@@ -20,9 +20,9 @@ const Sidebar = function () {
             className={twMerge(isOver1280 ? "flex" :
                 isOpen ? "translate-x-0" : "-translate-x-full"
                 , isCollapse ? "w-[72px]" : " w-[260px]"
-                , " transition-all duration-200 ease-in-out transform px-4 fixed xl:static top-0 left-0 xl:flex-col gap-0.5 h-[100dvh] bg-opacity-100 bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100")}
+                , " transition duration-200 ease-in-out transform px-4 fixed xl:static top-0 left-0 xl:flex-col gap-0.5 h-[100dvh] bg-opacity-100 ")}
             aria-label="Sidebar">
-            <div className="flex flex-col justify-between h-full ">
+            <div className="bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 flex flex-col justify-between h-full ">
                 <div className="grow">
                     <div className="flex flex-col">
                         <div className="flex flex-col gap-3">
