@@ -27,7 +27,7 @@ const ExpandableNote: FC<Props> = ({ note }) => {
             note?.blocks && note.blocks.length < 4 && <div className="py-2"></div>
         }
         {
-            note?.blocks && note.blocks.length > 4 && <button
+            note?.blocks && note.blocks.length > 3 && <button
                 onClick={() => setExpanded(!isExpanded)}
                 className="mt-2 px-4 py-1 text-sm flex justify-center items-center gap-2"
             >
