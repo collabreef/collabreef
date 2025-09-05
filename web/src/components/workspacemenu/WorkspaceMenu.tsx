@@ -9,7 +9,7 @@ import { createWorkspace } from "../../api/workspace"
 import { useSidebar } from "../sidebar/SidebarProvider"
 
 const WorkspaceMenu = () => {
-    const { workspaces, fetchWorkspaces } = useWorkspaceStore()
+    const { workspaces, fetchWorkspaces, getWorkspaceById } = useWorkspaceStore()
     const { workspaceId } = useParams()
     const [keyword, setKeyword] = useState("")
     const navigate = useNavigate()
@@ -23,7 +23,7 @@ const WorkspaceMenu = () => {
 
     const handleNewWorkspaceButtonClick = async () => {
         try {
-            const workspace = await createWorkspace({ name: keyword || t("menu.defaultWorkspaceName") });
+            const workspace = await createWorkspace({ name: keyword });
             if (workspace.id) {
                 await fetchWorkspaces();
                 navigate(`/workspaces/${workspace.id}`);
@@ -31,10 +31,6 @@ const WorkspaceMenu = () => {
         } catch (error) {
             console.error("Failed to create workspace:", error);
         }
-    }
-
-    const getCurrentWorkspaceName = () => {
-        return workspaces.find(x => x.id == workspaceId)?.name
     }
 
     const filteredWorkspaces = useMemo(() => {
@@ -46,12 +42,12 @@ const WorkspaceMenu = () => {
     return <Dropdown
         className="w-full "
         buttonClassName=" bg-white dark:bg-neutral-900 shadow border w-full px-3 py-1.5 rounded-md text-sm flex justify-center items-center truncate"
-        buttonTooltip={getCurrentWorkspaceName() ?? ""}
+        buttonTooltip={getWorkspaceById(workspaceId!)?.name ?? ""}
         buttonContent={<>
             {
                 !isCollapse &&
                 <span className="grow text-left truncate">
-                    {getCurrentWorkspaceName()}
+                    {getWorkspaceById(workspaceId!)?.name ?? ""}
                 </span>
             }
             <span className="w-5">

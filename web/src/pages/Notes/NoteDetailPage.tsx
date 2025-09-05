@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query"
 import BlockRenderer from "../../components/blockrenderer/BlockRenderer"
 import { Link, useParams } from "react-router-dom"
-import { useCurrentWorkspaceId } from "../../hooks/useCurrentWorkspace"
+import useCurrentWorkspaceId from "../../hooks/useCurrentworkspaceId"
 import { useEffect, useState } from "react"
 import { getNote, NoteData } from "../../api/note"
 import TransitionWrapper from "../../components/transitionwrapper/TransitionWrapper"

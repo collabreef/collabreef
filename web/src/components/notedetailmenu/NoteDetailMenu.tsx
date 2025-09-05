@@ -3,7 +3,7 @@ import { Ellipsis, Pencil, Trash2 } from "lucide-react"
 import { DropdownMenu } from "radix-ui"
 import { Link, useNavigate } from "react-router-dom"
 import { deleteNote } from "../../api/note"
-import { useCurrentWorkspaceId } from "../../hooks/useCurrentWorkspace"
+import useCurrentWorkspaceId from "../../hooks/useCurrentworkspaceId"
 import { useTranslation } from "react-i18next"
 
 interface Props {

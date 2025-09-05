@@ -8,7 +8,7 @@ import ImageTool from '@editorjs/image';
 import AttachesTool from '@editorjs/attaches';
 import Table from '@editorjs/table'
 import Embed from '@editorjs/embed';
-import { useCurrentWorkspaceId } from "../../hooks/useCurrentWorkspace";
+import useCurrentWorkspaceId from "../../hooks/useCurrentworkspaceId";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 

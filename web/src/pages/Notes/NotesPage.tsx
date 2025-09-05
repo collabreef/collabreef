@@ -3,7 +3,7 @@ import { MoveDiagonal, PlusCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import SidebarButton from "../../components/sidebar/SidebarButton"
 import { getNotes, NoteData } from "../../api/note"
-import { useCurrentWorkspaceId, useCurrentWorkspaceName } from "../../hooks/useCurrentWorkspace"
+import useCurrentWorkspaceId from "../../hooks/useCurrentworkspaceId"
 import { Link } from "react-router-dom"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useRef, useCallback } from "react"
@@ -11,11 +11,12 @@ import ExpandableNote from "../../components/expandablenote/ExpandableNote"
 import TransitionWrapper from "../../components/transitionwrapper/TransitionWrapper"
 import { Tooltip } from "radix-ui"
 import Loader from "../../components/loader/Loader"
+import { useWorkspaceStore } from "../../stores/workspace"
 
 const PAGE_SIZE = 20;
 
 const Notes = () => {
-    const workspaceName = useCurrentWorkspaceName()
+    const { getWorkspaceById } = useWorkspaceStore()
     const currentWorkspaceId = useCurrentWorkspaceId();
     const { t } = useTranslation()
 
@@ -89,7 +90,7 @@ const Notes = () => {
                     <div className="flex items-center gap-3 h-10">
                         <SidebarButton />
                         <div className=" max-w-[calc(100vw-100px)] overflow-x-auto sm:text-xl font-semibold hide-scrollbar">
-                            {workspaceName}
+                            {getWorkspaceById(currentWorkspaceId)?.name ?? ""}
                         </div>
                     </div>
                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">

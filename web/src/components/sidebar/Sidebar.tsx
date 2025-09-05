@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import ThemeButton from "../themebutton/ThemeButton"
 import { Tooltip } from "radix-ui"
 import UserMenu from "../usermenu/UserMenu"
-import { useCurrentWorkspaceId } from "../../hooks/useCurrentWorkspace"
+import useCurrentWorkspaceId from "../../hooks/useCurrentworkspaceId"
 
 const Sidebar = function () {
     const { t } = useTranslation();
