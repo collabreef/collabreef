@@ -6,7 +6,7 @@ export default {
   },
   menu: {
     notes: "Notes",
-    tags: "Tags",
+    settings: "Settings",
     createWithName: "Create workspace：{{name}}",
   },
   form: {

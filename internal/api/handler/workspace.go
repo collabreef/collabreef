@@ -55,7 +55,7 @@ func (h Handler) GetWorkspaces(c echo.Context) error {
 }
 
 func (h Handler) GetWorkspace(c echo.Context) error {
-	id := c.Param("id")
+	id := c.Param("workspaceId")
 	if id == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "workspace id is required")
 	}
@@ -127,7 +127,7 @@ func (h Handler) CreateWorkspace(c echo.Context) error {
 }
 
 func (h Handler) DeleteWorkspace(c echo.Context) error {
-	id := c.Param("id")
+	id := c.Param("workspaceId")
 	if id == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "workspace id is required")
 	}
@@ -173,7 +173,7 @@ func (h Handler) DeleteWorkspace(c echo.Context) error {
 }
 
 func (h Handler) UpdateWorkspace(c echo.Context) error {
-	id := c.Param("id")
+	id := c.Param("workspaceId")
 	if id == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "workspace id is required")
 	}
@@ -219,6 +219,7 @@ func (h Handler) UpdateWorkspace(c echo.Context) error {
 	}
 
 	workspace := model.Workspace{
+		ID:        id,
 		Name:      req.Name,
 		UpdatedBy: user.ID,
 		UpdatedAt: time.Now().UTC().String(),

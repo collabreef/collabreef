@@ -13,10 +13,10 @@ func RegisterWorkspace(api *echo.Group, h handler.Handler, authMiddleware middle
 	g.Use(workspaceMiddleware.CheckWorkspaceExists())
 
 	g.GET("", h.GetWorkspaces)
-	g.GET("/:id", h.GetWorkspace)
+	g.GET("/:workspaceId", h.GetWorkspace)
 	g.POST("", h.CreateWorkspace)
-	g.PUT("/:id", h.UpdateWorkspace)
-	g.DELETE("/:id", h.DeleteWorkspace)
+	g.PUT("/:workspaceId", h.UpdateWorkspace)
+	g.DELETE("/:workspaceId", h.DeleteWorkspace)
 
 	g.GET("/:workspaceId/notes", h.GetNotes)
 	g.POST("/:workspaceId/notes", h.CreateNote)

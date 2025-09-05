@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { PanelLeftClose, PanelLeftOpen, Text } from "lucide-react"
+import { PanelLeftClose, PanelLeftOpen, Settings, Text } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import { useSidebar } from "./SidebarProvider"
 import WorkspaceMenu from "../workspacemenu/WorkspaceMenu"
@@ -48,6 +48,29 @@ const Sidebar = function () {
                                             >
                                                 <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-100" />
                                                 {t("menu.notes")}
+                                            </Tooltip.Content>
+                                        </Tooltip.Portal>
+                                        }
+                                    </Tooltip.Root>
+                                </div>
+                                <div className="">
+                                    <Tooltip.Root>
+                                        <Tooltip.Trigger asChild>
+                                            <Link to={`/workspaces/${currentWorkspaceId}/settings`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
+                                                <Settings size={20} />
+                                                {!isCollapse && t("menu.settings")}
+                                            </Link>
+                                        </Tooltip.Trigger>
+                                        {
+                                            isCollapse && 
+                                        <Tooltip.Portal>
+                                            <Tooltip.Content
+                                                className="select-none rounded-lg bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-2 py-1 text-sm"
+                                                side="right"
+                                                sideOffset={5}
+                                            >
+                                                <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-100" />
+                                                {t("menu.settings")}
                                             </Tooltip.Content>
                                         </Tooltip.Portal>
                                         }

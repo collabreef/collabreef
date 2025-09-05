@@ -45,7 +45,7 @@ func (s SqliteDB) CreateWorkspace(w model.Workspace) error {
 }
 
 func (s SqliteDB) DeleteWorkspace(id string) error {
-	_, err := gorm.G[model.User](s.getDB()).Where("id = ?", id).Delete(context.Background())
+	_, err := gorm.G[model.Workspace](s.getDB()).Where("id = ?", id).Delete(context.Background())
 
 	return err
 }
