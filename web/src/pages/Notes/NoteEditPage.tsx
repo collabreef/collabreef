@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useCurrentWorkspaceId } from "../../hooks/useCurrentWorkspace"
+import useCurrentWorkspaceId from "../../hooks/useCurrentworkspaceId"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { createNote, getNote, NoteData, updateNote } from "../../api/note"
 import { ChevronLeft } from "lucide-react"
