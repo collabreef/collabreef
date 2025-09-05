@@ -26,13 +26,13 @@ export const getWorkspaces = async () => {
 
 export const updateWorkspace = async (id: string, data: WorkspaceData) => {
   const response = await axios.put(`/api/v1/workspaces/${id}`, {
+    withCredentials: true,
     name: data.name,
-    description: data.description,
   });
   return response.data;
 };
 
 export const deleteWorkspace = async (id: string) => {
-  const response = await axios.delete(`/api/v1/workspaces/${id}`);
+  const response = await axios.delete(`/api/v1/workspaces/${id}`, { withCredentials: true });
   return response.data;
 };

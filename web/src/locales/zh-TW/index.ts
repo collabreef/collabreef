@@ -6,7 +6,7 @@ export default {
   },
   menu: {
     notes: "筆記",
-    tags: "標籤",
+    settings: "設定",
     createWithName: "新增工作區：{{name}}",
   },
   form: {
