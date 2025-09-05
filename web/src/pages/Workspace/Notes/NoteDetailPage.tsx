@@ -1,13 +1,13 @@
 
 import { useQuery } from "@tanstack/react-query"
-import BlockRenderer from "../../components/blockrenderer/BlockRenderer"
+import BlockRenderer from "../../../components/blockrenderer/BlockRenderer"
 import { Link, useParams } from "react-router-dom"
-import useCurrentWorkspaceId from "../../hooks/useCurrentworkspaceId"
+import useCurrentWorkspaceId from "../../../hooks/useCurrentworkspaceId"
 import { useEffect, useState } from "react"
-import { getNote, NoteData } from "../../api/note"
-import TransitionWrapper from "../../components/transitionwrapper/TransitionWrapper"
+import { getNote, NoteData } from "../../../api/note"
+import TransitionWrapper from "../../../components/transitionwrapper/TransitionWrapper"
 import { ChevronLeft } from "lucide-react"
-import NoteDetailMenu from "../../components/notedetailmenu/NoteDetailMenu"
+import NoteDetailMenu from "../../../components/notedetailmenu/NoteDetailMenu"
 
 const NoteDetailPage = () => {
     const [_, setIsLoading] = useState<boolean>(true)

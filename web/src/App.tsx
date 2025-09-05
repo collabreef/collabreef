@@ -4,11 +4,11 @@ import SignUp from './pages/Auth/SignUpPage'
 import NotFound from './pages/Errors/NotFoundPage';
 import RequireAuth from './components/requireauth/RequireAuth';
 import Dashboard from './components/dashboard/Dashboard';
-import Notes from './pages/Notes/NotesPage';
+import Notes from './pages/Workspace/Notes/NotesPage';
 import Setup from './pages/WorkspaceSetup/WorkspaceSetupPage';
 import { AnimatePresence } from "motion/react"
-import NoteDetailPage from './pages/Notes/NoteDetailPage';
-import NoteEdit from './pages/Notes/NoteEditPage';
+import NoteDetailPage from './pages/Workspace/Notes/NoteDetailPage';
+import NoteEdit from './pages/Workspace/Notes/NoteEditPage';
 import Home from './pages/Home/HomePage';
 
 function App() {
