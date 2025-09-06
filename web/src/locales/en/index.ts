@@ -18,8 +18,15 @@ export default {
   pages: {
     settings: {
       workspaceName: "Workspace name",
-      deleteThisWorkspace: "Delete this workspace"
+      deleteThisWorkspace: "Delete this workspace",
+      deleteThisWorkspaceMessage : "Delete this workspace ?"
     },
+    workspaceSetup: {
+      createWorkspace: "Create Workspace",
+      pleaseEnterYourWorkspaceName:"Please enter your workspace name",
+      workspaceName: "Workspace name",
+      workspaceNamePlaceholder: "workspace name",
+    }
   },
   actions: {
     signin: "Sign in",

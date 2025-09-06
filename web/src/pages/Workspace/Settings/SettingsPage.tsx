@@ -40,7 +40,7 @@ const Settings = () => {
     })
 
     const handleDeleteClick = () => {
-        if (confirm(t("pages.settings.deleteThisWorkspace")+"?")) {
+        if (confirm(t("pages.settings.deleteThisWorkspaceMessage"))) {
             deleteWorkspaceMutation.mutate()
         }
     }
