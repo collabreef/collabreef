@@ -18,8 +18,15 @@ export default {
   pages: {
     settings: {
       workspaceName: "工作區名稱",
-      deleteThisWorkspace: "刪除這個工作區"
+      deleteThisWorkspace: "刪除這個工作區",
+      deleteThisWorkspaceMessage : "刪除這個工作區 ?"
     },
+    workspaceSetup: {
+      createWorkspace: "建立工作區",
+      pleaseEnterYourWorkspaceName:"請輸入你的工作區名稱",
+      workspaceName: "工作區名稱",
+      workspaceNamePlaceholder: "工作區名稱",
+    }
   },
   actions: {
     signin: "登入",
