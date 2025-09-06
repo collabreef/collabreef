@@ -69,7 +69,7 @@ const Settings = () => {
                                         {t("pages.settings.workspaceName")}
                                     </div>
                                     <div className="flex gap-3 flex-wrap">
-                                        <input className="flex-1 px-3 py-2 border rounded-lg" value={workspaceName} onChange={e => setWorkspaceName(e.target.value)} title="rename workspace" />
+                                        <input className="flex-1 px-3 py-2 border rounded-lg dark:text-black" value={workspaceName} onChange={e => setWorkspaceName(e.target.value)} title="rename workspace" />
                                         <button onClick={handleRenameClick} className=" px-3 py-2 border shadow-sm rounded-lg">{t("actions.rename")}</button>
                                     </div>
                                 </div>
