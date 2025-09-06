@@ -53,7 +53,7 @@ const Settings = () => {
         className="w-full"
     >
         <div className="flex flex-col min-h-screen">
-            <div className="py-2 px-4 sm:px-0  flex items-center justify-between border-b xl:border-b-0">
+            <div className="py-2 flex items-center justify-between ">
                 <div className="flex gap-3 items-center sm:text-xl font-semibold h-10">
                     <SidebarButton />
                     {t("menu.settings")}
