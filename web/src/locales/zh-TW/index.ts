@@ -46,7 +46,8 @@ export default {
     collapse: "收合",
     create: "建立",
     newNote: "新增筆記",
-    rename: "重新命名"
+    rename: "重新命名",
+    selectFileToUpload: "選擇檔案"
   },
   message: {
     noMoreNotes: "沒有更多筆記",

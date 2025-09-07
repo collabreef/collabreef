@@ -46,7 +46,8 @@ export default {
     collapse: "Collapse",
     create: "Create",
     newNote: "New Note",
-    rename: "Rename"
+    rename: "Rename",
+    selectFileToUpload: "Select file to upload"
   },
   message: {
     deleteTheNote: "Delete the note?",

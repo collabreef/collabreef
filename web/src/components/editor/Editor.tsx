@@ -55,6 +55,7 @@ const Editor: React.FC<Props> = ({ value, onChange }) => {
         attaches: {
           class: AttachesTool,
           config: {
+            buttonText: t("actions.selectFileToUpload"),
             uploader: {
               async uploadByFile(file: any) {
                 const formData = new FormData();
