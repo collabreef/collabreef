@@ -3,13 +3,15 @@ import { useTranslation } from "react-i18next"
 import useCurrentWorkspaceId from "../../../hooks/useCurrentworkspaceId"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { createNote, getNote, NoteData, updateNote } from "../../../api/note"
-import { ChevronLeft } from "lucide-react"
+import { ChevronLeft, LoaderIcon } from "lucide-react"
 import Editor from "../../../components/editor/Editor"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import TransitionWrapper from "../../../components/transitionwrapper/TransitionWrapper"
+import Loader from "../../../components/loader/Loader"
 
 const NoteEdit = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true)
+    const [isSaving, setIsSaving] = useState<boolean>(false);
     const [note, setNote] = useState<NoteData>({ blocks: [], visibility: "private" })
     const currentWorkspaceId = useCurrentWorkspaceId()
     const { noteId } = useParams()
@@ -63,6 +65,7 @@ const NoteEdit = () => {
         }))
     }
     function handleSave() {
+        setIsSaving(true);
         if (noteId) {
             updateNoteMutation.mutate({ ...note, id: noteId })
         } else {
@@ -93,7 +96,7 @@ const NoteEdit = () => {
                         {t("actions.cancel")}
                     </Link>
                     <button title="menu" onClick={handleSave} className="px-4 ">
-                        {t("actions.save")}
+                        {isSaving ? <LoaderIcon size={16} className=" animate-spin" /> : t("actions.save")}
                     </button>
                 </div>
             </div>
