@@ -8,6 +8,7 @@ import { getNote, NoteData } from "../../../api/note"
 import TransitionWrapper from "../../../components/transitionwrapper/TransitionWrapper"
 import { ChevronLeft } from "lucide-react"
 import NoteDetailMenu from "../../../components/notedetailmenu/NoteDetailMenu"
+import FullNote from "../../../components/fullnote/FullNote"
 
 const NoteDetailPage = () => {
     const [_, setIsLoading] = useState<boolean>(true)
@@ -46,9 +47,7 @@ const NoteDetailPage = () => {
             <div className="grow flex">
                 <div className=" flex-1 ">
                     <div className="max-w-2xl w-full m-auto py-4">
-                        {
-                            note.blocks && note.blocks.map(x => <BlockRenderer block={x} />)
-                        }
+                        <FullNote note={note} />
                     </div>
                 </div>
                 <div className="hidden lg:block w-[260px]">
