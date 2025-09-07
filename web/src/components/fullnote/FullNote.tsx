@@ -1,6 +1,7 @@
 import { FC } from "react"
 import { NoteData } from "../../api/note"
 import BlockRenderer from "../blockrenderer/BlockRenderer"
+import { PhotoProvider } from 'react-photo-view'
 
 interface Props {
     note: NoteData
@@ -8,9 +9,11 @@ interface Props {
 
 const FullNote: FC<Props> = ({ note }) => {
     return <>
-        {
-            note.blocks && note.blocks.map(x => <BlockRenderer block={x} />)
-        }
+        <PhotoProvider>
+            {
+                note.blocks && note.blocks.map(x => <BlockRenderer block={x} />)
+            }
+        </PhotoProvider>
     </>
 }
 

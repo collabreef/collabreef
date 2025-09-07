@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
+import 'react-photo-view/dist/react-photo-view.css';
 import './i18n'
 import { Tooltip } from "radix-ui";
 import App from './App.tsx'
