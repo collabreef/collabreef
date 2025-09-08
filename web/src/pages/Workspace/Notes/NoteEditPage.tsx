@@ -7,7 +7,6 @@ import { ChevronLeft, LoaderIcon } from "lucide-react"
 import Editor from "../../../components/editor/Editor"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import TransitionWrapper from "../../../components/transitionwrapper/TransitionWrapper"
-import Loader from "../../../components/loader/Loader"
 
 const NoteEdit = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true)
