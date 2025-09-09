@@ -1,12 +1,12 @@
 import Masonry from "../../../components/masonry/Masonry"
-import { MoveDiagonal, PlusCircle, Search } from "lucide-react"
+import { Filter, MoveDiagonal, PlusCircle, Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import SidebarButton from "../../../components/sidebar/SidebarButton"
 import { getNotes, NoteData } from "../../../api/note"
 import useCurrentWorkspaceId from "../../../hooks/useCurrentworkspaceId"
 import { Link } from "react-router-dom"
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { useRef, useCallback } from "react"
+import { useRef, useCallback, useState } from "react"
 import ExpandableNote from "../../../components/expandablenote/ExpandableNote"
 import TransitionWrapper from "../../../components/transitionwrapper/TransitionWrapper"
 import { Tooltip } from "radix-ui"
@@ -18,6 +18,7 @@ const PAGE_SIZE = 20;
 const Notes = () => {
     const { getWorkspaceById } = useWorkspaceStore()
     const currentWorkspaceId = useCurrentWorkspaceId();
+    const [isSearchVisible, setIsSearchVisible] = useState(false);
     const { t } = useTranslation()
 
     const observerRef = useRef<IntersectionObserver | null>(null);
@@ -89,16 +90,21 @@ const Notes = () => {
                 <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3 h-10">
                         <SidebarButton />
-                        <div className=" max-w-[calc(100vw-100px)] overflow-x-auto sm:text-xl font-semibold hide-scrollbar">
+                        <div className=" max-w-[calc(100vw-165px)] overflow-x-auto whitespace-nowrap sm:text-xl font-semibold hide-scrollbar">
                             {getWorkspaceById(currentWorkspaceId)?.name ?? ""}
                         </div>
                     </div>
                     <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                         <div className="hidden sm:block">
-                             <div className="flex items-center gap-2 py-2 px-3 shadow-inner rounded-md dark:border-neutral-600 bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-100">
+                            <div className="flex items-center gap-2 py-2 px-3 rounded-md dark:border-neutral-600 bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-100">
                                 <Search size={16} className="text-gray-400" />
                                 <input type="text" className=" flex-1 bg-transparent" placeholder={t("placeholder.search")} />
                             </div>
+                        </div>
+                        <div className="block sm:hidden">
+                            <button className="p-3" onClick={() => setIsSearchVisible(!isSearchVisible)}>
+                                <Filter size={20} />
+                            </button>
                         </div>
                         <div className="flex items-center">
                             <Tooltip.Root>
@@ -122,12 +128,14 @@ const Notes = () => {
                 </div>
             </div>
             <div className="flex flex-col gap-2 sm:gap-5">
-                <div className="block sm:hidden">
-                    <div className="w-full flex items-center gap-2 py-2 px-3 rounded-md shadow-inner border dark:border-neutral-600 bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-100">
-                        <Search size={16} className="text-gray-400" />
-                        <input type="text" className=" bg-transparent flex-1" placeholder={t("placeholder.search")} />
-                    </div>                
-                </div>
+                {
+                    isSearchVisible && < div className="block sm:hidden">
+                        <div className="w-full flex items-center gap-2 py-2 px-3 rounded-md shadow-inner border dark:border-neutral-600 bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-100">
+                            <Search size={16} className="text-gray-400" />
+                            <input type="text" className=" bg-transparent flex-1" placeholder={t("placeholder.search")} />
+                        </div>
+                    </div>
+                }
                 <div className="">
                     {
                         isLoading ? <Loader />
@@ -160,7 +168,7 @@ const Notes = () => {
                     {!isLoading && !hasNextPage && <div className="text-center py-4 text-gray-400">{t("message.noMoreNotes")}</div>}
                 </div>
             </div>
-        </TransitionWrapper>
+        </TransitionWrapper >
     </>
 }
 
