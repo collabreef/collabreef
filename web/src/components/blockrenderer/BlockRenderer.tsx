@@ -31,7 +31,7 @@ const BlockRenderer: FC<Props> = ({ block }) => {
     else if (block.type == "code") {
         return <div className="p-2">
             <pre className="p-4 bg-gray-100 text-gray-800 
-            dark:bg-gray-900 dark:text-gray-100 dark:border rounded-lg overflow-x-auto">
+            dark:bg-gray-900 dark:text-gray-100 dark:border rounded-lg whitespace-pre-wrap overflow-x-auto">
                 <code className="font-mono text-sm">
                     {block.data.code}
                 </code>
