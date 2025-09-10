@@ -13,8 +13,8 @@ interface Block {
   data: any;
 }
 
-export const getNotes = async (workspaceId: string, pageNum: number, pageSize: number) => {
-  const response = await axios.get(`/api/v1/workspaces/${workspaceId}/notes?pageSize=${pageSize}&pageNumber=${pageNum}`, { withCredentials: true });
+export const getNotes = async (workspaceId: string, pageNum: number, pageSize: number, query: string) => {
+  const response = await axios.get(`/api/v1/workspaces/${workspaceId}/notes?pageSize=${pageSize}&pageNumber=${pageNum}&query=${query}`, { withCredentials: true });
   return response.data;
 };
 

@@ -6,7 +6,7 @@ import { getNotes, NoteData } from "../../../api/note"
 import useCurrentWorkspaceId from "../../../hooks/useCurrentworkspaceId"
 import { Link } from "react-router-dom"
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { useRef, useCallback, useState } from "react"
+import { useRef, useCallback, useState, useEffect } from "react"
 import ExpandableNote from "../../../components/expandablenote/ExpandableNote"
 import TransitionWrapper from "../../../components/transitionwrapper/TransitionWrapper"
 import { Tooltip } from "radix-ui"
@@ -16,6 +16,8 @@ import { useWorkspaceStore } from "../../../stores/workspace"
 const PAGE_SIZE = 20;
 
 const Notes = () => {
+    const [query, setQuery] = useState("")
+    const [debouncedQuery, setDebouncedQuery] = useState(query);
     const { getWorkspaceById } = useWorkspaceStore()
     const currentWorkspaceId = useCurrentWorkspaceId();
     const [isSearchVisible, setIsSearchVisible] = useState(false);
@@ -23,16 +25,27 @@ const Notes = () => {
 
     const observerRef = useRef<IntersectionObserver | null>(null);
 
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedQuery(query);
+        }, 500);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [query]);
+
     const {
         data,
         isLoading,
         fetchNextPage,
         hasNextPage,
-        isFetchingNextPage
+        isFetchingNextPage,
+        refetch
     } = useInfiniteQuery({
         queryKey: ['notes', currentWorkspaceId],
         queryFn: ({ pageParam = 1 }: { pageParam?: unknown }) =>
-            getNotes(currentWorkspaceId, Number(pageParam), PAGE_SIZE),
+            getNotes(currentWorkspaceId, Number(pageParam), PAGE_SIZE, debouncedQuery),
         enabled: !!currentWorkspaceId,
         getNextPageParam: (lastPage, allPages) => {
             if (!lastPage || lastPage.length < PAGE_SIZE) return undefined;
@@ -42,6 +55,10 @@ const Notes = () => {
         staleTime: 0,
         initialPageParam: 1
     })
+
+    useEffect(() => {
+        refetch();
+    }, [debouncedQuery, refetch]);
 
     const loadMoreRef = useCallback((node: HTMLDivElement | null) => {
         if (observerRef.current) {
@@ -98,7 +115,7 @@ const Notes = () => {
                         {isSearchVisible && <div className="hidden sm:block">
                             <div className="flex items-center gap-2 py-2 px-3 rounded-xl dark:border-neutral-600 bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-100">
                                 <Search size={16} className="text-gray-400" />
-                                <input type="text" className=" flex-1 bg-transparent" placeholder={t("placeholder.search")} />
+                                <input type="text" value={query} onChange={e => setQuery(e.target.value)} className=" flex-1 bg-transparent" placeholder={t("placeholder.search")} />
                                 <button title="toggle isSearchVisible" onClick={() => setIsSearchVisible(false)}>
                                     <X size={16} className="text-gray-400" />
                                 </button>
@@ -137,7 +154,7 @@ const Notes = () => {
                     isSearchVisible && < div className="block sm:hidden pb-1">
                         <div className="w-full flex items-center gap-2 py-2 px-3 rounded-xl shadow-inner border dark:border-neutral-600 bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-100">
                             <Search size={16} className="text-gray-400" />
-                            <input type="text" className=" bg-transparent flex-1" placeholder={t("placeholder.search")} />
+                            <input type="text" value={query} onChange={e => setQuery(e.target.value)} className=" bg-transparent flex-1" placeholder={t("placeholder.search")} />
                             <button title="toggle isSearchVisible" onClick={() => setIsSearchVisible(false)}>
                                 <X size={16} className="text-gray-400" />
                             </button>

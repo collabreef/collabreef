@@ -49,10 +49,13 @@ func (h Handler) GetNotes(c echo.Context) error {
 		}
 	}
 
+	query := c.QueryParam("query")
+
 	filter := model.NoteFilter{
 		WorkspaceID: workspaceId,
 		PageSize:    pageSize,
 		PageNumber:  pageNumber,
+		Query:       query,
 	}
 
 	notes, err := h.db.FindNotes(filter)

@@ -93,21 +93,35 @@ func (s SqliteDB) FindNote(n model.Note) (model.Note, error) {
 }
 
 func (s SqliteDB) FindNotes(f model.NoteFilter) ([]model.Note, error) {
+	var notes []model.Note
 
 	var conds []string
 	var args []interface{}
 
 	if f.WorkspaceID != "" {
-		conds = append(conds, "workspace_id = ?")
-		args = append(args, f.WorkspaceID)
+		conds = append(conds, "notes.workspace_id = ? AND blocks.workspace_id = ?")
+		args = append(args, f.WorkspaceID, f.WorkspaceID)
 	}
 
-	var notes []model.Note
+	if f.Query != "" {
+		query := "%" + f.Query + "%"
+		conds = append(conds, `(
+		(blocks.type IN ('paragraph','header','quote') AND json_extract(blocks.data,'$.text') LIKE ?) 
+		OR (blocks.type='code' AND json_extract(blocks.data,'$.code') LIKE ?)
+		OR (blocks.type='list' AND EXISTS (
+			SELECT 1 FROM json_each(json_extract(blocks.data,'$.items'))
+			WHERE json_extract(value,'$.content') LIKE ?
+		))
+	)`)
+		args = append(args, query, query, query)
+	}
 
 	err := s.getDB().Model(&model.Note{}).
-		Preload("Blocks").
+		Select("DISTINCT notes.*").
+		Joins("JOIN blocks ON blocks.note_id = notes.id").
 		Where(strings.Join(conds, " AND "), args...).
-		Order("created_at DESC").
+		Preload("Blocks").
+		Order("notes.created_at DESC").
 		Offset((f.PageNumber - 1) * f.PageSize).
 		Limit(f.PageSize).
 		Find(&notes).Error
