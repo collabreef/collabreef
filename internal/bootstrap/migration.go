@@ -12,17 +12,19 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-func RunMigration(cfg config.AppConfig) error {
-	switch cfg.DB.Driver {
+func RunMigration() error {
+	driver := config.C.GetString(config.DB_DRIVER)
+
+	switch driver {
 	case "sqlite3":
-		return runSqlite3Migrations(cfg)
+		return runSqlite3Migrations()
 	}
 
-	return fmt.Errorf("unsupported database driver: %s", cfg.DB.Driver)
+	return fmt.Errorf("unsupported database driver: %s", driver)
 }
 
-func runSqlite3Migrations(config config.AppConfig) error {
-	db, err := sql.Open(config.DB.Driver, config.DB.DSN)
+func runSqlite3Migrations() error {
+	db, err := sql.Open(config.C.GetString(config.DB_DRIVER), config.C.GetString(config.DB_DSN))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,7 +36,7 @@ func runSqlite3Migrations(config config.AppConfig) error {
 	}
 
 	migrateInstance, err := migrate.NewWithDatabaseInstance(
-		config.DB.MigrationPath+config.DB.Driver,
+		config.C.GetString(config.DB_MIGRATIONS_PATH),
 		"main",
 		driver,
 	)

@@ -20,7 +20,7 @@ import (
 //go:embed dist/*
 var webAssets embed.FS
 
-func New(cfg config.AppConfig, db db.DB, storage storage.Storage) (*echo.Echo, error) {
+func New(db db.DB, storage storage.Storage) (*echo.Echo, error) {
 	e := echo.New()
 
 	subFS, err := fs.Sub(webAssets, "dist")
@@ -39,11 +39,13 @@ func New(cfg config.AppConfig, db db.DB, storage storage.Storage) (*echo.Echo, e
 	}))
 	e.Validator = &validate.CustomValidator{Validator: validator.New()}
 
+	apiRoot := config.C.GetString(config.SERVER_API_ROOT_PATH)
+
 	// Routes
-	api := e.Group(cfg.Server.ApiRootPath)
+	api := e.Group(apiRoot)
 	handler := handler.NewHandler(db, storage)
 	auth := middlewares.NewAuthMiddleware(db)
-	workspace := middlewares.NewWorkspaceMiddleware(db, cfg)
+	workspace := middlewares.NewWorkspaceMiddleware(db)
 
 	route.RegisterAuth(api, *handler)
 	route.RegisterAdmin(api, *handler, *auth)
