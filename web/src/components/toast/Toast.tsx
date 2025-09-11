@@ -14,7 +14,7 @@ export function Toast({ toast }: { toast: ToastMessage }) {
     <RadixToast.Root
       open={true}
       onOpenChange={(open) => !open && removeToast(toast.id)}
-      className="bg-white shadow-lg rounded-xl p-4 flex items-start gap-3 border border-gray-200 data-[state=open]:animate-slideIn data-[state=closed]:animate-slideOut"
+      className="bg-white dark:bg-neutral-900 shadow-lg rounded-xl p-4 flex items-start gap-3 border border-gray-200 data-[state=open]:animate-slideIn data-[state=closed]:animate-slideOut"
     >
       {icon}
       <div>
