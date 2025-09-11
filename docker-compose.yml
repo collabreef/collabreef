@@ -10,4 +10,5 @@ services:
       - "./bin:/usr/local/app/bin"
     environment:
       - PORT=8080
+      - SERVER_DISABLE_SIGNUP=${SERVER_DISABLE_SIGNUP}
     restart: unless-stopped

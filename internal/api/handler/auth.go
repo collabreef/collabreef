@@ -106,9 +106,9 @@ func (h *Handler) SignOut(c echo.Context) error {
 }
 
 func (h *Handler) SignUp(c echo.Context) error {
-	allowSignUp := config.C.GetBool(config.SERVER_ALLOW_SIGNUP)
+	disableSignUp := config.C.GetBool(config.SERVER_DISABLE_SIGNUP)
 
-	if !allowSignUp {
+	if disableSignUp {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": "Registration is not allowed on this server.",
 		})
