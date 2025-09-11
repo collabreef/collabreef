@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/pinbook/pinbook/internal/api/auth"
+	"github.com/pinbook/pinbook/internal/config"
 	"github.com/pinbook/pinbook/internal/model"
 	"github.com/pinbook/pinbook/internal/util"
 
@@ -105,6 +106,14 @@ func (h *Handler) SignOut(c echo.Context) error {
 }
 
 func (h *Handler) SignUp(c echo.Context) error {
+	allowSignUp := config.C.GetBool(config.SERVER_ALLOW_SIGNUP)
+
+	if !allowSignUp {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Registration is not allowed on this server.",
+		})
+	}
+
 	req := new(SignUpRequest)
 
 	if err := c.Bind(req); err != nil {

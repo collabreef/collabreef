@@ -36,6 +36,7 @@ const (
 	STORAGE_TYPE         = "storage_type"
 	STORAGE_ROOT         = "storage_root"
 	SERVER_API_ROOT_PATH = "server_api_root_path"
+	SERVER_ALLOW_SIGNUP  = "server_allow_signup"
 )
 
 func Init() {
@@ -47,6 +48,7 @@ func Init() {
 	C.SetDefault(STORAGE_TYPE, "local")
 	C.SetDefault(STORAGE_ROOT, "./bin/uploads/")
 	C.SetDefault(SERVER_API_ROOT_PATH, "/api/v1")
+	C.SetDefault(SERVER_ALLOW_SIGNUP, true)
 
 	C.AutomaticEnv()
 }
