@@ -5,6 +5,7 @@ import { signUp } from '../../api/auth';
 import logo from '../../assets/app.png'
 import logotext from '../../assets/applogo_text.png'
 import { useTranslation } from 'react-i18next';
+import { toast } from '../../stores/toast';
 
 const SignUp: React.FC = () => {
   const { t } = useTranslation()
@@ -20,9 +21,9 @@ const SignUp: React.FC = () => {
       console.log('Sign up successful:', data);
       navigate('/signin'); // Redirect to sign-in page
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Sign up failed:', error);
-      alert('Sign up failed, please try again later');
+      toast.error(`Sign up failed, ${error.response.data.error}`);
     },
   });
 

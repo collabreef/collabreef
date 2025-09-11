@@ -3,4 +3,5 @@ bin/*
 *.exe
 *.log
 .air.toml
+.env
 web/.vite
