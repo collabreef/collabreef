@@ -8,11 +8,12 @@ import (
 	"github.com/pinbook/pinbook/internal/db/sqlitedb"
 )
 
-func NewDB(cfg config.DatabaseConfig) (db.DB, error) {
-	switch cfg.Driver {
+func NewDB() (db.DB, error) {
+	driver := config.C.GetString(config.DB_DRIVER)
+	switch driver {
 	case "sqlite3":
-		return sqlitedb.NewSqliteDB(cfg)
+		return sqlitedb.NewSqliteDB()
 	}
 
-	return nil, fmt.Errorf("unsupported database driver: %s", cfg.Driver)
+	return nil, fmt.Errorf("unsupported database driver: %s", driver)
 }

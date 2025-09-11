@@ -1,5 +1,7 @@
 package config
 
+import "github.com/spf13/viper"
+
 type DatabaseConfig struct {
 	Driver        string
 	DSN           string
@@ -25,21 +27,24 @@ type AppConfig struct {
 	Server  ServerConfig
 }
 
-func LoadConfig() AppConfig {
-	return AppConfig{
-		DB: DatabaseConfig{
-			Driver:        "sqlite3",
-			DSN:           "bin/pinbook.db",
-			MaxIdle:       10,
-			MaxOpen:       100,
-			MigrationPath: "file://migrations/",
-		},
-		Storage: StorageConfig{
-			Type: "local",
-			Root: "./bin/uploads/",
-		},
-		Server: ServerConfig{
-			ApiRootPath: "/api/v1",
-		},
-	}
+var C *viper.Viper
+
+const (
+	DB_DRIVER            = "DB_DRIVER"
+	DB_DSN               = "DB_DRIVER"
+	DB_MIGRATIONS_PATH   = "DB_DRIVER"
+	STORAGE_TYPE         = "DB_DRIVER"
+	STORAGE_ROOT         = "DB_DRIVER"
+	SERVER_API_ROOT_PATH = "DB_DRIVER"
+)
+
+func Init() {
+	viper.SetDefault("DB_DRIVER", "sqlite3")
+	viper.SetDefault("DB_DSN", "bin/pinbook.db")
+	viper.SetDefault("DB_MIGRATIONS_PATH", "file://migrations/sqlite3")
+	viper.SetDefault("STORAGE_TYPE", "local")
+	viper.SetDefault("STORAGE_ROOT", "./bin/uploads/")
+	viper.SetDefault("SERVER_API_ROOT_PATH", "/api/v1")
+
+	viper.AutomaticEnv()
 }

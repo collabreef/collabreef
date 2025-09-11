@@ -16,8 +16,10 @@ type SqliteDB struct {
 	inTx bool
 }
 
-func NewSqliteDB(cfg config.DatabaseConfig) (db.DB, error) {
-	db, err := gorm.Open(sqlite.Open(cfg.DSN), &gorm.Config{})
+func NewSqliteDB() (db.DB, error) {
+	dsn := config.C.GetString(config.DB_DSN)
+
+	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
 
 	return &SqliteDB{db: db}, err
 }

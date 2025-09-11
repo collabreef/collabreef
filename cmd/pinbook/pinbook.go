@@ -10,23 +10,23 @@ import (
 )
 
 func main() {
-	cfg := config.LoadConfig()
+	config.Init()
 
-	if err := bootstrap.RunMigration(cfg); err != nil {
+	if err := bootstrap.RunMigration(); err != nil {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
-	db, err := bootstrap.NewDB(cfg.DB)
+	db, err := bootstrap.NewDB()
 	if err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
 
-	storage := bootstrap.NewStorage(cfg.Storage)
-	if storage == nil {
-		log.Fatal("Failed to initialize storage")
+	storage, err := bootstrap.NewStorage()
+	if err != nil {
+		log.Fatalf("Failed to initialize storage: %v", err)
 	}
 
-	e, err := server.New(cfg, db, storage)
+	e, err := server.New(db, storage)
 	if err != nil {
 		log.Fatalf("Failed to setup server: %v", err)
 	}

@@ -11,14 +11,12 @@ import (
 )
 
 type WorkspaceMiddleware struct {
-	db     db.DB
-	config config.AppConfig
+	db db.DB
 }
 
-func NewWorkspaceMiddleware(db db.DB, config config.AppConfig) *WorkspaceMiddleware {
+func NewWorkspaceMiddleware(db db.DB) *WorkspaceMiddleware {
 	return &WorkspaceMiddleware{
-		db:     db,
-		config: config,
+		db: db,
 	}
 }
 
@@ -26,7 +24,8 @@ func (m WorkspaceMiddleware) CheckWorkspaceExists() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) (returnErr error) {
 
-			if c.Path() == m.config.Server.ApiRootPath+"/workspaces" {
+			apiRoot := config.C.GetString(config.SERVER_API_ROOT_PATH)
+			if c.Path() == apiRoot+"/workspaces" {
 				return next(c)
 			}
 
