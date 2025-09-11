@@ -11,9 +11,12 @@ import NoteDetailPage from './pages/Workspace/Notes/NoteDetailPage';
 import NoteEdit from './pages/Workspace/Notes/NoteEditPage';
 import Home from './pages/Home/HomePage';
 import Settings from './pages/Workspace/Settings/SettingsPage';
+import { Toast } from './components/toast/Toast'
+import { useToastStore } from './stores/toast';
 
 function App() {
   const location = useLocation();
+  const toasts = useToastStore((s) => s.toasts);
 
   return (
       <AnimatePresence mode='wait'>
@@ -34,6 +37,10 @@ function App() {
           </Route>
           <Route path='' element={<Home />} />
         </Routes>
+        
+      {toasts.map((t) => (
+        <Toast key={t.id} toast={t} />
+      ))}
       </AnimatePresence>
   )
 }

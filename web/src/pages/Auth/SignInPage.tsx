@@ -5,6 +5,7 @@ import { signIn } from '../../api/auth';
 import logo from '../../assets/app.png'
 import logotext from '../../assets/applogo_text.png'
 import { useTranslation } from 'react-i18next';
+import { toast } from '../../stores/toast';
 
 const SignIn: React.FC = () => {
     const {t} = useTranslation();
@@ -19,8 +20,8 @@ const SignIn: React.FC = () => {
             navigate('/')
         },
         onError: (error) => {
-            console.error('Sign in failed:', error);
-            alert('Sign in failed, please check your email and password');
+            console.log(error)
+            toast.error('Sign in failed, please check your email and password');
         },
     });
 
