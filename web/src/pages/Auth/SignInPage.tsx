@@ -6,6 +6,8 @@ import logo from '../../assets/app.png'
 import logotext from '../../assets/applogo_text.png'
 import { useTranslation } from 'react-i18next';
 import { toast } from '../../stores/toast';
+import TextInput from '../../components/textinput/TextInput';
+import SubmitButton from '../../components/submitbutton/SubmitButton';
 
 const SignIn: React.FC = () => {
     const {t} = useTranslation();
@@ -21,7 +23,7 @@ const SignIn: React.FC = () => {
         },
         onError: (error) => {
             console.log(error)
-            toast.error('Sign in failed, please check your email and password');
+            toast.error('Sign in failed, please check your username and password');
         },
     });
 
@@ -31,7 +33,7 @@ const SignIn: React.FC = () => {
     };
 
     return (
-        <div className="min-h-dvh bg-neutral-50 dark:bg-neutral-900 flex justify-center pt-24">
+        <div className="min-h-dvh bg-stone-100 dark:bg-stone-900 flex justify-center pt-24">
             <div className="w-80 flex flex-col gap-10 pb-5">
                 <div className='flex items-center justify-center flex-col gap-3 sm:flex-row select-none '>
                     <img src={logo} className='w-14' alt="logo" />
@@ -42,37 +44,33 @@ const SignIn: React.FC = () => {
                         <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" htmlFor="email">
                             {t("form.username")}
                         </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        <TextInput
                             id="username"
-                            type="text"
                             value={username}
                             title='username'
                             onChange={(e) => setUsername(e.target.value)}
-                            required
+                            required={true}
                         />
                     </div>
                     <div className="mb-6">
                         <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" htmlFor="password">
                             {t("form.password")}
                         </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 dark:bg-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                        <TextInput
                             id="password"
                             type="password"
+                            title='password'
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            required
+                            required={true}
                         />
                     </div>
                     <div className="flex flex-col items-center gap-5 justify-between">
-                        <button
-                            className="w-full  bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-xl focus:outline-none focus:shadow-outline disabled:opacity-50"
-                            type="submit"
+                        <SubmitButton
                             disabled={signInMutation.isPending}
                         >
                             {t('actions.signin')}
-                        </button>
+                        </SubmitButton>
                         <Link
                             to="/signup"
                             className="inline-block align-baseline text-right font-bold text-sm text-amber-500 hover:text-amber-800"
