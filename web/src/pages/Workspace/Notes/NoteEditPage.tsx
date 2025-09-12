@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import useCurrentWorkspaceId from "../../../hooks/useCurrentworkspaceId"
-import { useParams, useNavigate, Link } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import { createNote, getNote, NoteData, updateNote } from "../../../api/note"
 import { ChevronLeft, LoaderIcon } from "lucide-react"
 import Editor from "../../../components/editor/Editor"
@@ -28,12 +28,12 @@ const NoteEdit = () => {
     // Mutation for creating note
     const createNoteMutation = useMutation({
         mutationFn: (data: NoteData) => createNote(currentWorkspaceId, data),
-        onSuccess: async (data: NoteData) => {
+        onSuccess: async () => {
             try {
                 await queryClient.invalidateQueries({ queryKey: ['notes', currentWorkspaceId] })
                 // Wait a bit to ensure the invalidation is processed
                 await new Promise(resolve => setTimeout(resolve, 100))
-                navigate(`/workspaces/${currentWorkspaceId}/note/${data.id}`)
+                navigate(-1)
             } catch (error) {
                 console.error('Error invalidating queries:', error)
                 navigate('/')
@@ -44,12 +44,12 @@ const NoteEdit = () => {
     // Mutation for updating note
     const updateNoteMutation = useMutation({
         mutationFn: (data: NoteData) => updateNote(currentWorkspaceId, data),
-        onSuccess: async (data: NoteData) => {
+        onSuccess: async () => {
             try {
                 await queryClient.invalidateQueries({ queryKey: ['notes', currentWorkspaceId] })
                 // Wait a bit to ensure the invalidation is processed
                 await new Promise(resolve => setTimeout(resolve, 100))
-                navigate(`/workspaces/${currentWorkspaceId}/note/${data.id}`)
+                navigate(-1)
             } catch (error) {
                 console.error('Error invalidating queries:', error)
                 navigate('/')
@@ -86,9 +86,9 @@ const NoteEdit = () => {
         <div className="flex flex-col min-h-screen">
             <div className="py-2 px-4 sm:px-0  flex items-center justify-between border-b xl:border-b-0">
                 <div className="flex items-center gap-2">
-                    <Link to={`/workspaces/${currentWorkspaceId}/`} className="inline-flex p-3 rounded-full ">
+                    <button title="back" onClick={()=>navigate(-1)} className="inline-flex p-3 rounded-full ">
                         <ChevronLeft size={20} />
-                    </Link>
+                    </button>
                     <div className="text-lg font-semibold">
                         {
                             noteId ? t("pages.noteEdit.editNote") :  t("pages.noteEdit.newNote")
