@@ -12,6 +12,7 @@ import TransitionWrapper from "../../../components/transitionwrapper/TransitionW
 import { Tooltip } from "radix-ui"
 import Loader from "../../../components/loader/Loader"
 import { useWorkspaceStore } from "../../../stores/workspace"
+import NoteTime from "../../../components/notetime/NoteTime"
 
 const PAGE_SIZE = 20;
 
@@ -22,7 +23,6 @@ const Notes = () => {
     const currentWorkspaceId = useCurrentWorkspaceId();
     const [isSearchVisible, setIsSearchVisible] = useState(false);
     const { t } = useTranslation()
-
     const observerRef = useRef<IntersectionObserver | null>(null);
 
     useEffect(() => {
@@ -73,31 +73,6 @@ const Notes = () => {
             observerRef.current.observe(node);
         }
     }, [hasNextPage, isLoading, fetchNextPage]);
-
-    function formatRelativeTime(dateString: string) {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diff = (now.getTime() - date.getTime()) / 1000;
-        if (diff < 60) {
-            return t("time.just_now");
-        } else if (diff < 3600) {
-            const mins = Math.floor(diff / 60);
-            return t("time.minutes_ago", { count: mins });
-        } else if (diff < 86400) {
-            const hours = Math.floor(diff / 3600);
-            return t("time.hours_ago", { count: hours });
-        } else {
-            const y = date.getFullYear();
-            const m = (date.getMonth() + 1).toString().padStart(2, '0');
-            const d = date.getDate().toString().padStart(2, '0');
-            if (y === now.getFullYear()) {
-                return t("time.date_md", { month: m, day: d });
-            } else {
-                return t("time.date_ymd", { year: y, month: m, day: d });
-            }
-        }
-    }
-
 
     const notes = data?.pages.flat() || [];
 
@@ -167,11 +142,11 @@ const Notes = () => {
                         isLoading ? <Loader />
                             : <Masonry>
                                 {
-                                    notes && notes?.map((n: NoteData, idx: number) => (
-                                        n && <div key={n.id || idx} className="bg-white dark:bg-neutral-900 border sm:shadow-sm dark:border-neutral-600 rounded-lg overflow-auto flex flex-col gap-2 ">
+                                    notes && notes?.map((n: NoteData, idx: number) => {
+                                        return n && <div key={n.id || idx} className="bg-white dark:bg-neutral-900 border sm:shadow-sm dark:border-neutral-600 rounded-lg overflow-auto flex flex-col gap-2 ">
                                             <div className="flex justify-between text-gray-500 px-4 pt-4">
                                                 <div>
-                                                    {formatRelativeTime(n.created_at || '')}
+                                                    <NoteTime time={n.created_at ?? ""} />
                                                 </div>
                                                 <div>
                                                     <Link to={"note/" + n.id!} >
@@ -184,9 +159,8 @@ const Notes = () => {
                                                 <ExpandableNote note={n} />
                                             </div>
                                         </div>
-                                    ))
-                                }
-                            </Masonry>
+                                    })
+                                }</Masonry>
                     }
 
                     <div ref={loadMoreRef} className="h-8" ></div>

@@ -4,7 +4,6 @@ export interface NoteData {
   id?: string;
   created_at?: string;
   blocks: Block[] | null;
-  tags?: string[];
   visibility?: string;
 }
 
