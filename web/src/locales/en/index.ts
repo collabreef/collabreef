@@ -51,6 +51,7 @@ export default {
     create: "Create",
     newNote: "New Note",
     rename: "Rename",
+    filter: "Filter",
     selectFileToUpload: "Select file to upload",
     makePublic: "Make Public",
     makeWorkspace: "Make Workspace",

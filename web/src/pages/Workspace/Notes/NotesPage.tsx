@@ -99,9 +99,22 @@ const Notes = () => {
                         </div>}
                         <div className="">
                             {
-                                !isSearchVisible && <button title="toggle the filter" className="p-3" onClick={() => setIsSearchVisible(!isSearchVisible)}>
-                                    <Filter size={20} />
-                                </button>
+                                !isSearchVisible && <Tooltip.Root>
+                                    <Tooltip.Trigger asChild>
+                                        <button aria-label="toggle the filter" className="p-3" onClick={() => setIsSearchVisible(!isSearchVisible)}>
+                                            <Filter size={20} />
+                                        </button>
+                                    </Tooltip.Trigger>
+                                    <Tooltip.Portal>
+                                        <Tooltip.Content
+                                            className="select-none rounded-lg bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-2 py-1 text-sm"
+                                            side="bottom"
+                                        >
+                                            <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-100" />
+                                            {t("actions.filter")}
+                                        </Tooltip.Content>
+                                    </Tooltip.Portal>
+                                </Tooltip.Root>
                             }
                         </div>
                         <div className="flex items-center">
