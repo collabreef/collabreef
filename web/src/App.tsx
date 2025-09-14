@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import SignIn from './pages/Auth/SignInPage';
 import SignUp from './pages/Auth/SignUpPage'
 import NotFound from './pages/Errors/NotFoundPage';
@@ -27,7 +27,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
         <Route path='/workspace-setup' element={<Setup />} />
         <Route path='/' element={<RequireAuth />}>
-          <Route path='user/preferences' />
+          <Route index element={<Navigate to="/workspaces" replace />} />
           <Route path='workspaces' element={<WorkspaceLoader />} />
           <Route path='workspaces/:workspaceId' element={<WorkspaceLayout />}>
             <Route path='note/:noteId' element={<NoteDetailPage />} ></Route>
@@ -37,6 +37,7 @@ function App() {
             <Route path='settings' element={<Settings />}></Route>
             <Route path='' element={<Notes />}></Route>
           </Route>
+          <Route path='user/preferences' />
         </Route>
         <Route path='' element={<Home />} />
       </Routes>
