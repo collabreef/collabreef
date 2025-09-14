@@ -11,13 +11,15 @@ import { Loader } from "lucide-react"
 
 const Settings = () => {
     const currentWorkspaceId = useCurrentWorkspaceId()
-    const { getWorkspaceById } = useWorkspaceStore()
+    const { isFetched, getWorkspaceById } = useWorkspaceStore()
     const [workspaceName, setWorkspaceName] = useState("")
     const [isRenaming, SetIsRenaming] = useState(false)
     const { t } = useTranslation()
     const navigate = useNavigate()
 
     useEffect(() => {
+        if(!isFetched) return;
+
         const workspace = getWorkspaceById(currentWorkspaceId)
 
         if (!workspace) {

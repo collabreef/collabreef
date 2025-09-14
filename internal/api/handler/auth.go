@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -36,6 +37,20 @@ type SignUpRequest struct {
 type SignUpResponse struct {
 	UserID  string `json:"user_id"`
 	Message string `json:"message"`
+}
+
+type GetUserInfoResponse struct {
+	ID          string          `json:"id"`
+	Email       string          `json:"email"`
+	Name        string          `json:"name"`
+	Role        string          `json:"role"`
+	AvatarUrl   string          `json:"avatar_url"`
+	Disabled    bool            `json:"disabled"`
+	CreatedBy   string          `json:"created_by"`
+	CreatedAt   string          `json:"created_at"`
+	UpdatedBy   string          `json:"updated_by"`
+	UpdatedAt   string          `json:"updated_at"`
+	Preferences json.RawMessage `json:"preferences"`
 }
 
 func (h *Handler) SignIn(c echo.Context) error {
@@ -208,11 +223,23 @@ func (h *Handler) GetUserInfo(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
 	}
 
-	_, err = h.db.FindUserByID(user.ID)
+	u, err := h.db.FindUserByID(user.ID)
 
 	if err != nil {
 		return echo.ErrUnauthorized
 	}
 
-	return c.JSON(http.StatusOK, user)
+	res := GetUserInfoResponse{
+		ID:        u.ID,
+		Name:      u.Name,
+		Email:     u.Email,
+		Role:      u.Role,
+		AvatarUrl: u.AvatarUrl,
+	}
+
+	if u.Preferences != "" {
+		res.Preferences = json.RawMessage(u.Preferences)
+	}
+
+	return c.JSON(http.StatusOK, res)
 }

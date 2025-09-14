@@ -18,6 +18,7 @@ type User struct {
 	CreatedAt    string `json:"created_at"`
 	UpdatedBy    string `json:"updated_by"`
 	UpdatedAt    string `json:"updated_at"`
+	Preferences  string `json:"preferences"`
 }
 
 const (

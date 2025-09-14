@@ -11,6 +11,7 @@ interface WorkspaceStore {
   workspaces: Workspace[];
   fetchWorkspaces: () => Promise<void>;
   getWorkspaceById: (id: string) => Workspace | undefined
+  reset: () => void;
 }
 
 export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
@@ -30,4 +31,10 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
   getWorkspaceById: (id) => {
     return get().workspaces.find((ws) => ws.id === id);
   },
+  reset: () => {
+    set({
+      workspaces: [],
+      isFetched: false
+    })
+  }
 }));

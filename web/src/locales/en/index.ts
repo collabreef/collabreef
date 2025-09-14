@@ -6,8 +6,10 @@ export default {
   },
   menu: {
     notes: "Notes",
-    workspaceSettings: "Worksapce Settings",
     createWithName: "Create workspace：{{name}}",
+    workspaceSettings: "Workspace Settings",
+    user: "User",
+    preferences: "Preferences",
   },
   form: {
     email: "Email",
@@ -23,6 +25,7 @@ export default {
       "alreadyHaveAccount":"Already have an account? Log in."
     },
     settings: {
+      workspaceSettings: "Worksapce Settings",
       workspaceName: "Workspace name",
       deleteThisWorkspace: "Delete this workspace",
       deleteThisWorkspaceMessage : "Delete this workspace ?"
@@ -36,6 +39,9 @@ export default {
     noteEdit: {
       newNote: "New Note",
       editNote: "Edit Note",
+    },
+    preferences: {
+      language: "Langueage"
     }
   },
   actions: {

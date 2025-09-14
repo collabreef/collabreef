@@ -1,8 +1,9 @@
-import { PanelLeftClose, PanelLeftOpen } from "lucide-react"
+import { PanelLeftClose, PanelLeftOpen, UserCircle2 } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import { useSidebar } from "./SidebarProvider"
 import ThemeButton from "../themebutton/ThemeButton"
-import UserMenu from "../usermenu/UserMenu"
+import { Link } from "react-router-dom"
+import UserLogout from "../userlogout/UserLogout"
 
 const Sidebar = function () {
     const { isOpen, isCollapse, isOver1280, expandSidebar, collapseSidebar, content } = useSidebar()
@@ -27,7 +28,11 @@ const Sidebar = function () {
                         </button>
                     }
                     <ThemeButton />
-                    <UserMenu />
+                    <Link to="/user/preferences" className="p-2">
+                        <UserCircle2 size={20} />
+                    </Link>
+
+                    <UserLogout />
                 </div>
             </div>
         </aside>

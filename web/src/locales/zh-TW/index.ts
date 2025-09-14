@@ -6,8 +6,10 @@ export default {
   },
   menu: {
     notes: "筆記",
-    workspaceSettings: "工作區設定",
     createWithName: "新增工作區：{{name}}",
+    workspaceSettings: "工作區設定",
+    user: "使用者",
+    preferences: "偏好設定",
   },
   form: {
     email: "Email",
@@ -23,6 +25,7 @@ export default {
       "alreadyHaveAccount":"已有帳號? 登入"
     },
     settings: {
+      workspaceSettings: "工作區設定",
       workspaceName: "工作區名稱",
       deleteThisWorkspace: "刪除這個工作區",
       deleteThisWorkspaceMessage: "刪除這個工作區 ?"
@@ -36,6 +39,9 @@ export default {
     noteEdit: {
       newNote: "新增筆記",
       editNote: "編輯筆記",
+    },
+    preferences: {
+      language: "語言"
     }
   },
   actions: {

@@ -58,7 +58,7 @@ const WorkspaceLayout = () => {
                     </div>
                 </div>
             </div>)
-    }, [workspaces])
+    }, [workspaces, isCollapse])
 
     useEffect(() => {
         closeSidebar()

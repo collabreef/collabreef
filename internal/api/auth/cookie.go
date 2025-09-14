@@ -15,9 +15,6 @@ func GetUserCookie(u model.User) (*http.Cookie, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["id"] = u.ID
-	claims["name"] = u.Name
-	claims["email"] = u.Email
-	claims["role"] = u.Role
 
 	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
 
@@ -50,10 +47,7 @@ func GetUserFromCookie(cookie *http.Cookie) (*model.User, error) {
 	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		user := &model.User{
-			ID:    claims["id"].(string),
-			Email: claims["email"].(string),
-			Name:  claims["name"].(string),
-			Role:  claims["role"].(string),
+			ID: claims["id"].(string),
 		}
 		return user, nil
 	}
