@@ -9,6 +9,8 @@ interface SidebarContextType {
   toggleSidebar: () => void;
   collapseSidebar: () => void;
   expandSidebar: () => void;
+  content: ReactNode;
+  setContent: (content: React.ReactNode) => void;
 }
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
@@ -22,6 +24,7 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) =>
   const [isOpen, setIsOpen] = useState(false);
   const [isCollapse, setIsCollapse] = useState(over1280 && true)
   const [isOver1280, setIsOver1280] = useState(over1280);
+  const [content, setContent] = useState<ReactNode>()
 
   const openSidebar = () => {
     setIsOpen(true)
@@ -43,7 +46,7 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) =>
     const handleResize = () => {
       const over1280 = window.innerWidth >= 1280;
       const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
-      if(isTouchDevice) return
+      if (isTouchDevice) return
       setIsOpen(false);
       setIsCollapse(over1280 && true)
       setIsOver1280(over1280);
@@ -57,7 +60,7 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) =>
   }, []);
 
   return (
-    <SidebarContext.Provider value={{ isOpen, isCollapse, openSidebar, closeSidebar, toggleSidebar, collapseSidebar, expandSidebar, isOver1280 }}>
+    <SidebarContext.Provider value={{ isOpen, isCollapse, openSidebar, closeSidebar, toggleSidebar, collapseSidebar, expandSidebar, isOver1280, content, setContent }}>
       {children}
     </SidebarContext.Provider>
   );

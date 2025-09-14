@@ -14,6 +14,8 @@ import { Toast } from './components/toast/Toast'
 import { useToastStore } from './stores/toast';
 import WorkspaceLayout from './components/workspacelayout/WorkspaceLayout';
 import WorkspaceLoader from './components/workspaceloader/WorkspaceLoader';
+import Preferences from './pages/User/Preferences';
+import UserLayout from './components/userlayout/UserLayout';
 
 function App() {
   const location = useLocation();
@@ -37,7 +39,10 @@ function App() {
             <Route path='settings' element={<Settings />}></Route>
             <Route path='' element={<Notes />}></Route>
           </Route>
-          <Route path='user/preferences' />
+          <Route path='user' element={<UserLayout />} >
+
+            <Route path='preferences' element={<Preferences />} />
+          </Route>
         </Route>
         <Route path='' element={<Home />} />
       </Routes>
