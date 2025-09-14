@@ -7,18 +7,21 @@ export interface Workspace {
 }
 
 interface WorkspaceStore {
+  isFetched: boolean,
   workspaces: Workspace[];
   fetchWorkspaces: () => Promise<void>;
   getWorkspaceById: (id: string) => Workspace | undefined
 }
 
 export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
+  isFetched: false,
   workspaces: [],
   fetchWorkspaces: async () => {
     try {
       const data = await getWorkspaces();
       set({
         workspaces: data,
+        isFetched: true
       });
     } catch (error) {
       console.error('Failed to fetch workspaces:', error);
