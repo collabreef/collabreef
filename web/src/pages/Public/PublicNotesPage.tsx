@@ -72,7 +72,7 @@ const PublicNotesPage = () => {
 
     return <>
         <TransitionWrapper className="w-full">
-            <div className=" py-2.5 ">
+            <div className=" py-2 ">
                 <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3 h-10">
                         <SidebarButton />
