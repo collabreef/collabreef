@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import EditorJS from "@editorjs/editorjs";
+import EditorJS, { ToolConstructable } from "@editorjs/editorjs";
+import Paragraph from "@editorjs/paragraph";
 import Header from "@editorjs/header";
 import List from "@editorjs/list";
 import Quote from "@editorjs/quote";
@@ -34,6 +35,12 @@ const Editor: React.FC<Props> = ({ value, onChange }) => {
       data: value,
       autofocus: true,
       tools: {
+        paragraph:{
+          class: Paragraph as ToolConstructable,
+          config: {
+            preserveBlank: true
+          }
+        },
         header: Header,
         list: List,
         quote: Quote,

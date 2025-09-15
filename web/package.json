@@ -19,6 +19,7 @@
     "@editorjs/image": "^2.10.2",
     "@editorjs/link": "^2.6.2",
     "@editorjs/list": "^2.0.8",
+    "@editorjs/paragraph": "^2.11.7",
     "@editorjs/quote": "^2.7.6",
     "@editorjs/table": "^2.4.5",
     "@tanstack/react-query": "^5.72.2",
