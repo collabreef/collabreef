@@ -83,7 +83,7 @@ const BlockRenderer: FC<Props> = ({ block }) => {
     else if (block.type == "image") {
         return <div className="px-4">
             <PhotoView src={block.data.file.url} >
-                <img className=" rounded overflow-hidden w-full h-auto" alt={block.data.file.name} src={block.data.file.url} />
+                <img className=" rounded overflow-hidden max-w-full max-h-[620px]" alt={block.data.file.name} src={block.data.file.url} />
             </PhotoView>
         </div>
     }
