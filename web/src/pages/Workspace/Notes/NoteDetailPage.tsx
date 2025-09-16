@@ -52,8 +52,7 @@ const NoteDetailPage = () => {
                         <NoteDetailMenu note={note} />
                     </div>
                 </div>
-                <div className="grow flex">
-                    <div className=" flex-1 ">
+                <div className="flex">
                         <div className="max-w-2xl w-full m-auto">
                             <div className="px-4 pt-4 pb-2 flex gap-2 items-center" >
                                 <span className="flex items-center rounded text-gray-500" >
@@ -67,11 +66,9 @@ const NoteDetailPage = () => {
                                 </span>
                             </div>
                             <div className="">
-
                                 {note && <FullNote note={note} />}
                             </div>
                         </div>
-                    </div>
                     <div className="hidden lg:block w-[260px]">
 
                     </div>

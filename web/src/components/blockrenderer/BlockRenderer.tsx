@@ -49,8 +49,8 @@ const BlockRenderer: FC<Props> = ({ block }) => {
         const { withHeadings, content } = block.data;
 
         return (
-            <div className="py-2 px-4 overflow-x-auto w-full">
-                <table className="border-collapse border border-gray-400  w-full">
+            <div className="py-2 px-4 max-w-full overflow-x-auto">
+                <table className="table-fixed border-collapse border border-gray-400">
                     {withHeadings && (
                         <thead>
                             <tr className="bg-gray-100">
