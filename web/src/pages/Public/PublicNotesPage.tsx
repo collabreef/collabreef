@@ -143,7 +143,7 @@ const PublicNotesPage = () => {
 
                     <div ref={loadMoreRef} className="h-8" ></div>
                     {isFetchingNextPage && <Loader />}
-                    {!isLoading && !hasNextPage && <div className="text-center py-4 text-gray-400">{t("message.noMoreNotes")}</div>}
+                    {!isLoading && !hasNextPage && <div className="text-center py-4 text-gray-400">{t("messages.noMoreNotes")}</div>}
                 </div>
             </div>
         </TransitionWrapper >

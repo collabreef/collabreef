@@ -3,9 +3,13 @@ import TransitionWrapper from "../../components/transitionwrapper/TransitionWrap
 import { useTranslation } from "react-i18next"
 import { updatePreferences } from "../../api/user"
 import { useCurrentUserStore } from "../../stores/current-user"
+import { useState } from "react"
+import { Loader } from "lucide-react"
+import { toast } from "../../stores/toast"
 
-const Preferences = () => {
-    const {user} = useCurrentUserStore()
+const PreferencesPage = () => {
+    const [isSaving, setIsSaving] = useState(false)
+    const { user } = useCurrentUserStore()
     const { t, i18n } = useTranslation();
     const supportedLanguages = i18n.options.supportedLngs && i18n.options.supportedLngs?.filter(l => l !== "cimode") || [];
 
@@ -13,14 +17,23 @@ const Preferences = () => {
         i18n.changeLanguage(e.target.value);
     };
 
-    const handleSave = () =>{
-        if(!user) return;
-        
-        user.preferences = {
-            lang: i18n.language
-        }
+    const handleSave = async () => {
+        if (!user) return;
+        setIsSaving(true);
 
-        updatePreferences(user)
+        const updatedUser = {
+            ...user,
+            preferences: { lang: i18n.language }
+        };
+
+        try {
+            await updatePreferences(updatedUser);
+            toast.success(t("messages.preferencesUpdated"));
+        } catch (err) {
+            toast.error(t("messages.updateFailed"));
+        } finally {
+            setIsSaving(false);
+        }
     }
 
     return <TransitionWrapper
@@ -52,7 +65,7 @@ const Preferences = () => {
                                 </div>
                                 <div>
                                     <button onClick={handleSave} className="rounded-xl px-3 py-2 text-white bg-orange-600 font-semibold">
-                                        {t("actions.save")}
+                                        {isSaving ? <Loader size={20} className="animate-spin" /> : t("actions.save")}
                                     </button>
                                 </div>
                             </div>
@@ -64,4 +77,4 @@ const Preferences = () => {
     </TransitionWrapper>
 }
 
-export default Preferences
+export default PreferencesPage

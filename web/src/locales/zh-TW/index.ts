@@ -66,8 +66,12 @@ export default {
     makeWorkspace: "設為工作區可見",
     makePrivate: "設為私人",
   },
-  message: {
-    noMoreNotes: "沒有更多筆記",
+  messages: {
+    deleteTheNote: "刪除這個筆記?",
+    noMoreNotes: "沒有更多的筆記",
+    preferencesUpdated: "偏好設定已更新",
+    preferencesUpdateFailed: "偏好設定更新失敗",
+    networkError: "網路異常"
   },
   button: {
     new: "新增",

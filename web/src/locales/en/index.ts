@@ -66,11 +66,12 @@ export default {
     makeWorkspace: "Make Workspace",
     makePrivate: "Make Private",
   },
-  message: {
+  messages: {
     deleteTheNote: "Delete the note?",
-    enterNewTag: "Enter new tag",
     noMoreNotes: "No more notes",
-    noMoreViews: "No more views"
+    preferencesUpdated: "Preferences updated",
+    preferencesUpdateFailed: "Could not update preferences",
+    networkError: "Network error. Please try again"
   },
   button: {
     new: "New",
