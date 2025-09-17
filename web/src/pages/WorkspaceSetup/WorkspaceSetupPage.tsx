@@ -26,14 +26,14 @@ const WorkspaceSetupPage = () => {
             <div className="grow flex justify-center items-center">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                     <div className="flex flex-col gap-3 p-5">
-                        <div className="text-3xl font-bold text-center">
-                            {t("pages.workspaceSetup.createWorkspace")}
+                        <div className="text-3xl font-bold m-auto">
+                            {t("pages.workspaceSetup.createYourFirstWorkspace")}
                         </div>
                         <div className="text-sm  text-center">
                             {t("pages.workspaceSetup.pleaseEnterYourWorkspaceName")}
                         </div>
                     </div>
-                    <div className="flex flex-col gap-3 p-6 w-80">
+                    <div className="flex flex-col gap-3 p-6 w-80 m-auto">
                         <label className="text-sm font-medium" htmlFor="workspace-name">
                             {t("pages.workspaceSetup.workspaceName")}
                         </label>
