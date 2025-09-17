@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import axios from "axios";
+import { ArrowUp, Bot, WandSparkles } from "lucide-react";
 
 type TextGenBlockData = {
     model?: string;
@@ -34,33 +35,37 @@ const TextGenBlock: FC<TextGenBlockProps> = ({ data, onChange, onGenerate }) => 
     };
 
     return (
-        <div className="p-2 border rounded-xl flex">
+        <div className="p-2 border rounded-xl flex flex-col sm:flex-row gap-2 flex-wrap max-w-full">
             <input
-                className="border p-2 flex-1"
+                autoFocus
+                className="p-2 flex-1 dark:bg-neutral-900"
                 placeholder="Enter prompt..."
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
             />
-            <select
-                aria-label="select model"
-                className="border p-1 mr-2"
-                value={model}
-                onChange={(e) => setModel(e.target.value)}
-            >
-                <option value="">Select model...</option>
-                {models.map((m) => (
-                    <option key={m} value={m}>
-                        {m}
-                    </option>
-                ))}
-            </select>
-            <button
-                onClick={handleGenerate}
-                className="bg-blue-500 text-white px-2 py-1 rounded"
-                disabled={loading}
-            >
-                {loading ? "Loading..." : "Generate"}
-            </button>
+            <div className="flex justify-between gap-2">
+
+                <select
+                    aria-label="select model"
+                    className="rounded-xl px-2 dark:border dark:bg-neutral-900"
+                    value={model}
+                    onChange={(e) => setModel(e.target.value)}
+                >
+                    <option value="">Select model...</option>
+                    {models.map((m) => (
+                        <option key={m} value={m}>
+                            {m}
+                        </option>
+                    ))}
+                </select>
+                <button
+                    onClick={handleGenerate}
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex justify-center items-center w-10 h-10 p-2 border rounded-full"
+                    disabled={loading}
+                >
+                    <WandSparkles size={14} />
+                </button>
+            </div>
         </div>
     );
 }
