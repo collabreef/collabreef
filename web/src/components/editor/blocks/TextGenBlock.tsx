@@ -1,6 +1,5 @@
-import React, { FC, useEffect, useState } from "react";
-import axios from "axios";
-import { ArrowUp, Bot, WandSparkles } from "lucide-react";
+import { FC, useState } from "react";
+import { WandSparkles } from "lucide-react";
 
 type TextGenBlockData = {
     model?: string;
@@ -15,10 +14,10 @@ interface TextGenBlockProps {
 }
 
 const TextGenBlock: FC<TextGenBlockProps> = ({ data, onChange, onGenerate }) => {
-    const [models, setModels] = useState<string[]>([]);
+    const [models] = useState<string[]>([]);
     const [model, setModel] = useState(data.model || "");
     const [prompt, setPrompt] = useState(data.prompt || "");
-    const [text, setText] = useState(data.text || "");
+    const [text] = useState(data.text || "");
     const [loading, setLoading] = useState(false);
 
     const handleGenerate = async () => {
@@ -59,6 +58,7 @@ const TextGenBlock: FC<TextGenBlockProps> = ({ data, onChange, onGenerate }) => 
                     ))}
                 </select>
                 <button
+                    aria-label="generate"
                     onClick={handleGenerate}
                     className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex justify-center items-center w-10 h-10 p-2 border rounded-full"
                     disabled={loading}

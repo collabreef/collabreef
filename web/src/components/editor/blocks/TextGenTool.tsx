@@ -1,6 +1,5 @@
 import ReactDOM from "react-dom/client";
 import TextGenBlock from "./TextGenBlock";
-import { Sparkle } from "lucide-react";
 
 export default class TextGenTool {
   data: any;
