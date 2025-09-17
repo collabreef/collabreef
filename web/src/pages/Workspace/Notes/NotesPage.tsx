@@ -1,5 +1,5 @@
 import Masonry from "../../../components/masonry/Masonry"
-import { ChevronDown, Filter, MoveDiagonal, Plus, PlusCircle, Search, X } from "lucide-react"
+import { ChevronDown, Edit, Filter, MoveDiagonal, Plus, PlusCircle, Search, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import SidebarButton from "../../../components/sidebar/SidebarButton"
 import { getNotes, NoteData } from "../../../api/note"
@@ -79,65 +79,8 @@ const NotesPage = () => {
     return <>
         <TransitionWrapper className="w-full">
             <div className=" py-2 ">
-                <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-3 h-10">
-                        <SidebarButton />
-                        <Link to={`/workspaces/${currentWorkspaceId}/settings`} className="flex gap-2 items-center max-w-[calc(100vw-165px)] overflow-x-auto whitespace-nowrap sm:text-xl font-semibold hide-scrollbar">
-                            {getWorkspaceById(currentWorkspaceId)?.name ?? ""}
-                            <ChevronDown size={16} />
-                        </Link>
-                    </div>
-                    <div className="flex items-center gap-2.5 text-gray-600 dark:text-gray-400">
-                        <div className="hidden sm:block">
-                            <div className="flex items-center gap-2 py-2 px-3 rounded-xl dark:border-neutral-600 bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-100">
-                                <Search size={16} className="text-gray-400" />
-                                <input type="text" value={query} onChange={e => setQuery(e.target.value)} className=" flex-1 bg-transparent" placeholder={t("placeholder.search")} />
-                            </div>
-                        </div>
-                        <div className="sm:hidden">
-                            {
-                                !isSearchVisible && <Tooltip.Root>
-                                    <Tooltip.Trigger asChild>
-                                        <button aria-label="toggle the filter" className="p-3" onClick={() => setIsSearchVisible(!isSearchVisible)}>
-                                            <Search size={20} />
-                                        </button>
-                                    </Tooltip.Trigger>
-                                    <Tooltip.Portal>
-                                        <Tooltip.Content
-                                            className="select-none rounded-lg bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-2 py-1 text-sm"
-                                            side="bottom"
-                                        >
-                                            <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-100" />
-                                            {t("actions.filter")}
-                                        </Tooltip.Content>
-                                    </Tooltip.Portal>
-                                </Tooltip.Root>
-                            }
-                        </div>
-                        <div className="flex items-center">
-                            <Tooltip.Root>
-                                <Tooltip.Trigger asChild>
-                                    <Link to="note/new" className="p-2">
-                                        <PlusCircle size={20} />
-                                    </Link>
-                                </Tooltip.Trigger>
-                                <Tooltip.Portal>
-                                    <Tooltip.Content
-                                        className="select-none rounded-lg bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-2 py-1 text-sm"
-                                        side="bottom"
-                                    >
-                                        <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-100" />
-                                        {t("actions.newNote")}
-                                    </Tooltip.Content>
-                                </Tooltip.Portal>
-                            </Tooltip.Root>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="flex flex-col gap-2 sm:gap-5">
                 {
-                    isSearchVisible && < div className="block sm:hidden pb-1">
+                    isSearchVisible ? < div className="block sm:hidden pb-1">
                         <div className="w-full flex items-center gap-2 py-2 px-3 rounded-xl shadow-inner border dark:border-neutral-600 bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-100">
                             <Search size={16} className="text-gray-400" />
                             <input type="text" value={query} onChange={e => setQuery(e.target.value)} className=" bg-transparent flex-1" placeholder={t("placeholder.search")} />
@@ -146,7 +89,65 @@ const NotesPage = () => {
                             </button>
                         </div>
                     </div>
+                        :
+                        <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-3 h-10">
+                                <SidebarButton />
+                                <Link to={`/workspaces/${currentWorkspaceId}/settings`} className="flex gap-2 items-center max-w-[calc(100vw-165px)] overflow-x-auto whitespace-nowrap sm:text-xl font-semibold hide-scrollbar">
+                                    {getWorkspaceById(currentWorkspaceId)?.name ?? ""}
+                                    <ChevronDown size={16} />
+                                </Link>
+                            </div>
+                            <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
+                                <div className="hidden sm:block">
+                                    <div className="flex items-center gap-2 py-2 px-3 rounded-xl dark:border-neutral-600 bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-100">
+                                        <Search size={16} className="text-gray-400" />
+                                        <input type="text" value={query} onChange={e => setQuery(e.target.value)} className=" flex-1 bg-transparent" placeholder={t("placeholder.search")} />
+                                    </div>
+                                </div>
+                                <div className="sm:hidden">
+                                    {
+                                        !isSearchVisible && <Tooltip.Root>
+                                            <Tooltip.Trigger asChild>
+                                                <button aria-label="toggle the filter" className="p-3" onClick={() => setIsSearchVisible(!isSearchVisible)}>
+                                                    <Search size={20} />
+                                                </button>
+                                            </Tooltip.Trigger>
+                                            <Tooltip.Portal>
+                                                <Tooltip.Content
+                                                    className="select-none rounded-lg bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-2 py-1 text-sm"
+                                                    side="bottom"
+                                                >
+                                                    <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-100" />
+                                                    {t("actions.filter")}
+                                                </Tooltip.Content>
+                                            </Tooltip.Portal>
+                                        </Tooltip.Root>
+                                    }
+                                </div>
+                                <div className="flex items-center">
+                                    <Tooltip.Root>
+                                        <Tooltip.Trigger asChild>
+                                            <Link to="note/new" className="p-3">
+                                                <Edit size={20} />
+                                            </Link>
+                                        </Tooltip.Trigger>
+                                        <Tooltip.Portal>
+                                            <Tooltip.Content
+                                                className="select-none rounded-lg bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-2 py-1 text-sm"
+                                                side="bottom"
+                                            >
+                                                <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-100" />
+                                                {t("actions.newNote")}
+                                            </Tooltip.Content>
+                                        </Tooltip.Portal>
+                                    </Tooltip.Root>
+                                </div>
+                            </div>
+                        </div>
                 }
+            </div>
+            <div className="flex flex-col gap-2 sm:gap-5">
                 <div className="">
                     {
                         isLoading ? <Loader />
