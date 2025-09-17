@@ -33,7 +33,7 @@ export default {
       deleteThisWorkspaceMessage : "Delete this workspace ?"
     },
     workspaceSetup: {
-      createWorkspace: "Create Workspace",
+      createYourFirstWorkspace: "Create your first workspace",
       pleaseEnterYourWorkspaceName:"Please enter your workspace name",
       workspaceName: "Workspace name",
       workspaceNamePlaceholder: "workspace name",

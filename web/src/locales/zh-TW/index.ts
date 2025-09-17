@@ -33,7 +33,7 @@ export default {
       deleteThisWorkspaceMessage: "刪除這個工作區 ?"
     },
     workspaceSetup: {
-      createWorkspace: "建立工作區",
+      createYourFirstWorkspace: "建立你的第一個工作區",
       pleaseEnterYourWorkspaceName: "請輸入你的工作區名稱",
       workspaceName: "工作區名稱",
       workspaceNamePlaceholder: "工作區名稱",
