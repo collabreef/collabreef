@@ -121,7 +121,7 @@ func (h *Handler) SignOut(c echo.Context) error {
 }
 
 func (h *Handler) SignUp(c echo.Context) error {
-	disableSignUp := config.C.GetBool(config.SERVER_DISABLE_SIGNUP)
+	disableSignUp := config.C.GetBool(config.APP_DISABLE_SIGNUP)
 
 	if disableSignUp {
 		return c.JSON(http.StatusBadRequest, map[string]string{
