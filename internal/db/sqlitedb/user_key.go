@@ -7,7 +7,7 @@ func (db SqliteDB) SaveUserKey(u model.UserKey) error {
 	return nil
 }
 
-func (db SqliteDB) GetUserKeyByPlatform(uid string, platform string) (model.UserKey, error) {
+func (db SqliteDB) GetUserKey(u model.UserKey) (model.UserKey, error) {
 
 	return model.UserKey{}, nil
 }

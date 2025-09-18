@@ -28,7 +28,7 @@ type UserRepository interface {
 }
 type UserKeyRepository interface {
 	SaveUserKey(u model.UserKey) error
-	GetUserKeyByPlatform(userId string, platform string) (model.UserKey, error)
+	GetUserKey(u model.UserKey) (model.UserKey, error)
 }
 type NoteRepository interface {
 	CreateNote(n model.Note) error
