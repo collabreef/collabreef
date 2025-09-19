@@ -14,7 +14,7 @@ const RequireAuth = () => {
       const currentUser = await fetchUser();
 
       if (!currentUser) {
-        navigate("/signin");
+        navigate("/explore/notes");
       }
 
       //load preferences

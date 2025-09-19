@@ -110,13 +110,6 @@ const SignUp: React.FC = () => {
             >
               {t("pages.signup.alreadyHaveAccount")}
             </Link>
-            <Link
-              to="/public/notes"
-              className="flex gap-2 items-center text-right font-bold text-sm text-amber-500 hover:text-amber-800"
-            >
-              <Telescope size={20} />
-              {t("menu.explore")}
-            </Link>
           </div>
         </form>
       </div>

@@ -79,7 +79,7 @@ const SignIn: React.FC = () => {
                             {t("pages.signin.noAccount")}
                         </Link>
                         <Link
-                            to="/public/notes"
+                            to="/explore/notes"
                             className="flex gap-2 items-center text-right font-bold text-sm text-amber-500 hover:text-amber-800"
                         >
                             <Telescope size={20} />
