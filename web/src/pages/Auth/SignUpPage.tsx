@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import { toast } from '../../stores/toast';
 import TextInput from '../../components/textinput/TextInput';
 import SubmitButton from '../../components/submitbutton/SubmitButton';
-import { Telescope } from 'lucide-react';
 
 const SignUp: React.FC = () => {
   const { t } = useTranslation()

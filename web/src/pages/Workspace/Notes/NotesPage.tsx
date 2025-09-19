@@ -1,5 +1,5 @@
 import Masonry from "../../../components/masonry/Masonry"
-import { ArrowDownWideNarrow, ChevronDown, Edit, Filter, LayoutDashboard, LayoutGrid, LayoutList, MoveDiagonal, Plus, PlusCircle, Rows3, Search, X } from "lucide-react"
+import { Edit, LayoutGrid, LayoutList, MoveDiagonal, Search, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import SidebarButton from "../../../components/sidebar/SidebarButton"
 import { getNotes, NoteData } from "../../../api/note"

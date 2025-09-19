@@ -1,5 +1,5 @@
 import Masonry from "../../components/masonry/Masonry"
-import { Filter, Search, X } from "lucide-react"
+import { Search, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import SidebarButton from "../../components/sidebar/SidebarButton"
 import { getPublicNotes, NoteData } from "../../api/note"
