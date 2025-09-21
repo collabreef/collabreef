@@ -51,6 +51,7 @@ func New(db db.DB, storage storage.Storage) (*echo.Echo, error) {
 	route.RegisterAdmin(api, *handler, *auth)
 	route.RegisterUser(api, *handler, *auth)
 	route.RegisterWorkspace(api, *handler, *auth, *workspace)
+	route.RegisterTool(api, *handler, *auth)
 	route.RegisterPublic(api, *handler, *auth)
 
 	return e, nil
