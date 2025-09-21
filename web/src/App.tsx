@@ -18,6 +18,7 @@ import PreferencesPage from './pages/User/PreferencesPage';
 import UserLayout from './components/userlayout/UserLayout';
 import PublicLayout from './components/publiclayout/PublicLayout';
 import ExploreNotesPage from './pages/Explore/ExploreNotesPage';
+import ModelsPage from './pages/User/ModelsPage';
 
 function App() {
   const location = useLocation();
@@ -42,6 +43,7 @@ function App() {
             <Route path='user' element={<UserLayout />} >
               <Route index element={<Navigate to="/user/preferences" replace />} />
               <Route path='preferences' element={<PreferencesPage />} />
+              <Route path='models' element={<ModelsPage />} />
             </Route>
           </Route>
           <Route path='/' element={<PublicLayout />}>

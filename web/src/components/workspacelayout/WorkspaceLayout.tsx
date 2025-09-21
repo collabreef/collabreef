@@ -7,7 +7,7 @@ import Main from "../main/Main"
 import { useWorkspaceStore } from "../../stores/workspace"
 import WorkspaceMenu from "../workspacemenu/WorkspaceMenu"
 import useCurrentWorkspaceId from "../../hooks/useCurrentworkspaceId"
-import { BookText, Wrench } from 'lucide-react'
+import { BookText, MonitorCog } from 'lucide-react'
 import { useTranslation } from "react-i18next"
 import Tooltip from "../tooltip/Tooltip"
 
@@ -56,7 +56,7 @@ const WorkspaceLayout = () => {
                                     enabled={isCollapse}
                                     >
                                     <Link to={`/workspaces/${currentWorkspaceId}/settings`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
-                                        <Wrench size={20} />
+                                        <MonitorCog size={20} />
                                         {!isCollapse && t("menu.workspaceSettings")}
                                     </Link>
                                 </Tooltip>

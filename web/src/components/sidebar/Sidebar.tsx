@@ -1,4 +1,4 @@
-import { PanelLeftClose, PanelLeftOpen, Telescope, UserCircle2 } from "lucide-react"
+import { Ellipsis, EllipsisVertical, PanelLeftClose, PanelLeftOpen, Settings, Telescope, UserCircle2 } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import { useSidebar } from "./SidebarProvider"
 import ThemeButton from "../themebutton/ThemeButton"
@@ -46,7 +46,7 @@ const Sidebar: FC<Props> = function ({ children }) {
                         >
                             <>
                                 <Link to="/user/" className="p-2">
-                                    <UserCircle2 size={20} />
+                                    <Settings size={20} />
                                 </Link>
                             </>
                         </Tooltip>

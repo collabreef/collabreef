@@ -10,6 +10,7 @@ export default {
     workspaceSettings: "工作區設定",
     workspace: "工作區",
     user: "使用者",
+    models: "AI模型",
     preferences: "偏好設定",
     explore: "探索",
   },

@@ -9,6 +9,7 @@ import (
 type DB interface {
 	Uow
 	UserRepository
+	UserSettingsRepository
 	NoteRepository
 	FileRepository
 	WorkspaceRepository
@@ -28,7 +29,7 @@ type UserRepository interface {
 }
 type UserSettingsRepository interface {
 	SaveUserSettings(u model.UserSettings) error
-	GetUserSettings(uid string) (model.UserSettings, error)
+	FindUserSettingsByID(id string) (model.UserSettings, error)
 }
 type NoteRepository interface {
 	CreateNote(n model.Note) error
