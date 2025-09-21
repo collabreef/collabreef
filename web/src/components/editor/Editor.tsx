@@ -114,7 +114,7 @@ const Editor: React.FC<Props> = ({ value, onChange }) => {
               async uploadByUrl(url: any) {
                 const formData = new FormData();
                 formData.append("url", url)
-                const fetchedFile = await axios.post(`/api/v1/workspaces/${currentWorkspaceId}/tools/fetchfile`, { url: url }, {
+                const fetchedFile = await axios.post(`/api/v1/tools/fetchfile`, { url: url }, {
                   responseType: 'blob',
                   withCredentials: true,
                 });
