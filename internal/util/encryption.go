@@ -4,13 +4,16 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/base64"
 	"errors"
 	"io"
 )
 
 func Encrypt(plaintext, secretKey string) (string, error) {
-	block, err := aes.NewCipher([]byte(secretKey))
+	key := sha256.Sum256([]byte(secretKey))
+
+	block, err := aes.NewCipher(key[:])
 	if err != nil {
 		return "", err
 	}
@@ -35,7 +38,9 @@ func Decrypt(ciphertext, secretKey string) (string, error) {
 		return "", err
 	}
 
-	block, err := aes.NewCipher([]byte(secretKey))
+	key := sha256.Sum256([]byte(secretKey))
+
+	block, err := aes.NewCipher(key[:])
 	if err != nil {
 		return "", err
 	}
