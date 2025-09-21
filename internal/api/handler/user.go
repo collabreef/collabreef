@@ -7,6 +7,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pinbook/pinbook/internal/api/auth"
+	"github.com/pinbook/pinbook/internal/config"
+	"github.com/pinbook/pinbook/internal/util"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -134,8 +136,27 @@ func (h Handler) GetUserSettings(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "failed to get user settings by id")
 	}
 
-	us.GeminiKey = maskAPIKey(us.GeminiKey)
-	us.OpenAIKey = maskAPIKey(us.OpenAIKey)
+	secret := config.C.GetString(config.APP_SECRET)
+
+	if us.OpenAIKey != nil {
+		decrypted, err := util.Decrypt(*us.OpenAIKey, secret)
+
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, "failed to decrypt key")
+		}
+
+		us.OpenAIKey = maskAPIKey(&decrypted)
+	}
+
+	if us.GeminiKey != nil {
+		decrypted, err := util.Decrypt(*us.GeminiKey, secret)
+
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, "failed to decrypt key")
+		}
+
+		us.GeminiKey = maskAPIKey(&decrypted)
+	}
 
 	return c.JSON(http.StatusOK, us)
 }
@@ -168,12 +189,26 @@ func (h Handler) UpdateUserSettings(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "failed to get user settings by id")
 	}
 
+	secret := config.C.GetString(config.APP_SECRET)
+
 	if req.OpenAIKey != nil {
-		us.OpenAIKey = req.OpenAIKey
+		encrypted, err := util.Encrypt(*req.OpenAIKey, secret)
+
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, "failed to encrypt key")
+		}
+
+		us.OpenAIKey = &encrypted
 	}
 
 	if req.GeminiKey != nil {
-		us.GeminiKey = req.GeminiKey
+		encrypted, err := util.Encrypt(*req.GeminiKey, secret)
+
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, "failed to encrypt key")
+		}
+
+		us.GeminiKey = &encrypted
 	}
 
 	err = h.db.SaveUserSettings(us)
