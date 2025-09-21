@@ -1,8 +1,10 @@
 package model
 
+import "time"
+
 type UserSettings struct {
-	UserID    string  `gorm:"primaryKey"`
-	OpenAIKey *string `gorm:"column:openai_api_key"`
-	GeminiKey *string `gorm:"column:gemini_api_key"`
-	CreatedAt int64
+	UserID    string    `gorm:"primaryKey;column:user_id" json:"user_id"`
+	OpenAIKey *string   `gorm:"column:openai_api_key" json:"openai_api_key"`
+	GeminiKey *string   `gorm:"column:gemini_api_key" json:"gemini_api_key"`
+	CreatedAt time.Time `json:"created_at"`
 }
