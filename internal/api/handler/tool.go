@@ -9,6 +9,10 @@ import (
 	"github.com/pinbook/pinbook/internal/urlfetcher"
 )
 
+type FetchFileRequest struct {
+	Url string `json:"url"`
+}
+
 func (h Handler) FetchFile(c echo.Context) error {
 	workspaceId := c.Param("workspaceId")
 	if workspaceId == "" {

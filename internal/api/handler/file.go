@@ -11,10 +11,6 @@ import (
 	"github.com/pinbook/pinbook/internal/util"
 )
 
-type FetchFileRequest struct {
-	Url string `json:"url"`
-}
-
 func (h Handler) Upload(c echo.Context) error {
 	workspaceId := c.Param("workspaceId")
 	if workspaceId == "" {

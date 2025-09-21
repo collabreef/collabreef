@@ -41,12 +41,11 @@ func New(db db.DB, storage storage.Storage) (*echo.Echo, error) {
 
 	apiRoot := config.C.GetString(config.SERVER_API_ROOT_PATH)
 
-	// Routes
-	api := e.Group(apiRoot)
 	handler := handler.NewHandler(db, storage)
 	auth := middlewares.NewAuthMiddleware(db)
 	workspace := middlewares.NewWorkspaceMiddleware(db)
 
+	api := e.Group(apiRoot)
 	route.RegisterAuth(api, *handler)
 	route.RegisterAdmin(api, *handler, *auth)
 	route.RegisterUser(api, *handler, *auth)
