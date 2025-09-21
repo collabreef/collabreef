@@ -66,7 +66,7 @@ const NoteDetailMenu: React.FC<Props> = ({ note }) => {
             >
                 {
                     note.visibility != "public" && <DropdownItem>
-                        <button onClick={() => handleUpdateVisibility("public")} className="flex gap-3 p-3 items-center " >
+                        <button onClick={() => handleUpdateVisibility("public")} className="flex gap-3 p-3 items-center w-full" >
                             <Globe size={20} />
                             {t("actions.makePublic")}
                         </button>
@@ -75,7 +75,7 @@ const NoteDetailMenu: React.FC<Props> = ({ note }) => {
 
                 {
                     note.visibility != "workspace" && <DropdownItem>
-                        <button onClick={() => handleUpdateVisibility("workspace")} className="flex gap-3 p-3 items-center " >
+                        <button onClick={() => handleUpdateVisibility("workspace")} className="flex gap-3 p-3 items-center w-full" >
                             <Building size={20} />
                             {t("actions.makeWorkspace")}
                         </button>
@@ -84,7 +84,7 @@ const NoteDetailMenu: React.FC<Props> = ({ note }) => {
 
                 {
                     note.visibility != "private" && <DropdownItem>
-                        <button onClick={() => handleUpdateVisibility("private")} className="flex gap-3 p-3 items-center " >
+                        <button onClick={() => handleUpdateVisibility("private")} className="flex gap-3 p-3 items-center w-full" >
                             <Lock size={20} />
                             {t("actions.makePrivate")}
                         </button>
