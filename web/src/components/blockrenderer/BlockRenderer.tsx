@@ -53,7 +53,7 @@ const BlockRenderer: FC<Props> = ({ block }) => {
                 <table className="table-fixed border-collapse border border-gray-400">
                     {withHeadings && (
                         <thead>
-                            <tr className="bg-gray-100">
+                            <tr className="bg-gray-100 dark:bg-gray-700">
                                 {content[0].map((cell: any, idx: number) => (
                                     <th className="whitespace-nowrap border border-gray-300 p-2 font-bold" key={idx}>{cell}</th>
                                 ))}
