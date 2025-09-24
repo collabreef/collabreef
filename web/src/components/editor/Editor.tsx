@@ -1,196 +1,24 @@
-import React, { useEffect, useRef } from "react";
-import EditorJS, { ToolConstructable } from "@editorjs/editorjs";
-import Paragraph from "@editorjs/paragraph";
-import Header from "@editorjs/header";
-import List from "@editorjs/list";
-import Quote from "@editorjs/quote";
-import Code from "@editorjs/code";
-import ImageTool from '@editorjs/image';
-import AttachesTool from '@editorjs/attaches';
-import Table from '@editorjs/table'
-import Embed from '@editorjs/embed';
-import useCurrentWorkspaceId from "../../hooks/use-currentworkspace-id";
-import { useTranslation } from "react-i18next";
-import axios from "axios";
-import { getEditorI18n } from "../../locales/getEditorI18n";
-import TextGenTool from "./blocks/TextGenTool";
-import { toast } from "../../stores/toast";
-import { TextGenRequest } from "./blocks/TextGenBlock";
+import { useEditor, EditorContext, EditorContent } from "@tiptap/react"
+import { FloatingMenu, BubbleMenu } from '@tiptap/react/menus'
+import StarterKit from "@tiptap/starter-kit"
+import { useMemo } from "react"
 
-interface Props {
-  value?: any;
-  onChange: (value: any) => void;
+const Editor = ()=>{
+  
+  const editor = useEditor({
+    extensions: [StarterKit], // define your extension array
+    content: '<p>Hello World!</p>', // initial content
+  })
+
+  const providerValue = useMemo(() => ({ editor }), [editor])
+
+  return (
+    <EditorContext.Provider value={providerValue}>
+      <EditorContent editor={editor} />
+      <FloatingMenu editor={editor}>This is the floating menu</FloatingMenu>
+      <BubbleMenu editor={editor}>This is the bubble menu</BubbleMenu>
+    </EditorContext.Provider>
+  )
 }
 
-const Editor: React.FC<Props> = ({ value, onChange }) => {
-  const ejInstance = useRef<EditorJS | null>(null);
-  const holder = useRef<HTMLDivElement>(null);
-  const currentWorkspaceId = useCurrentWorkspaceId()
-  const { t } = useTranslation()
-  const { t: tEditor } = useTranslation("editor")
-
-  useEffect(() => {
-    if (!holder.current || ejInstance.current) return;
-    ejInstance.current = new EditorJS({
-      holder: holder.current,
-      placeholder: t("placeholder.note"),
-      i18n: getEditorI18n(tEditor),
-      data: value,
-      autofocus: true,
-      tools: {
-        paragraph: {
-          class: Paragraph as ToolConstructable,
-          config: {
-            preserveBlank: true
-          }
-        },
-        header: Header,
-        list: List,
-        quote: Quote,
-        code: Code,
-        embed: {
-          class: Embed,
-          inlineToolbar: true,
-          config: {
-            services: {
-              Tiktok: {
-                regex: /https?:\/\/www.tiktok.com\/@(?:.+)\/video\/(\d+)(?:.+)*/,
-                embedUrl: 'https://www.tiktok.com/player/v1/<%= remote_id %>?music_info=1&description=1',
-                html: "<iframe height='300' scrolling='no' frameborder='no' allowtransparency='true' allowfullscreen='true' style='width: 100%;'></iframe>",
-                id: (groups: any) => groups[0]
-              }
-            }
-          }
-        },
-        attaches: {
-          class: AttachesTool,
-          config: {
-            buttonText: t("actions.selectFileToUpload"),
-            uploader: {
-              async uploadByFile(file: any) {
-                const formData = new FormData();
-                formData.append("file", file)
-                const response = await axios.post(`/api/v1/workspaces/${currentWorkspaceId}/files`, formData, {
-                  withCredentials: true,
-                  headers: {
-                    'Content-Type': 'multipart/form-data',
-                  },
-                });
-
-                return {
-                  success: 1,
-                  file: {
-                    url: `/api/v1/workspaces/${currentWorkspaceId}/files/${response.data.filename}`
-                  }
-                }
-              }
-            },
-          }
-        },
-        image: {
-          class: ImageTool,
-          config: {
-            features: {
-              border: false,
-              caption: false,
-              stretch: false,
-              background: false
-            },
-            uploader: {
-              async uploadByFile(file: any) {
-                const formData = new FormData();
-                formData.append("file", file)
-                const response = await axios.post(`/api/v1/workspaces/${currentWorkspaceId}/files`, formData, {
-                  withCredentials: true,
-                  headers: {
-                    'Content-Type': 'multipart/form-data',
-                  },
-                });
-
-                return {
-                  success: 1,
-                  file: {
-                    url: `/api/v1/workspaces/${currentWorkspaceId}/files/${response.data.filename}`
-                  }
-                }
-              },
-              async uploadByUrl(url: any) {
-                const formData = new FormData();
-                formData.append("url", url)
-                const fetchedFile = await axios.post(`/api/v1/tools/fetchfile`, { url: url }, {
-                  responseType: 'blob',
-                  withCredentials: true,
-                });
-
-                if (fetchedFile.data) {
-                  const formData = new FormData();
-                  formData.append("file", fetchedFile.data)
-                  const response = await axios.post(`/api/v1/workspaces/${currentWorkspaceId}/files`, formData, {
-                    withCredentials: true,
-                    headers: {
-                      'Content-Type': 'multipart/form-data',
-                    },
-                  });
-
-                  return {
-                    success: 1,
-                    file: {
-                      url: `/api/v1/workspaces/${currentWorkspaceId}/files/${response.data.filename}`
-                    }
-                  }
-                }
-
-                return {
-                  success: 0
-                }
-              }
-            }
-          }
-        },
-        table: Table,
-        textgen: {
-          class: TextGenTool as ToolConstructable,
-          config: {
-            onListModels: async () => {
-              try {
-                const response = await axios.get(`/api/v1/tools/textgen/models`, { withCredentials: true });
-                return response.data
-              }
-              catch (e) {
-                toast.error(JSON.stringify(e))
-              }
-            },
-            onGenerate: async (req: TextGenRequest) => {
-              try {
-                const response = await axios.post(`/api/v1/tools/textgen/generate`, req );
-                return response.data
-              }
-              catch (e) {
-                toast.error(JSON.stringify(e))
-              }
-            }
-          }
-        }
-      },
-      onChange: async () => {
-        if (ejInstance.current) {
-          const outputData = await ejInstance.current.save();
-          console.log(outputData)
-          onChange(outputData);
-        }
-      },
-    });
-    return () => {
-      if (ejInstance.current && ejInstance.current.destroy) {
-        ejInstance.current.destroy();
-        ejInstance.current = null;
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return <div ref={holder} />
-};
-
-export default Editor;
-
+export default Editor

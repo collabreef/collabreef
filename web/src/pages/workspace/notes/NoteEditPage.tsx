@@ -4,7 +4,7 @@ import useCurrentWorkspaceId from "../../../hooks/use-currentworkspace-id"
 import { useParams, useNavigate } from "react-router-dom"
 import { createNote, getNote, NoteData, updateNote } from "../../../api/note"
 import { ChevronLeft, LoaderIcon } from "lucide-react"
-import Editor from "../../../components/editor/Editor"
+import Tiptap from "../../../components/editor/Editor"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import TransitionWrapper from "../../../components/transitionwrapper/TransitionWrapper"
 
@@ -86,12 +86,12 @@ const NoteEdit = () => {
         <div className="flex flex-col min-h-screen">
             <div className="py-2 px-4 sm:px-0  flex items-center justify-between border-b xl:border-b-0">
                 <div className="flex items-center gap-2">
-                    <button title="back" onClick={()=>navigate(-1)} className="inline-flex p-3 rounded-full ">
+                    <button title="back" onClick={() => navigate(-1)} className="inline-flex p-3 rounded-full ">
                         <ChevronLeft size={20} />
                     </button>
                     <div className="text-lg font-semibold">
                         {
-                            noteId ? t("pages.noteEdit.editNote") :  t("pages.noteEdit.newNote")
+                            noteId ? t("pages.noteEdit.editNote") : t("pages.noteEdit.newNote")
                         }
                     </div>
                 </div>
@@ -99,19 +99,15 @@ const NoteEdit = () => {
                     <button title="save" onClick={handleSave} className="px-4 ">
                         {isSaving ? <LoaderIcon size={16} className=" animate-spin" /> : <span className="text-blue-600 font-semibold">
                             {t("actions.save")}
-                        </span> }
+                        </span>}
                     </button>
                 </div>
             </div>
-            <div className="grow flex justify-start">
-                <div className="flex-1">
-                    <div className="w-full m-auto">
-                        <div className=" w-full py-3 px-5 m-auto max-w-3xl">
-                            {
-                                !isLoading && <Editor value={note} onChange={handleContentChange} />
-                            }
-                        </div>
-                    </div>
+            <div className="flex justify-start">
+                <div className=" w-full max-w-full overflow-auto relative">
+                    {
+                        !isLoading && <Tiptap />
+                    }
                 </div>
             </div>
         </div>
