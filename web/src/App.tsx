@@ -1,24 +1,24 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import SignIn from './pages/Auth/SignInPage';
-import SignUp from './pages/Auth/SignUpPage'
-import NotFound from './pages/Errors/NotFoundPage';
+import SignIn from './pages/auth/SignInPage';
+import SignUp from './pages/auth/SignUpPage'
+import NotFound from './pages/errors/NotFoundPage';
 import RequireAuth from './components/requireauth/RequireAuth';
-import NotesPage from './pages/Workspace/Notes/NotesPage';
-import Setup from './pages/WorkspaceSetup/WorkspaceSetupPage';
+import NotesPage from './pages/workspace/notes/NotesPage';
+import Setup from './pages/workspacesetup/WorkspaceSetupPage';
 import { AnimatePresence } from "motion/react"
-import NoteDetailPage from './pages/Workspace/Notes/NoteDetailPage';
-import NoteEdit from './pages/Workspace/Notes/NoteEditPage';
-import Home from './pages/Home/HomePage';
-import Settings from './pages/Workspace/Settings/SettingsPage';
+import NoteDetailPage from './pages/workspace/notes/NoteDetailPage';
+import NoteEdit from './pages/workspace/notes/NoteEditPage';
+import Home from './pages/home/HomePage';
+import Settings from './pages/workspace/settings/SettingsPage';
 import { Toast } from './components/toast/Toast'
 import { useToastStore } from './stores/toast';
 import WorkspaceLayout from './components/workspacelayout/WorkspaceLayout';
 import WorkspaceLoader from './components/workspaceloader/WorkspaceLoader';
-import PreferencesPage from './pages/User/PreferencesPage';
+import PreferencesPage from './pages/user/PreferencesPage';
 import UserLayout from './components/userlayout/UserLayout';
 import PublicLayout from './components/publiclayout/PublicLayout';
-import ExploreNotesPage from './pages/Explore/ExploreNotesPage';
-import ModelsPage from './pages/User/ModelsPage';
+import ExploreNotesPage from './pages/explore/ExploreNotesPage';
+import ModelsPage from './pages/user/ModelsPage';
 
 function App() {
   const location = useLocation();

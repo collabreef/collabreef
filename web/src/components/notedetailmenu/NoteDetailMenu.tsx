@@ -3,7 +3,7 @@ import { Building, Ellipsis, Globe, Lock, Pencil, Trash2 } from "lucide-react"
 import { DropdownMenu } from "radix-ui"
 import { Link, useNavigate } from "react-router-dom"
 import { deleteNote, NoteData, updateNoteVisibility } from "../../api/note"
-import useCurrentWorkspaceId from "../../hooks/useCurrentworkspaceId"
+import useCurrentWorkspaceId from "../../hooks/use-currentworkspace-id"
 import { useTranslation } from "react-i18next"
 import { toast } from '../../stores/toast';
 import { FC, ReactNode } from "react"

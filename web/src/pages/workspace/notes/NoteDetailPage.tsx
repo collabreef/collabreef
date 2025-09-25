@@ -1,7 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { Link, useParams } from "react-router-dom"
-import useCurrentWorkspaceId from "../../../hooks/useCurrentworkspaceId"
+import useCurrentWorkspaceId from "../../../hooks/use-currentworkspace-id"
 import { useEffect, useState } from "react"
 import { getNote, NoteData } from "../../../api/note"
 import TransitionWrapper from "../../../components/transitionwrapper/TransitionWrapper"

@@ -3,7 +3,7 @@ import { Edit, LayoutGrid, LayoutList, MoveDiagonal, Search, X } from "lucide-re
 import { useTranslation } from "react-i18next"
 import SidebarButton from "../../../components/sidebar/SidebarButton"
 import { getNotes, NoteData } from "../../../api/note"
-import useCurrentWorkspaceId from "../../../hooks/useCurrentworkspaceId"
+import useCurrentWorkspaceId from "../../../hooks/use-currentworkspace-id"
 import { Link } from "react-router-dom"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useRef, useCallback, useState, useEffect, FC } from "react"

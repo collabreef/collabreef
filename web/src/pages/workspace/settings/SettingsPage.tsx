@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import TransitionWrapper from "../../../components/transitionwrapper/TransitionWrapper"
-import useCurrentWorkspaceId from "../../../hooks/useCurrentworkspaceId"
+import useCurrentWorkspaceId from "../../../hooks/use-currentworkspace-id"
 import { useTranslation } from "react-i18next"
 import { useMutation } from "@tanstack/react-query"
 import { useWorkspaceStore } from "../../../stores/workspace"
