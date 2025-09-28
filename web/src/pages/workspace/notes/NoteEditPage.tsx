@@ -4,7 +4,7 @@ import useCurrentWorkspaceId from "../../../hooks/use-currentworkspace-id"
 import { useParams, useNavigate } from "react-router-dom"
 import { createNote, getNote, NoteData, updateNote } from "../../../api/note"
 import { ChevronLeft, LoaderIcon } from "lucide-react"
-import Tiptap from "../../../components/editor/Editor"
+import Editor from "../../../components/editor/Editor"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import TransitionWrapper from "../../../components/transitionwrapper/TransitionWrapper"
 
@@ -104,9 +104,9 @@ const NoteEdit = () => {
                 </div>
             </div>
             <div className="flex justify-start">
-                <div className=" w-full max-w-full overflow-auto relative">
+                <div className=" w-full m-auto max-w-3xl p-2.5 sm:p-4">
                     {
-                        !isLoading && <Tiptap />
+                        !isLoading && <Editor data={note.blocks} onChange={(data)=>console.log(data)} />
                     }
                 </div>
             </div>

@@ -145,7 +145,10 @@ p[data-placeholder]::before {
   left: 0;
   top: 0;
 }
-
+.ProseMirror-selectednode {
+  outline: 2px solid #10b981; 
+  border-radius: 4px;
+}
 p[data-placeholder] br {
   display: none;
 }
@@ -156,4 +159,16 @@ p[data-placeholder] :not(.ProseMirror-trailingBreak) {
 
 div[contenteditable=true] {
   outline: none;
+}
+
+li > p {
+  @apply inline-block
+}
+
+ul[data-type="taskList"] > li input[type=checkbox]{
+   @apply transform scale-125 mx-2 
+}
+
+ul[data-type="taskList"] > li > div{
+   @apply inline-block
 }

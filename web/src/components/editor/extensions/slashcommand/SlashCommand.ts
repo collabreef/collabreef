@@ -4,11 +4,15 @@ import { ReactRenderer } from '@tiptap/react'
 import tippy, { Instance as TippyInstance } from 'tippy.js'
 import { SlashMenu } from './SlashMenu'
 
-interface CommandItem {
+export interface CommandItem {
   label: string
-  command: ({ editor }: { editor: any }) => void
+  command: (ctx: { editor: any }) => void
 }
 
+export interface SlashCommandOptions {
+  suggestion: Partial<SuggestionOptions>
+  commands: CommandItem[]
+}
 export const SlashCommand = Extension.create({
   name: 'slash-command',
 
@@ -16,7 +20,6 @@ export const SlashCommand = Extension.create({
     return {
       suggestion: {
         char: '/',
-        startOfLine: true,
         items: ({ query }: { query: string }): CommandItem[] => {
           return [
             {
@@ -34,27 +37,27 @@ export const SlashCommand = Extension.create({
               command: ({ editor }:any) =>
                 editor.chain().focus().toggleTaskList().run(),
             },
-          ].filter(item =>
-            item.label.toLowerCase().includes(query.toLowerCase()),
+          ].filter((item) =>
+            item.label.toLowerCase().includes(query.toLowerCase())
           )
         },
         command: ({ editor, range, props }) => {
-          const usedEditor = editor || (props as any).editor
-          usedEditor.chain().focus().deleteRange(range).run()
-          props.command({ editor: usedEditor })
+          editor.chain().focus().deleteRange(range).run()
+          props.command({ editor })
         },
         render: () => {
-          let reactRenderer: ReactRenderer
+          let reactRenderer: any
           let popup: TippyInstance[]
 
           return {
-            onStart: props => {
+            onStart: (props) => {
               reactRenderer = new ReactRenderer(SlashMenu, {
                 props: {
-                  items: props.items,
+                  ...props,
+                  editor: props.editor,
                   command: props.command,
                 },
-                editor: props.editor ?? undefined,
+                editor: props.editor,
               })
 
               popup = tippy('body', {
@@ -70,10 +73,10 @@ export const SlashCommand = Extension.create({
 
             onUpdate(props) {
               reactRenderer.updateProps({
-                items: props.items,
+                ...props,
+                editor: props.editor,
                 command: props.command,
               })
-
               popup[0].setProps({
                 getReferenceClientRect: props.clientRect as any,
               })
@@ -84,7 +87,8 @@ export const SlashCommand = Extension.create({
                 popup[0].hide()
                 return true
               }
-              return false
+
+              return reactRenderer.ref?.onKeyDown?.(props) || false
             },
 
             onExit() {
