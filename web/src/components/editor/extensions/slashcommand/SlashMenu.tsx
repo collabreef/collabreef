@@ -64,7 +64,7 @@ export const SlashMenu = forwardRef<SlashMenuRef, Props>(
 
     return (
       <div className="bg-white shadow-lg rounded-lg border border-gray-200 p-2 w-56">
-        <div className=' h-36 overflow-y-auto'>
+        <div className=' h-40 overflow-y-auto'>
           {items.map((item, i) => (
             <button
               key={i}
