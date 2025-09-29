@@ -26,20 +26,18 @@ const TextGenComponent: React.FC<NodeViewProps> = ({ editor, extension }) => {
 
     return (
         <NodeViewWrapper className="select-none">
-            <div className="flex gap-2 items-center rounded-3xl p-3 w-full border">
-                <div className="flex-1">
-                    <input value={prompt} onChange={e => setPrompt(e.target.value)} className="p-2 select-none" placeholder={t("textGen.placeholder")} aria-label="prompt input" />
+            <div className="flex flex-col sm:flex-row gap-2 items-center rounded-3xl p-3 w-full border">
+                <div className="flex gap-2 flex-1 w-full">
+                    <input value={prompt} onChange={e => setPrompt(e.target.value)} className="w-full p-2 select-none " placeholder={t("textGen.placeholder")} aria-label="prompt input" />
                 </div>
-                <div className="w-20">
-                    <select className="w-full outline-none select-none" value={selectedModel?.id} onChange={e => setSelectedModel(models.find(x => x.id == e.target.value))} aria-label="text gen models select">
+                <div className="flex justify-between gap-3 w-full sm:w-auto">
+                    <select className="w-24 outline-none select-none bg-white" value={selectedModel?.id} onChange={e => setSelectedModel(models.find(x => x.id == e.target.value))} aria-label="text gen models select">
                         {
                             models.map(m => (
                                 <option value={m.id}>{m.name}</option>
                             ))
                         }
                     </select>
-                </div>
-                <div>
                     <button onClick={handleGenerate} className="select-none p-2 rounded-full text-white bg-gradient-to-r from-blue-600 to-indigo-600" aria-label="generate button">
                         <Wand size={16} />
                     </button>
