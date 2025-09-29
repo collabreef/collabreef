@@ -20,4 +20,8 @@ export default {
         "deleteRow": "刪除列",
         "addRow": "新增列",
     },
+    "textGen": {
+        "name": "文字生成",
+        "placeholder": "問AI"
+    }
 }

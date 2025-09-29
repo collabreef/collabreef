@@ -20,4 +20,8 @@ export default {
         "deleteRow": "delete row",
         "addRow": "add row",
     },
+    "textGen": {
+        "name": "Text Gen",
+        "placeholder": "Ask AI"
+    }
 }
