@@ -28,7 +28,7 @@ const Renderer: React.FC<RendererProps> = ({ json }) => {
             case 'heading':
                 const level = node.attrs?.level || 1
                 const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements
-                return <HeadingTag key={key} className='px-4'>{renderContent()}</HeadingTag>
+                return <HeadingTag key={key} className='px-4 py-2'>{renderContent()}</HeadingTag>
             case 'bulletList':
                 return <ul key={key} className="px-4">{renderContent()}</ul>
             case 'orderedList':
