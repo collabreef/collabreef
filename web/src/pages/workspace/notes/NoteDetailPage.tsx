@@ -11,6 +11,7 @@ import FullNote from "../../../components/fullnote/FullNote"
 import NoteTime from "../../../components/notetime/NoteTime"
 import { useCurrentUserStore } from "../../../stores/current-user"
 import VisibilityLabel from "../../../components/visibilitylabel/VisibilityLabel"
+import { useTranslation } from "react-i18next"
 
 const NoteDetailPage = () => {
     const [_, setIsLoading] = useState<boolean>(true)
@@ -18,6 +19,7 @@ const NoteDetailPage = () => {
     const currentWorkspaceId = useCurrentWorkspaceId()
     const { user } = useCurrentUserStore()
     const { noteId } = useParams()
+    const { t } = useTranslation()
 
     const { data: fetchedNote } = useQuery({
         queryKey: ['note', currentWorkspaceId, noteId],
@@ -45,7 +47,7 @@ const NoteDetailPage = () => {
                             <ChevronLeft size={20} />
                         </Link>
                         <div className="text-lg font-semibold">
-                            筆記
+                            {t("pages.noteDetail.note")}
                         </div>
                     </div>
                     <div className="inline-flex">

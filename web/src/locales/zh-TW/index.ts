@@ -42,6 +42,9 @@ export default {
       newNote: "新增筆記",
       editNote: "編輯筆記",
     },
+    noteDetail: {
+      note: "筆記",
+    },
     preferences: {
       language: "語言"
     }

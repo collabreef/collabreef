@@ -43,6 +43,9 @@ export default {
       newNote: "New Note",
       editNote: "Edit Note",
     },
+    noteDetail: {
+      note: "Note",
+    },
     preferences: {
       language: "Langueage"
     }
