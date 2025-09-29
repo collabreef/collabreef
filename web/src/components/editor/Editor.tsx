@@ -229,11 +229,11 @@ const Editor: FC<Props> = ({ note, onChange }) => {
         }}
         options={{ placement: 'top-start', offset: 8 }}
       >
-        <div className="flex gap-1 p-1 bg-slate-50 border rounded shadow">
-          <button className='p-1' onClick={() => editor.chain().focus().deleteColumn().run()}>{t("table.deleteColumn")}</button>
-          <button className='p-1' onClick={() => editor.chain().focus().addColumnAfter().run()}>{t("table.addColumn")}</button>
-          <button className='p-1' onClick={() => editor.chain().focus().deleteRow().run()}>{t("table.deleteRow")}</button>
-          <button className='p-1' onClick={() => editor.chain().focus().addRowAfter().run()}>{t("table.addRow")}</button>
+        <div className="flex gap-1 divide-x-2 bg-slate-50 border rounded shadow">
+          <button className='p-2' onClick={() => editor.chain().focus().deleteColumn().run()}>{t("table.deleteColumn")}</button>
+          <button className='p-2' onClick={() => editor.chain().focus().addColumnAfter().run()}>{t("table.addColumn")}</button>
+          <button className='p-2' onClick={() => editor.chain().focus().deleteRow().run()}>{t("table.deleteRow")}</button>
+          <button className='p-2' onClick={() => editor.chain().focus().addRowAfter().run()}>{t("table.addRow")}</button>
         </div>
       </BubbleMenu>
       <EditorContent editor={editor} />
