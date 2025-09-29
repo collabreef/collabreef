@@ -192,7 +192,7 @@ const Editor: FC<Props> = ({ note, onChange }) => {
               },
               {
                 icon: <Sparkles size={16} />,
-                label: t("TextGen"),
+                label: t("textGen.name"),
                 keywords: [],
                 command: ({ editor }: any) =>
                   editor.chain().focus().addTextGen().run(),
