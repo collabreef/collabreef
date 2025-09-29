@@ -112,14 +112,9 @@ func (s SqliteDB) FindNotes(f model.NoteFilter) ([]model.Note, error) {
 
 	if f.Query != "" {
 		query := "%" + f.Query + "%"
-		conds = append(conds, `(
-		(blocks.type IN ('paragraph','header','quote') AND json_extract(blocks.data,'$.text') LIKE ?) 
-		OR (blocks.type='code' AND json_extract(blocks.data,'$.code') LIKE ?)
-		OR (blocks.type='list' AND EXISTS (
-			SELECT 1 FROM json_each(json_extract(blocks.data,'$.items'))
-			WHERE json_extract(value,'$.content') LIKE ?
-		))
-	)`)
+		conds = append(conds, `
+		blocks.type IN ('paragraph','bulletList','orderedList','taskList','codeBlock','heading','blockquote','table','image','attachment') AND blocks.data LIKE ?
+		`)
 		args = append(args, query, query, query)
 	}
 
