@@ -12,7 +12,7 @@ const Masonry = (props: Props) => {
 
     return <M
         breakpointCols={breakpointColumns}
-        className="flex w-auto"
+        className="flex max-w-full"
         columnClassName="masonry-grid_column"
     >
         {props.children}

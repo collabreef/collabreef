@@ -11,6 +11,10 @@ export default {
         satoshi: ['Satoshi', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
       },
+      screens: {
+        '2xl': '1536px',
+        '3xl': '1920px',
+      },
     },
     gridTemplateColumns: {
       '1': 'repeat(1, minmax(0, 1fr));',

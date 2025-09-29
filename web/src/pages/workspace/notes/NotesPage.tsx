@@ -157,7 +157,7 @@ const NotesPage = () => {
                 }
             </div>
             <div className="flex flex-col gap-2 sm:gap-5">
-                <div className="">
+                <div className="w-full">
                     {
                         isLoading ? <Loader /> :
                             isMasonryView ? <NoteMasonry notes={notes} />

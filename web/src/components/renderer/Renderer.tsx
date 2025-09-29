@@ -1,6 +1,7 @@
 import React from 'react'
 import { NoteData } from '../../api/note'
 import { PhotoView } from 'react-photo-view'
+import ShikiHighlighter from "react-shiki";
 
 interface Node {
     type: string
@@ -39,9 +40,15 @@ const Renderer: React.FC<RendererProps> = ({ json }) => {
             case 'listItem':
                 return <li key={key} className="px-4">{renderContent()}</li>
             case 'codeBlock':
-                return <pre key={key} className="px-4"><code>{renderContent()}</code></pre>
+                return <div className='px-4 py-1'>
+                    <ShikiHighlighter language={node.attrs.language} showLineNumbers={true} theme="ayu-dark">
+                        {node.content?.map(d => d.text).join('') ?? ""}
+                    </ShikiHighlighter>
+                </div>
             case 'blockquote':
-                return <blockquote key={key} className="px-4">{renderContent()}</blockquote>
+                return <div className='px-4 py-1'>
+                    <blockquote key={key} className="border-l-4 border-gray-300">{renderContent()}</blockquote>
+                </div>
             case 'horizontalRule':
                 return <hr key={key} />
             case 'image':
@@ -94,7 +101,7 @@ const Renderer: React.FC<RendererProps> = ({ json }) => {
         }
     }
 
-    return <>{(json.content || []).map((node, idx) => renderNode(node, idx))}</>
+    return <div className=' max-w-full  overflow-x-auto'>{(json.content || []).map((node, idx) => renderNode(node, idx))}</div>
 }
 
 export const ConvertToNode: (n: NoteData) => Node = (noteData: NoteData) => {
