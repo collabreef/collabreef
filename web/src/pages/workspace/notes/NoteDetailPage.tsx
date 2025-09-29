@@ -38,7 +38,7 @@ const NoteDetailPage = () => {
     >
         {
             note &&
-            <div className="flex flex-col min-h-dvh ">
+            <div className="flex flex-col min-h-dvh">
                 <div className="py-2 px-4 sm:px-0 flex items-center justify-between border-b xl:border-b-0">
                     <div className="flex items-center gap-2">
                         <Link to=".." className="inline-flex p-3 rounded-full ">
@@ -53,22 +53,22 @@ const NoteDetailPage = () => {
                     </div>
                 </div>
                 <div className="flex">
-                        <div className="max-w-2xl w-full m-auto">
-                            <div className="px-4 pt-4 pb-2 flex gap-2 items-center" >
-                                <span className="flex items-center rounded text-gray-500" >
-                                    <VisibilityLabel value={note.visibility} />
-                                </span>
-                                <span className="text-gray-500">
-                                    {note && <NoteTime time={note.updated_at ?? ""} />}
-                                </span>
-                                <span className=" text-orange-500">
-                                    {user?.name}
-                                </span>
-                            </div>
-                            <div className="">
-                                {note && <FullNote note={note} />}
-                            </div>
+                    <div className="max-w-2xl w-full m-auto">
+                        <div className="px-4 pt-4 pb-2 flex gap-2 items-center" >
+                            <span className="flex items-center rounded text-gray-500" >
+                                <VisibilityLabel value={note.visibility} />
+                            </span>
+                            <span className="text-gray-500">
+                                {note && <NoteTime time={note.updated_at ?? ""} />}
+                            </span>
+                            <span className=" text-orange-500">
+                                {user?.name}
+                            </span>
                         </div>
+                        <div className="pb-10">
+                            {note && <FullNote note={note} />}
+                        </div>
+                    </div>
                     <div className="hidden lg:block w-[260px]">
 
                     </div>

@@ -1,11 +1,13 @@
 import DragHandle from '@tiptap/extension-drag-handle-react'
 import { TaskItem, TaskList } from "@tiptap/extension-list"
-import { useEditor, EditorContext, EditorContent } from "@tiptap/react"
+import { useEditor, EditorContext, EditorContent, findParentNode, posToDOMRect } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import { Placeholder } from "@tiptap/extensions"
+import { BubbleMenu } from "@tiptap/react/menus"
+import { TableKit } from "@tiptap/extension-table"
 import { FC, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { Code, GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, List, ListTodo, Paperclip, Type } from 'lucide-react'
+import { GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, List, ListTodo, Paperclip, Quote, Table, Type } from 'lucide-react'
 import { CommandItem, SlashCommand } from './extensions/slashcommand/SlashCommand'
 import { Attachment } from './extensions/attachment/Attachment'
 import { ImageNode } from './extensions/imagenode/ImageNode'
@@ -69,6 +71,7 @@ const Editor: FC<Props> = ({ note, onChange }) => {
           }
         }
       }),
+      TableKit,
       SlashCommand.configure({
         suggestion: {
           items: ({ query }: { query: string }): CommandItem[] => {
@@ -81,11 +84,39 @@ const Editor: FC<Props> = ({ note, onChange }) => {
                   editor.chain().focus().setParagraph().run(),
               },
               {
-                icon: <Code size={14} />,
-                label: t("Code"),
-                keywords: ["text"],
+                icon: <Quote size={14} />,
+                label: t("Quote"),
+                keywords: ["quote"],
                 command: ({ editor }: any) =>
-                  editor.chain().focus().toggleCode().run(),
+                  editor.chain().focus().setBlockquote().run(),
+              },
+              {
+                icon: <List size={16} />,
+                label: t("BulletList"),
+                keywords: ["list"],
+                command: ({ editor }: any) =>
+                  editor.chain().focus().toggleBulletList().run(),
+              },
+              {
+                icon: <ListTodo size={16} />,
+                label: t("TaskList"),
+                keywords: ["list"],
+                command: ({ editor }: any) =>
+                  editor.chain().focus().toggleTaskList().run(),
+              },
+              {
+                icon: <Paperclip size={16} />,
+                label: t("Attachment"),
+                keywords: ["file"],
+                command: ({ editor }: any) =>
+                  editor?.chain().focus().setFile({ src: null, name: null }).run()
+              },
+              {
+                icon: <Image size={16} />,
+                label: t("Image"),
+                keywords: ["image"],
+                command: ({ editor }: any) =>
+                  editor?.chain().focus().setImage({ src: null, name: null }).run()
               },
               {
                 icon: <Heading1 size={16} />,
@@ -130,33 +161,12 @@ const Editor: FC<Props> = ({ note, onChange }) => {
                   editor.chain().focus().toggleHeading({ level: 6 }).run(),
               },
               {
-                icon: <List size={16} />,
-                label: t("BulletList"),
-                keywords: ["list"],
+                icon: <Table size={16} />,
+                label: t("table.name"),
+                keywords: [],
                 command: ({ editor }: any) =>
-                  editor.chain().focus().toggleBulletList().run(),
-              },
-              {
-                icon: <ListTodo size={16} />,
-                label: t("TaskList"),
-                keywords: ["list"],
-                command: ({ editor }: any) =>
-                  editor.chain().focus().toggleTaskList().run(),
-              },
-              {
-                icon: <Paperclip size={16} />,
-                label: t("Attachment"),
-                keywords: ["file"],
-                command: ({ editor }: any) =>
-                  editor?.chain().focus().setFile({ src: null, name: null }).run()
-              },
-              {
-                icon: <Image size={16} />,
-                label: t("Image"),
-                keywords: ["image"],
-                command: ({ editor }: any) =>
-                  editor?.chain().focus().setImage({ src: null, name: null }).run()
-              },
+                  editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: false }).run(),
+              }
             ].filter((item) =>
               item.label.toLowerCase().includes(query.toLowerCase()) ||
               item.keywords?.some(k => k.toLowerCase().includes(query.toLowerCase()))
@@ -200,6 +210,32 @@ const Editor: FC<Props> = ({ note, onChange }) => {
       {!isTouchDevice && <DragHandle editor={editor} className='border rounded shadow-sm p-1'>
         <GripVertical size={12} />
       </DragHandle>}
+
+      <BubbleMenu
+        editor={editor}
+        shouldShow={() => editor.isActive('table') || editor.isActive('tableCell')}
+        getReferencedVirtualElement={() => {
+          const parentNode = findParentNode(
+            node => node.type.name === 'table' || node.type.name === 'tableCell',
+          )(editor.state.selection)
+          if (parentNode) {
+            const domRect = posToDOMRect(editor.view, parentNode.start, parentNode.start + parentNode.node.nodeSize)
+            return {
+              getBoundingClientRect: () => domRect,
+              getClientRects: () => [domRect],
+            }
+          }
+          return null
+        }}
+        options={{ placement: 'top-start', offset: 8 }}
+      >
+        <div className="flex gap-1 p-1 bg-slate-50 border rounded shadow">
+          <button className='p-1' onClick={() => editor.chain().focus().deleteColumn().run()}>{t("table.deleteColumn")}</button>
+          <button className='p-1' onClick={() => editor.chain().focus().addColumnAfter().run()}>{t("table.addColumn")}</button>
+          <button className='p-1' onClick={() => editor.chain().focus().deleteRow().run()}>{t("table.deleteRow")}</button>
+          <button className='p-1' onClick={() => editor.chain().focus().addRowAfter().run()}>{t("table.addRow")}</button>
+        </div>
+      </BubbleMenu>
       <EditorContent editor={editor} />
     </EditorContext.Provider>
   )

@@ -26,6 +26,7 @@
     "@tiptap/extension-node-range": "^3.6.1",
     "@tiptap/extension-subscript": "^3.5.0",
     "@tiptap/extension-superscript": "^3.5.0",
+    "@tiptap/extension-table": "^3.6.1",
     "@tiptap/extension-text-align": "^3.5.0",
     "@tiptap/extension-typography": "^3.5.0",
     "@tiptap/extensions": "^3.5.0",

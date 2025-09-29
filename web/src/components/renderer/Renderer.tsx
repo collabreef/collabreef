@@ -50,7 +50,9 @@ const Renderer: React.FC<RendererProps> = ({ json }) => {
                     <blockquote key={key} className="border-l-4 border-gray-300">{renderContent()}</blockquote>
                 </div>
             case 'horizontalRule':
-                return <hr key={key} />
+                return <div className='p-4'>
+                    <hr key={key} />
+                </div>
             case 'image':
                 return <div className="px-4">
                     <PhotoView src={node.attrs?.src} >
@@ -59,6 +61,16 @@ const Renderer: React.FC<RendererProps> = ({ json }) => {
                 </div>
             case 'attachment':
                 return <a href={node.attrs.src} className="px-4 text-blue-600">{node.attrs.name}</a>
+            case 'table':
+                return <div className='px-4 max-w-full overflow-x-auto'>
+                    <table className='w-full table-fixed'>{renderContent()}</table>
+                </div>
+            case 'tableRow':
+                return <tr>{renderContent()}</tr>
+            case 'tableHeader':
+                return <th className='border bg-gray-200 dark:bg-gray-900'>{renderContent()}</th>
+            case 'tableCell':
+                return <td className='border'>{renderContent()}</td>
             case 'hardBreak':
                 return <br key={key} />
             case 'text':

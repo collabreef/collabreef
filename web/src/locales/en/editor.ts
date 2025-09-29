@@ -2,6 +2,7 @@ export default {
     "placeholder": "Start writing your note ...",
     "Paragraph": "Paragraph",
     "Code": "Code",
+    "Quote": "Quote",
     "Heading 1": "Heading 1",
     "Heading 2": "Heading 2",
     "Heading 3": "Heading 3",
@@ -12,4 +13,11 @@ export default {
     "TaskList":"Task List",
     "Attachment":"Attachment",
     "Image":"Image",
+    "table":{
+        "name": "Table",
+        "deleteColumn": "delete column",
+        "addColumn": "add column",
+        "deleteRow": "delete row",
+        "addRow": "add row",
+    },
 }

@@ -171,3 +171,11 @@ ul[data-type="taskList"] > li input[type=checkbox]{
 ul[data-type="taskList"] > li > div{
    @apply inline-block
 }
+
+.tiptap table {
+  @apply w-full table-fixed
+}
+
+.tiptap td {
+  @apply border
+}
