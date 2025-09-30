@@ -72,11 +72,10 @@ const ExploreNotesPage = () => {
 
     return <>
         <TransitionWrapper className="w-full">
-            <div className=" py-2 ">
-                
+            <div className=" py-2 ">          
                 {
                     isSearchVisible ? < div className="block sm:hidden py-1">
-                        <div className="w-full flex items-center gap-2 py-2 px-3 rounded-xl shadow-inner border dark:border-neutral-600 bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-100">
+                        <div className="w-full flex items-center gap-2 py-2 px-3 rounded-xl shadow-inner border dark:border-stone-600 bg-stone-200 dark:bg-stone-900 dark:text-stone-100">
                             <Search size={16} className="text-gray-400" />
                             <input type="text" value={query} onChange={e => setQuery(e.target.value)} className=" bg-transparent flex-1" placeholder={t("placeholder.search")} />
                             <button title="toggle isSearchVisible" onClick={() => setIsSearchVisible(false)}>
@@ -91,7 +90,7 @@ const ExploreNotesPage = () => {
                     </div>
                     <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                         <div className="hidden sm:block">
-                            <div className="flex items-center gap-2 py-2 px-3 rounded-xl dark:border-neutral-600 bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-100">
+                            <div className="flex items-center gap-2 py-2 px-3 rounded-xl dark:border-stone-600 bg-stone-200 dark:bg-stone-800 dark:text-stone-100">
                                 <Search size={16} className="text-gray-400" />
                                 <input type="text" value={query} onChange={e => setQuery(e.target.value)} className=" flex-1 bg-transparent" placeholder={t("placeholder.search")} />       
                             </div>
@@ -127,7 +126,7 @@ const ExploreNotesPage = () => {
                             : <Masonry>
                                 {
                                     notes && notes?.map((n: NoteData, idx: number) => {
-                                        return n && <div key={n.id || idx} className="bg-white dark:bg-neutral-900 border sm:shadow-sm dark:border-neutral-600 rounded-lg overflow-auto flex flex-col gap-2 ">
+                                        return n && <div key={n.id || idx} className="bg-white dark:bg-stone-800 border sm:shadow-sm dark:border-stone-600 rounded-lg overflow-auto flex flex-col gap-2 ">
                                             <div className="flex justify-between text-gray-500 px-4 pt-4">
                                                 <div>
                                                     <NoteTime time={n.updated_at ?? ""} />

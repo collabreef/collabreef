@@ -30,11 +30,11 @@ const Renderer: React.FC<RendererProps> = ({ json }) => {
                 const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements
                 return <HeadingTag key={key} className='px-4 py-2'>{renderContent()}</HeadingTag>
             case 'bulletList':
-                return <ul key={key} className="px-4">{renderContent()}</ul>
+                return <ul key={key} className="">{renderContent()}</ul>
             case 'orderedList':
-                return <ol key={key} className="px-4">{renderContent()}</ol>
+                return <ol key={key} className="">{renderContent()}</ol>
             case 'taskList':
-                return <div key={key} className="px-4">{renderContent()}</div>
+                return <div key={key} className="">{renderContent()}</div>
             case 'taskItem':
                 return <div className='px-4 flex'><input disabled={true} type='checkbox' checked={node.attrs.checked} aria-label='checkbox' />{renderContent()}</div>
             case 'listItem':
