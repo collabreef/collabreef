@@ -46,7 +46,8 @@ export default {
       note: "筆記",
     },
     preferences: {
-      language: "語言"
+      language: "語言",
+      theme: "主題",
     }
   },
   actions: {

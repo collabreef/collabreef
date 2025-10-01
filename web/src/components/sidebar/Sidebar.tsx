@@ -1,7 +1,6 @@
 import { PanelLeftClose, PanelLeftOpen, Settings, Telescope } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import { useSidebar } from "./SidebarProvider"
-import ThemeButton from "../themebutton/ThemeButton"
 import { Link } from "react-router-dom"
 import { FC, ReactNode } from "react"
 import { useCurrentUserStore } from "../../stores/current-user"
@@ -27,7 +26,6 @@ const Sidebar: FC<Props> = function ({ children }) {
             <div className="px-4 bg-neutral-100 dark:bg-stone-900 text-neutral-900 dark:text-neutral-100 flex flex-col justify-between h-full ">
                 {children}
                 <div className={twMerge("pt-1 pb-3 flex gap-1 flex-wrap-reverse", isCollapse ? "flex-col" : "flex-row")}>
-
                     <Tooltip
                         text={t("menu.explore")}
                         side="right"
@@ -49,14 +47,6 @@ const Sidebar: FC<Props> = function ({ children }) {
                                     <Settings size={20} />
                                 </Link>
                             </>
-                        </Tooltip>
-                    }
-                    {
-                        <Tooltip
-                            text={t("actions.toggleTheme")}
-                            side="right"
-                            enabled={isCollapse}>
-                            <ThemeButton/>
                         </Tooltip>
                     }
                     {

@@ -47,7 +47,8 @@ export default {
       note: "Note",
     },
     preferences: {
-      language: "Langueage"
+      language: "Langueage",
+      theme: "Theme",
     }
   },
   actions: {

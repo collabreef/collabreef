@@ -6,14 +6,17 @@ import { useCurrentUserStore } from "../../stores/current-user"
 import { useState } from "react"
 import { Loader } from "lucide-react"
 import { toast } from "../../stores/toast"
+import { useTheme, Theme } from "../../providers/Theme"
 
 const PreferencesPage = () => {
     const [isSaving, setIsSaving] = useState(false)
     const { user } = useCurrentUserStore()
     const { t, i18n } = useTranslation();
+    const { theme, setTheme } = useTheme()!;
+    const themes: Theme[] = ["light", "dark"]
     const supportedLanguages = i18n.options.supportedLngs && i18n.options.supportedLngs?.filter(l => l !== "cimode") || [];
 
-    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleSelectedLangChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         i18n.changeLanguage(e.target.value);
     };
 
@@ -23,7 +26,7 @@ const PreferencesPage = () => {
 
         const updatedUser = {
             ...user,
-            preferences: { lang: i18n.language }
+            preferences: { lang: i18n.language, theme: theme }
         };
 
         try {
@@ -55,10 +58,22 @@ const PreferencesPage = () => {
                                     {t("pages.preferences.language")}
                                 </div>
                                 <div className="flex gap-3 flex-wrap">
-                                    <select className="dark:bg-neutral-700 p-2 border" aria-label="select lang" value={i18n.language} onChange={handleChange}>
+                                    <select className="dark:bg-neutral-700 p-2 border" aria-label="select lang" value={i18n.language} onChange={handleSelectedLangChange}>
                                         {supportedLanguages.map((lng) => (
                                             <option key={lng} value={lng}>
-                                                {lng.toUpperCase()}
+                                                {lng}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="text-lg font-semibold">
+                                    {t("pages.preferences.theme")}
+                                </div>
+                                <div className="flex gap-3 flex-wrap">
+                                    <select className="dark:bg-neutral-700 p-2 border" aria-label="select theme" value={theme} onChange={e => setTheme(e.target.value as Theme)}>
+                                        {themes.map((t) => (
+                                            <option key={t} value={t}>
+                                                {t}
                                             </option>
                                         ))}
                                     </select>

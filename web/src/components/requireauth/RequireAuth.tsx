@@ -3,11 +3,13 @@ import { useEffect, useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
 import { useCurrentUserStore } from '../../stores/current-user';
 import i18n from '../../i18n';
+import { useTheme } from '../../providers/Theme';
 
 const RequireAuth = () => {
   const [isChecking, setIsChecking] = useState(true)
   const { fetchUser } = useCurrentUserStore();
   const navigate = useNavigate()
+  const { theme, setTheme } = useTheme()!
 
   useEffect(() => {
     (async () => {
@@ -19,8 +21,14 @@ const RequireAuth = () => {
 
       //load preferences
       if (currentUser?.preferences) {
+        console.log(theme)
+        console.log(currentUser.preferences.theme)
+        console.log(theme != currentUser.preferences.theme)
         if (i18n.language != currentUser.preferences.lang) {
           i18n.changeLanguage(currentUser.preferences.lang)
+        }
+        if (theme != currentUser.preferences.theme) {
+          setTheme(currentUser.preferences.theme)
         }
       }
 
