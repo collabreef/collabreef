@@ -1,8 +1,9 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
 import { Image } from "lucide-react"
 import { useRef } from "react"
+import { twMerge } from "tailwind-merge"
 
-const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttributes }) => {
+const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttributes, selected }) => {
     const inputRef = useRef<HTMLInputElement>(null)
     const { src, name } = node.attrs
 
@@ -22,7 +23,7 @@ const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttrib
 
     if (!src) {
         return (
-            <NodeViewWrapper className="file-node select-none border rounded p-2 bg-gray-100">
+            <NodeViewWrapper className="image-node select-none border rounded p-2 bg-gray-100">
                 <button
                     className="rounded w-full h-32 flex gap-3 items-center justify-center"
                     onClick={() => inputRef.current?.click()}
@@ -42,7 +43,7 @@ const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttrib
     }
 
     return (
-        <NodeViewWrapper className="file-node select-none border rounded p-2 flex items-center gap-2 bg-gray-50">
+        <NodeViewWrapper className={twMerge("image-node select-none rounded box-border flex items-center gap-2 bg-gray-50",selected ? "border-4 border-sky-300":"")}>
             <img src={src} alt={name} />
         </NodeViewWrapper>
     )
