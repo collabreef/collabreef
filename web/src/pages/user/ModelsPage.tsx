@@ -167,7 +167,7 @@ const ModelsPage = () => {
                                                         isGeminiKeyRevoking ? <Loader size={16} className=" animate-spin" /> : <Trash2 size={16} />
                                                     }
                                                 </button>
-                                                {!userSettings?.gemini_api_key ? "API Key" : userSettings?.gemini_api_key}
+                                                {!userSettings?.gemini_api_key ? "" : userSettings?.gemini_api_key}
                                             </div>
                                     }
                                 </div>
