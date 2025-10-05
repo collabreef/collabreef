@@ -3,13 +3,11 @@ import TransitionWrapper from "../../components/transitionwrapper/TransitionWrap
 import { useTranslation } from "react-i18next"
 import { updatePreferences } from "../../api/user"
 import { useCurrentUserStore } from "../../stores/current-user"
-import { useState } from "react"
-import { Loader } from "lucide-react"
 import { toast } from "../../stores/toast"
 import { useTheme, Theme } from "../../providers/Theme"
+import { useEffect } from "react"
 
 const PreferencesPage = () => {
-    const [isSaving, setIsSaving] = useState(false)
     const { user } = useCurrentUserStore()
     const { t, i18n } = useTranslation();
     const { theme, setTheme } = useTheme()!;
@@ -19,10 +17,13 @@ const PreferencesPage = () => {
     const handleSelectedLangChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         i18n.changeLanguage(e.target.value);
     };
+    const handleThemeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newTheme = e.target.value as Theme;
+        setTheme(newTheme)
+    }
 
-    const handleSave = async () => {
+    const savePreferences = async () => {
         if (!user) return;
-        setIsSaving(true);
 
         const updatedUser = {
             ...user,
@@ -31,13 +32,15 @@ const PreferencesPage = () => {
 
         try {
             await updatePreferences(updatedUser);
-            toast.success(t("messages.preferencesUpdated"));
         } catch (err) {
             toast.error(t("messages.updateFailed"));
-        } finally {
-            setIsSaving(false);
         }
     }
+
+    useEffect(() => {
+        if (!user) return
+        savePreferences()
+    }, [theme, i18n.language])
 
     return <TransitionWrapper
         className="w-full"
@@ -54,34 +57,34 @@ const PreferencesPage = () => {
                     <div className="w-full">
                         <div className="bg-white dark:bg-neutral-800 rounded shadow-sm w-full p-5 max-w-3xl">
                             <div className="flex flex-col gap-6">
-                                <div className="text-lg font-semibold">
-                                    {t("pages.preferences.language")}
+                                <div className="flex flex-col">
+
+                                    <div className="text-xs font-semibold text-gray-500">
+                                        {t("pages.preferences.language")}
+                                    </div>
+                                    <div>
+                                        <select className="dark:bg-neutral-700 p-2 border" aria-label="select lang" value={i18n.language} onChange={handleSelectedLangChange}>
+                                            {supportedLanguages.map((lng) => (
+                                                <option key={lng} value={lng}>
+                                                    {lng}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
-                                <div className="flex gap-3 flex-wrap">
-                                    <select className="dark:bg-neutral-700 p-2 border" aria-label="select lang" value={i18n.language} onChange={handleSelectedLangChange}>
-                                        {supportedLanguages.map((lng) => (
-                                            <option key={lng} value={lng}>
-                                                {lng}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="text-lg font-semibold">
-                                    {t("pages.preferences.theme")}
-                                </div>
-                                <div className="flex gap-3 flex-wrap">
-                                    <select className="dark:bg-neutral-700 p-2 border" aria-label="select theme" value={theme} onChange={e => setTheme(e.target.value as Theme)}>
-                                        {themes.map((t) => (
-                                            <option key={t} value={t}>
-                                                {t}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <button onClick={handleSave} className="rounded-xl px-3 py-2 text-white bg-orange-600 font-semibold">
-                                        {isSaving ? <Loader size={20} className="animate-spin" /> : t("actions.save")}
-                                    </button>
+                                <div className="flex flex-col">
+                                    <div className="text-xs font-semibold text-gray-500">
+                                        {t("pages.preferences.theme")}
+                                    </div>
+                                    <div>
+                                        <select className="dark:bg-neutral-700 p-2 border" aria-label="select theme" value={theme} onChange={handleThemeChange}>
+                                            {themes.map((t) => (
+                                                <option key={t} value={t}>
+                                                    {t}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
