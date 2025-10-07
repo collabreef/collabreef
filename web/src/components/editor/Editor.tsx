@@ -15,9 +15,10 @@ import { uploadFile } from '@/api/file'
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id'
 import { NoteData } from '@/api/note'
 import { TextGenNode } from './extensions/textgen/TextGen'
-import { listModels, textGen, TextGenModel } from '@/api/tool'
+import { listModels, textGen } from '@/api/tool'
 import { toast } from '@/stores/toast'
-import MyBubbleMenu from '@/components/editor/extensions/mybubblemenu/MyBubbleMenu'
+import TextSelectionMenu from '@/components/editor/extensions/textselectionmenu/TextSelectionMenu'
+import { TextGenModel } from '@/types/textgen'
 
 interface Props {
   note: NoteData
@@ -259,7 +260,7 @@ const Editor: FC<Props> = ({ note, onChange }) => {
         }}
         options={{ placement: 'top-start', offset: 8 }}
       >
-        <div className="flex gap-1 divide-x-2 bg-slate-50 border rounded shadow">
+        <div className="flex gap-1 divide-x-2 bg-slate-50 border rounded shadow text-sm">
           <button className='p-2' onClick={() => editor.chain().focus().deleteColumn().run()}>{t("table.deleteColumn")}</button>
           <button className='p-2' onClick={() => editor.chain().focus().addColumnAfter().run()}>{t("table.addColumn")}</button>
           <button className='p-2' onClick={() => editor.chain().focus().deleteRow().run()}>{t("table.deleteRow")}</button>
@@ -267,7 +268,7 @@ const Editor: FC<Props> = ({ note, onChange }) => {
         </div>
       </BubbleMenu>
 
-      <MyBubbleMenu editor={editor} />
+      <TextSelectionMenu editor={editor} />
       <EditorContent editor={editor} className='relative' />
     </EditorContext.Provider>
   )

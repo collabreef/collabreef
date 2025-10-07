@@ -12,6 +12,7 @@ export default {
     user: "User",
     models: "AI Models",
     preferences: "Preferences",
+    gencommands: "Gen Commands",
     explore: "Explore",
   },
   form: {
@@ -49,6 +50,14 @@ export default {
     preferences: {
       language: "Langueage",
       theme: "Theme",
+    },
+    genCommands: {
+      name: "Command Name",
+      triggerType: "Trigger Type",
+      prompt: "Prompt",
+      model: "Model",
+      outputType: "Output Type",
+      displayMode: "Display Mode",
     }
   },
   actions: {
@@ -62,6 +71,7 @@ export default {
     expand: "Expand",
     collapse: "Collapse",
     create: "Create",
+    new: "New",
     newNote: "New Note",
     rename: "Rename",
     filter: "Filter",

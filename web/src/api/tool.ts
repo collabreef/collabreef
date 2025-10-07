@@ -1,10 +1,5 @@
 import axios from "axios";
-
-export interface TextGenModel {
-    id: string
-    provider: string
-    name: string
-}
+import { TextGenModel } from "../types/textgen";
 
 export const listModels = async () => {
     const response = await axios.get(`/api/v1/tools/textgen/models`, { withCredentials: true });

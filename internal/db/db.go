@@ -10,6 +10,7 @@ type DB interface {
 	Uow
 	UserRepository
 	UserSettingsRepository
+	UserGenCommandRepository
 	NoteRepository
 	FileRepository
 	WorkspaceRepository
@@ -30,6 +31,12 @@ type UserRepository interface {
 type UserSettingsRepository interface {
 	SaveUserSettings(u model.UserSettings) error
 	FindUserSettingsByID(id string) (model.UserSettings, error)
+}
+type UserGenCommandRepository interface {
+	FindUserGenCommandsByUserID(id string) ([]model.UserGenCommand, error)
+	CreateUserGenCommand(c model.UserGenCommand) error
+	UpdateUserGenCommand(c model.UserGenCommand) error
+	DeleteUserGenCommand(id string) error
 }
 type NoteRepository interface {
 	CreateNote(n model.Note) error

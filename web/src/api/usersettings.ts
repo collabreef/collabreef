@@ -1,11 +1,5 @@
 import axios from "axios";
-
-export interface UserSettings {
-    user_id: string
-    openai_api_key: string
-    gemini_api_key: string
-    created_at?: string;
-}
+import { UserSettings } from "../types/usersettings";
 
 export const getUserSettings = async (id: string) => {
     const response = await axios.get(`/api/v1/users/${id}/settings`,
@@ -16,11 +10,11 @@ export const getUserSettings = async (id: string) => {
 };
 
 export const updateOpenAIKey = async (userSettings: UserSettings) => {
-    const response = await axios.patch(`/api/v1/users/${userSettings.user_id}/openaikey`, userSettings);
+    const response = await axios.patch(`/api/v1/users/${userSettings.user_id}/settings/openaikey`, userSettings);
     return response.data as UserSettings;
 };
 
 export const updateGeminiKey = async (userSettings: UserSettings) => {
-    const response = await axios.patch(`/api/v1/users/${userSettings.user_id}/geminikey`, userSettings);
+    const response = await axios.patch(`/api/v1/users/${userSettings.user_id}/settings/geminikey`, userSettings);
     return response.data as UserSettings;
 };

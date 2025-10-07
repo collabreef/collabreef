@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/unsealdev/unseal/internal/api/auth"
 	"github.com/unsealdev/unseal/internal/config"
+	"github.com/unsealdev/unseal/internal/model"
 	"github.com/unsealdev/unseal/internal/util"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -30,15 +30,8 @@ type SaveGeminiKeyRequest struct {
 
 func (h Handler) UpdatePreferences(c echo.Context) error {
 	id := c.Param("id")
-	cookie, err := c.Cookie("token")
-	if err != nil || cookie.Value == "" {
-		return echo.NewHTTPError(http.StatusUnauthorized, "missing or invalid token")
-	}
 
-	user, err := auth.GetUserFromCookie(cookie)
-	if err != nil || user == nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
-	}
+	user := c.Get("user").(model.User)
 
 	if user.ID != id {
 		return echo.NewHTTPError(http.StatusForbidden, "You do not have permission to update the preferences.")
@@ -79,15 +72,7 @@ func (h Handler) ChangePassword(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "password is required")
 	}
 
-	cookie, err := c.Cookie("token")
-	if err != nil || cookie.Value == "" {
-		return echo.NewHTTPError(http.StatusUnauthorized, "missing or invalid token")
-	}
-
-	user, err := auth.GetUserFromCookie(cookie)
-	if err != nil || user == nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
-	}
+	user := c.Get("user").(model.User)
 
 	if user.ID != id {
 		return echo.NewHTTPError(http.StatusForbidden, "You do not have permission to update the preferences.")
@@ -120,15 +105,7 @@ func (h Handler) ChangePassword(c echo.Context) error {
 func (h Handler) GetUserSettings(c echo.Context) error {
 	id := c.Param("id")
 
-	cookie, err := c.Cookie("token")
-	if err != nil || cookie.Value == "" {
-		return echo.NewHTTPError(http.StatusUnauthorized, "missing or invalid token")
-	}
-
-	user, err := auth.GetUserFromCookie(cookie)
-	if err != nil || user == nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
-	}
+	user := c.Get("user").(model.User)
 
 	if user.ID != id {
 		return echo.NewHTTPError(http.StatusForbidden, "You do not have permission to get user settings")
@@ -167,19 +144,11 @@ func (h Handler) GetUserSettings(c echo.Context) error {
 func (h Handler) UpdateOpenAIKey(c echo.Context) error {
 	id := c.Param("id")
 
-	cookie, err := c.Cookie("token")
-	if err != nil || cookie.Value == "" {
-		return echo.NewHTTPError(http.StatusUnauthorized, "missing or invalid token")
-	}
+	user := c.Get("user").(model.User)
 
 	var req SaveOpenaiKeyRequest
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-
-	user, err := auth.GetUserFromCookie(cookie)
-	if err != nil || user == nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
 	}
 
 	if user.ID != id {
@@ -217,19 +186,11 @@ func (h Handler) UpdateOpenAIKey(c echo.Context) error {
 func (h Handler) UpdateGeminiKey(c echo.Context) error {
 	id := c.Param("id")
 
-	cookie, err := c.Cookie("token")
-	if err != nil || cookie.Value == "" {
-		return echo.NewHTTPError(http.StatusUnauthorized, "missing or invalid token")
-	}
+	user := c.Get("user").(model.User)
 
 	var req SaveGeminiKeyRequest
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-
-	user, err := auth.GetUserFromCookie(cookie)
-	if err != nil || user == nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
 	}
 
 	if user.ID != id {

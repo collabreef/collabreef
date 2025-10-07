@@ -11,6 +11,7 @@ export default {
     user: "使用者",
     models: "AI模型",
     preferences: "偏好設定",
+    gencommands: "生成指令",
     explore: "探索",
   },
   form: {
@@ -48,6 +49,14 @@ export default {
     preferences: {
       language: "語言",
       theme: "主題",
+    },
+    genCommands: {
+      name: "指令名稱",
+      triggerType: "觸發類型",
+      prompt: "提示詞",
+      model: "模型",
+      outputType: "輸出類型",
+      displayMode: "顯示模式",
     }
   },
   actions: {
@@ -61,6 +70,7 @@ export default {
     expand: "展開",
     collapse: "收合",
     create: "建立",
+    new: "新增",
     newNote: "新增筆記",
     rename: "重新命名",
     filter: "篩選",

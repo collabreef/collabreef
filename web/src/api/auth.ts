@@ -1,13 +1,5 @@
 import axios from 'axios';
-
-interface SignInData {
-  username: string;
-  password: string;
-}
-
-interface SignUpData extends SignInData {
-  email: string;
-}
+import { SignInData, SignUpData } from '../types/auth';
 
 export const signIn = async (data: SignInData) => {
   const response = await axios.post('/api/v1/signin', {

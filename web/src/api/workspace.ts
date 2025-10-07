@@ -1,10 +1,5 @@
 import axios from 'axios';
-
-interface WorkspaceData {
-  id?: string;
-  name: string;
-  description?: string;
-}
+import { WorkspaceData } from '../types/workspace';
 
 export const createWorkspace = async (data: WorkspaceData) => {
   const response = await axios.post('/api/v1/workspaces', {
