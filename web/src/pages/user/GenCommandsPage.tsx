@@ -11,14 +11,14 @@ const GenCommandsPage = () => {
 
     const commnads: GenCommand[] = [
         {
-            trigger_type: "editorTextSelection",
+            container_type: "editorTextSelectionMenu",
             name: "翻譯成繁體中文",
             prompt: "把{{input}}翻譯成繁體中文",
             gen_type: "text-to-text",
             model: ""
         },
         {
-            trigger_type: "editorTextSelection",
+            container_type: "editorTextSelectionMenu",
             name: "摘要內容",
             prompt: "把{{input}}做總結",
             gen_type: "text-to-text",
@@ -63,10 +63,10 @@ const GenCommandsPage = () => {
                                         </div>
                                         <div className="flex flex-col">
                                             <div className="text-xs font-semibold text-gray-500">
-                                                {t("pages.genCommands.triggerType")}
+                                                {t("pages.genCommands.containerType")}
                                             </div>
                                             <div>
-                                                {c.trigger_type}
+                                                {c.container_type}
                                             </div>
                                         </div>
                                         <div className="flex flex-col flex-wrap">
@@ -80,11 +80,13 @@ const GenCommandsPage = () => {
                                         <div className="flex gap-3">
                                             <div className="flex flex-col flex-1">
                                                 <div className="text-xs font-semibold text-gray-500">
-                                                    {t("pages.genCommands.outputType")}
+                                                    {t("pages.genCommands.genType")}
                                                 </div>
                                                 <select aria-label="output type" className="border p-2 rounded">
-                                                    <option>text</option>
-                                                    <option>image</option>
+                                                    <option>text to text</option>
+                                                    <option>text to image</option>
+                                                    <option>text and image to text</option>
+                                                    <option>text and image to image</option>
                                                 </select>
                                             </div>
                                             <div className="flex flex-col flex-1">

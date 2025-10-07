@@ -53,11 +53,10 @@ export default {
     },
     genCommands: {
       name: "Command Name",
-      triggerType: "Trigger Type",
+      containerType: "Container Type",
       prompt: "Prompt",
       model: "Model",
-      outputType: "Output Type",
-      displayMode: "Display Mode",
+      genType: "Generative Type",
     }
   },
   actions: {

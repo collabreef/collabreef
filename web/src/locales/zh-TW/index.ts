@@ -52,11 +52,10 @@ export default {
     },
     genCommands: {
       name: "指令名稱",
-      triggerType: "觸發類型",
+      containerType: "容器類型",
       prompt: "提示詞",
       model: "模型",
-      outputType: "輸出類型",
-      displayMode: "顯示模式",
+      genType: "生成方式",
     }
   },
   actions: {

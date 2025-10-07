@@ -13,12 +13,12 @@ interface Preferences {
 
 export type Theme = "light" | "dark";
 
-type TriggerType = "editorTextSelection" | "editorImageSelection"
-type GenType = "text-to-text" | "text-to-image" | "text-and-image-to-text" | "text-and-image-to-image"
+export type ContainerType = "editorTextSelectionMenu" | "editorImageSelectionMenu" | "notePageMenu"
+export type GenType = "text-to-text" | "text-to-image" | "text-and-image-to-text" | "text-and-image-to-image"
 
 export interface GenCommand {
     id?: string
-    trigger_type: TriggerType
+    container_type: ContainerType
     name: string
     prompt: string
     gen_type: GenType
