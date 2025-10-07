@@ -47,7 +47,7 @@ const Renderer: React.FC<RendererProps> = ({ json }) => {
                 </div>
             case 'blockquote':
                 return <div className='px-4 py-1'>
-                    <blockquote key={key} className="border-l-4 border-gray-300">{renderContent()}</blockquote>
+                    <blockquote key={key} className="border-l-4 border-gray-300 italic">{renderContent()}</blockquote>
                 </div>
             case 'horizontalRule':
                 return <div className='p-4'>
