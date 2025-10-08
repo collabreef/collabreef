@@ -1,4 +1,4 @@
-import { PanelLeftClose, PanelLeftOpen, Settings, Telescope } from "lucide-react"
+import { PanelLeftClose, PanelLeftOpen, Settings } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import { useSidebar } from "./SidebarProvider"
 import { Link } from "react-router-dom"
@@ -26,16 +26,6 @@ const Sidebar: FC<Props> = function ({ children }) {
             <div className="px-4 bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col justify-between h-full ">
                 {children}
                 <div className={twMerge("pt-1 pb-3 flex gap-1 flex-wrap-reverse", isCollapse ? "flex-col" : "flex-row")}>
-                    <Tooltip
-                        text={t("menu.explore")}
-                        side="right"
-                        enabled={isCollapse}
-                    >
-                        <Link to="/explore/notes" className="p-2">
-                            <Telescope size={20} />
-                        </Link>
-                    </Tooltip>
-
                     {
                         user && <Tooltip
                             text={t("menu.user")}
