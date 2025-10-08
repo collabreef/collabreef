@@ -1,8 +1,8 @@
-import { ChevronsUpDown, Plus } from "lucide-react"
+import { ChevronsUpDown, Plus, Telescope } from "lucide-react"
 import { WorkspaceDropdown } from "../workspacedropdown/WorkspaceDropdown"
 import { useWorkspaceStore } from "../../stores/workspace"
 import { useMemo, useState } from "react"
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { createWorkspace } from "../../api/workspace"
 import { useSidebar } from "../sidebar/SidebarProvider"
@@ -77,6 +77,14 @@ const WorkspaceMenu = () => {
                     </button>
                 </div>
             }
+        </div>
+        <div className="border-t dark:border-neutral-700">
+            <div className="px-2 pt-1 text-sm">
+                <Link to="/explore/notes" className="px-3 py-2 rounded w-full hover:bg-neutral-200 dark:hover:bg-neutral-700 flex items-center gap-2">
+                    <Telescope size={16} />
+                    {t("menu.explore")}
+                </Link>
+            </div>
         </div>
     </WorkspaceDropdown>
 }
