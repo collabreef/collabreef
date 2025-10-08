@@ -1,4 +1,4 @@
-import { ChevronsUpDown, Plus, Telescope } from "lucide-react"
+import { ChevronsUpDown, Plus, Telescope, MonitorCog } from "lucide-react"
 import { WorkspaceDropdown } from "../workspacedropdown/WorkspaceDropdown"
 import { useWorkspaceStore } from "../../stores/workspace"
 import { useMemo, useState } from "react"
@@ -80,6 +80,10 @@ const WorkspaceMenu = () => {
         </div>
         <div className="border-t dark:border-neutral-700">
             <div className="px-2 pt-1 text-sm">
+                <Link to={`/workspaces/${workspaceId}/settings`} className="px-3 py-2 rounded w-full hover:bg-neutral-200 dark:hover:bg-neutral-700 flex items-center gap-2">
+                    <MonitorCog size={16} />
+                    {t("menu.workspaceSettings")}
+                </Link>
                 <Link to="/explore/notes" className="px-3 py-2 rounded w-full hover:bg-neutral-200 dark:hover:bg-neutral-700 flex items-center gap-2">
                     <Telescope size={16} />
                     {t("menu.explore")}
