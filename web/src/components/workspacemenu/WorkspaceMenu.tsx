@@ -54,10 +54,10 @@ const WorkspaceMenu = () => {
             </span>
         </>}
     >
-        <div className="px-2 pb-1">
+        <div className="px-2 pb-2">
             <input value={keyword} onChange={(e) => setKeyword(e.target.value)} className="border shadow-inner rounded-md w-full px-3 py-1 dark:bg-neutral-800 dark:text-neutral-100 " placeholder={t("placeholder.searchWorkspace")} />
         </div>
-        <div className=" overflow-y-auto">
+        <div className=" overflow-y-auto pb-2">
             {
                 filteredWorkspaces && filteredWorkspaces.map(w => (
                     <>
@@ -79,7 +79,7 @@ const WorkspaceMenu = () => {
             }
         </div>
         <div className="border-t dark:border-neutral-700">
-            <div className="px-2 pt-1 text-sm">
+            <div className="px-2 pt-2 text-sm">
                 <Link to={`/workspaces/${workspaceId}/settings`} className="px-3 py-2 rounded w-full hover:bg-neutral-200 dark:hover:bg-neutral-700 flex items-center gap-2">
                     <MonitorCog size={16} />
                     {t("menu.workspaceSettings")}
