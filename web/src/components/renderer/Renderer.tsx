@@ -24,7 +24,7 @@ const Renderer: React.FC<RendererProps> = ({ json }) => {
 
         switch (node.type) {
             case 'paragraph':
-                return <p className='px-4 leading-6' key={key}>{renderContent()}</p>
+                return node.content ? <p className='px-4 leading-6' key={key}>{renderContent()}</p> : <div className='h-4'></div>
             case 'heading':
                 const level = node.attrs?.level || 1
                 const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements
