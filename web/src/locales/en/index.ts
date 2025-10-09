@@ -57,6 +57,21 @@ export default {
       prompt: "Prompt",
       model: "Model",
       genType: "Generative Type",
+      searchPlaceholder: "Search gen command",
+      createNew: "Create New Command",
+      editing: "Editing Command",
+      namePlaceholder: "Enter command name",
+      promptPlaceholder: "Enter prompt template (use {{input}} for user input)",
+      createSuccess: "Command created successfully",
+      createError: "Failed to create command",
+      updateSuccess: "Command updated successfully",
+      updateError: "Failed to update command",
+      deleteSuccess: "Command deleted successfully",
+      deleteError: "Failed to delete command",
+      confirmDelete: "Are you sure you want to delete this command?",
+      fillRequired: "Please fill in all required fields",
+      noResults: "No commands found",
+      empty: "No commands yet. Create your first one!",
     }
   },
   actions: {
@@ -103,5 +118,8 @@ export default {
     hours_ago: "{{count}} hours ago",
     date_md: "{{month}}/{{day}}",
     date_ymd: "{{year}}/{{month}}/{{day}}"
+  },
+  common: {
+    loading: "Loading..."
   }
 } as const;

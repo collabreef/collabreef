@@ -56,6 +56,21 @@ export default {
       prompt: "提示詞",
       model: "模型",
       genType: "生成方式",
+      searchPlaceholder: "搜尋生成指令",
+      createNew: "建立新指令",
+      editing: "編輯指令",
+      namePlaceholder: "輸入指令名稱",
+      promptPlaceholder: "輸入提示詞範本（使用 {{input}} 代表使用者輸入）",
+      createSuccess: "指令建立成功",
+      createError: "指令建立失敗",
+      updateSuccess: "指令更新成功",
+      updateError: "指令更新失敗",
+      deleteSuccess: "指令刪除成功",
+      deleteError: "指令刪除失敗",
+      confirmDelete: "確定要刪除這個指令嗎？",
+      fillRequired: "請填寫所有必填欄位",
+      noResults: "找不到符合的指令",
+      empty: "還沒有指令，建立第一個吧！",
     }
   },
   actions: {
@@ -102,5 +117,8 @@ export default {
     hours_ago: "{{count}} 小時前",
     date_md: "{{month}}月{{day}}日",
     date_ymd: "{{year}}年{{month}}月{{day}}日"
+  },
+  common: {
+    loading: "載入中..."
   }
 } as const;

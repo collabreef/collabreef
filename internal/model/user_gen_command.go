@@ -13,3 +13,8 @@ type UserGenCommand struct {
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 }
+
+// TableName specifies the table name for GORM
+func (UserGenCommand) TableName() string {
+	return "user_gencommands"
+}

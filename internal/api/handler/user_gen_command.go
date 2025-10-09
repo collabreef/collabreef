@@ -33,6 +33,11 @@ func (h Handler) GetUserGenCommands(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get user gen commands")
 	}
 
+	// Ensure we always return an array, not null
+	if commands == nil {
+		commands = []model.UserGenCommand{}
+	}
+
 	return c.JSON(http.StatusOK, commands)
 }
 
