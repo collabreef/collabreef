@@ -109,23 +109,23 @@ const ModelsPage = () => {
     return <TransitionWrapper
         className="w-full"
     >
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen  flex-1 w-full min-w-0">
             <div className="py-2.5 flex items-center justify-between ">
                 <div className="flex gap-3 items-center sm:text-xl font-semibold h-10">
                     <SidebarButton />
                     {t("menu.models")}
                 </div>
             </div>
-            <div className="grow flex justify-start">
-                <div className="flex-1">
+            <div className="grow flex justify-start flex-1 w-full min-w-0">
+                <div className="flex-1 w-full min-w-0">
                     <div className="w-full flex flex-col gap-4">
                         <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm w-full p-5 max-w-3xl">
                             <div className="flex flex-col gap-4">
-                                <div className="text-lg font-semibold flex items-center gap-2">
+                                <div className="text-lg font-semibold flex items-center gap-2 ">
                                     <OpenAI className="w-5 h-5 dark:fill-white" />
                                     OpenAI
                                 </div>
-                                <div className="flex gap-3 flex-wrap">
+                                <div className="flex gap-3 flex-wrap flex-1">
                                     {
                                         isOpenAIKeyEditing ? <div className="flex gap-3 w-full">
                                             <AutoSaveInput onSave={handleOpenAIKeySave} placeholder="OpenAI API KEY" />
