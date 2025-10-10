@@ -1,0 +1,7 @@
+package text2image
+
+type Provider interface {
+	Name() string
+	ListModels() ([]Model, error)
+	Generate(req GenerateRequest) (*GenerateResponse, error)
+}

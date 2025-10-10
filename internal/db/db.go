@@ -11,6 +11,7 @@ type DB interface {
 	UserRepository
 	UserSettingsRepository
 	UserGenCommandRepository
+	AIGenerationRepository
 	NoteRepository
 	FileRepository
 	WorkspaceRepository
@@ -64,4 +65,9 @@ type WorkspaceUserRepository interface {
 	CreateWorkspaceUser(w model.WorkspaceUser) error
 	UpdateWorkspaceUser(w model.WorkspaceUser) error
 	DeleteWorkspaceUser(w model.WorkspaceUser) error
+}
+type AIGenerationRepository interface {
+	CreateAIGeneration(g model.AIGeneration) error
+	FindAIGenerationByID(id string) (model.AIGeneration, error)
+	FindAIGenerationsByUserID(userID string, limit int) ([]model.AIGeneration, error)
 }
