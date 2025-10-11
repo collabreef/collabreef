@@ -6,6 +6,7 @@ import { useCurrentUserStore } from "../../stores/current-user"
 import { toast } from "../../stores/toast"
 import { useTheme, Theme } from "../../providers/Theme"
 import { useEffect } from "react"
+import Card from "../../components/card/Card"
 
 const PreferencesPage = () => {
     const { user } = useCurrentUserStore()
@@ -52,45 +53,39 @@ const PreferencesPage = () => {
                     {t("menu.preferences")}
                 </div>
             </div>
-            <div className="grow flex justify-start">
-                <div className="flex-1">
-                    <div className="w-full">
-                        <div className="bg-white dark:bg-neutral-800 rounded shadow-sm w-full p-5 max-w-3xl">
-                            <div className="flex flex-col gap-6">
-                                <div className="flex flex-col">
+            <Card className="w-full max-w-3xl">
+                <div className="flex flex-col gap-6">
+                    <div className="flex flex-col">
 
-                                    <div className="text-xs font-semibold text-gray-500">
-                                        {t("pages.preferences.language")}
-                                    </div>
-                                    <div>
-                                        <select className="dark:bg-neutral-700 p-2 border" aria-label="select lang" value={i18n.language} onChange={handleSelectedLangChange}>
-                                            {supportedLanguages.map((lng) => (
-                                                <option key={lng} value={lng}>
-                                                    {lng}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col">
-                                    <div className="text-xs font-semibold text-gray-500">
-                                        {t("pages.preferences.theme")}
-                                    </div>
-                                    <div>
-                                        <select className="dark:bg-neutral-700 p-2 border" aria-label="select theme" value={theme} onChange={handleThemeChange}>
-                                            {themes.map((t) => (
-                                                <option key={t} value={t}>
-                                                    {t}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="text-xs font-semibold text-gray-500">
+                            {t("pages.preferences.language")}
+                        </div>
+                        <div>
+                            <select className="dark:bg-neutral-700 p-2 border" aria-label="select lang" value={i18n.language} onChange={handleSelectedLangChange}>
+                                {supportedLanguages.map((lng) => (
+                                    <option key={lng} value={lng}>
+                                        {lng}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                    <div className="flex flex-col">
+                        <div className="text-xs font-semibold text-gray-500">
+                            {t("pages.preferences.theme")}
+                        </div>
+                        <div>
+                            <select className="dark:bg-neutral-700 p-2 border" aria-label="select theme" value={theme} onChange={handleThemeChange}>
+                                {themes.map((t) => (
+                                    <option key={t} value={t}>
+                                        {t}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
                 </div>
-            </div>
+            </Card>
         </div>
     </TransitionWrapper>
 }
