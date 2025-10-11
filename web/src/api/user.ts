@@ -1,8 +1,6 @@
 import axios from "axios";
 import { User, GenCommand } from "../types/user";
 
-export type { User, GenCommand } from "../types/user";
-
 export const updatePreferences = async (user: User) => {
     const response = await axios.patch(`/api/v1/users/${user.id}/preferences`,
         {
