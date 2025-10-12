@@ -9,17 +9,16 @@ export const AIGenerationNode = Node.create({
     group: 'block',
     atom: true,
 
+    addAttributes() {
+        return {
+            command: { default: null }
+        }
+    },
+
     addOptions() {
         return {
-            listModels: async () => {
-                return {
-                    models: []
-                }
-            },
             generate: async () => {
-                return {
-                    text: ""
-                }
+                return {}
             }
         }
     },

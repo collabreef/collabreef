@@ -1,11 +1,11 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
-import { useEffect } from "react"
 
-const AIGenerationComponent: React.FC<NodeViewProps> = ({ editor, extension }) => {
+const AIGenerationComponent: React.FC<NodeViewProps> = ({ node }) => {
 
     return (
         <NodeViewWrapper as="p">
-                text 2 text
+            123
+            {JSON.stringify(node.attrs)}
         </NodeViewWrapper>
     )
 }

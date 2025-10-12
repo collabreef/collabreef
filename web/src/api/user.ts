@@ -1,5 +1,7 @@
 import axios from "axios";
 import { User, GenCommand } from "../types/user";
+import { UserSettings } from "../types/usersettings";
+
 
 export const updatePreferences = async (user: User) => {
     const response = await axios.patch(`/api/v1/users/${user.id}/preferences`,
@@ -27,4 +29,21 @@ export const updateUserGenCommand = async (userId: string, commandId: string, co
 
 export const deleteUserGenCommand = async (userId: string, commandId: string) => {
     await axios.delete(`/api/v1/users/${userId}/gencommands/${commandId}`);
+};
+export const getUserSettings = async (id: string) => {
+    const response = await axios.get(`/api/v1/users/${id}/settings`,
+        {
+            withCredentials: true
+        });
+    return response.data as UserSettings;
+};
+
+export const updateOpenAIKey = async (userSettings: UserSettings) => {
+    const response = await axios.patch(`/api/v1/users/${userSettings.user_id}/settings/openaikey`, userSettings);
+    return response.data as UserSettings;
+};
+
+export const updateGeminiKey = async (userSettings: UserSettings) => {
+    const response = await axios.patch(`/api/v1/users/${userSettings.user_id}/settings/geminikey`, userSettings);
+    return response.data as UserSettings;
 };

@@ -97,7 +97,21 @@ const Editor: FC<Props> = ({ note, onChange }) => {
           }
         }
       }),
-      AIGenerationNode,
+      AIGenerationNode.configure({
+        generate: async (command: GenCommand) => {
+          try {
+            const response = await generateContent({
+              modality: command.modality,
+              model: command.model,
+              prompt: command.prompt
+            })
+            return response
+          }
+          catch (e) {
+            toast.error(JSON.stringify(e))
+          }
+        }
+      }),
       SlashCommand.configure({
         suggestion: {
           items: ({ query }: { query: string }): CommandItem[] => {

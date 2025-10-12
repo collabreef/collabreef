@@ -3,11 +3,12 @@ import TransitionWrapper from "../../components/transitionwrapper/TransitionWrap
 import { useTranslation } from "react-i18next"
 import { useCurrentUserStore } from "../../stores/current-user"
 import { Plus, Search, Pencil, Trash2, X, Save } from "lucide-react"
-import { GenCommand, ContainerType, GenType } from "../../types/user"
+import { GenCommand, ContainerType } from "../../types/user"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { getUserGenCommands, createUserGenCommand, updateUserGenCommand, deleteUserGenCommand } from "../../api/user"
 import { useState } from "react"
 import { useToastStore } from "../../stores/toast"
+import { AIModality } from "../../types/ai"
 
 const GenCommandsPage = () => {
     const { t } = useTranslation();
@@ -22,7 +23,7 @@ const GenCommandsPage = () => {
         name: "",
         container_type: "editorTextSelectionMenu",
         prompt: "",
-        gen_type: "text-to-text",
+        modality: "text2text",
         model: ""
     })
 
@@ -82,7 +83,7 @@ const GenCommandsPage = () => {
             name: "",
             container_type: "editorTextSelectionMenu",
             prompt: "",
-            gen_type: "text-to-text",
+            modality: "text2text",
             model: ""
         })
     }
@@ -93,7 +94,7 @@ const GenCommandsPage = () => {
             name: command.name,
             container_type: command.container_type,
             prompt: command.prompt,
-            gen_type: command.gen_type,
+            modality: command.modality,
             model: command.model
         })
         setIsCreating(false)
@@ -183,7 +184,7 @@ const GenCommandsPage = () => {
                                 <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">
                                     {t("pages.genCommands.genType")}
                                 </div>
-                                <div className="text-base mt-1">{command.gen_type}</div>
+                                <div className="text-base mt-1">{command.modality}</div>
                             </div>
                             <div className="flex flex-col flex-1">
                                 <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">
@@ -203,9 +204,9 @@ const GenCommandsPage = () => {
                 <div key={isNew ? "new" : command?.id} className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm w-full p-5 border-2 border-amber-500">
                     <div className="flex flex-col gap-4  w-full min-w-0">
                         <div className="flex justify-between items-center  w-full min-w-0">
-                            <h3 className="font-semibold">
+                            <div className="font-semibold">
                                 {isNew ? t("pages.genCommands.createNew") : t("pages.genCommands.editing")}
-                            </h3>
+                            </div>
                             <div className="flex gap-2">
                                 <button
                                     onClick={handleSave}
@@ -274,15 +275,15 @@ const GenCommandsPage = () => {
                                     {t("pages.genCommands.genType")} *
                                 </label>
                                 <select
-                                    value={formData.gen_type}
-                                    onChange={(e) => setFormData({ ...formData, gen_type: e.target.value as GenType })}
+                                    value={formData.modality}
+                                    onChange={(e) => setFormData({ ...formData, modality: e.target.value as AIModality })}
                                     className="border dark:border-neutral-600 p-2 rounded bg-transparent"
                                     aria-label="output type"
                                 >
-                                    <option value="text-to-text">text-to-text</option>
-                                    <option value="text-to-image">text-to-image</option>
-                                    <option value="text-and-image-to-text">text-and-image-to-text</option>
-                                    <option value="text-and-image-to-image">text-and-image-to-image</option>
+                                    <option value="text2text">text-to-text</option>
+                                    <option value="text2image">text-to-image</option>
+                                    <option value="textimage2text">text-and-image-to-text</option>
+                                    <option value="textimage2image">text-and-image-to-image</option>
                                 </select>
                             </div>
                             <div className="flex flex-col flex-1  w-full min-w-0">
