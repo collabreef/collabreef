@@ -34,10 +34,9 @@ const SignIn: React.FC = () => {
 
     return (
         <div className="min-h-dvh bg-neutral-100 dark:bg-neutral-900 flex justify-center pt-24">
-            <div className="w-80 flex flex-col gap-10 pb-5">
+            <div className="w-80 flex flex-col gap-2 pb-5">
                 <div className='flex items-center justify-center flex-col sm:flex-row select-none '>
-                    <img src={logo} className='w-14' alt="logo" />
-                    <h1 className='text-3xl font-extrabold text-yellow-600 drop-shadow-sm font-mono'>UNSEAL</h1>
+                    <img src={logo} className='w-40' alt="logo" />
                 </div>
                 <form onSubmit={handleSubmit} className='px-3 sm:px-0'>
                     <div className="mb-4">
