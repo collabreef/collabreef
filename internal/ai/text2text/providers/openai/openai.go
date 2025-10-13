@@ -19,6 +19,7 @@ func (o OpenAIText2Text) Name() string {
 func (o OpenAIText2Text) ListModels() ([]text2text.Model, error) {
 	// Return a curated list of chat models
 	models := []text2text.Model{
+		{ID: "gpt-5", Name: "GPT-5", Provider: "openai"},
 		{ID: "gpt-4o", Name: "GPT-4o", Provider: "openai"},
 		{ID: "gpt-4o-mini", Name: "GPT-4o Mini", Provider: "openai"},
 		{ID: "gpt-4-turbo", Name: "GPT-4 Turbo", Provider: "openai"},

@@ -6,9 +6,10 @@ import { Plus, Search, Pencil, Trash2, X, Save } from "lucide-react"
 import { GenCommand, MenuType } from "../../types/user"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { getUserGenCommands, createUserGenCommand, updateUserGenCommand, deleteUserGenCommand } from "../../api/user"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useToastStore } from "../../stores/toast"
 import { AIModality } from "../../types/ai"
+import { listAIModels } from "../../api/ai"
 
 const GenCommandsPage = () => {
     const { t } = useTranslation();
@@ -36,6 +37,31 @@ const GenCommandsPage = () => {
         },
         enabled: !!user?.id,
     })
+
+    // Fetch AI models
+    const { data: aiModels = [], isLoading: isModelsLoading } = useQuery({
+        queryKey: ["aiModels"],
+        queryFn: listAIModels,
+        enabled: !!user?.id,
+    })
+
+    // Get unique modalities from available models
+    const availableModalities = useMemo(() => {
+        const modalitiesSet = new Set<AIModality>()
+        aiModels.forEach(model => {
+            model.modalities.forEach(modality => {
+                modalitiesSet.add(modality as AIModality)
+            })
+        })
+        return Array.from(modalitiesSet)
+    }, [aiModels])
+
+    // Get models filtered by selected modality
+    const availableModels = useMemo(() => {
+        return aiModels.filter(model =>
+            model.modalities.includes(formData.modality)
+        )
+    }, [aiModels, formData.modality])
 
     // Create mutation
     const createMutation = useMutation({
@@ -123,6 +149,15 @@ const GenCommandsPage = () => {
         if (window.confirm(t("pages.genCommands.confirmDelete"))) {
             deleteMutation.mutate(id)
         }
+    }
+
+    const handleModalityChange = (newModality: AIModality) => {
+        // Reset model when modality changes
+        setFormData({
+            ...formData,
+            modality: newModality,
+            model: ""
+        })
     }
 
     const filteredCommands = commands.filter(cmd =>
@@ -275,28 +310,48 @@ const GenCommandsPage = () => {
                                 </label>
                                 <select
                                     value={formData.modality}
-                                    onChange={(e) => setFormData({ ...formData, modality: e.target.value as AIModality })}
+                                    onChange={(e) => handleModalityChange(e.target.value as AIModality)}
                                     className="border dark:border-neutral-600 p-2 rounded bg-transparent"
                                     aria-label="output type"
+                                    disabled={isModelsLoading}
                                 >
-                                    <option value="text2text">text-to-text</option>
-                                    <option value="text2image">text-to-image</option>
-                                    <option value="textimage2text">text-and-image-to-text</option>
-                                    <option value="textimage2image">text-and-image-to-image</option>
+                                    {availableModalities.length === 0 && (
+                                        <option value="">No modalities available</option>
+                                    )}
+                                    {availableModalities.includes("text2text" as AIModality) && (
+                                        <option value="text2text">text-to-text</option>
+                                    )}
+                                    {availableModalities.includes("text2image" as AIModality) && (
+                                        <option value="text2image">text-to-image</option>
+                                    )}
+                                    {availableModalities.includes("textimage2text" as AIModality) && (
+                                        <option value="textimage2text">text-and-image-to-text</option>
+                                    )}
+                                    {availableModalities.includes("textimage2image" as AIModality) && (
+                                        <option value="textimage2image">text-and-image-to-image</option>
+                                    )}
                                 </select>
                             </div>
                             <div className="flex flex-col flex-1  w-full min-w-0">
                                 <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
                                     {t("pages.genCommands.model")} *
                                 </label>
-                                <input
-                                    type="text"
+                                <select
                                     value={formData.model}
                                     onChange={(e) => setFormData({ ...formData, model: e.target.value })}
                                     className="border dark:border-neutral-600 p-2 rounded bg-transparent"
-                                    placeholder="gpt-4o"
                                     aria-label="model"
-                                />
+                                    disabled={isModelsLoading || availableModels.length === 0}
+                                >
+                                    <option value="">
+                                        {isModelsLoading ? "Loading..." : availableModels.length === 0 ? "No models available" : "Select a model"}
+                                    </option>
+                                    {availableModels.map((model) => (
+                                        <option key={model.id} value={model.id}>
+                                            {model.name} ({model.provider})
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                     </div>
