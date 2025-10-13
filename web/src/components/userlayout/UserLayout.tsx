@@ -1,19 +1,16 @@
-import { twMerge } from "tailwind-merge"
-import Sidebar from "../sidebar/Sidebar"
 import { useSidebar } from "../sidebar/SidebarProvider"
-import { Link, Outlet, useNavigate } from "react-router-dom"
-import { useEffect } from "react"
-import Main from "../main/Main"
+import { Link, useNavigate } from "react-router-dom"
 import { Brain, CornerUpLeft, LogOut, Settings2 } from 'lucide-react'
 import { useTranslation } from "react-i18next"
 import { useMutation } from "@tanstack/react-query"
 import { signOut } from "../../api/auth"
 import { useWorkspaceStore } from "../../stores/workspace"
 import Tooltip from "../tooltip/Tooltip"
+import BaseLayout from "../baselayout/BaseLayout"
 
 const UserLayout = () => {
     const { t } = useTranslation()
-    const { isOpen, isCollapse, closeSidebar, isOver1280 } = useSidebar()
+    const { isCollapse } = useSidebar()
     const navigate = useNavigate()
     const { reset } = useWorkspaceStore()
     const signoutMutation = useMutation({
@@ -33,68 +30,47 @@ const UserLayout = () => {
         signoutMutation.mutate()
     }
 
-    useEffect(() => {
-        closeSidebar()
-    }, [location])
-
-    return <>
-        <div className='flex justify-center relative'>
-            <div className={twMerge("flex", isOver1280 ? isCollapse ? "w-[72px]" : "w-[260px]" : isOpen ? "w-full absolute top-0 z-30" : "")}>
-                <Sidebar>
-                    <div className="flex flex-col gap-3">
-                        <div className="pt-4">
-                            <Link to="/" className="p-2 flex gap-2">
-                                <CornerUpLeft size={20} />
-                                {!isCollapse && <>{t("menu.user")}</>}
-                            </Link>
-                        </div>
-                        <div className=" flex flex-col gap-2 overflow-y-auto">
-                            <Tooltip
-                                text={t("menu.preferences")}
-                                side="right"
-                                enabled={isCollapse}>
-                                <Link to="/user/preferences" className="p-2 flex gap-2">
-                                    <Settings2 size={20} />
-                                    {!isCollapse && <>{t("menu.preferences")}</>}
-                                </Link>
-                            </Tooltip>
-                            <Tooltip
-                                text={t("menu.models")}
-                                side="right"
-                                enabled={isCollapse}>
-                                <Link to="/user/models" className="p-2 flex gap-2">
-                                    <Brain size={20} />
-                                    {!isCollapse && <>{t("menu.models")}</>}
-                                </Link>
-                            </Tooltip>
-                            <Tooltip
-                                text={t("actions.signout")}
-                                side="right"
-                                enabled={isCollapse}>
-                                <button onClick={handleLogout} className="w-full p-2 flex gap-2 items-center">
-                                    <LogOut size={20} />
-                                    {!isCollapse && <>{t("actions.signout")}</>}
-                                </button>
-                            </Tooltip>
-                        </div>
-                    </div>
-                </Sidebar>
-                {
-                    isOpen && <div className="2xl:hidden grow bg-opacity-50 bg-black h-[100dvh]" onClick={() => closeSidebar()}></div>
-                }
+    const sidebarContent = (
+        <div className="flex flex-col gap-3">
+            <div className="pt-4">
+                <Link to="/" className="p-2 flex gap-2">
+                    <CornerUpLeft size={20} />
+                    {!isCollapse && <>{t("menu.user")}</>}
+                </Link>
             </div>
-            <div className={twMerge(
-                isCollapse ? "max-w-[calc(100vw-72px)] 3xl:max-w-[1848px]" : "max-w-[calc(100vw-260px)] 3xl:max-w-[1660px]"
-                , isOver1280 ? 'flex flex-col' :
-                    isOpen ? '  overflow-hidden sm:overflow-auto  max-w-full'
-                        : ' translate-x-0 max-w-full'
-                , '  w-full h-[100dvh] flex-1')}>
-                <Main>
-                    <Outlet />
-                </Main>
+            <div className=" flex flex-col gap-2 overflow-y-auto">
+                <Tooltip
+                    text={t("menu.preferences")}
+                    side="right"
+                    enabled={isCollapse}>
+                    <Link to="/user/preferences" className="p-2 flex gap-2">
+                        <Settings2 size={20} />
+                        {!isCollapse && <>{t("menu.preferences")}</>}
+                    </Link>
+                </Tooltip>
+                <Tooltip
+                    text={t("menu.models")}
+                    side="right"
+                    enabled={isCollapse}>
+                    <Link to="/user/models" className="p-2 flex gap-2">
+                        <Brain size={20} />
+                        {!isCollapse && <>{t("menu.models")}</>}
+                    </Link>
+                </Tooltip>
+                <Tooltip
+                    text={t("actions.signout")}
+                    side="right"
+                    enabled={isCollapse}>
+                    <button onClick={handleLogout} className="w-full p-2 flex gap-2 items-center">
+                        <LogOut size={20} />
+                        {!isCollapse && <>{t("actions.signout")}</>}
+                    </button>
+                </Tooltip>
             </div>
         </div>
-    </>
+    )
+
+    return <BaseLayout sidebarContent={sidebarContent} />
 }
 
 export default UserLayout
