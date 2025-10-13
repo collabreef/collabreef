@@ -1,22 +1,26 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
 import { useEffect, useState } from "react"
 import { AIGenerateRequest, AIGenerateResponse } from "../../../../types/ai"
-import { Copy, Check } from "lucide-react"
+import { Copy, Check, RefreshCw, Trash2 } from "lucide-react"
 import { GenCommand } from "../../../../types/user"
 
-const AIGenerationComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttributes }) => {
+const AIGenerationComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttributes, deleteNode }) => {
     const [result, setResult] = useState<AIGenerateResponse | null>(null)
     const [loading, setLoading] = useState(true)
     const [elapsedTime, setElapsedTime] = useState(0)
     const [error, setError] = useState<string | null>(null)
     const [copied, setCopied] = useState(false)
+    const [regenerating, setRegenerating] = useState(false)
 
     const command = node.attrs.command as GenCommand
     const selectedText = node.attrs.selectedText || ''
     const selectedImages = node.attrs.selectedImages
 
-    useEffect(() => {
-        if (result) return
+    // Shared generation logic
+    const performGeneration = async () => {
+        setLoading(true)
+        setError(null)
+        setElapsedTime(0)
 
         let timer: NodeJS.Timeout
         let startTime = Date.now()
@@ -26,37 +30,29 @@ const AIGenerationComponent: React.FC<NodeViewProps> = ({ node, extension, updat
             setElapsedTime(Math.floor((Date.now() - startTime) / 1000))
         }, 1000)
 
-        // Call generate function from extension options
-        const generate = async () => {
-            try {
-
-                let prompt = command.prompt;
-
-                const req: AIGenerateRequest = {
-                    modality: command.modality,
-                    model: command.model,
-                    prompt: prompt,
-                    image_base64s: selectedImages
-                }
-
-                const response = await extension.options.generate(req)
-                setResult(response)
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'Generation failed')
-            } finally {
-                setLoading(false)
-                // Stop timer when generation completes or fails
-                if (timer) clearInterval(timer)
-
-                updateAttributes({ result: result, command: command })
+        try {
+            const req: AIGenerateRequest = {
+                modality: command.modality,
+                model: command.model,
+                prompt: command.prompt,
+                image_base64s: selectedImages
             }
-        }
 
-        generate()
-
-        return () => {
+            const response = await extension.options.generate(req)
+            setResult(response)
+            updateAttributes({ result: response, command: command })
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Generation failed')
+        } finally {
+            setLoading(false)
+            setRegenerating(false)
             if (timer) clearInterval(timer)
         }
+    }
+
+    useEffect(() => {
+        if (result) return
+        performGeneration()
     }, [command, selectedText, extension])
 
     const formatTime = (seconds: number) => {
@@ -81,6 +77,60 @@ const AIGenerationComponent: React.FC<NodeViewProps> = ({ node, extension, updat
             console.error('Failed to copy:', err)
         }
     }
+
+    const handleRegenerate = async () => {
+        setRegenerating(true)
+        setResult(null)
+        await performGeneration()
+    }
+
+    const handleDelete = () => {
+        if (deleteNode) {
+            deleteNode()
+        }
+    }
+
+    // Render loading skeleton for text
+    const renderTextSkeleton = () => (
+        <div className="space-y-2">
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6"></div>
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-4/6"></div>
+        </div>
+    )
+
+    // Render loading spinner for image
+    const renderImageLoader = () => (
+        <div className="border-2 border-dashed border-gray-300 rounded-lg h-48 flex items-center justify-center">
+            <div className="flex flex-col items-center gap-2">
+                <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                <span className="text-sm text-gray-500">Generating image...</span>
+            </div>
+        </div>
+    )
+
+    // Render action buttons
+    const renderActionButtons = (isError: boolean) => (
+        <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-200">
+            <button
+                onClick={handleRegenerate}
+                disabled={regenerating}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title={isError ? "Retry" : "Regenerate"}
+            >
+                <RefreshCw size={14} className={regenerating ? "animate-spin" : ""} />
+                <span>{isError ? "Retry" : "Regenerate"}</span>
+            </button>
+            <button
+                onClick={handleDelete}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-white border border-red-300 text-red-600 rounded hover:bg-red-50 transition-colors"
+                title="Delete"
+            >
+                <Trash2 size={14} />
+                <span>Delete</span>
+            </button>
+        </div>
+    )
 
     return (
         <NodeViewWrapper className="ai-generation-wrapper select-none">
@@ -113,23 +163,8 @@ const AIGenerationComponent: React.FC<NodeViewProps> = ({ node, extension, updat
                 {/* Loading state */}
                 {loading && (
                     <div>
-                        {isTextOutput && (
-                            // Skeleton loader for text
-                            <div className="space-y-2">
-                                <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
-                                <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6"></div>
-                                <div className="h-4 bg-gray-200 rounded animate-pulse w-4/6"></div>
-                            </div>
-                        )}
-                        {isImageOutput && (
-                            // Loading spinner for image
-                            <div className="border-2 border-dashed border-gray-300 rounded-lg h-48 flex items-center justify-center">
-                                <div className="flex flex-col items-center gap-2">
-                                    <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-                                    <span className="text-sm text-gray-500">Generating image...</span>
-                                </div>
-                            </div>
-                        )}
+                        {isTextOutput && renderTextSkeleton()}
+                        {isImageOutput && renderImageLoader()}
                     </div>
                 )}
 
@@ -157,7 +192,15 @@ const AIGenerationComponent: React.FC<NodeViewProps> = ({ node, extension, updat
                                 />
                             </div>
                         )}
+                        {renderActionButtons(false)}
                     </div>
+                )}
+
+                {/* Error state with action buttons */}
+                {error && !loading && (
+                    <>
+                        {renderActionButtons(true)}
+                    </>
                 )}
             </div>
         </NodeViewWrapper>
