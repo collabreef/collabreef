@@ -132,8 +132,8 @@ const ExploreNotesPage = () => {
                 <div className="w-full">
                     {
                         isLoading ? <Loader /> :
-                            isMasonryView ? <NoteMasonry notes={notes} showLink={false} />
-                                : <NoteList notes={notes} showLink={false} />}
+                            isMasonryView ? <NoteMasonry notes={notes} getLinkTo={(note) => `/explore/notes/${note.id}`} />
+                                : <NoteList notes={notes} getLinkTo={(note) => `/explore/notes/${note.id}`} />}
 
                     <div ref={loadMoreRef} className="h-8" ></div>
                     {isFetchingNextPage && <Loader />}

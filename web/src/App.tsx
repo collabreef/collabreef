@@ -18,6 +18,7 @@ import PreferencesPage from './pages/user/PreferencesPage';
 import UserLayout from './components/userlayout/UserLayout';
 import PublicLayout from './components/publiclayout/PublicLayout';
 import ExploreNotesPage from './pages/explore/ExploreNotesPage';
+import ExploreNoteDetailPage from './pages/explore/ExploreNoteDetailPage';
 import ModelsPage from './pages/user/ModelsPage';
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
           </Route>
           <Route path='/' element={<PublicLayout />}>
             <Route path='explore/notes' element={<ExploreNotesPage />} />
+            <Route path='explore/notes/:noteId' element={<ExploreNoteDetailPage />} />
           </Route>
           <Route path='signin' element={<SignIn />}></Route>
           <Route path='signup' element={<SignUp />}></Route>
