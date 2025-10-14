@@ -11,4 +11,5 @@ func RegisterPublic(api *echo.Group, h handler.Handler, a middlewares.AuthMiddle
 	g.Use(a.ParseJWT())
 
 	g.GET("/notes", h.GetPublicNotes)
+	g.GET("/notes/:id", h.GetPublicNote)
 }

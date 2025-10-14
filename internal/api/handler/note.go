@@ -93,6 +93,52 @@ func (h Handler) GetPublicNotes(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
+func (h Handler) GetPublicNote(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Note id is required")
+	}
+
+	b := model.Note{ID: id}
+	b, err := h.db.FindNote(b)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	var user *model.User
+	if u := c.Get("user"); u != nil {
+		if uu, ok := u.(model.User); ok {
+			user = &uu
+		}
+	}
+
+	isVisible := false
+
+	switch b.Visibility {
+	case "public":
+		isVisible = true
+	case "workspace":
+		// For workspace visibility, allow if user is authenticated
+		isVisible = user != nil
+	case "private":
+		isVisible = user != nil && b.CreatedBy == user.ID
+	}
+
+	if !isVisible {
+		return echo.NewHTTPError(http.StatusForbidden, "you do not have permission to see this Note")
+	}
+
+	res := GetNoteResponse{
+		ID:         b.ID,
+		Visibility: b.Visibility,
+		Blocks:     b.Blocks,
+		CreatedAt:  b.CreatedAt,
+		UpdatedAt:  b.UpdatedAt,
+	}
+
+	return c.JSON(http.StatusOK, res)
+}
+
 func (h Handler) GetNotes(c echo.Context) error {
 	workspaceId := c.Param("workspaceId")
 	pageSize := 20
