@@ -1,15 +1,14 @@
-import Masonry from "../../components/masonry/Masonry"
-import { Search, X } from "lucide-react"
+import { LayoutGrid, LayoutList, Search, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import SidebarButton from "../../components/sidebar/SidebarButton"
-import { getPublicNotes, NoteData } from "../../api/note"
+import { getPublicNotes } from "../../api/note"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useRef, useCallback, useState, useEffect } from "react"
-import ExpandableNote from "../../components/expandablenote/ExpandableNote"
 import TransitionWrapper from "../../components/transitionwrapper/TransitionWrapper"
 import { Tooltip } from "radix-ui"
 import Loader from "../../components/loader/Loader"
-import NoteTime from "../../components/notetime/NoteTime"
+import NoteMasonry from "../../components/notecard/NoteMasonry"
+import NoteList from "../../components/notecard/NoteList"
 
 const PAGE_SIZE = 20;
 
@@ -17,6 +16,7 @@ const ExploreNotesPage = () => {
     const [query, setQuery] = useState("")
     const [debouncedQuery, setDebouncedQuery] = useState(query);
     const [isSearchVisible, setIsSearchVisible] = useState(false);
+    const [isMasonryView, setIsMasonryView] = useState(false);
     const { t } = useTranslation()
     const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -88,14 +88,23 @@ const ExploreNotesPage = () => {
                         <SidebarButton />
                         {t("menu.explore")}
                     </div>
-                    <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
-                        <div className="hidden sm:block">
+                    <div className="flex items-center text-gray-600 dark:text-gray-400">
+                        <div className="hidden sm:block px-1.5">
                             <div className="flex items-center gap-2 py-2 px-3 rounded-xl dark:border-neutral-600 bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-100">
                                 <Search size={16} className="text-gray-400" />
-                                <input type="text" value={query} onChange={e => setQuery(e.target.value)} className=" flex-1 bg-transparent" placeholder={t("placeholder.search")} />       
+                                <input type="text" value={query} onChange={e => setQuery(e.target.value)} className=" flex-1 bg-transparent" placeholder={t("placeholder.search")} />
                             </div>
                         </div>
-                        <div className="block sm:hidden">
+                        <div className="hidden sm:block">
+                            <div className="p-3 flex items-center">
+                                <button onClick={() => setIsMasonryView(!isMasonryView)}>
+                                    {
+                                        isMasonryView ? <LayoutGrid size={20} /> : <LayoutList size={20} />
+                                    }
+                                </button>
+                            </div>
+                        </div>
+                        <div className="sm:hidden">
                             {
                                 !isSearchVisible && <Tooltip.Root>
                                     <Tooltip.Trigger asChild>
@@ -120,26 +129,11 @@ const ExploreNotesPage = () => {
                 }
             </div>
             <div className="flex flex-col gap-2 sm:gap-5">
-                <div className="">
+                <div className="w-full">
                     {
-                        isLoading ? <Loader />
-                            : <Masonry>
-                                {
-                                    notes && notes?.map((n: NoteData, idx: number) => {
-                                        return n && <div key={n.id || idx} className="bg-white dark:bg-neutral-800 border sm:shadow-sm dark:border-neutral-600 rounded-lg overflow-auto flex flex-col gap-2 ">
-                                            <div className="flex justify-between text-gray-500 px-4 pt-4">
-                                                <div>
-                                                    <NoteTime time={n.updated_at ?? ""} />
-                                                </div>
-                                            </div>
-                                            <div className="break-all w-full flex flex-col m-auto">
-
-                                                <ExpandableNote note={n} />
-                                            </div>
-                                        </div>
-                                    })
-                                }</Masonry>
-                    }
+                        isLoading ? <Loader /> :
+                            isMasonryView ? <NoteMasonry notes={notes} showLink={false} />
+                                : <NoteList notes={notes} showLink={false} />}
 
                     <div ref={loadMoreRef} className="h-8" ></div>
                     {isFetchingNextPage && <Loader />}

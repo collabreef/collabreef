@@ -1,18 +1,17 @@
-import Masonry from "../../../components/masonry/Masonry"
-import { Edit, LayoutGrid, LayoutList, MoveDiagonal, Search, X } from "lucide-react"
+import { Edit, LayoutGrid, LayoutList, Search, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import SidebarButton from "../../../components/sidebar/SidebarButton"
 import { getNotes, NoteData } from "../../../api/note"
 import useCurrentWorkspaceId from "../../../hooks/use-currentworkspace-id"
 import { Link } from "react-router-dom"
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { useRef, useCallback, useState, useEffect, FC } from "react"
-import ExpandableNote from "../../../components/expandablenote/ExpandableNote"
+import { useRef, useCallback, useState, useEffect } from "react"
 import TransitionWrapper from "../../../components/transitionwrapper/TransitionWrapper"
 import { Tooltip } from "radix-ui"
 import Loader from "../../../components/loader/Loader"
 import { useWorkspaceStore } from "../../../stores/workspace"
-import NoteTime from "../../../components/notetime/NoteTime"
+import NoteMasonry from "../../../components/notecard/NoteMasonry"
+import NoteList from "../../../components/notecard/NoteList"
 
 const PAGE_SIZE = 20;
 
@@ -23,7 +22,7 @@ const NotesPage = () => {
     const currentWorkspaceId = useCurrentWorkspaceId();
     const [isSearchVisible, setIsSearchVisible] = useState(false);
     const { t } = useTranslation()
-    const [isMasonryView, setIsMasonryView] = useState(true)
+    const [isMasonryView, setIsMasonryView] = useState(false)
     const observerRef = useRef<IntersectionObserver | null>(null);
 
     useEffect(() => {
@@ -160,8 +159,8 @@ const NotesPage = () => {
                 <div className="w-full">
                     {
                         isLoading ? <Loader /> :
-                            isMasonryView ? <NoteMasonry notes={notes} />
-                                : <NoteList notes={notes} />}
+                            isMasonryView ? <NoteMasonry notes={notes} getLinkTo={(note) => `note/${note.id}`} />
+                                : <NoteList notes={notes} getLinkTo={(note) => `note/${note.id}`} />}
 
                     <div ref={loadMoreRef} className="h-8" ></div>
                     {isFetchingNextPage && <Loader />}
@@ -170,52 +169,6 @@ const NotesPage = () => {
             </div>
         </TransitionWrapper >
     </>
-}
-
-const NoteMasonry: FC<{ notes: NoteData[] }> = ({ notes }) => {
-    return <Masonry>
-        {
-            notes?.map((n: NoteData, idx: number) => {
-                return n && <div key={n.id || idx} className="bg-white dark:bg-neutral-800 border sm:shadow-sm dark:border-neutral-600 rounded-lg overflow-auto flex flex-col gap-2 ">
-                    <div className="flex justify-between text-gray-500 px-4 pt-4">
-                        <div>
-                            <NoteTime time={n.updated_at ?? ""} />
-                        </div>
-                        <div>
-                            <Link to={"note/" + n.id!} >
-                                <MoveDiagonal size={16} />
-                            </Link>
-                        </div>
-                    </div>
-                    <div className="break-all w-full flex flex-col m-auto">
-                        <ExpandableNote note={n} />
-                    </div>
-                </div>
-            })}
-    </Masonry>
-}
-
-const NoteList: FC<{ notes: NoteData[] }> = ({ notes }) => {
-    return <div className="flex flex-col gap-3 max-w-3xl m-auto">
-        {
-            notes?.map((n: NoteData, idx: number) => {
-                return n && <div key={n.id || idx} className="bg-white dark:bg-neutral-800 border sm:shadow-sm dark:border-neutral-600 rounded-lg overflow-auto flex flex-col gap-2 ">
-                    <div className="flex justify-between text-gray-500 px-4 pt-4">
-                        <div>
-                            <NoteTime time={n.updated_at ?? ""} />
-                        </div>
-                        <div>
-                            <Link to={"note/" + n.id!} >
-                                <MoveDiagonal size={16} />
-                            </Link>
-                        </div>
-                    </div>
-                    <div className="break-all w-full flex flex-col m-auto">
-                        <ExpandableNote note={n} />
-                    </div>
-                </div>
-            })}
-    </div>
 }
 
 export default NotesPage
