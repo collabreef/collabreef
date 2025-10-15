@@ -1,7 +1,7 @@
 import { FC } from "react"
 import { Link } from "react-router-dom"
 import { MoveDiagonal } from "lucide-react"
-import { NoteData } from "../../api/note"
+import { NoteData } from "@/api/note"
 import NoteTime from "../notetime/NoteTime"
 import ExpandableNote from "../expandablenote/ExpandableNote"
 

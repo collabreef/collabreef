@@ -3,8 +3,8 @@ import { useSidebar } from "../sidebar/SidebarProvider"
 import { Link } from "react-router-dom"
 import { LogIn, Monitor } from 'lucide-react'
 import { useTranslation } from "react-i18next"
-import logo from '../../assets/app.png'
-import { useCurrentUserStore } from "../../stores/current-user"
+import logo from '@/assets/app.png'
+import { useCurrentUserStore } from "@/stores/current-user"
 import BaseLayout from "../baselayout/BaseLayout"
 
 const PublicLayout = () => {

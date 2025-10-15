@@ -2,7 +2,7 @@ import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
 import { Wand } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { TextGenModel } from "../../../../api/tool"
+import { TextGenModel } from "@/api/tool"
 
 const TextGenComponent: React.FC<NodeViewProps> = ({ editor, extension }) => {
     const [prompt, setPrompt] = useState("")

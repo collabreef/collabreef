@@ -1,6 +1,6 @@
 import * as RadixToast from "@radix-ui/react-toast";
 import { CheckCircle2, XCircle, Info } from "lucide-react";
-import { ToastMessage, useToastStore } from "../../stores/toast";
+import { ToastMessage, useToastStore } from "@/stores/toast";
 
 export function Toast({ toast }: { toast: ToastMessage }) {
   const removeToast = useToastStore((s) => s.removeToast);

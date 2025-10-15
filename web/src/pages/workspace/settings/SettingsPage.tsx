@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom"
-import TransitionWrapper from "../../../components/transitionwrapper/TransitionWrapper"
-import useCurrentWorkspaceId from "../../../hooks/use-currentworkspace-id"
+import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
+import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { useTranslation } from "react-i18next"
 import { useMutation } from "@tanstack/react-query"
-import { useWorkspaceStore } from "../../../stores/workspace"
-import { deleteWorkspace, updateWorkspace } from "../../../api/workspace"
+import { useWorkspaceStore } from "@/stores/workspace"
+import { deleteWorkspace, updateWorkspace } from "@/api/workspace"
 import { useEffect, useState } from "react"
-import SidebarButton from "../../../components/sidebar/SidebarButton"
+import SidebarButton from "@/components/sidebar/SidebarButton"
 import { Loader } from "lucide-react"
 
 const Settings = () => {

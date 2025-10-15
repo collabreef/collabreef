@@ -2,10 +2,10 @@ import { useMutation } from "@tanstack/react-query"
 import { LogOut } from "lucide-react"
 import { DropdownMenu } from "radix-ui"
 import { useNavigate } from "react-router-dom"
-import { signOut } from "../../api/auth"
+import { signOut } from "@/api/auth"
 import { useSidebar } from "../sidebar/SidebarProvider"
 import { useTranslation } from "react-i18next"
-import { useWorkspaceStore } from "../../stores/workspace"
+import { useWorkspaceStore } from "@/stores/workspace"
 
 const UserLogout = () => {
     const { t } = useTranslation()

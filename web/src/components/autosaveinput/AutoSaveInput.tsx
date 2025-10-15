@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import useDebounce from "../../hooks/use-debounce";
+import useDebounce from "@/hooks/use-debounce";
 import { CheckCircle2, Loader } from "lucide-react";
 
 interface Props {

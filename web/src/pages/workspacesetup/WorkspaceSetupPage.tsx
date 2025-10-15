@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createWorkspace } from "../../api/workspace";
+import { createWorkspace } from "@/api/workspace";
 import { useTranslation } from "react-i18next";
-import SubmitButton from "../../components/submitbutton/SubmitButton";
-import TextInput from "../../components/textinput/TextInput";
-import { useWorkspaceStore } from "../../stores/workspace";
+import SubmitButton from "@/components/submitbutton/SubmitButton";
+import TextInput from "@/components/textinput/TextInput";
+import { useWorkspaceStore } from "@/stores/workspace";
 
 const WorkspaceSetupPage = () => {
     const [workspaceName, setWorkspaceName] = useState("");

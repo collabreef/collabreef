@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { useRelativeTime } from "../../hooks/use-relative-time"
+import { useRelativeTime } from "@/hooks/use-relative-time"
 
 interface Props {
     time: string

@@ -1,6 +1,6 @@
 import { Building, Globe, Lock } from "lucide-react"
 import { FC } from "react"
-import { Visibility } from "../../types/visibility"
+import { Visibility } from "@/types/visibility"
 
 interface Props {
     value?: Visibility

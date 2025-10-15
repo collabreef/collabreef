@@ -1,14 +1,14 @@
 import { LayoutGrid, LayoutList, Search, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import SidebarButton from "../../components/sidebar/SidebarButton"
-import { getPublicNotes } from "../../api/note"
+import SidebarButton from "@/components/sidebar/SidebarButton"
+import { getPublicNotes } from "@/api/note"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useRef, useCallback, useState, useEffect } from "react"
-import TransitionWrapper from "../../components/transitionwrapper/TransitionWrapper"
+import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
 import { Tooltip } from "radix-ui"
-import Loader from "../../components/loader/Loader"
-import NoteMasonry from "../../components/notecard/NoteMasonry"
-import NoteList from "../../components/notecard/NoteList"
+import Loader from "@/components/loader/Loader"
+import NoteMasonry from "@/components/notecard/NoteMasonry"
+import NoteList from "@/components/notecard/NoteList"
 
 const PAGE_SIZE = 20;
 

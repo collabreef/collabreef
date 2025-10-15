@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import useCurrentWorkspaceId from "../../../hooks/use-currentworkspace-id"
+import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { useParams, useNavigate } from "react-router-dom"
-import { createNote, getNote, NoteData, updateNote } from "../../../api/note"
+import { createNote, getNote, NoteData, updateNote } from "@/api/note"
 import { ChevronLeft, LoaderIcon } from "lucide-react"
-import Editor from "../../../components/editor/Editor"
+import Editor from "@/components/editor/Editor"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import TransitionWrapper from "../../../components/transitionwrapper/TransitionWrapper"
+import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
 
 const NoteEdit = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true)

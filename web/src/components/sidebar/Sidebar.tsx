@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge"
 import { useSidebar } from "./SidebarProvider"
 import { Link } from "react-router-dom"
 import { FC, ReactNode } from "react"
-import { useCurrentUserStore } from "../../stores/current-user"
+import { useCurrentUserStore } from "@/stores/current-user"
 import Tooltip from "../tooltip/Tooltip"
 import { useTranslation } from "react-i18next"
 

@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom"
 import { Brain, CornerUpLeft, LogOut, Settings2 } from 'lucide-react'
 import { useTranslation } from "react-i18next"
 import { useMutation } from "@tanstack/react-query"
-import { signOut } from "../../api/auth"
-import { useWorkspaceStore } from "../../stores/workspace"
+import { signOut } from "@/api/auth"
+import { useWorkspaceStore } from "@/stores/workspace"
 import Tooltip from "../tooltip/Tooltip"
 import BaseLayout from "../baselayout/BaseLayout"
 

@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { NoteData } from "../../api/note"
+import { NoteData } from "@/api/note"
 import { PhotoProvider } from 'react-photo-view'
 import Renderer, { ConvertToNode } from "../renderer/Renderer"
 

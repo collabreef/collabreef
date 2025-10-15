@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom"
 import { useEffect } from "react"
-import { useWorkspaceStore } from "../../stores/workspace"
+import { useWorkspaceStore } from "@/stores/workspace"
 
 const WorkspaceLoader = () => {
     const { isFetched, workspaces, fetchWorkspaces } = useWorkspaceStore()

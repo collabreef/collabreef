@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom"
 import { useEffect } from "react"
 import { useSidebar } from "../sidebar/SidebarProvider"
-import { useWorkspaceStore } from "../../stores/workspace"
+import { useWorkspaceStore } from "@/stores/workspace"
 import WorkspaceMenu from "../workspacemenu/WorkspaceMenu"
-import useCurrentWorkspaceId from "../../hooks/use-currentworkspace-id"
+import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { BookText } from 'lucide-react'
 import { useTranslation } from "react-i18next"
 import Tooltip from "../tooltip/Tooltip"

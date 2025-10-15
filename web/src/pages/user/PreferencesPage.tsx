@@ -1,12 +1,12 @@
-import SidebarButton from "../../components/sidebar/SidebarButton"
-import TransitionWrapper from "../../components/transitionwrapper/TransitionWrapper"
+import SidebarButton from "@/components/sidebar/SidebarButton"
+import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
 import { useTranslation } from "react-i18next"
-import { updatePreferences } from "../../api/user"
-import { useCurrentUserStore } from "../../stores/current-user"
-import { toast } from "../../stores/toast"
-import { useTheme, Theme } from "../../providers/Theme"
+import { updatePreferences } from "@/api/user"
+import { useCurrentUserStore } from "@/stores/current-user"
+import { toast } from "@/stores/toast"
+import { useTheme, Theme } from "@/providers/Theme"
 import { useEffect } from "react"
-import Card from "../../components/card/Card"
+import Card from "@/components/card/Card"
 
 const PreferencesPage = () => {
     const { user } = useCurrentUserStore()

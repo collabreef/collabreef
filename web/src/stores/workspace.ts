@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getWorkspaces } from '../api/workspace';
+import { getWorkspaces } from '@/api/workspace';
 
 export interface Workspace {
   id: string;

@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom"
-import useCurrentWorkspaceId from "../../../hooks/use-currentworkspace-id"
+import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { useEffect, useState } from "react"
-import { getNote, NoteData } from "../../../api/note"
-import NoteDetailMenu from "../../../components/notedetailmenu/NoteDetailMenu"
-import { useCurrentUserStore } from "../../../stores/current-user"
+import { getNote, NoteData } from "@/api/note"
+import NoteDetailMenu from "@/components/notedetailmenu/NoteDetailMenu"
+import { useCurrentUserStore } from "@/stores/current-user"
 import { useTranslation } from "react-i18next"
-import NoteDetailView from "../../../components/notedetail/NoteDetailView"
+import NoteDetailView from "@/components/notedetail/NoteDetailView"
 
 const NoteDetailPage = () => {
     const [_, setIsLoading] = useState<boolean>(true)

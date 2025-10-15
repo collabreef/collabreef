@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
-import { getPublicNote, NoteData } from "../../api/note"
+import { getPublicNote, NoteData } from "@/api/note"
 import { useTranslation } from "react-i18next"
-import NoteDetailView from "../../components/notedetail/NoteDetailView"
+import NoteDetailView from "@/components/notedetail/NoteDetailView"
 
 const ExploreNoteDetailPage = () => {
     const [_, setIsLoading] = useState<boolean>(true)

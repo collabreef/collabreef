@@ -1,5 +1,5 @@
 import { FC, useState } from "react"
-import { NoteData } from "../../api/note"
+import { NoteData } from "@/api/note"
 import { ArrowDownFromLine, ArrowUpToLine } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { PhotoProvider } from 'react-photo-view'

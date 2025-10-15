@@ -11,12 +11,12 @@ import { GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading
 import { CommandItem, SlashCommand } from './extensions/slashcommand/SlashCommand'
 import { Attachment } from './extensions/attachment/Attachment'
 import { ImageNode } from './extensions/imagenode/ImageNode'
-import { uploadFile } from '../../api/file'
-import useCurrentWorkspaceId from '../../hooks/use-currentworkspace-id'
-import { NoteData } from '../../api/note'
+import { uploadFile } from '@/api/file'
+import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id'
+import { NoteData } from '@/api/note'
 import { TextGenNode } from './extensions/textgen/TextGen'
-import { listModels, textGen, TextGenModel } from '../../api/tool'
-import { toast } from '../../stores/toast'
+import { listModels, textGen, TextGenModel } from '@/api/tool'
+import { toast } from '@/stores/toast'
 
 interface Props {
   note: NoteData

@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom"
-import { useWorkspaceStore } from "../../stores/workspace";
-import Loader from "../../components/loader/Loader";
+import { useWorkspaceStore } from "@/stores/workspace";
+import Loader from "@/components/loader/Loader";
 
 const Home = () => {
     const { workspaces, fetchWorkspaces } = useWorkspaceStore()

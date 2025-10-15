@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
-import { signIn } from '../../api/auth';
-import logo from '../../assets/app.png'
+import { signIn } from '@/api/auth';
+import logo from '@/assets/app.png'
 import { useTranslation } from 'react-i18next';
-import { toast } from '../../stores/toast';
-import TextInput from '../../components/textinput/TextInput';
-import SubmitButton from '../../components/submitbutton/SubmitButton';
+import { toast } from '@/stores/toast';
+import TextInput from '@/components/textinput/TextInput';
+import SubmitButton from '@/components/submitbutton/SubmitButton';
 import { Telescope } from 'lucide-react';
 
 const SignIn: React.FC = () => {

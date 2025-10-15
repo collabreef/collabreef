@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Visibility } from '../types/visibility';
+import { Visibility } from '@/types/visibility';
 
 export interface NoteData {
   id?: string;

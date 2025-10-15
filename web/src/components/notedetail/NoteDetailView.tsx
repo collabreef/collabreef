@@ -1,7 +1,7 @@
 import { FC, ReactNode } from "react"
 import { Link } from "react-router-dom"
 import { ChevronLeft } from "lucide-react"
-import { NoteData } from "../../api/note"
+import { NoteData } from "@/api/note"
 import FullNote from "../fullnote/FullNote"
 import NoteTime from "../notetime/NoteTime"
 import VisibilityLabel from "../visibilitylabel/VisibilityLabel"

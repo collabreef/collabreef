@@ -1,10 +1,10 @@
 import { ChevronsUpDown, Plus, Telescope, MonitorCog } from "lucide-react"
 import { WorkspaceDropdown } from "../workspacedropdown/WorkspaceDropdown"
-import { useWorkspaceStore } from "../../stores/workspace"
+import { useWorkspaceStore } from "@/stores/workspace"
 import { useMemo, useState } from "react"
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { createWorkspace } from "../../api/workspace"
+import { createWorkspace } from "@/api/workspace"
 import { useSidebar } from "../sidebar/SidebarProvider"
 
 const WorkspaceMenu = () => {

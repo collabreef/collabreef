@@ -1,7 +1,7 @@
 import { FC } from "react"
 import Masonry from "../masonry/Masonry"
 import NoteCard from "./NoteCard"
-import { NoteData } from "../../api/note"
+import { NoteData } from "@/api/note"
 
 interface NoteMasonryProps {
     notes: NoteData[]

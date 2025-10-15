@@ -1,9 +1,9 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
-import { useCurrentUserStore } from '../../stores/current-user';
-import i18n from '../../i18n';
-import { useTheme } from '../../providers/Theme';
+import { useCurrentUserStore } from '@/stores/current-user';
+import i18n from '@/i18n';
+import { useTheme } from '@/providers/Theme';
 
 const RequireAuth = () => {
   const [isChecking, setIsChecking] = useState(true)

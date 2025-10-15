@@ -1,6 +1,6 @@
 import { FC } from "react"
 import NoteCard from "./NoteCard"
-import { NoteData } from "../../api/note"
+import { NoteData } from "@/api/note"
 
 interface NoteListProps {
     notes: NoteData[]

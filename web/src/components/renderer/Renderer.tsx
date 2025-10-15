@@ -1,5 +1,5 @@
 import React from 'react'
-import { NoteData } from '../../api/note'
+import { NoteData } from '@/api/note'
 import { PhotoView } from 'react-photo-view'
 import ShikiHighlighter from "react-shiki";
 
