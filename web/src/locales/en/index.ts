@@ -6,6 +6,7 @@ export default {
   },
   menu: {
     notes: "Notes",
+    genTemplates: "Gen Templates",
     createWithName: "Create workspace：{{name}}",
     workspaceSettings: "Workspace Settings",
     workspace: "Workspace",
@@ -62,6 +63,7 @@ export default {
     expand: "Expand",
     collapse: "Collapse",
     create: "Create",
+    update: "Update",
     newNote: "New Note",
     rename: "Rename",
     filter: "Filter",
@@ -77,9 +79,12 @@ export default {
     passwordDoNotMatch: "Passwords do not match",
     deleteTheNote: "Delete the note?",
     noMoreNotes: "No more notes",
+    noMore: "No more items",
     preferencesUpdated: "Preferences updated",
     preferencesUpdateFailed: "Could not update preferences",
-    networkError: "Network error. Please try again"
+    networkError: "Network error. Please try again",
+    fileUploaded: "File uploaded successfully",
+    fileUploadFailed: "File upload failed"
   },
   button: {
     new: "New",
@@ -94,5 +99,35 @@ export default {
     hours_ago: "{{count}} hours ago",
     date_md: "{{month}}/{{day}}",
     date_ymd: "{{year}}/{{month}}/{{day}}"
+  },
+  genTemplates: {
+    title: "Generation Templates",
+    new: "New Template",
+    edit: "Edit Template",
+    empty: "No templates yet. Create your first template!",
+    fields: {
+      name: "Name",
+      prompt: "Prompt",
+      model: "Model",
+      modality: "Modality",
+      imageUrls: "Default Images (URLs)"
+    },
+    addImageUrl: "Add Image URL",
+    imageUrlPlaceholder: "https://example.com/image.jpg",
+    additionalImages: "Additional Images",
+    promptPlaceholder: "Enter your prompt. Use {{parameter}} for dynamic values.",
+    detectedParameters: "Detected parameters",
+    fillParameters: "Fill in Parameters",
+    assembledPrompt: "Assembled Prompt",
+    generate: "Generate",
+    createSuccess: "Template created successfully",
+    createError: "Failed to create template",
+    updateSuccess: "Template updated successfully",
+    updateError: "Failed to update template",
+    deleteSuccess: "Template deleted successfully",
+    deleteError: "Failed to delete template",
+    deleteConfirm: "Are you sure you want to delete this template?",
+    generatePlaceholder: "AI generation feature coming soon!",
+    generationNotice: "Note: AI generation functionality is not implemented yet. This is a placeholder."
   }
 } as const;

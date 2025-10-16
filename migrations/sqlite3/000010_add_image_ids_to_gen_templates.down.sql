@@ -1,0 +1,1 @@
+ALTER TABLE `gen_templates` DROP COLUMN `image_urls`;

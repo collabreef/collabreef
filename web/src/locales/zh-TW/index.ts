@@ -5,6 +5,7 @@ export default {
   },
   menu: {
     notes: "筆記",
+    genTemplates: "生成模板",
     createWithName: "新增工作區：{{name}}",
     workspaceSettings: "工作區設定",
     workspace: "工作區",
@@ -61,6 +62,7 @@ export default {
     expand: "展開",
     collapse: "收合",
     create: "建立",
+    update: "更新",
     newNote: "新增筆記",
     rename: "重新命名",
     filter: "篩選",
@@ -76,9 +78,12 @@ export default {
     passwordDoNotMatch: "再次輸入密碼不符合",
     deleteTheNote: "刪除這個筆記?",
     noMoreNotes: "沒有更多的筆記",
+    noMore: "沒有更多了",
     preferencesUpdated: "偏好設定已更新",
     preferencesUpdateFailed: "偏好設定更新失敗",
-    networkError: "網路異常"
+    networkError: "網路異常",
+    fileUploaded: "檔案上傳成功",
+    fileUploadFailed: "檔案上傳失敗"
   },
   button: {
     new: "新增",
@@ -93,5 +98,35 @@ export default {
     hours_ago: "{{count}} 小時前",
     date_md: "{{month}}月{{day}}日",
     date_ymd: "{{year}}年{{month}}月{{day}}日"
+  },
+  genTemplates: {
+    title: "生成模板",
+    new: "新增模板",
+    edit: "編輯模板",
+    empty: "尚無模板。建立你的第一個模板!",
+    fields: {
+      name: "名稱",
+      prompt: "提示詞",
+      model: "模型",
+      modality: "模態",
+      imageUrls: "預設圖片 (網址)"
+    },
+    addImageUrl: "新增圖片網址",
+    imageUrlPlaceholder: "https://example.com/image.jpg",
+    additionalImages: "額外圖片",
+    promptPlaceholder: "輸入你的提示詞。使用 {{參數}} 來設定動態值。",
+    detectedParameters: "偵測到的參數",
+    fillParameters: "填寫參數",
+    assembledPrompt: "組裝後的提示詞",
+    generate: "生成",
+    createSuccess: "模板建立成功",
+    createError: "模板建立失敗",
+    updateSuccess: "模板更新成功",
+    updateError: "模板更新失敗",
+    deleteSuccess: "模板刪除成功",
+    deleteError: "模板刪除失敗",
+    deleteConfirm: "確定要刪除這個模板嗎?",
+    generatePlaceholder: "AI 生成功能即將推出!",
+    generationNotice: "注意：AI 生成功能尚未實作。這是一個佔位符。"
   }
 } as const;
