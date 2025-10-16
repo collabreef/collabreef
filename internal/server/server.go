@@ -8,6 +8,9 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/unsealdev/unseal/internal/ai/gen"
+	"github.com/unsealdev/unseal/internal/ai/gen/providers/gemini"
+	"github.com/unsealdev/unseal/internal/ai/gen/providers/openai"
 	"github.com/unsealdev/unseal/internal/api/handler"
 	"github.com/unsealdev/unseal/internal/api/middlewares"
 	"github.com/unsealdev/unseal/internal/api/route"
@@ -39,9 +42,15 @@ func New(db db.DB, storage storage.Storage) (*echo.Echo, error) {
 	}))
 	e.Validator = &validate.CustomValidator{Validator: validator.New()}
 
+	// Initialize AI generation service with providers (without API keys)
+	genService := gen.NewService(
+		openai.NewOpenAIProvider(),
+		gemini.NewGeminiProvider(),
+	)
+
 	apiRoot := config.C.GetString(config.SERVER_API_ROOT_PATH)
 
-	handler := handler.NewHandler(db, storage)
+	handler := handler.NewHandler(db, storage, genService)
 	auth := middlewares.NewAuthMiddleware(db)
 	workspace := middlewares.NewWorkspaceMiddleware(db)
 

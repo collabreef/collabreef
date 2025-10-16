@@ -15,6 +15,7 @@ type DB interface {
 	WorkspaceRepository
 	WorkspaceUserRepository
 	GenTemplateRepository
+	GenHistoryRepository
 }
 type Uow interface {
 	Begin(ctx context.Context) (DB, error)
@@ -65,4 +66,10 @@ type GenTemplateRepository interface {
 	DeleteGenTemplate(g model.GenTemplate) error
 	FindGenTemplate(g model.GenTemplate) (model.GenTemplate, error)
 	FindGenTemplates(f model.GenTemplateFilter) ([]model.GenTemplate, error)
+}
+type GenHistoryRepository interface {
+	CreateGenHistory(h model.GenHistory) error
+	DeleteGenHistory(h model.GenHistory) error
+	FindGenHistory(h model.GenHistory) (model.GenHistory, error)
+	FindGenHistories(f model.GenHistoryFilter) ([]model.GenHistory, error)
 }

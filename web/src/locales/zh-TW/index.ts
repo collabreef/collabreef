@@ -6,6 +6,7 @@ export default {
   menu: {
     notes: "筆記",
     genTemplates: "生成模板",
+    genHistory: "生成記錄",
     createWithName: "新增工作區：{{name}}",
     workspaceSettings: "工作區設定",
     workspace: "工作區",
@@ -71,6 +72,9 @@ export default {
     makePublic: "設為公開",
     makeWorkspace: "設為工作區可見",
     makePrivate: "設為私人",
+    copy: "複製",
+    showMore: "顯示更多",
+    showLess: "顯示較少",
   },
   messages: {
     signInFailed: "登入失敗，請檢查你的帳號和密碼",
@@ -83,7 +87,8 @@ export default {
     preferencesUpdateFailed: "偏好設定更新失敗",
     networkError: "網路異常",
     fileUploaded: "檔案上傳成功",
-    fileUploadFailed: "檔案上傳失敗"
+    fileUploadFailed: "檔案上傳失敗",
+    copied: "已複製到剪貼簿"
   },
   button: {
     new: "新增",
@@ -119,6 +124,9 @@ export default {
     fillParameters: "填寫參數",
     assembledPrompt: "組裝後的提示詞",
     generate: "生成",
+    generating: "生成中...",
+    generateSuccess: "生成成功",
+    generateError: "生成失敗",
     createSuccess: "模板建立成功",
     createError: "模板建立失敗",
     updateSuccess: "模板更新成功",
@@ -127,6 +135,21 @@ export default {
     deleteError: "模板刪除失敗",
     deleteConfirm: "確定要刪除這個模板嗎?",
     generatePlaceholder: "AI 生成功能即將推出!",
-    generationNotice: "注意：AI 生成功能尚未實作。這是一個佔位符。"
+    generationNotice: "注意：AI 生成功能尚未實作。這是一個佔位符。",
+    historyDeleteSuccess: "記錄已刪除",
+    historyDeleteError: "記錄刪除失敗"
+  },
+  genHistory: {
+    title: "生成記錄",
+    empty: "尚無生成記錄",
+    emptyHint: "您的 AI 生成結果將會顯示在這裡",
+    prompt: "提示詞",
+    response: "回應",
+    error: "錯誤",
+    images: "圖片",
+    viewTemplate: "查看模板",
+    deleteSuccess: "記錄已刪除",
+    deleteError: "記錄刪除失敗",
+    deleteConfirm: "確定要刪除這筆記錄嗎?"
   }
 } as const;

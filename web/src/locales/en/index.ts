@@ -7,6 +7,7 @@ export default {
   menu: {
     notes: "Notes",
     genTemplates: "Gen Templates",
+    genHistory: "Generation History",
     createWithName: "Create workspace：{{name}}",
     workspaceSettings: "Workspace Settings",
     workspace: "Workspace",
@@ -72,6 +73,9 @@ export default {
     makePublic: "Make Public",
     makeWorkspace: "Make Workspace",
     makePrivate: "Make Private",
+    copy: "Copy",
+    showMore: "Show more",
+    showLess: "Show less",
   },
   messages: {
     signInFailed: "Sign in failed, please check your username and password",
@@ -84,7 +88,8 @@ export default {
     preferencesUpdateFailed: "Could not update preferences",
     networkError: "Network error. Please try again",
     fileUploaded: "File uploaded successfully",
-    fileUploadFailed: "File upload failed"
+    fileUploadFailed: "File upload failed",
+    copied: "Copied to clipboard"
   },
   button: {
     new: "New",
@@ -120,6 +125,9 @@ export default {
     fillParameters: "Fill in Parameters",
     assembledPrompt: "Assembled Prompt",
     generate: "Generate",
+    generating: "Generating...",
+    generateSuccess: "Generated successfully",
+    generateError: "Generation failed",
     createSuccess: "Template created successfully",
     createError: "Failed to create template",
     updateSuccess: "Template updated successfully",
@@ -128,6 +136,21 @@ export default {
     deleteError: "Failed to delete template",
     deleteConfirm: "Are you sure you want to delete this template?",
     generatePlaceholder: "AI generation feature coming soon!",
-    generationNotice: "Note: AI generation functionality is not implemented yet. This is a placeholder."
+    generationNotice: "Note: AI generation functionality is not implemented yet. This is a placeholder.",
+    historyDeleteSuccess: "History deleted successfully",
+    historyDeleteError: "Failed to delete history"
+  },
+  genHistory: {
+    title: "Generation History",
+    empty: "No generation history yet",
+    emptyHint: "Your AI generation results will appear here",
+    prompt: "Prompt",
+    response: "Response",
+    error: "Error",
+    images: "Images",
+    viewTemplate: "View Template",
+    deleteSuccess: "History deleted successfully",
+    deleteError: "Failed to delete history",
+    deleteConfirm: "Are you sure you want to delete this history?"
   }
 } as const;

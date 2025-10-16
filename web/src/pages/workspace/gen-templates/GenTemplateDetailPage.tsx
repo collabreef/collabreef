@@ -2,9 +2,9 @@ import { useState, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { ArrowLeft, Edit, Sparkles, Trash2, Upload, X } from "lucide-react"
+import { ArrowLeft, Edit, Sparkles, Trash2, Upload, X, History, Copy } from "lucide-react"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
-import { getGenTemplate, deleteGenTemplate } from "@/api/gen-template"
+import { getGenTemplate, deleteGenTemplate, generateFromTemplate, getGenHistories, deleteGenHistory } from "@/api/gen-template"
 import { uploadFile } from "@/api/file"
 import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
 import { useToastStore } from "@/stores/toast"
@@ -21,11 +21,18 @@ const GenTemplateDetailPage = () => {
     const [assembledPrompt, setAssembledPrompt] = useState("")
     const [additionalImageUrls, setAdditionalImageUrls] = useState<string[]>([])
     const [uploadingIndex, setUploadingIndex] = useState<number | null>(null)
+    const [showHistory, setShowHistory] = useState(false)
 
     const { data: template, isLoading } = useQuery({
         queryKey: ['gen-template', currentWorkspaceId, id],
         queryFn: () => getGenTemplate(currentWorkspaceId, id!),
         enabled: !!currentWorkspaceId && !!id,
+    })
+
+    const { data: histories, refetch: refetchHistories } = useQuery({
+        queryKey: ['gen-histories', currentWorkspaceId, id],
+        queryFn: () => getGenHistories(currentWorkspaceId, 1, 20, id),
+        enabled: !!currentWorkspaceId && !!id && showHistory,
     })
 
     // Extract parameters from prompt using regex {{xxx}}
@@ -78,15 +85,42 @@ const GenTemplateDetailPage = () => {
         }
     }
 
+    const generateMutation = useMutation({
+        mutationFn: () => generateFromTemplate(currentWorkspaceId, {
+            template_id: id!,
+            prompt: assembledPrompt,
+            image_urls: additionalImageUrls.filter(Boolean)
+        }),
+        onSuccess: (data) => {
+            if (data.error) {
+                addToast({ title: t("genTemplates.generateError") || "Generation failed", type: "error" })
+                console.error("Generation error:", data.error)
+            } else {
+                addToast({ title: t("genTemplates.generateSuccess") || "Generated successfully", type: "success" })
+                console.log("Generated content:", data.content)
+                console.log("History ID:", data.history_id)
+                refetchHistories()
+            }
+        },
+        onError: (error) => {
+            addToast({ title: t("genTemplates.generateError") || "Generation failed", type: "error" })
+            console.error("Generation error:", error)
+        }
+    })
+
+    const deleteHistoryMutation = useMutation({
+        mutationFn: (historyId: string) => deleteGenHistory(currentWorkspaceId, historyId),
+        onSuccess: () => {
+            addToast({ title: t("genTemplates.historyDeleteSuccess") || "History deleted", type: "success" })
+            refetchHistories()
+        },
+        onError: () => {
+            addToast({ title: t("genTemplates.historyDeleteError") || "Failed to delete history", type: "error" })
+        }
+    })
+
     const handleGenerate = () => {
-        // This is where you would call the AI generation API
-        // For now, just show the assembled prompt
-        addToast({ title: t("genTemplates.generatePlaceholder"), type: "info" })
-        console.log("Assembled prompt:", assembledPrompt)
-        console.log("Model:", template?.model)
-        console.log("Modality:", template?.modality)
-        console.log("Template Images:", templateImages)
-        console.log("Additional Images:", additionalImageUrls.filter(Boolean))
+        generateMutation.mutate()
     }
 
     const handleFileUpload = async (file: File, index: number) => {
@@ -313,11 +347,11 @@ const GenTemplateDetailPage = () => {
                     <div className="flex gap-3 pt-4">
                         <button
                             onClick={handleGenerate}
-                            disabled={parameters.some(param => !paramValues[param])}
+                            disabled={parameters.some(param => !paramValues[param]) || generateMutation.isPending}
                             className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                         >
                             <Sparkles size={18} />
-                            {t("genTemplates.generate")}
+                            {generateMutation.isPending ? t("genTemplates.generating") || "Generating..." : t("genTemplates.generate")}
                         </button>
                     </div>
 

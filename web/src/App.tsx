@@ -23,6 +23,7 @@ import ModelsPage from './pages/user/ModelsPage';
 import GenTemplatesPage from './pages/workspace/gen-templates/GenTemplatesPage';
 import GenTemplateFormPage from './pages/workspace/gen-templates/GenTemplateFormPage';
 import GenTemplateDetailPage from './pages/workspace/gen-templates/GenTemplateDetailPage';
+import GenHistoryPage from './pages/workspace/gen-history/GenHistoryPage';
 
 function App() {
   const location = useLocation();
@@ -45,6 +46,7 @@ function App() {
               <Route path='gen-templates/new' element={<GenTemplateFormPage />}></Route>
               <Route path='gen-templates/:id/edit' element={<GenTemplateFormPage />}></Route>
               <Route path='gen-templates/:id' element={<GenTemplateDetailPage />}></Route>
+              <Route path='gen-history' element={<GenHistoryPage />}></Route>
               <Route path='settings' element={<Settings />}></Route>
               <Route path='' element={<NotesPage />}></Route>
             </Route>
