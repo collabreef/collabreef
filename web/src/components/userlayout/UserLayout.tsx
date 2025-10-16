@@ -30,13 +30,17 @@ const UserLayout = () => {
         signoutMutation.mutate()
     }
 
+    const handleGoBack = () => {
+        navigate(-1)
+    }
+
     const sidebarContent = (
         <div className="flex flex-col gap-3">
             <div className="pt-4">
-                <Link to="/" className="p-2 flex gap-2">
+                <button onClick={handleGoBack} className="p-2 flex gap-2">
                     <CornerUpLeft size={20} />
                     {!isCollapse && <>{t("menu.user")}</>}
-                </Link>
+                </button>
             </div>
             <div className=" flex flex-col gap-2 overflow-y-auto">
                 <Tooltip
