@@ -16,7 +16,7 @@ const ExploreNotesPage = () => {
     const [query, setQuery] = useState("")
     const [debouncedQuery, setDebouncedQuery] = useState(query);
     const [isSearchVisible, setIsSearchVisible] = useState(false);
-    const [isMasonryView, setIsMasonryView] = useState(false);
+    const [isMasonryView, setIsMasonryView] = useState(true);
     const { t } = useTranslation()
     const observerRef = useRef<IntersectionObserver | null>(null);
 

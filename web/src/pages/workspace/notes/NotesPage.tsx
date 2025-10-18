@@ -22,7 +22,7 @@ const NotesPage = () => {
     const currentWorkspaceId = useCurrentWorkspaceId();
     const [isSearchVisible, setIsSearchVisible] = useState(false);
     const { t } = useTranslation()
-    const [isMasonryView, setIsMasonryView] = useState(false)
+    const [isMasonryView, setIsMasonryView] = useState(true)
     const observerRef = useRef<IntersectionObserver | null>(null);
 
     useEffect(() => {
