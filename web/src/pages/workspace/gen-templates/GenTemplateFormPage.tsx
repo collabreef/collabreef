@@ -139,7 +139,7 @@ const GenTemplateFormPage = () => {
     return (
         <TransitionWrapper className="w-full max-w-4xl">
             <div className="py-4">
-                <div className="flex items-center gap-3 mb-6">
+                <div className="flex items-center gap-3">
                     <button
                         onClick={() => navigate(`/workspaces/${currentWorkspaceId}/gen-templates`)}
                         className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
@@ -151,7 +151,7 @@ const GenTemplateFormPage = () => {
                     </h1>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-6 p-4 lg:p-6">
                     <div>
                         <label className="block text-sm font-medium mb-2">
                             {t("genTemplates.fields.name")}

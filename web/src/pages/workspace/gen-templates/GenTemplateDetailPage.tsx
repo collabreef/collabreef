@@ -276,7 +276,7 @@ const GenTemplateContent = ({ template, parameters, paramValues, setParamValues,
                         </div>
                     </div>
 
-                    <div className="space-y-6 p-4 lg:p-6">
+                    <div className="flex flex-col gap-6 p-4 lg:p-6">
                         <div className="lg:hidden flex items-center gap-2">
                             <span className="text-2xl font-semibold">{template.name}</span>
                             <span className="text-xs px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
