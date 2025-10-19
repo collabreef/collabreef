@@ -137,7 +137,7 @@ const GenTemplateFormPage = () => {
     }
 
     return (
-        <TransitionWrapper className="w-full max-w-4xl mx-auto">
+        <TransitionWrapper className="w-full max-w-4xl">
             <div className="py-4">
                 <div className="flex items-center gap-3 mb-6">
                     <button
