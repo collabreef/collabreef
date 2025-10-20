@@ -138,7 +138,6 @@ export default {
     deleteError: "Failed to delete template",
     deleteConfirm: "Are you sure you want to delete this template?",
     generatePlaceholder: "AI generation feature coming soon!",
-    generationNotice: "Note: AI generation functionality is not implemented yet. This is a placeholder.",
     historyDeleteSuccess: "History deleted successfully",
     historyDeleteError: "Failed to delete history",
     selectProvider: "Select a provider",

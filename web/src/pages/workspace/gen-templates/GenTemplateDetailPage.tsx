@@ -439,10 +439,6 @@ const GenTemplateContent = ({ template, parameters, paramValues, setParamValues,
                                 {generateMutation.isPending ? t("genTemplates.generating") || "Generating..." : t("genTemplates.generate")}
                             </button>
                         </div>
-
-                        <div className="text-xs text-gray-500 dark:text-gray-500 pt-2">
-                            {t("genTemplates.generationNotice")}
-                        </div>
                     </div>
                 </div>
     )

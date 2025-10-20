@@ -14,7 +14,6 @@ type Provider interface {
 	Modality() string
 
 	// ListModels returns available models for this provider
-	// Note: This may return a static list if API key is not available
 	ListModels() ([]Model, error)
 
 	// Generate performs the generation

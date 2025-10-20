@@ -137,7 +137,6 @@ export default {
     deleteError: "模板刪除失敗",
     deleteConfirm: "確定要刪除這個模板嗎?",
     generatePlaceholder: "AI 生成功能即將推出!",
-    generationNotice: "注意：AI 生成功能尚未實作。這是一個佔位符。",
     historyDeleteSuccess: "記錄已刪除",
     historyDeleteError: "記錄刪除失敗",
     selectProvider: "選擇提供商",

@@ -29,7 +29,6 @@ func (p *GeminiText2TextProvider) Modality() string {
 }
 
 func (p *GeminiText2TextProvider) ListModels() ([]gen.Model, error) {
-	// Return static list of Gemini models that support text-to-text
 	var models []gen.Model
 
 	models = append(models, gen.Model{

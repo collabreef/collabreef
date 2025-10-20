@@ -30,7 +30,6 @@ func (p *OpenAIText2TextProvider) Modality() string {
 }
 
 func (p *OpenAIText2TextProvider) ListModels() ([]gen.Model, error) {
-	// Return static list of OpenAI models that support text-to-text
 	var models []gen.Model
 
 	models = append(models, gen.Model{

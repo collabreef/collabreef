@@ -96,7 +96,7 @@ const GenHistoryCard = ({ history, onDeleted }: GenHistoryCardProps) => {
             </button>
 
             {isExpanded && (
-                <div className="px-4 pb-4 space-y-3 border-t dark:border-neutral-700">
+                <div className="p-4 space-y-3 border-t dark:border-neutral-700">
                     <div>
                         <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
                             {t("genHistory.model") || "Model"}
