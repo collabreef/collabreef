@@ -184,14 +184,33 @@ const GenTemplateDetailPage = () => {
                     histories={histories}
                     refetchHistories={refetchHistories}
                     t={t}
+                    isGenerating={generateMutation.isPending}
                 />
             </TwoColumnSidebar>
         </TwoColumn>
     )
 }
 
+// Skeleton component for loading state
+const GenHistorySkeleton = () => {
+    return (
+        <div className="bg-white dark:bg-neutral-800 rounded-lg border dark:border-neutral-700 overflow-hidden animate-pulse">
+            <div className="px-4 py-3">
+                <div className="flex items-center gap-2 mb-2">
+                    <div className="h-5 w-20 bg-gray-200 dark:bg-neutral-700 rounded"></div>
+                    <div className="h-4 w-32 bg-gray-200 dark:bg-neutral-700 rounded"></div>
+                </div>
+                <div className="space-y-2">
+                    <div className="h-4 bg-gray-200 dark:bg-neutral-700 rounded w-full"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-neutral-700 rounded w-3/4"></div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
 // Sidebar component
-const GenTemplateSidebar = ({ histories, refetchHistories, t }: any) => {
+const GenTemplateSidebar = ({ histories, refetchHistories, t, isGenerating }: any) => {
     const { toggleSidebar } = useTwoColumn()
 
     return (
@@ -211,6 +230,7 @@ const GenTemplateSidebar = ({ histories, refetchHistories, t }: any) => {
             </div>
 
             <div className="p-4 space-y-4">
+                {isGenerating && <GenHistorySkeleton />}
                 {histories && histories.length > 0 ? (
                     histories.map((history: any) => (
                         <GenHistoryCard
@@ -220,11 +240,13 @@ const GenTemplateSidebar = ({ histories, refetchHistories, t }: any) => {
                         />
                     ))
                 ) : (
-                    <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-                        <History size={48} className="mx-auto mb-4 opacity-30" />
-                        <p className="text-sm">{t("genHistory.noHistory") || "No generation history yet"}</p>
-                        <p className="text-xs mt-2">{t("genHistory.generateToSee") || "Generate content to see history here"}</p>
-                    </div>
+                    !isGenerating && (
+                        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+                            <History size={48} className="mx-auto mb-4 opacity-30" />
+                            <p className="text-sm">{t("genHistory.noHistory") || "No generation history yet"}</p>
+                            <p className="text-xs mt-2">{t("genHistory.generateToSee") || "Generate content to see history here"}</p>
+                        </div>
+                    )
                 )}
             </div>
         </>
