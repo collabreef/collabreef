@@ -28,6 +28,10 @@ type SaveGeminiKeyRequest struct {
 	GeminiKey *string `json:"gemini_api_key"`
 }
 
+type SaveOllamaKeyRequest struct {
+	OllamaKey *string `json:"ollama_api_key"`
+}
+
 func (h Handler) UpdatePreferences(c echo.Context) error {
 	id := c.Param("id")
 	cookie, err := c.Cookie("token")
@@ -161,6 +165,16 @@ func (h Handler) GetUserSettings(c echo.Context) error {
 		us.GeminiKey = maskAPIKey(&decrypted)
 	}
 
+	if us.OllamaKey != nil {
+		decrypted, err := util.Decrypt(*us.OllamaKey, secret)
+
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, "failed to decrypt key")
+		}
+
+		us.OllamaKey = maskAPIKey(&decrypted)
+	}
+
 	return c.JSON(http.StatusOK, us)
 }
 
@@ -260,6 +274,56 @@ func (h Handler) UpdateGeminiKey(c echo.Context) error {
 	}
 
 	us.GeminiKey = maskAPIKey(req.GeminiKey)
+
+	return c.JSON(http.StatusOK, us)
+}
+
+func (h Handler) UpdateOllamaKey(c echo.Context) error {
+	id := c.Param("id")
+
+	cookie, err := c.Cookie("token")
+	if err != nil || cookie.Value == "" {
+		return echo.NewHTTPError(http.StatusUnauthorized, "missing or invalid token")
+	}
+
+	var req SaveOllamaKeyRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	user, err := auth.GetUserFromCookie(cookie)
+	if err != nil || user == nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
+	}
+
+	if user.ID != id {
+		return echo.NewHTTPError(http.StatusForbidden, "You do not have permission to update user settings")
+	}
+
+	us, err := h.db.FindUserSettingsByID(id)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "failed to get user settings by id")
+	}
+
+	secret := config.C.GetString(config.APP_SECRET)
+
+	if req.OllamaKey != nil {
+		encrypted, err := util.Encrypt(*req.OllamaKey, secret)
+
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, "failed to encrypt api key")
+		}
+
+		us.OllamaKey = &encrypted
+	}
+	err = h.db.SaveUserSettings(us)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "failed to update settings")
+	}
+
+	us.OllamaKey = maskAPIKey(req.OllamaKey)
 
 	return c.JSON(http.StatusOK, us)
 }

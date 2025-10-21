@@ -5,11 +5,12 @@ import OpenAI from "@/components/icons/openai"
 import Gemini from "@/components/icons/gemini"
 import AutoSaveInput from "@/components/autosaveinput/AutoSaveInput"
 import { useEffect, useState } from "react"
-import { getUserSettings, updateGeminiKey, updateOpenAIKey, UserSettings } from "@/api/user-settings"
+import { getUserSettings, updateGeminiKey, updateOllamaKey, updateOpenAIKey, UserSettings } from "@/api/user-settings"
 import { useCurrentUserStore } from "@/stores/current-user"
 import { toast } from "@/stores/toast"
 import { Edit, Loader, Trash2, X } from "lucide-react"
 import Card from "@/components/card/Card"
+import Ollama from "@/components/icons/ollama"
 
 const ModelsPage = () => {
     const { t } = useTranslation();
@@ -17,8 +18,10 @@ const ModelsPage = () => {
     const [userSettings, setUserSettings] = useState<UserSettings>()
     const [isOpenAIKeyEditing, setIsOpenAIKeyEditing] = useState(false)
     const [isGeminiKeyEditing, setIsGeminiKeyEditing] = useState(false)
+    const [isOllamaKeyEditing, setIsOllamaKeyEditing] = useState(false)
     const [isOpenAIKeyRevoking, setIsOpenAIKeyRevoking] = useState(false)
     const [isGeminiKeyRevoking, setIsGeminiKeyRevoking] = useState(false)
+    const [isOllamaKeyRevoking, setIsOllamaKeyRevoking] = useState(false)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -107,6 +110,42 @@ const ModelsPage = () => {
         setIsGeminiKeyEditing(false)
     }
 
+    const handleOllamaKeyRevoke = async () => {
+        if (!userSettings) return
+
+        setIsOllamaKeyRevoking(true)
+
+        userSettings.ollama_api_key = ""
+
+        try {
+            await updateOllamaKey(userSettings)
+        }
+        catch {
+
+        }
+
+        setUserSettings({ ...userSettings })
+
+        setIsOllamaKeyRevoking(false)
+    }
+
+    const handleOllamaKeySave = async (text: string) => {
+        if (!userSettings) return
+
+        userSettings.ollama_api_key = text
+
+        try {
+            await updateOllamaKey(userSettings)
+        }
+        catch {
+
+        }
+
+        setUserSettings({ ...userSettings })
+
+        setIsOllamaKeyEditing(false)
+    }
+
     return <TransitionWrapper
         className="w-full"
     >
@@ -169,6 +208,33 @@ const ModelsPage = () => {
                                                     }
                                                 </button>
                                                 {!userSettings?.gemini_api_key ? "" : userSettings?.gemini_api_key}
+                                            </div>
+                                    }
+                                </div>
+                            </div>
+                        </Card>
+                        <Card className="w-full max-w-3xl">
+                            <div className="flex flex-col gap-4">
+                                <div className="text-lg font-semibold flex items-center gap-2">
+                                    <Ollama className="w-5 h-5 dark:fill-white" />
+                                    Ollama
+                                </div>
+                                <div className="flex gap-3 flex-wrap">
+                                    {
+                                        isOllamaKeyEditing ? <div className="flex gap-3 w-full">
+                                            <AutoSaveInput onSave={handleOllamaKeySave} placeholder="Ollama API KEY" />
+                                            <button aria-label="edit key" onClick={() => setIsOllamaKeyEditing(false)}><X size={16} /></button>
+                                        </div>
+                                            : <div className="flex items-center truncate">
+                                                <button className="text-gray-500 p-2" aria-label="edit key" onClick={() => setIsOllamaKeyEditing(true)}>
+                                                    <Edit size={16} />
+                                                </button>
+                                                <button className="text-red-500 p-2" aria-label="revoke key" onClick={handleOllamaKeyRevoke}>
+                                                    {
+                                                        isOllamaKeyRevoking ? <Loader size={16} className=" animate-spin" /> : <Trash2 size={16} />
+                                                    }
+                                                </button>
+                                                {!userSettings?.ollama_api_key ? "" : userSettings?.ollama_api_key}
                                             </div>
                                     }
                                 </div>

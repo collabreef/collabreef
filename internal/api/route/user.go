@@ -15,4 +15,5 @@ func RegisterUser(api *echo.Group, h handler.Handler, authMiddleware middlewares
 	g.GET("/:id/settings", h.GetUserSettings)
 	g.PATCH("/:id/openaikey", h.UpdateOpenAIKey)
 	g.PATCH("/:id/geminikey", h.UpdateGeminiKey)
+	g.PATCH("/:id/ollamakey", h.UpdateOllamaKey)
 }
