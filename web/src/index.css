@@ -124,10 +124,6 @@ svg.lucide-icon{
   @apply bg-neutral-500 rounded-lg;
 }
 
-::-webkit-scrollbar-track {
-  @apply bg-neutral-100 dark:bg-neutral-800 ;
-}
-
 .hide-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
 }

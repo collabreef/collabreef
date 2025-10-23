@@ -179,7 +179,7 @@ const GenTemplateDetailPage = () => {
                 />
             </TwoColumnMain>
 
-            <TwoColumnSidebar>
+            <TwoColumnSidebar className="bg-white">
                 <GenTemplateSidebar
                     histories={histories}
                     refetchHistories={refetchHistories}

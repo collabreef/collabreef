@@ -18,7 +18,7 @@ interface TwoColumnMainProps {
  */
 export const TwoColumnMain = ({ children, className = "" }: TwoColumnMainProps) => {
     return (
-        <TransitionWrapper className={`w-full xl:px-0 xl:pr-4 overflow-y-auto transition-all duration-300 ${className}`}>
+        <TransitionWrapper className={`overflow-y-auto transition-all duration-300 ${className}`}>
             {children}
         </TransitionWrapper>
     )

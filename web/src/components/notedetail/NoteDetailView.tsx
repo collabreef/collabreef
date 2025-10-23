@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import { ChevronLeft } from "lucide-react"
 import { NoteData } from "@/api/note"
 import FullNote from "../fullnote/FullNote"
+import Editor from "../editor/Editor"
 import NoteTime from "../notetime/NoteTime"
 import VisibilityLabel from "../visibilitylabel/VisibilityLabel"
 import TransitionWrapper from "../transitionwrapper/TransitionWrapper"
@@ -13,11 +14,13 @@ interface NoteDetailViewProps {
     title: string
     authorName?: string
     menu?: ReactNode
+    isEditable?: boolean
+    onChange?: (data: any) => void
 }
 
-const NoteDetailView: FC<NoteDetailViewProps> = ({ note, backLink, title, authorName, menu }) => {
+const NoteDetailView: FC<NoteDetailViewProps> = ({ note, backLink, title, authorName, menu, isEditable = false, onChange }) => {
     return (
-        <TransitionWrapper className="px-0 xl:px-6 bg-white dark:bg-neutral-800">
+        <TransitionWrapper className="px-4  bg-white dark:bg-neutral-800 w-full xl:px-0 xl:pr-0 ">
             {note && (
                 <div className="flex flex-col min-h-dvh">
                     <div className="py-2 px-4 sm:px-0 flex items-center justify-between border-b xl:border-b-0">
@@ -42,7 +45,13 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({ note, backLink, title, author
                                     <span className="text-orange-500">{authorName}</span>
                                 )}
                             </div>
-                            <div className="pb-10">{note && <FullNote note={note} />}</div>
+                            <div className="pb-10">
+                                {isEditable && onChange ? (
+                                    <Editor note={note} onChange={onChange} />
+                                ) : (
+                                    <FullNote note={note} />
+                                )}
+                            </div>
                         </div>
                         <div className="hidden lg:block w-[260px]"></div>
                     </div>
