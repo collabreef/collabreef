@@ -27,7 +27,7 @@ export const TwoColumnSidebar = ({ children, className = "" }: TwoColumnSidebarP
             className={`${
                 isSidebarCollapsed
                     ? 'hidden lg:hidden'
-                    : 'w-full h-screen fixed right-0 top-0 lg:static lg:w-1/3'
+                    : 'shrink h-screen fixed right-0 top-0 lg:static'
             } border-l  overflow-y-auto transition-all duration-300 z-50 ${className}`}
         >
             {children}

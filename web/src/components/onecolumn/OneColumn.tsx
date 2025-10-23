@@ -5,7 +5,7 @@ interface Props {
 }
 
 const OneColumn: FC<Props> = ({ children }) => {
-    return <div className="px-4 xl:px-0 xl:pr-4">
+    return <div className="px-4 xl:px-0 xl:pr-4 w-full">
         {children}
     </div>
 }

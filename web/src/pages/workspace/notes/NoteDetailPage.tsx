@@ -91,11 +91,12 @@ const NoteDetailPage = () => {
                     menu={note ? <NoteDetailMenu note={note} /> : undefined}
                     isEditable={true}
                     onChange={handleNoteChange}
-                    
                 />
             </TwoColumnMain>
             <TwoColumnSidebar>
-                <></>
+                <div className="w-96">
+                
+                </div>
             </TwoColumnSidebar>
         </TwoColumn>
     )
