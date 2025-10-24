@@ -95,7 +95,7 @@ const NoteDetailPage = () => {
             </TwoColumnMain>
             <TwoColumnSidebar>
                 <div className="w-96">
-                
+                    
                 </div>
             </TwoColumnSidebar>
         </TwoColumn>

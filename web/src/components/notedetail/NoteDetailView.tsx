@@ -53,7 +53,6 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({ note, backLink, title, author
                                 )}
                             </div>
                         </div>
-                        <div className="hidden lg:block w-[260px]"></div>
                     </div>
                 </div>
             )}
