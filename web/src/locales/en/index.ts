@@ -76,6 +76,7 @@ export default {
     copy: "Copy",
     showMore: "Show more",
     showLess: "Show less",
+    download: "Download",
   },
   messages: {
     signInFailed: "Sign in failed, please check your username and password",

@@ -75,6 +75,7 @@ export default {
     copy: "複製",
     showMore: "顯示更多",
     showLess: "顯示較少",
+    download: "下載",
   },
   messages: {
     signInFailed: "登入失敗，請檢查你的帳號和密碼",

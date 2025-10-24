@@ -1,10 +1,12 @@
 import React, { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface RendererProps {
     content: string
 }
 
 const Renderer: React.FC<RendererProps> = ({ content }) => {
+    const { t } = useTranslation()
     const processedContent = useMemo(() => {
         if (!content) return ''
 
@@ -47,8 +49,8 @@ const Renderer: React.FC<RendererProps> = ({ content }) => {
                 downloadLink.href = src
                 downloadLink.download = name
                 downloadLink.className = 'ml-auto text-sm text-gray-600 hover:text-gray-900'
-                downloadLink.innerHTML = '⬇'
-                downloadLink.title = 'Download'
+                downloadLink.innerHTML = t('actions.download')
+                downloadLink.title = t('actions.download')
 
                 wrapper.appendChild(link)
                 wrapper.appendChild(downloadLink)
@@ -61,7 +63,7 @@ const Renderer: React.FC<RendererProps> = ({ content }) => {
         textgenNodes.forEach(node => node.remove())
 
         return doc.body.innerHTML
-    }, [content])
+    }, [content, t])
 
     return (
         <div
