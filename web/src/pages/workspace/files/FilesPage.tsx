@@ -290,32 +290,36 @@ const FilesPage = () => {
                                             {/* File Info */}
                                             <div className="p-3">
                                                 {editingFileId === file.id ? (
-                                                    <div className="flex gap-1">
-                                                        <input
-                                                            type="text"
-                                                            value={editingFileName}
-                                                            onChange={(e) => setEditingFileName(e.target.value)}
-                                                            className="flex-1 px-2 py-1 text-sm border border-neutral-300 dark:border-neutral-600 rounded bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100"
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === 'Enter') saveEdit(file.id);
-                                                                if (e.key === 'Escape') cancelEdit();
-                                                            }}
-                                                            autoFocus
-                                                        />
-                                                        <button
-                                                            onClick={() => saveEdit(file.id)}
-                                                            className="p-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded"
-                                                            title={t('common.save')}
-                                                        >
-                                                            <Check size={16} />
-                                                        </button>
-                                                        <button
-                                                            onClick={cancelEdit}
-                                                            className="p-1 text-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded"
-                                                            title={t('common.cancel')}
-                                                        >
-                                                            <X size={16} />
-                                                        </button>
+                                                    <div className="flex gap-1 flex-wrap">
+                                                        <div className='w-full overflow-x-auto'>
+                                                            <input
+                                                                type="text"
+                                                                value={editingFileName}
+                                                                onChange={(e) => setEditingFileName(e.target.value)}
+                                                                className="flex-1 px-2 py-1 text-sm border border-neutral-300 dark:border-neutral-600 rounded bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100"
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === 'Enter') saveEdit(file.id);
+                                                                    if (e.key === 'Escape') cancelEdit();
+                                                                }}
+                                                                autoFocus
+                                                            />
+                                                        </div>
+                                                        <div >
+                                                            <button
+                                                                onClick={() => saveEdit(file.id)}
+                                                                className="p-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded"
+                                                                title={t('common.save')}
+                                                            >
+                                                                <Check size={16} />
+                                                            </button>
+                                                            <button
+                                                                onClick={cancelEdit}
+                                                                className="p-1 text-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded"
+                                                                title={t('common.cancel')}
+                                                            >
+                                                                <X size={16} />
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 ) : (
                                                     <>
