@@ -31,7 +31,7 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({ note, backLink, title, menu, 
                     </div>
                     <div className="flex">
                         <div className="max-w-2xl w-full m-auto">
-                            <div className="pb-10">
+                            <div className="lg:px-4 pb-10">
                                 {isEditable && onChange ? (
                                     <Editor note={note} onChange={onChange} />
                                 ) : (
