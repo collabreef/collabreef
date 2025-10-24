@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Building, Ellipsis, Globe, Lock, Pencil, Trash2 } from "lucide-react"
+import { Building, Ellipsis, Globe, Lock, Trash2 } from "lucide-react"
 import { DropdownMenu } from "radix-ui"
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { deleteNote, NoteData, updateNoteVisibility } from "@/api/note"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { useTranslation } from "react-i18next"
@@ -91,12 +91,6 @@ const NoteDetailMenu: React.FC<Props> = ({ note }) => {
                     </DropdownItem>
                 }
 
-                <DropdownItem>
-                    <Link to={"./edit"} className="flex gap-3 p-3 items-center " >
-                        <Pencil size={20} />
-                        {t("actions.edit")}
-                    </Link>
-                </DropdownItem>
                 <DropdownMenu.Item className=" text-red-600  select-none rounded-lg leading-none text-violet11 outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-red-100 dark:data-[highlighted]:text-red-900 ">
                     <button onClick={handleDelete} className="flex gap-3 p-3 items-center w-full" >
                         <Trash2 size={20} />

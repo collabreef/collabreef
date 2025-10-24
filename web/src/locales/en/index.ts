@@ -99,6 +99,16 @@ export default {
     back: "Back",
     addTag: "Add Tag"
   },
+  common: {
+    visibility: "Visibility",
+    created: "Created",
+    lastUpdated: "Last Updated",
+    creator: "Creator",
+    author: "Author",
+    public: "Public",
+    private: "Private",
+    workspace: "Workspace"
+  },
   time: {
     just_now: "just now",
     minutes_ago: "{{count}} minutes ago",

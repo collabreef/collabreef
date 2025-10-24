@@ -27,7 +27,21 @@ type GetNoteResponse struct {
 	Tags       []string      `json:"tags"`
 	Files      []string      `json:"files"`
 	CreatedAt  string        `json:"created_at"`
+	CreatedBy  string        `json:"created_by"`
 	UpdatedAt  string        `json:"updated_at"`
+	UpdatedBy  string        `json:"updated_by"`
+}
+
+// Helper function to get username by user ID
+func (h Handler) getUserNameByID(userID string) string {
+	if userID == "" {
+		return ""
+	}
+	user, err := h.db.FindUserByID(userID)
+	if err != nil {
+		return userID // Return ID if user not found
+	}
+	return user.Name
 }
 
 func (h Handler) GetPublicNotes(c echo.Context) error {
@@ -75,7 +89,9 @@ func (h Handler) GetPublicNotes(c echo.Context) error {
 				Visibility: b.Visibility,
 				Blocks:     b.Blocks,
 				CreatedAt:  b.CreatedAt,
+				CreatedBy:  h.getUserNameByID(b.CreatedBy),
 				UpdatedAt:  b.UpdatedAt,
+				UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
 			})
 		case "private":
 			if user != nil && b.CreatedBy == user.ID {
@@ -84,7 +100,9 @@ func (h Handler) GetPublicNotes(c echo.Context) error {
 					Visibility: b.Visibility,
 					Blocks:     b.Blocks,
 					CreatedAt:  b.CreatedAt,
+					CreatedBy:  h.getUserNameByID(b.CreatedBy),
 					UpdatedAt:  b.UpdatedAt,
+					UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
 				})
 			}
 		}
@@ -133,7 +151,9 @@ func (h Handler) GetPublicNote(c echo.Context) error {
 		Visibility: b.Visibility,
 		Blocks:     b.Blocks,
 		CreatedAt:  b.CreatedAt,
+		CreatedBy:  h.getUserNameByID(b.CreatedBy),
 		UpdatedAt:  b.UpdatedAt,
+		UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
 	}
 
 	return c.JSON(http.StatusOK, res)
@@ -179,7 +199,9 @@ func (h Handler) GetNotes(c echo.Context) error {
 				Visibility: b.Visibility,
 				Blocks:     b.Blocks,
 				CreatedAt:  b.CreatedAt,
+				CreatedBy:  h.getUserNameByID(b.CreatedBy),
 				UpdatedAt:  b.UpdatedAt,
+				UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
 			})
 		case "private":
 			if b.CreatedBy == user.ID {
@@ -188,7 +210,9 @@ func (h Handler) GetNotes(c echo.Context) error {
 					Visibility: b.Visibility,
 					Blocks:     b.Blocks,
 					CreatedAt:  b.CreatedAt,
+					CreatedBy:  h.getUserNameByID(b.CreatedBy),
 					UpdatedAt:  b.UpdatedAt,
+					UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
 				})
 			}
 		}
@@ -233,7 +257,9 @@ func (h Handler) GetNote(c echo.Context) error {
 		Visibility: b.Visibility,
 		Blocks:     b.Blocks,
 		CreatedAt:  b.CreatedAt,
+		CreatedBy:  h.getUserNameByID(b.CreatedBy),
 		UpdatedAt:  b.UpdatedAt,
+		UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
 	}
 
 	return c.JSON(http.StatusOK, res)

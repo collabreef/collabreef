@@ -4,7 +4,9 @@ import { Visibility } from '@/types/visibility';
 export interface NoteData {
   id?: string;
   created_at?: string;
+  created_by?: string;
   updated_at?: string;
+  updated_by?: string;
   blocks: Block[] | null;
   visibility?: Visibility;
 }

@@ -9,6 +9,7 @@ import { Tooltip } from "radix-ui"
 import Loader from "@/components/loader/Loader"
 import NoteMasonry from "@/components/notecard/NoteMasonry"
 import NoteList from "@/components/notecard/NoteList"
+import OneColumn from "@/components/onecolumn/OneColumn"
 
 const PAGE_SIZE = 20;
 
@@ -71,76 +72,78 @@ const ExploreNotesPage = () => {
     const notes = data?.pages.flat() || [];
 
     return <>
-        <TransitionWrapper className="w-full">
-            <div className=" py-2 ">          
-                {
-                    isSearchVisible ? < div className="block sm:hidden py-1">
-                        <div className="w-full flex items-center gap-2 py-2 px-3 rounded-xl shadow-inner border dark:border-neutral-600 bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-100">
-                            <Search size={16} className="text-gray-400" />
-                            <input type="text" value={query} onChange={e => setQuery(e.target.value)} className=" bg-transparent flex-1" placeholder={t("placeholder.search")} />
-                            <button title="toggle isSearchVisible" onClick={() => setIsSearchVisible(false)}>
-                                <X size={16} className="text-gray-400" />
-                            </button>
-                        </div>
-                    </div>:
-                <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-3 h-10">
-                        <SidebarButton />
-                        {t("menu.explore")}
-                    </div>
-                    <div className="flex items-center text-gray-600 dark:text-gray-400">
-                        <div className="hidden sm:block px-1.5">
-                            <div className="flex items-center gap-2 py-2 px-3 rounded-xl dark:border-neutral-600 bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-100">
+        <OneColumn>
+            <TransitionWrapper className="w-full">
+                <div className=" py-2 ">
+                    {
+                        isSearchVisible ? < div className="block sm:hidden py-1">
+                            <div className="w-full flex items-center gap-2 py-2 px-3 rounded-xl shadow-inner border dark:border-neutral-600 bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-100">
                                 <Search size={16} className="text-gray-400" />
-                                <input type="text" value={query} onChange={e => setQuery(e.target.value)} className=" flex-1 bg-transparent" placeholder={t("placeholder.search")} />
-                            </div>
-                        </div>
-                        <div className="hidden sm:block">
-                            <div className="p-3 flex items-center">
-                                <button onClick={() => setIsMasonryView(!isMasonryView)}>
-                                    {
-                                        isMasonryView ? <LayoutGrid size={20} /> : <LayoutList size={20} />
-                                    }
+                                <input type="text" value={query} onChange={e => setQuery(e.target.value)} className=" bg-transparent flex-1" placeholder={t("placeholder.search")} />
+                                <button title="toggle isSearchVisible" onClick={() => setIsSearchVisible(false)}>
+                                    <X size={16} className="text-gray-400" />
                                 </button>
                             </div>
-                        </div>
-                        <div className="sm:hidden">
-                            {
-                                !isSearchVisible && <Tooltip.Root>
-                                    <Tooltip.Trigger asChild>
-                                        <button aria-label="toggle the filter" className="p-3" onClick={() => setIsSearchVisible(!isSearchVisible)}>
-                                            <Search size={20} />
-                                        </button>
-                                    </Tooltip.Trigger>
-                                    <Tooltip.Portal>
-                                        <Tooltip.Content
-                                            className="select-none rounded-lg bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-2 py-1 text-sm"
-                                            side="bottom"
-                                        >
-                                            <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-100" />
-                                            {t("actions.filter")}
-                                        </Tooltip.Content>
-                                    </Tooltip.Portal>
-                                </Tooltip.Root>
-                            }
-                        </div>
+                        </div> :
+                            <div className="flex justify-between items-center">
+                                <div className="flex items-center gap-3 h-10">
+                                    <SidebarButton />
+                                    {t("menu.explore")}
+                                </div>
+                                <div className="flex items-center text-gray-600 dark:text-gray-400">
+                                    <div className="hidden sm:block px-1.5">
+                                        <div className="flex items-center gap-2 py-2 px-3 rounded-xl dark:border-neutral-600 bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-100">
+                                            <Search size={16} className="text-gray-400" />
+                                            <input type="text" value={query} onChange={e => setQuery(e.target.value)} className=" flex-1 bg-transparent" placeholder={t("placeholder.search")} />
+                                        </div>
+                                    </div>
+                                    <div className="hidden sm:block">
+                                        <div className="p-3 flex items-center">
+                                            <button onClick={() => setIsMasonryView(!isMasonryView)}>
+                                                {
+                                                    isMasonryView ? <LayoutGrid size={20} /> : <LayoutList size={20} />
+                                                }
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="sm:hidden">
+                                        {
+                                            !isSearchVisible && <Tooltip.Root>
+                                                <Tooltip.Trigger asChild>
+                                                    <button aria-label="toggle the filter" className="p-3" onClick={() => setIsSearchVisible(!isSearchVisible)}>
+                                                        <Search size={20} />
+                                                    </button>
+                                                </Tooltip.Trigger>
+                                                <Tooltip.Portal>
+                                                    <Tooltip.Content
+                                                        className="select-none rounded-lg bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-2 py-1 text-sm"
+                                                        side="bottom"
+                                                    >
+                                                        <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-100" />
+                                                        {t("actions.filter")}
+                                                    </Tooltip.Content>
+                                                </Tooltip.Portal>
+                                            </Tooltip.Root>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                    }
+                </div>
+                <div className="flex flex-col gap-2 sm:gap-5">
+                    <div className="w-full">
+                        {
+                            isLoading ? <Loader /> :
+                                isMasonryView ? <NoteMasonry notes={notes} getLinkTo={(note) => `/explore/notes/${note.id}`} />
+                                    : <NoteList notes={notes} getLinkTo={(note) => `/explore/notes/${note.id}`} />}
+
+                        <div ref={loadMoreRef} className="h-8" ></div>
+                        {isFetchingNextPage && <Loader />}
+                        {!isLoading && !hasNextPage && <div className="text-center py-4 text-gray-400">{t("messages.noMoreNotes")}</div>}
                     </div>
                 </div>
-                }
-            </div>
-            <div className="flex flex-col gap-2 sm:gap-5">
-                <div className="w-full">
-                    {
-                        isLoading ? <Loader /> :
-                            isMasonryView ? <NoteMasonry notes={notes} getLinkTo={(note) => `/explore/notes/${note.id}`} />
-                                : <NoteList notes={notes} getLinkTo={(note) => `/explore/notes/${note.id}`} />}
-
-                    <div ref={loadMoreRef} className="h-8" ></div>
-                    {isFetchingNextPage && <Loader />}
-                    {!isLoading && !hasNextPage && <div className="text-center py-4 text-gray-400">{t("messages.noMoreNotes")}</div>}
-                </div>
-            </div>
-        </TransitionWrapper >
+            </TransitionWrapper >
+        </OneColumn>
     </>
 }
 

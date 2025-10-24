@@ -53,62 +53,9 @@ ol {
    list-style-type: decimal; 
    list-style-position: inside; 
 }
-.ce-header{
-  padding: 0!important;
-}
-
-.ce-block--selected .ce-block__content {
-  @apply dark:bg-sky-900 dark:text-neutral-800
-}
-/* toolbox (+) & settings gear */
-.ce-toolbar__plus,
-.ce-toolbar__settings-btn { @apply bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-sm text-neutral-700 dark:text-neutral-200; }
-.ce-toolbar__plus:hover,
-.ce-toolbar__settings-btn:hover { @apply bg-neutral-100 dark:bg-neutral-700; }
-
-
-/* inline toolbar (bold/italic/link etc.) */
-.ce-inline-toolbar { @apply bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl }
-.ce-inline-toolbar [class*="button"] { @apply hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-lg; }
-
-
-/* popover menus (tool picker) */
-.ce-popover { @apply bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl; }
-.ce-popover-item { @apply dark:text-neutral-200 dark:hover:text-neutral-800 dark:hover:bg-neutral-700 rounded-lg; }
-.ce-popover-item-html > button { @apply dark:text-neutral-200 dark:hover:text-neutral-200 dark:hover:bg-neutral-700 rounded-lg; }
-.ce-popover-item-html > input { @apply dark:text-neutral-200 dark:bg-neutral-700 rounded-lg; }
-.ce-popover__search { @apply bg-transparent text-sm; }
-.codex-editor ::-moz-selection { @apply dark:text-black}
-.codex-editor ::selection { @apply dark:text-black}
-.ce-popover__container  { @apply bg-white dark:bg-neutral-800 dark:text-neutral-100 border border-neutral-200 dark:border-neutral-700; }
-/* marker (highlight) */
-.cdx-marker { @apply bg-yellow-200 dark:bg-yellow-500/60; }
-
-
-/* code block */
-pre.cdx-code { @apply bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 rounded-xl p-4 overflow-x-auto; }
-code.cdx-code__line { @apply font-mono text-sm; }
-
-
-/* list */
-.cdx-list__item { @apply leading-7; }
-
-
-/* delimiter */
-.ce-delimiter:before { @apply text-neutral-300 dark:text-neutral-600; }
-
-
-/* image tool (basic container style if used) */
-.cdx-image { @apply rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800; }
-
 
 /* link tool input */
 .tc-popover, .tc-toolbox { @apply bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl ; }
-
-.ce-paragraph { @apply py-0 }
-
-/* Placeholder text */
-.ce-paragraph[data-placeholder]:empty:before { @apply text-neutral-400 dark:text-neutral-500; }
 
 svg.lucide-icon{
   width: 16px!important;
@@ -122,10 +69,6 @@ svg.lucide-icon{
 
 ::-webkit-scrollbar-thumb {
   @apply bg-neutral-500 rounded-lg;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-neutral-100 dark:bg-neutral-800 ;
 }
 
 .hide-scrollbar::-webkit-scrollbar {

@@ -98,6 +98,16 @@ export default {
     back: "返回",
     addTag: "新增標籤"
   },
+  common: {
+    visibility: "可見性",
+    created: "建立時間",
+    lastUpdated: "最後更新",
+    creator: "建立者",
+    author: "作者",
+    public: "公開",
+    private: "私人",
+    workspace: "工作區"
+  },
   time: {
     just_now: "剛剛",
     minutes_ago: "{{count}} 分鐘前",

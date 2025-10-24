@@ -7,7 +7,6 @@ import NotesPage from './pages/workspace/notes/NotesPage';
 import Setup from './pages/workspacesetup/WorkspaceSetupPage';
 import { AnimatePresence } from "motion/react"
 import NoteDetailPage from './pages/workspace/notes/NoteDetailPage';
-import NoteEdit from './pages/workspace/notes/NoteEditPage';
 import Home from './pages/home/HomePage';
 import Settings from './pages/workspace/settings/SettingsPage';
 import { Toast } from './components/toast/Toast'
@@ -38,8 +37,6 @@ function App() {
             <Route path='workspaces' element={<WorkspaceLoader />} />
             <Route path='workspaces/:workspaceId' element={<WorkspaceLayout />}>
               <Route path='note/:noteId' element={<NoteDetailPage />} ></Route>
-              <Route path='note/:noteId/edit' element={<NoteEdit />} ></Route>
-              <Route path='note/new' element={<NoteEdit />} ></Route>
               <Route path='notes' element={<NotesPage />}></Route>
               <Route path='gen-templates' element={<GenTemplatesPage />}></Route>
               <Route path='gen-templates/new' element={<GenTemplateFormPage />}></Route>
