@@ -24,21 +24,21 @@ export default {
     comfirmPassword: "Confirm Password",
   },
   pages: {
-    signin:{
-      "noAccount":"Don't have an account? Sign up"
+    signin: {
+      "noAccount": "Don't have an account? Sign up"
     },
-    signup:{
-      "alreadyHaveAccount":"Already have an account? Log in."
+    signup: {
+      "alreadyHaveAccount": "Already have an account? Log in."
     },
     settings: {
       workspaceSettings: "Worksapce Settings",
       workspaceName: "Workspace name",
       deleteThisWorkspace: "Delete this workspace",
-      deleteThisWorkspaceMessage : "Delete this workspace ?"
+      deleteThisWorkspaceMessage: "Delete this workspace ?"
     },
     workspaceSetup: {
       createYourFirstWorkspace: "Create your first workspace",
-      pleaseEnterYourWorkspaceName:"Please enter your workspace name",
+      pleaseEnterYourWorkspaceName: "Please enter your workspace name",
       workspaceName: "Workspace name",
       workspaceNamePlaceholder: "workspace name",
     },
@@ -174,6 +174,7 @@ export default {
     deleteSuccess: "History deleted successfully",
     deleteError: "Failed to delete history",
     deleteConfirm: "Are you sure you want to delete this history?"
+  },
   files: {
     drag_drop: "Drag and drop files here or click to select",
     select_files: "Select Files",

@@ -173,6 +173,7 @@ export default {
     deleteSuccess: "記錄已刪除",
     deleteError: "記錄刪除失敗",
     deleteConfirm: "確定要刪除這筆記錄嗎?"
+  },
   files: {
     drag_drop: "拖放檔案到這裡或點擊選擇檔案",
     select_files: "選擇檔案",
