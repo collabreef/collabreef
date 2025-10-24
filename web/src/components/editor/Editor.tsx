@@ -207,7 +207,7 @@ const Editor: FC<Props> = ({ note, onChange }) => {
     ],
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl p-3 focus:outline-none',
+        class: 'prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl px-4 focus:outline-none',
       },
     },
     content: doc,
