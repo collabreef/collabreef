@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { getPublicNote, NoteData } from "@/api/note"
 import { useTranslation } from "react-i18next"
 import NoteDetailView from "@/components/notedetail/NoteDetailView"
+import { TwoColumn, TwoColumnMain, TwoColumnSidebar } from "@/components/twocolumn"
 
 const ExploreNoteDetailPage = () => {
     const [_, setIsLoading] = useState<boolean>(true)
@@ -27,11 +28,21 @@ const ExploreNoteDetailPage = () => {
     }, [fetchedNote, noteId])
 
     return (
-        <NoteDetailView
-            note={note}
-            backLink="/explore/notes"
-            title={t("pages.noteDetail.note")}
-        />
+        <TwoColumn>
+            <TwoColumnMain>
+                <NoteDetailView
+                    note={note}
+                    backLink="/explore/notes"
+                    title={t("pages.noteDetail.note")}
+                    isEditable={false}
+                />
+            </TwoColumnMain>
+            <TwoColumnSidebar>
+                <div className="w-96">
+
+                </div>
+            </TwoColumnSidebar>
+        </TwoColumn>
     )
 }
 
