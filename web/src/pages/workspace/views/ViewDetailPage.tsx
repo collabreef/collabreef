@@ -10,6 +10,7 @@ import { TwoColumn, TwoColumnMain, TwoColumnSidebar, useTwoColumn } from "@/comp
 import { ViewObject, ViewObjectType } from "@/types/view"
 import CalendarViewContent from "@/components/views/calendar/CalendarViewContent"
 import MapViewContent from "@/components/views/map/MapViewContent"
+import ViewObjectNotesManager from "@/components/views/ViewObjectNotesManager"
 
 const ViewDetailPage = () => {
     const { t } = useTranslation()
@@ -20,6 +21,7 @@ const ViewDetailPage = () => {
     const [isCreating, setIsCreating] = useState(false)
     const [newObjectName, setNewObjectName] = useState("")
     const [newObjectData, setNewObjectData] = useState("")
+    const [selectedViewObject, setSelectedViewObject] = useState<ViewObject | null>(null)
 
     const { data: view, isLoading: isViewLoading } = useQuery({
         queryKey: ['view', currentWorkspaceId, viewId],
@@ -50,14 +52,18 @@ const ViewDetailPage = () => {
         onSuccess: () => {
             addToast({ title: t('views.objectCreatedSuccess'), type: 'success' })
             refetchViewObjects()
-            setIsCreating(false)
-            setNewObjectName("")
-            setNewObjectData("")
+            handleCloseModal()
         },
         onError: () => {
             addToast({ title: t('views.objectCreatedError'), type: 'error' })
         }
     })
+
+    const handleCloseModal = () => {
+        setIsCreating(false)
+        setNewObjectName("")
+        setNewObjectData("")
+    }
 
     const deleteMutation = useMutation({
         mutationFn: (objectId: string) => deleteViewObject(currentWorkspaceId, viewId!, objectId),
@@ -100,6 +106,7 @@ const ViewDetailPage = () => {
                     currentWorkspaceId={currentWorkspaceId}
                     isCreating={isCreating}
                     setIsCreating={setIsCreating}
+                    handleCloseModal={handleCloseModal}
                     newObjectName={newObjectName}
                     setNewObjectName={setNewObjectName}
                     newObjectData={newObjectData}
@@ -115,6 +122,10 @@ const ViewDetailPage = () => {
                     viewObjects={viewObjects}
                     handleDelete={handleDelete}
                     deleteMutation={deleteMutation}
+                    selectedViewObject={selectedViewObject}
+                    setSelectedViewObject={setSelectedViewObject}
+                    workspaceId={currentWorkspaceId}
+                    viewId={viewId!}
                 />
             </TwoColumnSidebar>
         </TwoColumn>
@@ -122,7 +133,7 @@ const ViewDetailPage = () => {
 }
 
 // Sidebar component - displays view objects list
-const ViewObjectsSidebar = ({ view, viewObjects, handleDelete, deleteMutation }: any) => {
+const ViewObjectsSidebar = ({ view, viewObjects, handleDelete, deleteMutation, selectedViewObject, setSelectedViewObject, workspaceId, viewId }: any) => {
     const { t } = useTranslation()
     const { toggleSidebar } = useTwoColumn()
 
@@ -151,7 +162,7 @@ const ViewObjectsSidebar = ({ view, viewObjects, handleDelete, deleteMutation }:
     }
 
     return (
-        <div className="max-w-sm">
+        <div className="w-full sm:w-96">
             <div className="sticky top-0 bg-gray-50 dark:bg-neutral-900 border-b dark:border-neutral-700 px-4 py-4 flex items-center justify-between z-10">
                 <div className="flex items-center gap-2">
                     {getIcon()}
@@ -166,33 +177,82 @@ const ViewObjectsSidebar = ({ view, viewObjects, handleDelete, deleteMutation }:
                 </button>
             </div>
 
-            <div className="p-4 space-y-4">
+            <div className="p-4 space-y-4 overflow-x-hidden min-h-screen bg-gray-50 dark:bg-neutral-900">
                 {viewObjects && viewObjects.length > 0 ? (
                     viewObjects.map((obj: ViewObject) => (
                         <div
                             key={obj.id}
-                            className="bg-white dark:bg-neutral-800 rounded-lg border dark:border-neutral-700 p-4"
+                            className={`bg-white dark:bg-neutral-800 rounded-lg border dark:border-neutral-700 p-4 cursor-pointer transition-all ${
+                                selectedViewObject?.id === obj.id ? 'ring-2 ring-blue-500' : ''
+                            }`}
+                            onClick={() => setSelectedViewObject(obj)}
                         >
                             <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                    <h3 className="font-semibold mb-2">{obj.name}</h3>
+                                <div className="flex-1 truncate text-ellipsis">
+                                    <div className="font-semibold mb-2">{obj.name}</div>
                                     {obj.data && (
-                                        <p className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap">
-                                            {obj.data}
-                                        </p>
+                                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                                            {(() => {
+                                                // For map markers, parse and display coordinates
+                                                if (obj.type === 'map_marker') {
+                                                    try {
+                                                        const coords = JSON.parse(obj.data)
+                                                        if (coords.lat && coords.lng) {
+                                                            return (
+                                                                <div className="space-y-1">
+                                                                    <div className="flex items-center gap-1">
+                                                                        <MapPin size={12} className="flex-shrink-0" />
+                                                                        <span className="text-xs">
+                                                                            {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        }
+                                                    } catch (e) {
+                                                        // If parsing fails, show raw data
+                                                        return <p className="whitespace-pre-wrap">{obj.data}</p>
+                                                    }
+                                                }
+                                                // For calendar slots, show the date
+                                                if (obj.type === 'calendar_slot') {
+                                                    return (
+                                                        <div className="flex items-center gap-1">
+                                                            <Calendar size={12} className="flex-shrink-0" />
+                                                            <span className="text-xs">{obj.data}</span>
+                                                        </div>
+                                                    )
+                                                }
+                                                // Default: show raw data
+                                                return <p className="whitespace-pre-wrap">{obj.data}</p>
+                                            })()}
+                                        </div>
                                     )}
                                     <p className="text-xs text-gray-400 mt-2">
                                         {t('views.createdBy')}: {obj.created_by}
                                     </p>
                                 </div>
                                 <button
-                                    onClick={() => handleDelete(obj.id)}
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleDelete(obj.id)
+                                    }}
                                     disabled={deleteMutation.isPending}
                                     className="p-2 hover:bg-red-100 dark:hover:bg-red-900/20 text-red-600 rounded-lg disabled:opacity-50"
                                 >
                                     <Trash2 size={16} />
                                 </button>
                             </div>
+
+                            {/* View Object Notes Manager */}
+                            {selectedViewObject?.id === obj.id && (
+                                <ViewObjectNotesManager
+                                    workspaceId={workspaceId}
+                                    viewId={viewId}
+                                    viewObjectId={obj.id}
+                                    viewObjectName={obj.name}
+                                />
+                            )}
                         </div>
                     ))
                 ) : (

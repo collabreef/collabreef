@@ -18,6 +18,7 @@ type DB interface {
 	GenHistoryRepository
 	ViewRepository
 	ViewObjectRepository
+	ViewObjectNoteRepository
 }
 type Uow interface {
 	Begin(ctx context.Context) (DB, error)
@@ -88,4 +89,10 @@ type ViewObjectRepository interface {
 	DeleteViewObject(v model.ViewObject) error
 	FindViewObject(v model.ViewObject) (model.ViewObject, error)
 	FindViewObjects(f model.ViewObjectFilter) ([]model.ViewObject, error)
+}
+type ViewObjectNoteRepository interface {
+	AddNoteToViewObject(v model.ViewObjectNote) error
+	RemoveNoteFromViewObject(v model.ViewObjectNote) error
+	FindNotesForViewObject(viewObjectID string) ([]model.Note, error)
+	FindViewObjectsForNote(noteID string) ([]model.ViewObject, error)
 }

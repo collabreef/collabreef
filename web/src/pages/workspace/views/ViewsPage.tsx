@@ -1,4 +1,4 @@
-import { Plus, Trash2, MapPin, Calendar } from "lucide-react"
+import { Plus, Trash2, MapPin, Calendar, PlusCircle } from "lucide-react"
 import SidebarButton from "@/components/sidebar/SidebarButton"
 import { getViews, createView, deleteView } from "@/api/view"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
@@ -91,8 +91,7 @@ const ViewsPage = () => {
                                 onClick={() => setIsCreating(!isCreating)}
                                 className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
                             >
-                                <Plus size={20} />
-                                <span className="hidden sm:inline">{t('views.newView')}</span>
+                                <PlusCircle size={20} />
                             </button>
                         </div>
                     </div>

@@ -69,3 +69,19 @@ export const deleteViewObject = async (workspaceId: string, viewId: string, obje
   const response = await axios.delete(`/api/v1/workspaces/${workspaceId}/views/${viewId}/objects/${objectId}`);
   return response.data;
 };
+
+// View Object Notes API
+export const getNotesForViewObject = async (workspaceId: string, viewId: string, objectId: string) => {
+  const response = await axios.get(`/api/v1/workspaces/${workspaceId}/views/${viewId}/objects/${objectId}/notes`, { withCredentials: true });
+  return response.data;
+};
+
+export const addNoteToViewObject = async (workspaceId: string, viewId: string, objectId: string, noteId: string) => {
+  const response = await axios.post(`/api/v1/workspaces/${workspaceId}/views/${viewId}/objects/${objectId}/notes`, { note_id: noteId });
+  return response.data;
+};
+
+export const removeNoteFromViewObject = async (workspaceId: string, viewId: string, objectId: string, noteId: string) => {
+  const response = await axios.delete(`/api/v1/workspaces/${workspaceId}/views/${viewId}/objects/${objectId}/notes/${noteId}`);
+  return response.data;
+};

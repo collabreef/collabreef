@@ -114,7 +114,10 @@ export default {
     workspace: "工作區",
     loading: "載入中...",
     save: "儲存",
-    cancel: "取消"
+    cancel: "取消",
+    create: "建立",
+    creating: "建立中...",
+    close: "關閉"
   },
   time: {
     just_now: "剛剛",
@@ -246,6 +249,28 @@ export default {
     enterSlotName: "輸入時段名稱",
     enterMarkerName: "輸入標記名稱",
     enterDetails: "輸入詳細資訊或資料",
-    enterLocation: "輸入位置詳情、座標或描述"
+    enterLocation: "輸入位置詳情、座標或描述",
+    createCalendarSlot: "建立行事曆時段",
+    createMapMarker: "建立地圖標記",
+    locationDetailsPlaceholder: "輸入位置詳情、座標或描述",
+    enterName: "輸入名稱",
+    searchLocation: "搜尋地點",
+    searchLocationPlaceholder: "輸入地點名稱（例如：台北101）",
+    search: "搜尋",
+    searching: "搜尋中...",
+    coordinates: "座標",
+    latitude: "緯度",
+    longitude: "經度",
+    linkedNotes: "關聯筆記",
+    addNote: "添加筆記",
+    noLinkedNotes: "尚未關聯筆記",
+    addNoteToObject: "添加筆記到 {{name}}",
+    searchNotes: "搜尋筆記...",
+    noNotesFound: "找不到筆記",
+    allNotesLinked: "所有筆記都已關聯",
+    noteAddedSuccess: "筆記添加成功",
+    noteAddedError: "筆記添加失敗",
+    noteRemovedSuccess: "筆記移除成功",
+    noteRemovedError: "筆記移除失敗"
   },
 } as const;

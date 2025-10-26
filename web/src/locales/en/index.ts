@@ -115,7 +115,10 @@ export default {
     workspace: "Workspace",
     loading: "Loading...",
     save: "Save",
-    cancel: "Cancel"
+    cancel: "Cancel",
+    create: "Create",
+    creating: "Creating...",
+    close: "Close"
   },
   time: {
     just_now: "just now",
@@ -247,6 +250,28 @@ export default {
     enterSlotName: "Enter slot name",
     enterMarkerName: "Enter marker name",
     enterDetails: "Enter details or data",
-    enterLocation: "Enter location details, coordinates, or description"
+    enterLocation: "Enter location details, coordinates, or description",
+    createCalendarSlot: "Create Calendar Slot",
+    createMapMarker: "Create Map Marker",
+    locationDetailsPlaceholder: "Enter location details, coordinates, or description",
+    enterName: "Enter name",
+    searchLocation: "Search Location",
+    searchLocationPlaceholder: "Enter place name (e.g., Taipei 101)",
+    search: "Search",
+    searching: "Searching...",
+    coordinates: "Coordinates",
+    latitude: "Latitude",
+    longitude: "Longitude",
+    linkedNotes: "Linked Notes",
+    addNote: "Add Note",
+    noLinkedNotes: "No notes linked yet",
+    addNoteToObject: "Add Note to {{name}}",
+    searchNotes: "Search notes...",
+    noNotesFound: "No notes found",
+    allNotesLinked: "All notes are already linked",
+    noteAddedSuccess: "Note added successfully",
+    noteAddedError: "Failed to add note",
+    noteRemovedSuccess: "Note removed successfully",
+    noteRemovedError: "Failed to remove note"
   },
 } as const;
