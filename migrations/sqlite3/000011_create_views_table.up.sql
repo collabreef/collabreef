@@ -3,6 +3,7 @@ CREATE TABLE `views` (
     `id` text,
     `name` text,
     `type` text,
+    `data` text,
     `created_at` text,
     `created_by` text,
     `updated_at` text,

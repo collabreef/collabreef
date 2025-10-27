@@ -1,8 +1,10 @@
-import { ArrowLeft, MapPin, PlusCircle } from "lucide-react"
+import { ArrowLeft, MapPin, PlusCircle, Settings } from "lucide-react"
 import { useTwoColumn } from "@/components/twocolumn"
 import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
 import MapViewComponent from "./MapViewComponent"
 import CreateViewObjectModal from "../CreateViewObjectModal"
+import MapViewSettingsModal from "./MapViewSettingsModal"
+import { useState } from "react"
 
 interface MapViewContentProps {
     view: any
@@ -36,11 +38,13 @@ const MapViewContent = ({
     createMutation
 }: MapViewContentProps) => {
     const { isSidebarCollapsed, toggleSidebar } = useTwoColumn()
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
     return (
-        <TransitionWrapper className="px-4 w-full">
-            <div className="py-4">
-                <div className="flex items-center justify-between mb-6">
+        <TransitionWrapper className="w-full h-full flex flex-col">
+            {/* Header */}
+            <div className="flex-shrink-0 px-4 py-4 border-b dark:border-neutral-700">
+                <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => navigate(`/workspaces/${currentWorkspaceId}/views`)}
@@ -61,30 +65,47 @@ const MapViewContent = ({
                             <MapPin size={18} />
                         </button>
                         <button
+                            onClick={() => setIsSettingsOpen(true)}
+                            className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                            title="Settings"
+                        >
+                            <Settings size={18} />
+                        </button>
+                        <button
                             onClick={() => setIsCreating(true)}
-                            className="flex items-center gap-2 p-2"
+                            className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
                         >
                             <PlusCircle size={18} />
                         </button>
                     </div>
                 </div>
+            </div>
 
-                <CreateViewObjectModal
-                    open={isCreating}
-                    onOpenChange={(open) => {
-                        if (!open) handleCloseModal()
-                        else setIsCreating(true)
-                    }}
-                    viewType="map"
-                    name={newObjectName}
-                    setName={setNewObjectName}
-                    data={newObjectData}
-                    setData={setNewObjectData}
-                    onSubmit={handleCreate}
-                    isSubmitting={createMutation.isPending}
-                />
+            <CreateViewObjectModal
+                open={isCreating}
+                onOpenChange={(open) => {
+                    if (!open) handleCloseModal()
+                    else setIsCreating(true)
+                }}
+                viewType="map"
+                name={newObjectName}
+                setName={setNewObjectName}
+                data={newObjectData}
+                setData={setNewObjectData}
+                onSubmit={handleCreate}
+                isSubmitting={createMutation.isPending}
+            />
 
-                <MapViewComponent viewObjects={viewObjects} />
+            <MapViewSettingsModal
+                open={isSettingsOpen}
+                onOpenChange={setIsSettingsOpen}
+                view={view}
+                workspaceId={currentWorkspaceId}
+            />
+
+            {/* Map - takes remaining space */}
+            <div className="flex-1 overflow-hidden">
+                <MapViewComponent viewObjects={viewObjects} view={view} />
             </div>
         </TransitionWrapper>
     )

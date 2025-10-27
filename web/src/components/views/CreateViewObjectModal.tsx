@@ -2,7 +2,9 @@ import { Dialog } from "radix-ui"
 import { useTranslation } from "react-i18next"
 import { ViewType } from "@/types/view"
 import { useState, useEffect } from "react"
-import { Search, MapPin } from "lucide-react"
+import { Search, MapPin, Navigation, Locate } from "lucide-react"
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
+import { Icon } from 'leaflet'
 
 interface CreateViewObjectModalProps {
     open: boolean
@@ -22,6 +24,20 @@ interface NominatimResult {
     display_name: string
 }
 
+// Map click handler component
+interface MapClickHandlerProps {
+    onLocationSelect: (lat: number, lng: number) => void
+}
+
+const MapClickHandler = ({ onLocationSelect }: MapClickHandlerProps) => {
+    useMapEvents({
+        click: (e) => {
+            onLocationSelect(e.latlng.lat, e.latlng.lng)
+        },
+    })
+    return null
+}
+
 const CreateViewObjectModal = ({
     open,
     onOpenChange,
@@ -39,6 +55,9 @@ const CreateViewObjectModal = ({
     const [searchResults, setSearchResults] = useState<NominatimResult[]>([])
     const [latitude, setLatitude] = useState("")
     const [longitude, setLongitude] = useState("")
+    const [reverseGeocodedAddress, setReverseGeocodedAddress] = useState("")
+    const [isReverseGeocoding, setIsReverseGeocoding] = useState(false)
+    const [isGettingLocation, setIsGettingLocation] = useState(false)
 
     // Parse existing data when modal opens for map type
     useEffect(() => {
@@ -115,7 +134,92 @@ const CreateViewObjectModal = ({
         }
         setSearchResults([])
         setSearchQuery("")
+        setReverseGeocodedAddress(result.display_name)
     }
+
+    // Reverse geocoding
+    const reverseGeocode = async (lat: number, lng: number) => {
+        setIsReverseGeocoding(true)
+        try {
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?` +
+                `lat=${lat}&lon=${lng}&format=json`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                }
+            )
+
+            if (response.ok) {
+                const result = await response.json()
+                setReverseGeocodedAddress(result.display_name || '')
+                if (!name && result.display_name) {
+                    setName(result.display_name.split(',')[0])
+                }
+            }
+        } catch (error) {
+            console.error('Reverse geocoding error:', error)
+        } finally {
+            setIsReverseGeocoding(false)
+        }
+    }
+
+    // Handle map click
+    const handleMapClick = (lat: number, lng: number) => {
+        setLatitude(lat.toString())
+        setLongitude(lng.toString())
+        reverseGeocode(lat, lng)
+    }
+
+    // Get current location
+    const getCurrentLocation = () => {
+        if (!navigator.geolocation) {
+            alert(t('views.geolocationNotSupported') || 'Geolocation is not supported by your browser')
+            return
+        }
+
+        setIsGettingLocation(true)
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude
+                const lng = position.coords.longitude
+                setLatitude(lat.toString())
+                setLongitude(lng.toString())
+                reverseGeocode(lat, lng)
+                setIsGettingLocation(false)
+            },
+            (error) => {
+                console.error('Geolocation error:', error)
+                let errorMessage = t('views.locationError') || 'Could not get your location'
+                if (error.code === error.PERMISSION_DENIED) {
+                    errorMessage = t('views.locationPermissionDenied') || 'Location permission denied'
+                } else if (error.code === error.POSITION_UNAVAILABLE) {
+                    errorMessage = t('views.locationUnavailable') || 'Location information unavailable'
+                } else if (error.code === error.TIMEOUT) {
+                    errorMessage = t('views.locationTimeout') || 'Location request timed out'
+                }
+                alert(errorMessage)
+                setIsGettingLocation(false)
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        )
+    }
+
+    // Custom marker icon
+    const markerIcon = new Icon({
+        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    })
 
     const getTitle = () => {
         if (viewType === 'calendar') return t('views.createCalendarSlot')
@@ -170,6 +274,15 @@ const CreateViewObjectModal = ({
                             />
                             <button
                                 type="button"
+                                onClick={getCurrentLocation}
+                                disabled={isGettingLocation}
+                                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
+                                title={t('views.getCurrentLocation') || 'Get current location'}
+                            >
+                                <Locate size={16} />
+                            </button>
+                            <button
+                                type="button"
                                 onClick={searchLocation}
                                 disabled={isSearching || !searchQuery.trim()}
                                 className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50 flex items-center gap-2"
@@ -193,6 +306,62 @@ const CreateViewObjectModal = ({
                                         <span className="text-sm">{result.display_name}</span>
                                     </button>
                                 ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Interactive Map */}
+                    <div>
+                        <label className="block text-sm font-medium mb-2">
+                            {t('views.selectOnMap') || 'Select on Map'}
+                        </label>
+                        <div className="h-64 rounded-lg overflow-hidden border dark:border-neutral-600 relative z-0">
+                            {latitude && longitude && (
+                                <MapContainer
+                                    center={[parseFloat(latitude), parseFloat(longitude)]}
+                                    zoom={13}
+                                    className="h-full w-full z-0"
+                                    scrollWheelZoom={true}
+                                >
+                                    <TileLayer
+                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    />
+                                    <MapClickHandler onLocationSelect={handleMapClick} />
+                                    <Marker
+                                        position={[parseFloat(latitude), parseFloat(longitude)]}
+                                        icon={markerIcon}
+                                    />
+                                </MapContainer>
+                            )}
+                            {(!latitude || !longitude) && (
+                                <div className="h-full flex items-center justify-center bg-gray-100 dark:bg-neutral-900">
+                                    <p className="text-sm text-gray-500">
+                                        {t('views.searchOrEnterCoordinates') || 'Search or enter coordinates to see map'}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                            {t('views.clickMapToSelect') || 'Click on the map to select a location'}
+                        </p>
+
+                        {/* Reverse Geocoded Address Display */}
+                        {reverseGeocodedAddress && (
+                            <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
+                                <div className="flex items-start gap-2">
+                                    <Navigation size={14} className="mt-0.5 flex-shrink-0 text-blue-600 dark:text-blue-400" />
+                                    <span className="text-xs text-blue-800 dark:text-blue-200">
+                                        {reverseGeocodedAddress}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                        {isReverseGeocoding && (
+                            <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-900/20 rounded">
+                                <span className="text-xs text-gray-600 dark:text-gray-400">
+                                    {t('views.loadingAddress') || 'Loading address...'}
+                                </span>
                             </div>
                         )}
                     </div>
@@ -241,8 +410,8 @@ const CreateViewObjectModal = ({
     return (
         <Dialog.Root open={open} onOpenChange={onOpenChange}>
             <Dialog.Portal>
-                <Dialog.Overlay className="fixed inset-0 bg-black/50 z-50" />
-                <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-neutral-800 rounded-lg shadow-xl p-6 w-[90vw] max-w-[500px] z-50 max-h-[85vh] overflow-y-auto">
+                <Dialog.Overlay className="fixed inset-0 bg-black/50 z-[1000]" />
+                <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-neutral-800 rounded-lg shadow-xl p-6 w-[90vw] max-w-[500px] z-[1001] max-h-[85vh] overflow-y-auto">
                     <Dialog.Title className="text-xl font-semibold mb-4">
                         {getTitle()}
                     </Dialog.Title>

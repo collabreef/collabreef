@@ -1,11 +1,26 @@
 export type ViewType = 'map' | 'calendar';
 export type ViewObjectType = 'calendar_slot' | 'map_marker';
 
+// View data structures
+export interface MapViewData {
+  center?: {
+    lat: number;
+    lng: number;
+  };
+  zoom?: number;
+}
+
+export interface CalendarViewData {
+  defaultYear?: number;
+  defaultMonth?: number;
+}
+
 export interface View {
   id: string;
   workspace_id: string;
   name: string;
   type: ViewType;
+  data: string;
   created_at: string;
   created_by: string;
   updated_at: string;
@@ -15,11 +30,13 @@ export interface View {
 export interface CreateViewRequest {
   name: string;
   type: ViewType;
+  data?: string;
 }
 
 export interface UpdateViewRequest {
   name?: string;
   type?: ViewType;
+  data?: string;
 }
 
 export interface ViewObject {

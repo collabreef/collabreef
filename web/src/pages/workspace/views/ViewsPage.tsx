@@ -1,6 +1,6 @@
-import { Plus, Trash2, MapPin, Calendar, PlusCircle } from "lucide-react"
+import { Trash2, MapPin, Calendar, PlusCircle, Edit2, Check, X } from "lucide-react"
 import SidebarButton from "@/components/sidebar/SidebarButton"
-import { getViews, createView, deleteView } from "@/api/view"
+import { getViews, createView, deleteView, updateView } from "@/api/view"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
@@ -20,6 +20,8 @@ const ViewsPage = () => {
     const [isCreating, setIsCreating] = useState(false);
     const [newViewName, setNewViewName] = useState("");
     const [newViewType, setNewViewType] = useState<ViewType>("map");
+    const [editingViewId, setEditingViewId] = useState<string | null>(null);
+    const [editingViewName, setEditingViewName] = useState("");
 
     const {
         data: views,
@@ -58,6 +60,20 @@ const ViewsPage = () => {
         }
     })
 
+    const updateMutation = useMutation({
+        mutationFn: ({ viewId, name }: { viewId: string, name: string }) =>
+            updateView(currentWorkspaceId, viewId, { name }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['views', currentWorkspaceId] });
+            setEditingViewId(null);
+            setEditingViewName("");
+            addToast({ type: 'success', title: t('views.viewUpdated') });
+        },
+        onError: () => {
+            addToast({ type: 'error', title: t('views.viewUpdateError') });
+        }
+    })
+
     const handleCreateView = () => {
         if (newViewName.trim()) {
             createMutation.mutate({ name: newViewName.trim(), type: newViewType });
@@ -71,8 +87,32 @@ const ViewsPage = () => {
         }
     }
 
+    const handleStartEdit = (e: React.MouseEvent, view: any) => {
+        e.stopPropagation();
+        setEditingViewId(view.id);
+        setEditingViewName(view.name);
+    }
+
+    const handleCancelEdit = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setEditingViewId(null);
+        setEditingViewName("");
+    }
+
+    const handleSaveEdit = (e: React.MouseEvent, viewId: string) => {
+        e.stopPropagation();
+        if (editingViewName.trim() && editingViewName !== viewsList.find(v => v.id === viewId)?.name) {
+            updateMutation.mutate({ viewId, name: editingViewName.trim() });
+        } else {
+            setEditingViewId(null);
+            setEditingViewName("");
+        }
+    }
+
     const handleViewClick = (view: any) => {
-        navigate(`/workspaces/${currentWorkspaceId}/views/${view.id}`);
+        if (editingViewId !== view.id) {
+            navigate(`/workspaces/${currentWorkspaceId}/views/${view.id}`);
+        }
     }
 
     return (
@@ -176,26 +216,74 @@ const ViewsPage = () => {
                                         className="p-4 border dark:border-neutral-700 rounded-lg hover:shadow-md transition-shadow bg-white dark:bg-neutral-900 cursor-pointer"
                                     >
                                         <div className="flex items-start justify-between">
-                                            <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-3 flex-1 min-w-0">
                                                 {view.type === 'map' ? (
-                                                    <MapPin size={20} className="text-blue-500" />
+                                                    <MapPin size={20} className="text-blue-500 flex-shrink-0" />
                                                 ) : (
-                                                    <Calendar size={20} className="text-green-500" />
+                                                    <Calendar size={20} className="text-green-500 flex-shrink-0" />
                                                 )}
-                                                <div>
-                                                    <h3 className="font-semibold">{view.name}</h3>
+                                                <div className="flex-1 min-w-0">
+                                                    {editingViewId === view.id ? (
+                                                        <input
+                                                            type="text"
+                                                            value={editingViewName}
+                                                            onChange={(e) => setEditingViewName(e.target.value)}
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === 'Enter') {
+                                                                    handleSaveEdit(e as any, view.id)
+                                                                } else if (e.key === 'Escape') {
+                                                                    handleCancelEdit(e as any)
+                                                                }
+                                                            }}
+                                                            className="w-full px-2 py-1 rounded border dark:border-neutral-600 bg-white dark:bg-neutral-800 font-semibold"
+                                                            autoFocus
+                                                        />
+                                                    ) : (
+                                                        <h3 className="font-semibold truncate">{view.name}</h3>
+                                                    )}
                                                     <p className="text-sm text-gray-500 capitalize">
                                                         {view.type === 'map' ? t('views.map') : t('views.calendar')}
                                                     </p>
                                                 </div>
                                             </div>
-                                            <button
-                                                onClick={(e) => handleDeleteView(e, view.id)}
-                                                className="text-red-500 hover:text-red-700 p-1"
-                                                title={t('views.deleteView')}
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
+                                            <div className="flex gap-1 flex-shrink-0">
+                                                {editingViewId === view.id ? (
+                                                    <>
+                                                        <button
+                                                            onClick={(e) => handleSaveEdit(e, view.id)}
+                                                            className="text-green-600 hover:text-green-700 p-1"
+                                                            title={t('actions.save')}
+                                                        >
+                                                            <Check size={16} />
+                                                        </button>
+                                                        <button
+                                                            onClick={handleCancelEdit}
+                                                            className="text-gray-500 hover:text-gray-700 p-1"
+                                                            title={t('actions.cancel')}
+                                                        >
+                                                            <X size={16} />
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <button
+                                                            onClick={(e) => handleStartEdit(e, view)}
+                                                            className="text-blue-500 hover:text-blue-700 p-1"
+                                                            title={t('views.editView')}
+                                                        >
+                                                            <Edit2 size={16} />
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => handleDeleteView(e, view.id)}
+                                                            className="text-red-500 hover:text-red-700 p-1"
+                                                            title={t('views.deleteView')}
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </div>
                                         </div>
                                         <div className="mt-3 text-xs text-gray-400">
                                             <div>{t('views.createdBy')}: {view.created_by}</div>

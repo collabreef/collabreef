@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import 'react-photo-view/dist/react-photo-view.css';
+import 'leaflet/dist/leaflet.css';
 import './i18n'
 import { Toast, Tooltip } from "radix-ui";
 import App from './App.tsx'

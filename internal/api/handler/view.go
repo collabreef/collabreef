@@ -14,11 +14,13 @@ import (
 type CreateViewRequest struct {
 	Name string `json:"name" validate:"required"`
 	Type string `json:"type" validate:"required"`
+	Data string `json:"data"`
 }
 
 type UpdateViewRequest struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
+	Data string `json:"data"`
 }
 
 type GetViewResponse struct {
@@ -26,6 +28,7 @@ type GetViewResponse struct {
 	WorkspaceID string `json:"workspace_id"`
 	Name        string `json:"name"`
 	Type        string `json:"type"`
+	Data        string `json:"data"`
 	CreatedAt   string `json:"created_at"`
 	CreatedBy   string `json:"created_by"`
 	UpdatedAt   string `json:"updated_at"`
@@ -69,6 +72,7 @@ func (h Handler) GetViews(c echo.Context) error {
 			WorkspaceID: v.WorkspaceID,
 			Name:        v.Name,
 			Type:        v.Type,
+			Data:        v.Data,
 			CreatedAt:   v.CreatedAt,
 			CreatedBy:   h.getUserNameByID(v.CreatedBy),
 			UpdatedAt:   v.UpdatedAt,
@@ -101,6 +105,7 @@ func (h Handler) GetView(c echo.Context) error {
 		WorkspaceID: v.WorkspaceID,
 		Name:        v.Name,
 		Type:        v.Type,
+		Data:        v.Data,
 		CreatedAt:   v.CreatedAt,
 		CreatedBy:   h.getUserNameByID(v.CreatedBy),
 		UpdatedAt:   v.UpdatedAt,
@@ -141,6 +146,7 @@ func (h Handler) CreateView(c echo.Context) error {
 		ID:          util.NewId(),
 		Name:        req.Name,
 		Type:        req.Type,
+		Data:        req.Data,
 		CreatedAt:   time.Now().UTC().String(),
 		CreatedBy:   user.ID,
 		UpdatedAt:   time.Now().UTC().String(),
@@ -200,6 +206,7 @@ func (h Handler) UpdateView(c echo.Context) error {
 		ID:          existingView.ID,
 		Name:        req.Name,
 		Type:        req.Type,
+		Data:        req.Data,
 		CreatedAt:   existingView.CreatedAt,
 		CreatedBy:   existingView.CreatedBy,
 		UpdatedAt:   time.Now().UTC().String(),
@@ -213,6 +220,8 @@ func (h Handler) UpdateView(c echo.Context) error {
 	if v.Type == "" {
 		v.Type = existingView.Type
 	}
+	// Note: Data can be explicitly set to empty string to clear it
+	// So we don't check if it's empty here
 
 	err = h.db.UpdateView(v)
 

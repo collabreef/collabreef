@@ -114,6 +114,7 @@ export default {
     workspace: "工作區",
     loading: "載入中...",
     save: "儲存",
+    saving: "儲存中...",
     cancel: "取消",
     create: "建立",
     creating: "建立中...",
@@ -271,6 +272,19 @@ export default {
     noteAddedSuccess: "筆記添加成功",
     noteAddedError: "筆記添加失敗",
     noteRemovedSuccess: "筆記移除成功",
-    noteRemovedError: "筆記移除失敗"
+    noteRemovedError: "筆記移除失敗",
+    mapSettings: "地圖設定",
+    defaultMapCenter: "預設地圖中心點",
+    defaultZoom: "預設縮放等級",
+    zoomRange: "縮放等級（1-20）。數字越大顯示越詳細。",
+    clearSettings: "清除設定",
+    settingsUpdated: "設定更新成功",
+    settingsUpdateError: "設定更新失敗",
+    viewUpdated: "視圖更新成功",
+    viewUpdateError: "視圖更新失敗",
+    selectOnMap: "在地圖上選擇",
+    searchOrEnterCoordinates: "搜尋或輸入座標以顯示地圖",
+    clickMapToSelect: "點擊地圖選擇位置",
+    loadingAddress: "載入地址中..."
   },
 } as const;
