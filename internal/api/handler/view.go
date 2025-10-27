@@ -1,0 +1,255 @@
+package handler
+
+import (
+	"net/http"
+	"strconv"
+	"time"
+
+	"github.com/unsealdev/unseal/internal/model"
+	"github.com/unsealdev/unseal/internal/util"
+
+	"github.com/labstack/echo/v4"
+)
+
+type CreateViewRequest struct {
+	Name string `json:"name" validate:"required"`
+	Type string `json:"type" validate:"required"`
+	Data string `json:"data"`
+}
+
+type UpdateViewRequest struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+	Data string `json:"data"`
+}
+
+type GetViewResponse struct {
+	ID          string `json:"id"`
+	WorkspaceID string `json:"workspace_id"`
+	Name        string `json:"name"`
+	Type        string `json:"type"`
+	Data        string `json:"data"`
+	CreatedAt   string `json:"created_at"`
+	CreatedBy   string `json:"created_by"`
+	UpdatedAt   string `json:"updated_at"`
+	UpdatedBy   string `json:"updated_by"`
+}
+
+func (h Handler) GetViews(c echo.Context) error {
+	workspaceId := c.Param("workspaceId")
+	pageSize := 100
+	pageNumber := 1
+	if ps := c.QueryParam("pageSize"); ps != "" {
+		if v, err := strconv.Atoi(ps); err == nil && v > 0 {
+			pageSize = v
+		}
+	}
+	if pn := c.QueryParam("pageNumber"); pn != "" {
+		if v, err := strconv.Atoi(pn); err == nil && v > 0 {
+			pageNumber = v
+		}
+	}
+
+	viewType := c.QueryParam("type")
+
+	filter := model.ViewFilter{
+		WorkspaceID: workspaceId,
+		ViewType:    viewType,
+		PageSize:    pageSize,
+		PageNumber:  pageNumber,
+	}
+
+	views, err := h.db.FindViews(filter)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	res := []GetViewResponse{}
+
+	for _, v := range views {
+		res = append(res, GetViewResponse{
+			ID:          v.ID,
+			WorkspaceID: v.WorkspaceID,
+			Name:        v.Name,
+			Type:        v.Type,
+			Data:        v.Data,
+			CreatedAt:   v.CreatedAt,
+			CreatedBy:   h.getUserNameByID(v.CreatedBy),
+			UpdatedAt:   v.UpdatedAt,
+			UpdatedBy:   h.getUserNameByID(v.UpdatedBy),
+		})
+	}
+
+	return c.JSON(http.StatusOK, res)
+}
+
+func (h Handler) GetView(c echo.Context) error {
+	workspaceId := c.Param("workspaceId")
+	if workspaceId == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Workspace id is required")
+	}
+
+	id := c.Param("id")
+	if id == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "View id is required")
+	}
+
+	v := model.View{WorkspaceID: workspaceId, ID: id}
+	v, err := h.db.FindView(v)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	res := GetViewResponse{
+		ID:          v.ID,
+		WorkspaceID: v.WorkspaceID,
+		Name:        v.Name,
+		Type:        v.Type,
+		Data:        v.Data,
+		CreatedAt:   v.CreatedAt,
+		CreatedBy:   h.getUserNameByID(v.CreatedBy),
+		UpdatedAt:   v.UpdatedAt,
+		UpdatedBy:   h.getUserNameByID(v.UpdatedBy),
+	}
+
+	return c.JSON(http.StatusOK, res)
+}
+
+func (h Handler) CreateView(c echo.Context) error {
+	workspaceId := c.Param("workspaceId")
+	if workspaceId == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "workspace id is required")
+	}
+
+	var req CreateViewRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	if err := c.Validate(req); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Validation failed: " + err.Error(),
+		})
+	}
+
+	// Validate view type
+	switch req.Type {
+	case "map", "calendar":
+	default:
+		return echo.NewHTTPError(http.StatusBadRequest, "View type must be 'map' or 'calendar'")
+	}
+
+	user := c.Get("user").(model.User)
+
+	v := model.View{
+		WorkspaceID: workspaceId,
+		ID:          util.NewId(),
+		Name:        req.Name,
+		Type:        req.Type,
+		Data:        req.Data,
+		CreatedAt:   time.Now().UTC().String(),
+		CreatedBy:   user.ID,
+		UpdatedAt:   time.Now().UTC().String(),
+		UpdatedBy:   user.ID,
+	}
+
+	err := h.db.CreateView(v)
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	return c.JSON(http.StatusCreated, v)
+}
+
+func (h Handler) UpdateView(c echo.Context) error {
+	workspaceId := c.Param("workspaceId")
+	if workspaceId == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "workspace id is required")
+	}
+
+	id := c.Param("id")
+	if id == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "View id is required")
+	}
+
+	var req UpdateViewRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	if err := c.Validate(req); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Validation failed: " + err.Error(),
+		})
+	}
+
+	existingView, err := h.db.FindView(model.View{ID: id})
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Validate view type if provided
+	if req.Type != "" {
+		switch req.Type {
+		case "map", "calendar":
+		default:
+			return echo.NewHTTPError(http.StatusBadRequest, "View type must be 'map' or 'calendar'")
+		}
+	}
+
+	user := c.Get("user").(model.User)
+
+	v := model.View{
+		WorkspaceID: workspaceId,
+		ID:          existingView.ID,
+		Name:        req.Name,
+		Type:        req.Type,
+		Data:        req.Data,
+		CreatedAt:   existingView.CreatedAt,
+		CreatedBy:   existingView.CreatedBy,
+		UpdatedAt:   time.Now().UTC().String(),
+		UpdatedBy:   user.ID,
+	}
+
+	// If fields are empty, keep existing values
+	if v.Name == "" {
+		v.Name = existingView.Name
+	}
+	if v.Type == "" {
+		v.Type = existingView.Type
+	}
+	// Note: Data can be explicitly set to empty string to clear it
+	// So we don't check if it's empty here
+
+	err = h.db.UpdateView(v)
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, v)
+}
+
+func (h Handler) DeleteView(c echo.Context) error {
+	workspaceId := c.Param("workspaceId")
+	id := c.Param("id")
+	if id == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "View id is required")
+	}
+
+	view := model.View{WorkspaceID: workspaceId, ID: id}
+
+	_, err := h.db.FindView(view)
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	if err := h.db.DeleteView(view); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.NoContent(http.StatusNoContent)
+}

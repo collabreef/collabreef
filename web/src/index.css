@@ -122,3 +122,12 @@ ul[data-type="taskList"] > li > div{
 .tiptap td {
   @apply border
 }
+
+/* Leaflet map z-index fix to prevent covering modals */
+.leaflet-container {
+  z-index: 1 !important;
+}
+
+.leaflet-pane {
+  z-index: auto !important;
+}

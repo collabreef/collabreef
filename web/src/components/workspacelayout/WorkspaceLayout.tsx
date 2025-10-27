@@ -4,7 +4,7 @@ import { useSidebar } from "../sidebar/SidebarProvider"
 import { useWorkspaceStore } from "@/stores/workspace"
 import WorkspaceMenu from "../workspacemenu/WorkspaceMenu"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
-import { BookText, Paperclip, Sparkles } from 'lucide-react'
+import { BookText, Paperclip, Sparkles, Shapes } from 'lucide-react'
 import { useTranslation } from "react-i18next"
 import Tooltip from "../tooltip/Tooltip"
 import BaseLayout from "../baselayout/BaseLayout"
@@ -49,6 +49,18 @@ const WorkspaceLayout = () => {
                         <Link to={`/workspaces/${currentWorkspaceId}/files`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
                             <Paperclip size={20} />
                             {!isCollapse && t("menu.files")}
+                        </Link>
+                    </Tooltip>
+                </div>
+                <div className="">
+                    <Tooltip
+                        text={t("menu.views")}
+                        side="right"
+                        enabled={isCollapse}
+                        >
+                        <Link to={`/workspaces/${currentWorkspaceId}/views`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
+                            <Shapes size={20} />
+                            {!isCollapse && t("menu.views")}
                         </Link>
                     </Tooltip>
                 </div>

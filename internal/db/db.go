@@ -16,6 +16,9 @@ type DB interface {
 	WorkspaceUserRepository
 	GenTemplateRepository
 	GenHistoryRepository
+	ViewRepository
+	ViewObjectRepository
+	ViewObjectNoteRepository
 }
 type Uow interface {
 	Begin(ctx context.Context) (DB, error)
@@ -72,4 +75,24 @@ type GenHistoryRepository interface {
 	DeleteGenHistory(h model.GenHistory) error
 	FindGenHistory(h model.GenHistory) (model.GenHistory, error)
 	FindGenHistories(f model.GenHistoryFilter) ([]model.GenHistory, error)
+}
+type ViewRepository interface {
+	CreateView(v model.View) error
+	UpdateView(v model.View) error
+	DeleteView(v model.View) error
+	FindView(v model.View) (model.View, error)
+	FindViews(f model.ViewFilter) ([]model.View, error)
+}
+type ViewObjectRepository interface {
+	CreateViewObject(v model.ViewObject) error
+	UpdateViewObject(v model.ViewObject) error
+	DeleteViewObject(v model.ViewObject) error
+	FindViewObject(v model.ViewObject) (model.ViewObject, error)
+	FindViewObjects(f model.ViewObjectFilter) ([]model.ViewObject, error)
+}
+type ViewObjectNoteRepository interface {
+	AddNoteToViewObject(v model.ViewObjectNote) error
+	RemoveNoteFromViewObject(v model.ViewObjectNote) error
+	FindNotesForViewObject(viewObjectID string) ([]model.Note, error)
+	FindViewObjectsForNote(noteID string) ([]model.ViewObject, error)
 }
