@@ -62,3 +62,20 @@ export interface UpdateViewObjectRequest {
   type?: ViewObjectType;
   data?: string;
 }
+
+export interface ViewObjectWithView {
+  view_object: ViewObject;
+  view: View;
+}
+
+// View object data structures
+export interface CalendarSlotData {
+  date: string; // ISO date string
+  color?: string;
+}
+
+export interface MapMarkerData {
+  lat: number;
+  lng: number;
+  color?: string;
+}

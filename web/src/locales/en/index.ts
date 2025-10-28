@@ -119,7 +119,8 @@ export default {
     cancel: "Cancel",
     create: "Create",
     creating: "Creating...",
-    close: "Close"
+    close: "Close",
+    relatedViews: "Related Views"
   },
   time: {
     just_now: "just now",

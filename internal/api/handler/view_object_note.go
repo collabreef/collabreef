@@ -173,3 +173,49 @@ func (h Handler) RemoveNoteFromViewObject(c echo.Context) error {
 
 	return c.NoContent(http.StatusNoContent)
 }
+
+type ViewObjectWithView struct {
+	ViewObject model.ViewObject `json:"view_object"`
+	View       model.View       `json:"view"`
+}
+
+// GetViewObjectsForNote returns all view objects associated with a note
+func (h Handler) GetViewObjectsForNote(c echo.Context) error {
+	workspaceId := c.Param("workspaceId")
+	noteId := c.Param("noteId")
+
+	if workspaceId == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Workspace id is required")
+	}
+
+	if noteId == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Note id is required")
+	}
+
+	// Verify note exists and belongs to workspace
+	_, err := h.db.FindNote(model.Note{ID: noteId, WorkspaceID: workspaceId})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, "Note not found")
+	}
+
+	viewObjects, err := h.db.FindViewObjectsForNote(noteId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	// Fetch the associated views for each view object
+	result := make([]ViewObjectWithView, 0, len(viewObjects))
+	for _, vo := range viewObjects {
+		view, err := h.db.FindView(model.View{ID: vo.ViewID, WorkspaceID: workspaceId})
+		if err != nil {
+			// Skip if view not found (shouldn't happen in normal cases)
+			continue
+		}
+		result = append(result, ViewObjectWithView{
+			ViewObject: vo,
+			View:       view,
+		})
+	}
+
+	return c.JSON(http.StatusOK, result)
+}

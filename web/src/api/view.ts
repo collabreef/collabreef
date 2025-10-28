@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { View, CreateViewRequest, UpdateViewRequest, ViewType, ViewObject, CreateViewObjectRequest, UpdateViewObjectRequest, ViewObjectType } from '@/types/view';
+import { View, CreateViewRequest, UpdateViewRequest, ViewType, ViewObject, CreateViewObjectRequest, UpdateViewObjectRequest, ViewObjectType, ViewObjectWithView } from '@/types/view';
 
 export const getViews = async (workspaceId: string, pageNum: number = 1, pageSize: number = 100, type?: ViewType) => {
   const params = new URLSearchParams({
@@ -84,4 +84,10 @@ export const addNoteToViewObject = async (workspaceId: string, viewId: string, o
 export const removeNoteFromViewObject = async (workspaceId: string, viewId: string, objectId: string, noteId: string) => {
   const response = await axios.delete(`/api/v1/workspaces/${workspaceId}/views/${viewId}/objects/${objectId}/notes/${noteId}`);
   return response.data;
+};
+
+// Get view objects for a note
+export const getViewObjectsForNote = async (workspaceId: string, noteId: string) => {
+  const response = await axios.get(`/api/v1/workspaces/${workspaceId}/notes/${noteId}/view-objects`, { withCredentials: true });
+  return response.data as ViewObjectWithView[];
 };

@@ -118,7 +118,8 @@ export default {
     cancel: "取消",
     create: "建立",
     creating: "建立中...",
-    close: "關閉"
+    close: "關閉",
+    relatedViews: "相關視圖"
   },
   time: {
     just_now: "剛剛",
