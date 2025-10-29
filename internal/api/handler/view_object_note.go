@@ -219,3 +219,80 @@ func (h Handler) GetViewObjectsForNote(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, result)
 }
+
+// GetPublicViewObjectsForNote returns all view objects associated with a public note
+// This endpoint does not require workspace context and respects view visibility settings
+func (h Handler) GetPublicViewObjectsForNote(c echo.Context) error {
+	noteId := c.Param("noteId")
+
+	if noteId == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Note id is required")
+	}
+
+	// Verify note exists
+	note, err := h.db.FindNote(model.Note{ID: noteId})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, "Note not found")
+	}
+
+	// Check note visibility
+	var user *model.User
+	if u := c.Get("user"); u != nil {
+		if uu, ok := u.(model.User); ok {
+			user = &uu
+		}
+	}
+
+	isVisible := false
+
+	switch note.Visibility {
+	case "public":
+		isVisible = true
+	case "workspace":
+		// For workspace visibility, allow if user is authenticated
+		isVisible = user != nil
+	case "private":
+		isVisible = user != nil && note.CreatedBy == user.ID
+	}
+
+	if !isVisible {
+		return echo.NewHTTPError(http.StatusForbidden, "you do not have permission to see this Note")
+	}
+
+	// Get view objects for the note
+	viewObjects, err := h.db.FindViewObjectsForNote(noteId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	// Fetch the associated views for each view object and filter by visibility
+	result := make([]ViewObjectWithView, 0)
+	for _, vo := range viewObjects {
+		view, err := h.db.FindView(model.View{ID: vo.ViewID})
+		if err != nil {
+			// Skip if view not found
+			continue
+		}
+
+		// Filter views based on visibility
+		isViewVisible := false
+		switch view.Visibility {
+		case "public":
+			isViewVisible = true
+		case "workspace":
+			// For workspace visibility, allow if user is authenticated
+			isViewVisible = user != nil
+		case "private":
+			isViewVisible = user != nil && view.CreatedBy == user.ID
+		}
+
+		if isViewVisible {
+			result = append(result, ViewObjectWithView{
+				ViewObject: vo,
+				View:       view,
+			})
+		}
+	}
+
+	return c.JSON(http.StatusOK, result)
+}

@@ -1,12 +1,12 @@
 import { FC, useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { NoteData } from "@/api/note"
-import { getViewObjectsForNote } from "@/api/view"
+import { getViewObjectsForNote, getPublicViewObjectsForNote } from "@/api/view"
 import NoteTime from "../notetime/NoteTime"
 import VisibilityLabel from "../visibilitylabel/VisibilityLabel"
 import { useTranslation } from "react-i18next"
 import { Info, ChevronRight, Calendar, MapPin } from "lucide-react"
-import { CalendarSlotData, MapMarkerData } from "@/types/view"
+import { CalendarSlotData, MapMarkerData, ViewObject } from "@/types/view"
 import MiniCalendarView from "./MiniCalendarView"
 import MiniMapView from "./MiniMapView"
 import { Link, useParams } from "react-router-dom"
@@ -19,12 +19,22 @@ interface NoteDetailSidebarProps {
 const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note, onClose }) => {
     const { t } = useTranslation()
     const { workspaceId } = useParams<{ workspaceId?: string }>()
-    const currentWorkspaceId = workspaceId || note.workspace_id
 
+    // Use public endpoint when viewing from explore page (no workspaceId in URL)
+    // Use workspace endpoint when viewing from workspace context
     const { data: viewObjects = [] } = useQuery({
-        queryKey: ['note-view-objects', currentWorkspaceId, note.id],
-        queryFn: () => getViewObjectsForNote(currentWorkspaceId, note.id),
-        enabled: !!note.id && !!currentWorkspaceId,
+        queryKey: workspaceId
+            ? ['note-view-objects', workspaceId, note.id]
+            : ['public-note-view-objects', note.id],
+        queryFn: () => {
+            if (workspaceId && note.id) {
+                return getViewObjectsForNote(workspaceId, note.id)
+            } else if (note.id) {
+                return getPublicViewObjectsForNote(note.id)
+            }
+            return Promise.resolve([])
+        },
+        enabled: !!note.id,
     })
 
     // Group view objects by view and filter out private views
@@ -78,11 +88,11 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note, onClose }) => {
                         <div className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
                             <span>{t("common.relatedViews")}</span>
                         </div>
-                        {groupedByView.map((viewGroup, index) => (
+                        {groupedByView.map((viewGroup) => (
                             <div key={viewGroup.view.id} className="space-y-2">
                                 <Link
                                     to={workspaceId
-                                        ? `/workspaces/${currentWorkspaceId}/views/${viewGroup.view.id}`
+                                        ? `/workspaces/${workspaceId}/views/${viewGroup.view.id}`
                                         : `/explore/views/${viewGroup.view.id}`
                                     }
                                     className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-2 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
@@ -104,8 +114,8 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note, onClose }) => {
                                 </Link>
                                 {viewGroup.view.type === 'calendar' && (() => {
                                     try {
-                                        const calendarViewObjects = viewGroup.viewObjects.filter(obj => obj.type === 'calendar_slot')
-                                        const slots: CalendarSlotData[] = calendarViewObjects.map(obj => ({
+                                        const calendarViewObjects = viewGroup.viewObjects.filter((obj: ViewObject) => obj.type === 'calendar_slot')
+                                        const slots: CalendarSlotData[] = calendarViewObjects.map((obj: ViewObject) => ({
                                             date: obj.data, // data is already a date string like "2024-01-15"
                                             color: undefined
                                         }))
@@ -117,8 +127,8 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note, onClose }) => {
                                 })()}
                                 {viewGroup.view.type === 'map' && (() => {
                                     try {
-                                        const mapViewObjects = viewGroup.viewObjects.filter(obj => obj.type === 'map_marker')
-                                        const markers: MapMarkerData[] = mapViewObjects.map(obj => JSON.parse(obj.data))
+                                        const mapViewObjects = viewGroup.viewObjects.filter((obj: ViewObject) => obj.type === 'map_marker')
+                                        const markers: MapMarkerData[] = mapViewObjects.map((obj: ViewObject) => JSON.parse(obj.data))
                                         return <MiniMapView markers={markers} viewObjects={mapViewObjects} />
                                     } catch (e) {
                                         console.error('Failed to parse map marker data:', e)

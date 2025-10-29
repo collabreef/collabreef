@@ -306,3 +306,89 @@ func (h Handler) DeleteViewObject(c echo.Context) error {
 
 	return c.NoContent(http.StatusNoContent)
 }
+
+// GetPublicViewObjects returns all view objects for a public view
+// This endpoint does not require workspace context and respects view visibility settings
+func (h Handler) GetPublicViewObjects(c echo.Context) error {
+	viewId := c.Param("viewId")
+
+	if viewId == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "View id is required")
+	}
+
+	pageSize := 100
+	pageNumber := 1
+	if ps := c.QueryParam("pageSize"); ps != "" {
+		if v, err := strconv.Atoi(ps); err == nil && v > 0 {
+			pageSize = v
+		}
+	}
+	if pn := c.QueryParam("pageNumber"); pn != "" {
+		if v, err := strconv.Atoi(pn); err == nil && v > 0 {
+			pageNumber = v
+		}
+	}
+
+	objectType := c.QueryParam("type")
+
+	// Verify view exists
+	view, err := h.db.FindView(model.View{ID: viewId})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, "View not found")
+	}
+
+	// Check view visibility
+	var user *model.User
+	if u := c.Get("user"); u != nil {
+		if uu, ok := u.(model.User); ok {
+			user = &uu
+		}
+	}
+
+	isVisible := false
+
+	switch view.Visibility {
+	case "public":
+		isVisible = true
+	case "workspace":
+		// For workspace visibility, allow if user is authenticated
+		isVisible = user != nil
+	case "private":
+		isVisible = user != nil && view.CreatedBy == user.ID
+	}
+
+	if !isVisible {
+		return echo.NewHTTPError(http.StatusForbidden, "you do not have permission to see this View")
+	}
+
+	// Get view objects for the view
+	filter := model.ViewObjectFilter{
+		ViewID:     view.ID,
+		ObjectType: objectType,
+		PageSize:   pageSize,
+		PageNumber: pageNumber,
+	}
+
+	viewObjects, err := h.db.FindViewObjects(filter)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	res := []GetViewObjectResponse{}
+
+	for _, vo := range viewObjects {
+		res = append(res, GetViewObjectResponse{
+			ID:        vo.ID,
+			ViewID:    vo.ViewID,
+			Name:      vo.Name,
+			Type:      vo.Type,
+			Data:      vo.Data,
+			CreatedAt: vo.CreatedAt,
+			CreatedBy: h.getUserNameByID(vo.CreatedBy),
+			UpdatedAt: vo.UpdatedAt,
+			UpdatedBy: h.getUserNameByID(vo.UpdatedBy),
+		})
+	}
+
+	return c.JSON(http.StatusOK, res)
+}

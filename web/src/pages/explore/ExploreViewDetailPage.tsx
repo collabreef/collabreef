@@ -2,8 +2,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { Calendar, MapPin, ArrowLeft } from "lucide-react"
-import { getPublicView, getViewObjects } from "@/api/view"
-import { TwoColumn, TwoColumnMain, TwoColumnSidebar } from "@/components/twocolumn"
+import { getPublicView, getPublicViewObjects } from "@/api/view"
 import { ViewObject } from "@/types/view"
 import OneColumn from "@/components/onecolumn/OneColumn"
 import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
@@ -20,9 +19,9 @@ const ExploreViewDetailPage = () => {
     })
 
     const { data: viewObjects } = useQuery({
-        queryKey: ['view-objects', view?.workspace_id, viewId],
-        queryFn: () => getViewObjects(view!.workspace_id, viewId!),
-        enabled: !!view && !!viewId,
+        queryKey: ['public-view-objects', viewId],
+        queryFn: () => getPublicViewObjects(viewId!),
+        enabled: !!viewId,
     })
 
     if (isViewLoading) {
