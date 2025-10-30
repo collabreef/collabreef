@@ -2,10 +2,11 @@ import { useState } from "react"
 import { Outlet, useNavigate, useParams } from "react-router-dom"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
+import { ChevronUp } from "lucide-react"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { getView, getViewObjects, createViewObject, deleteViewObject } from "@/api/view"
 import { useToastStore } from "@/stores/toast"
-import { TwoColumn, TwoColumnMain, TwoColumnSidebar } from "@/components/twocolumn"
+import { TwoColumn, TwoColumnMain, TwoColumnSidebar, useTwoColumn } from "@/components/twocolumn"
 import { ViewObjectType } from "@/types/view"
 import CalendarViewContent from "@/components/views/calendar/CalendarViewContent"
 import MapViewContent from "@/components/views/map/MapViewContent"
@@ -95,7 +96,7 @@ const ViewDetailPage = () => {
 
     return (
         <TwoColumn>
-            <TwoColumnMain className="bg-white dark:bg-neutral-800">
+            <TwoColumnMain className="bg-white dark:bg-neutral-800 relative">
                 <ViewContent
                     view={view}
                     viewObjects={viewObjects}
@@ -111,6 +112,9 @@ const ViewDetailPage = () => {
                     handleCreate={handleCreate}
                     createMutation={createMutation}
                 />
+
+                {/* Floating button to open bottom sheet on mobile - only show on mobile when sidebar is collapsed */}
+                <FloatingBottomSheetButton />
             </TwoColumnMain>
 
             <TwoColumnSidebar className="bg-white">
@@ -137,6 +141,25 @@ const ViewContent = (props: any) => {
         return <MapViewContent {...props} />
     }
     return null
+}
+
+// Floating button to open bottom sheet on mobile
+const FloatingBottomSheetButton = () => {
+    const { t } = useTranslation()
+    const { isSidebarCollapsed, toggleSidebar } = useTwoColumn()
+
+    // Only show on mobile when sidebar is collapsed
+    if (!isSidebarCollapsed) return null
+
+    return (
+        <button
+            onClick={toggleSidebar}
+            className="lg:hidden fixed bottom-6 right-6 z-30 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all duration-200 active:scale-95"
+            title={t('views.showSidebar')}
+        >
+            <ChevronUp size={24} />
+        </button>
+    )
 }
 
 export default ViewDetailPage

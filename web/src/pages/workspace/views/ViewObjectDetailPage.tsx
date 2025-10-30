@@ -1,7 +1,7 @@
 import { useNavigate, useParams, useOutletContext } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { ArrowLeft, Calendar, MapPin, ChevronRight } from "lucide-react"
+import { ArrowLeft, Calendar, MapPin, ChevronDown } from "lucide-react"
 import { getViewObject } from "@/api/view"
 import ViewObjectNotesManager from "@/components/views/ViewObjectNotesManager"
 import { useTwoColumn } from "@/components/twocolumn"
@@ -75,7 +75,7 @@ const ViewObjectDetailPage = () => {
                         className="lg:hidden p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg"
                         title={t('views.hideSidebar')}
                     >
-                        <ChevronRight size={18} />
+                        <ChevronDown size={18} />
                     </button>
                 </div>
 
@@ -86,7 +86,7 @@ const ViewObjectDetailPage = () => {
             </div>
 
             {/* Content */}
-            <div className="p-4 space-y-4 overflow-x-hidden">
+            <div className="p-2 space-y-4 overflow-x-hidden">
                 {/* View Object Data */}
                 {viewObject.data && (
                     <div className="">
@@ -125,7 +125,7 @@ const ViewObjectDetailPage = () => {
                                 }
                                 // Default: show raw data
                                 return (
-                                    <pre className="bg-gray-50 dark:bg-neutral-700 p-2 rounded overflow-x-auto text-xs">
+                                    <pre className="">
                                         {viewObject.data}
                                     </pre>
                                 )

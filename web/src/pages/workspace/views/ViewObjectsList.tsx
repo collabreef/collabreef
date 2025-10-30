@@ -1,6 +1,6 @@
 import { useNavigate, useOutletContext } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Trash2, Calendar, MapPin, ChevronRight } from "lucide-react"
+import { Trash2, Calendar, MapPin, ChevronDown } from "lucide-react"
 import { useTwoColumn } from "@/components/twocolumn"
 import { ViewObject } from "@/types/view"
 
@@ -60,7 +60,7 @@ const ViewObjectsList = () => {
                     className="lg:hidden p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg"
                     title={t('views.hideSidebar')}
                 >
-                    <ChevronRight size={18} />
+                    <ChevronDown size={18} />
                 </button>
             </div>
 
