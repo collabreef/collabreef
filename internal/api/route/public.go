@@ -16,4 +16,5 @@ func RegisterPublic(api *echo.Group, h handler.Handler, a middlewares.AuthMiddle
 	g.GET("/views", h.GetPublicViews)
 	g.GET("/views/:id", h.GetPublicView)
 	g.GET("/views/:viewId/objects", h.GetPublicViewObjects)
+	g.GET("/views/:viewId/objects/:id/notes", h.GetPublicNotesForViewObject)
 }

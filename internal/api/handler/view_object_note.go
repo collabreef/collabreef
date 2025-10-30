@@ -296,3 +296,78 @@ func (h Handler) GetPublicViewObjectsForNote(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, result)
 }
+
+// GetPublicNotesForViewObject returns all public notes associated with a view object
+// This endpoint does not require workspace context and respects note visibility settings
+func (h Handler) GetPublicNotesForViewObject(c echo.Context) error {
+	viewId := c.Param("viewId")
+	viewObjectId := c.Param("id")
+
+	if viewId == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "View id is required")
+	}
+
+	if viewObjectId == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "View object id is required")
+	}
+
+	// Verify view exists
+	view, err := h.db.FindView(model.View{ID: viewId})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, "View not found")
+	}
+
+	// Check view visibility
+	var user *model.User
+	if u := c.Get("user"); u != nil {
+		if uu, ok := u.(model.User); ok {
+			user = &uu
+		}
+	}
+
+	isViewVisible := false
+	switch view.Visibility {
+	case "public":
+		isViewVisible = true
+	case "workspace":
+		isViewVisible = user != nil
+	case "private":
+		isViewVisible = user != nil && view.CreatedBy == user.ID
+	}
+
+	if !isViewVisible {
+		return echo.NewHTTPError(http.StatusForbidden, "you do not have permission to see this View")
+	}
+
+	// Verify view object exists and belongs to view
+	_, err = h.db.FindViewObject(model.ViewObject{ID: viewObjectId, ViewID: viewId})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, "View object not found")
+	}
+
+	// Get all notes for the view object
+	notes, err := h.db.FindNotesForViewObject(viewObjectId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	// Filter notes based on visibility
+	visibleNotes := make([]model.Note, 0)
+	for _, note := range notes {
+		isNoteVisible := false
+		switch note.Visibility {
+		case "public":
+			isNoteVisible = true
+		case "workspace":
+			isNoteVisible = user != nil
+		case "private":
+			isNoteVisible = user != nil && note.CreatedBy == user.ID
+		}
+
+		if isNoteVisible {
+			visibleNotes = append(visibleNotes, note)
+		}
+	}
+
+	return c.JSON(http.StatusOK, visibleNotes)
+}
