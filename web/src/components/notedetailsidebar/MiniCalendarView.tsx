@@ -142,7 +142,7 @@ const MiniCalendarView: FC<MiniCalendarViewProps> = ({ slots, viewObjects }) => 
                                 aspect-square flex items-center justify-center text-xs rounded
                                 ${d ? 'text-gray-700 dark:text-gray-300' : ''}
                                 ${isHighlighted ? `font-bold text-white cursor-pointer hover:opacity-80` : ''}
-                                ${isSelected ? 'ring-2 ring-white ring-offset-1' : ''}
+                                ${isSelected ? '' : ''}
                             `}
                             style={isHighlighted ? { backgroundColor: firstSlotColor } : {}}
                         >
