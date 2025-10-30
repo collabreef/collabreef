@@ -121,6 +121,7 @@ export default {
     create: "Create",
     creating: "Creating...",
     close: "Close",
+    back: "Back",
     relatedViews: "Related Views",
     all: "All",
     views: "Views"
@@ -304,6 +305,13 @@ export default {
     locationTimeout: "Location request timed out",
     calendarSettings: "Calendar Settings",
     visibilityUpdated: "Visibility updated successfully",
-    visibilityUpdateError: "Failed to update visibility"
+    visibilityUpdateError: "Failed to update visibility",
+    objectNotFound: "Object not found",
+    objectDetails: "Object Details",
+    objectType: "Object Type",
+    objectData: "Object Data",
+    calendarSlot: "Calendar Slot",
+    mapMarker: "Map Marker",
+    createdAt: "Created At"
   },
 } as const;

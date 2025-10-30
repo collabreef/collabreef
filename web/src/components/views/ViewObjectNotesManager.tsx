@@ -71,21 +71,19 @@ const ViewObjectNotesManager = ({
     const availableNotes = Array.isArray(allNotes) ? allNotes.filter((note: any) => !linkedNoteIds.includes(note.id)) : []
 
     return (
-        <div className="mt-4 border-t dark:border-neutral-700 pt-4">
-            <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                    <FileText size={14} />
-                    <h4 className="text-sm font-semibold">{t('views.linkedNotes')}</h4>
-                    <span className="text-xs text-gray-500">({linkedNotes.length})</span>
+        <div >
+
+            {(
+                <div className="flex items-center justify-between mb-3">
+                    <button
+                        onClick={() => setIsAddingNote(true)}
+                        className="p-1 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded text-sm"
+                        title={t('views.addNote')}
+                    >
+                        <Plus size={14} />
+                    </button>
                 </div>
-                <button
-                    onClick={() => setIsAddingNote(true)}
-                    className="p-1 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded"
-                    title={t('views.addNote')}
-                >
-                    <Plus size={14} />
-                </button>
-            </div>
+            )}
 
             {/* Linked Notes List */}
             {linkedNotes.length > 0 ? (

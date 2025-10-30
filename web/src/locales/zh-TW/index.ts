@@ -120,6 +120,7 @@ export default {
     create: "建立",
     creating: "建立中...",
     close: "關閉",
+    back: "返回",
     relatedViews: "相關視圖",
     all: "全部",
     views: "視圖"
@@ -297,6 +298,13 @@ export default {
     loadingAddress: "載入地址中...",
     calendarSettings: "行事曆設定",
     visibilityUpdated: "可見性更新成功",
-    visibilityUpdateError: "可見性更新失敗"
+    visibilityUpdateError: "可見性更新失敗",
+    objectNotFound: "找不到物件",
+    objectDetails: "物件詳情",
+    objectType: "物件類型",
+    objectData: "物件資料",
+    calendarSlot: "行事曆時段",
+    mapMarker: "地圖標記",
+    createdAt: "建立時間"
   },
 } as const;
