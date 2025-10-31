@@ -8,6 +8,7 @@ import { deleteWorkspace, updateWorkspace } from "@/api/workspace"
 import { useEffect, useState } from "react"
 import SidebarButton from "@/components/sidebar/SidebarButton"
 import { Loader } from "lucide-react"
+import OneColumn from "@/components/onecolumn/OneColumn"
 
 const Settings = () => {
     const currentWorkspaceId = useCurrentWorkspaceId()
@@ -18,7 +19,7 @@ const Settings = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        if(!isFetched) return;
+        if (!isFetched) return;
 
         const workspace = getWorkspaceById(currentWorkspaceId)
 
@@ -35,7 +36,7 @@ const Settings = () => {
             name: workspaceName
         }),
         onSuccess: () => {
-            reset() 
+            reset()
             setTimeout(() => {
                 SetIsRenaming(false)
             }, 200)
@@ -45,7 +46,7 @@ const Settings = () => {
     const deleteWorkspaceMutation = useMutation({
         mutationFn: () => deleteWorkspace(currentWorkspaceId),
         onSuccess: () => {
-            reset() 
+            reset()
             navigate("/")
         }
     })
@@ -61,40 +62,43 @@ const Settings = () => {
         renameWorkspaceNameMutation.mutate()
     }
 
-    return <TransitionWrapper
-        className="w-full"
-    >
-        <div className="flex flex-col min-h-screen">
-            <div className="py-2.5 flex items-center justify-between ">
-                <div className="flex gap-3 items-center sm:text-xl font-semibold h-10">
-                    <SidebarButton />
-                    {t("menu.workspaceSettings")}
+    return <OneColumn>
+
+        <TransitionWrapper
+            className="w-full"
+        >
+            <div className="flex flex-col min-h-screen">
+                <div className="py-2.5 flex items-center justify-between ">
+                    <div className="flex gap-3 items-center sm:text-xl font-semibold h-10">
+                        <SidebarButton />
+                        {t("menu.workspaceSettings")}
+                    </div>
                 </div>
-            </div>
-            <div className="grow flex justify-start">
-                <div className="flex-1">
-                    <div className="w-full">
-                        <div className="bg-white dark:bg-neutral-800 rounded shadow-sm w-full p-5 max-w-3xl">
-                            <div className="flex flex-col gap-6">
-                                <div className="flex flex-col gap-2 ">
-                                    <div className="text-lg font-semibold">
-                                        {t("pages.settings.workspaceName")}
-                                    </div>
-                                    <div className="flex gap-3 flex-wrap">
-                                        <input className="flex-1 px-3 py-2 border rounded-lg dark:bg-neutral-700" value={workspaceName} onChange={e => setWorkspaceName(e.target.value)} title="rename workspace" />
-                                        <button onClick={handleRenameClick} className=" px-3 py-2 border shadow-sm rounded-lg">
-                                            {isRenaming ? <Loader size={16} className="animate-spin" /> : t("actions.rename")}
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className="flex gap-2 items-center justify-between">
-                                    <div className="flex flex-col">
-                                        <div className=" text-lg font-semibold">
-                                            {t("pages.settings.deleteThisWorkspace")}
+                <div className="grow flex justify-start">
+                    <div className="flex-1">
+                        <div className="w-full">
+                            <div className="bg-white dark:bg-neutral-800 rounded shadow-sm w-full p-5 max-w-3xl">
+                                <div className="flex flex-col gap-6">
+                                    <div className="flex flex-col gap-2 ">
+                                        <div className="text-lg font-semibold">
+                                            {t("pages.settings.workspaceName")}
+                                        </div>
+                                        <div className="flex gap-3 flex-wrap">
+                                            <input className="flex-1 px-3 py-2 border rounded-lg dark:bg-neutral-700" value={workspaceName} onChange={e => setWorkspaceName(e.target.value)} title="rename workspace" />
+                                            <button onClick={handleRenameClick} className=" px-3 py-2 border shadow-sm rounded-lg">
+                                                {isRenaming ? <Loader size={16} className="animate-spin" /> : t("actions.rename")}
+                                            </button>
                                         </div>
                                     </div>
-                                    <div>
-                                        <button onClick={handleDeleteClick} className="px-3 py-2 border border-red-600 text-red-600 shadow-sm rounded-lg">{t("actions.delete")}</button>
+                                    <div className="flex gap-2 items-center justify-between">
+                                        <div className="flex flex-col">
+                                            <div className=" text-lg font-semibold">
+                                                {t("pages.settings.deleteThisWorkspace")}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <button onClick={handleDeleteClick} className="px-3 py-2 border border-red-600 text-red-600 shadow-sm rounded-lg">{t("actions.delete")}</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -102,8 +106,8 @@ const Settings = () => {
                     </div>
                 </div>
             </div>
-        </div>
-    </TransitionWrapper>
+        </TransitionWrapper>
+    </OneColumn>
 }
 
 export default Settings
