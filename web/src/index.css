@@ -15,7 +15,7 @@ input, button {
     @apply bg-clip-padding;
   }
   
-  .masonry-grid_column > div { 
+  .masonry-grid_column > a { 
     @apply mb-2 sm:mb-4
   }
 
