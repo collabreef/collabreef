@@ -62,9 +62,7 @@ const ExploreNoteDetailContent: FC<ExploreNoteDetailContentProps> = ({ note, t }
                 />
             </TwoColumnMain>
             <TwoColumnSidebar>
-                <div className="w-96">
-                    {note && <NoteDetailSidebar note={note} onClose={toggleSidebar} />}
-                </div>
+                {note && <NoteDetailSidebar note={note} onClose={toggleSidebar} />}
             </TwoColumnSidebar>
         </>
     )
