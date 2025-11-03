@@ -7,7 +7,6 @@ import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { createGenTemplate, updateGenTemplate, getGenTemplate, listGenModels } from "@/api/gen-template"
 import { uploadFile } from "@/api/file"
 import { Modality, GenModel } from "@/types/gen-template"
-import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
 import { useToastStore } from "@/stores/toast"
 
 const GenTemplateFormPage = () => {
@@ -201,7 +200,7 @@ const GenTemplateFormPage = () => {
     }
 
     return (
-        <TransitionWrapper className="w-full max-w-4xl">
+        <div className="w-full max-w-4xl">
             <div className="py-4">
                 <div className="flex items-center gap-3">
                     <button
@@ -338,7 +337,7 @@ const GenTemplateFormPage = () => {
                     </div>
                 </form>
             </div>
-        </TransitionWrapper>
+        </div>
     )
 }
 

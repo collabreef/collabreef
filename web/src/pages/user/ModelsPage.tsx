@@ -1,5 +1,4 @@
 import SidebarButton from "@/components/sidebar/SidebarButton"
-import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
 import { useTranslation } from "react-i18next"
 import OpenAI from "@/components/icons/openai"
 import Gemini from "@/components/icons/gemini"
@@ -146,7 +145,7 @@ const ModelsPage = () => {
         setIsOllamaKeyEditing(false)
     }
 
-    return <TransitionWrapper
+    return <div
         className="px-4 xl:pl-0 w-full "
     >
         <div className="flex flex-col min-h-screen  flex-1 w-full min-w-0">
@@ -244,7 +243,7 @@ const ModelsPage = () => {
                 </div>
             </div>
         </div>
-    </TransitionWrapper>
+    </div>
 }
 
 export default ModelsPage

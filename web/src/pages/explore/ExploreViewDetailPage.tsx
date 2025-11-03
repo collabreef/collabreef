@@ -6,7 +6,6 @@ import { Calendar, MapPin, ArrowLeft, ChevronRight } from "lucide-react"
 import { getPublicView, getPublicViewObjects } from "@/api/view"
 import { ViewObject } from "@/types/view"
 import { TwoColumn, TwoColumnMain, TwoColumnSidebar, useTwoColumn } from "@/components/twocolumn"
-import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
 import CalendarViewComponent from "@/components/views/calendar/CalendarViewComponent"
 import MapViewComponent from "@/components/views/map/MapViewComponent"
 import PublicViewObjectNotesManager from "@/components/views/PublicViewObjectNotesManager"
@@ -182,7 +181,7 @@ const PublicViewContent = ({ view, viewObjects, navigate }: any) => {
 
     if (view.type === 'calendar') {
         return (
-            <TransitionWrapper className="px-4 w-full">
+            <div className="px-4 w-full">
                 <div className="py-4">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-3">
@@ -209,13 +208,13 @@ const PublicViewContent = ({ view, viewObjects, navigate }: any) => {
 
                     <CalendarViewComponent viewObjects={viewObjects} />
                 </div>
-            </TransitionWrapper>
+            </div>
         )
     }
 
     if (view.type === 'map') {
         return (
-            <TransitionWrapper className="w-full h-full flex flex-col">
+            <div className="w-full h-full flex flex-col">
                 {/* Header */}
                 <div className="flex-shrink-0 px-4 py-4 border-b dark:border-neutral-700">
                     <div className="flex items-center justify-between">
@@ -246,7 +245,7 @@ const PublicViewContent = ({ view, viewObjects, navigate }: any) => {
                 <div className="flex-1 overflow-hidden">
                     <MapViewComponent viewObjects={viewObjects} view={view} />
                 </div>
-            </TransitionWrapper>
+            </div>
         )
     }
 

@@ -6,7 +6,6 @@ import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { Link } from "react-router-dom"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useRef, useCallback, useState, useEffect } from "react"
-import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
 import { Tooltip } from "radix-ui"
 import Loader from "@/components/loader/Loader"
 import OneColumn from "@/components/onecolumn/OneColumn"
@@ -74,7 +73,7 @@ const GenTemplatesPage = () => {
 
     return <>
         <OneColumn>
-            <TransitionWrapper className="w-full">
+            <div className="w-full">
                 <div className="py-2">
                     {
                         isSearchVisible ? <div className="block sm:hidden py-1">
@@ -181,7 +180,7 @@ const GenTemplatesPage = () => {
                         )}
                     </div>
                 </div>
-            </TransitionWrapper>
+            </div>
         </OneColumn>
     </>
 }

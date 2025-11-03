@@ -1,6 +1,5 @@
 import { ArrowLeft, Calendar, PlusCircle, Settings } from "lucide-react"
 import { useTwoColumn } from "@/components/twocolumn"
-import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
 import CalendarViewComponent from "./CalendarViewComponent"
 import CreateViewObjectModal from "../CreateViewObjectModal"
 import CalendarViewSettingsModal from "./CalendarViewSettingsModal"
@@ -41,7 +40,7 @@ const CalendarViewContent = ({
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
     return (
-        <TransitionWrapper className="px-4 w-full">
+        <div className="px-4 w-full">
             <div className="py-4">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
@@ -103,7 +102,7 @@ const CalendarViewContent = ({
 
                 <CalendarViewComponent viewObjects={viewObjects} />
             </div>
-        </TransitionWrapper>
+        </div>
     )
 }
 

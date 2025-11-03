@@ -6,7 +6,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
 import OneColumn from "@/components/onecolumn/OneColumn"
 import { ViewType } from "@/types/view"
 import { useToastStore } from "@/stores/toast"
@@ -119,7 +118,7 @@ const ViewsPage = () => {
 
     return (
         <OneColumn>
-            <TransitionWrapper className="w-full">
+            <div className="w-full">
                 <div className="py-2">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-3 h-10">
@@ -335,7 +334,7 @@ const ViewsPage = () => {
                         )}
                     </div>
                 </div>
-            </TransitionWrapper>
+            </div>
         </OneColumn>
     )
 }

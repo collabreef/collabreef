@@ -4,7 +4,6 @@ import SidebarButton from "@/components/sidebar/SidebarButton"
 import { getPublicNotes } from "@/api/note"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useRef, useCallback, useState, useEffect } from "react"
-import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
 import { Tooltip } from "radix-ui"
 import Loader from "@/components/loader/Loader"
 import NoteMasonry from "@/components/notecard/NoteMasonry"
@@ -73,7 +72,7 @@ const ExploreNotesPage = () => {
 
     return <>
         <OneColumn>
-            <TransitionWrapper className="w-full">
+            <div className="w-full">
                 <div className=" py-2 ">
                     {
                         isSearchVisible ? < div className="block sm:hidden py-1">
@@ -142,7 +141,7 @@ const ExploreNotesPage = () => {
                         {!isLoading && !hasNextPage && <div className="text-center py-4 text-gray-400">{t("messages.noMoreNotes")}</div>}
                     </div>
                 </div>
-            </TransitionWrapper >
+            </div >
         </OneColumn>
     </>
 }

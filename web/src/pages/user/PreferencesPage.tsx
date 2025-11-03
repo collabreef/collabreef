@@ -1,5 +1,4 @@
 import SidebarButton from "@/components/sidebar/SidebarButton"
-import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
 import { useTranslation } from "react-i18next"
 import { updatePreferences } from "@/api/user"
 import { useCurrentUserStore } from "@/stores/current-user"
@@ -43,7 +42,7 @@ const PreferencesPage = () => {
         savePreferences()
     }, [theme, i18n.language])
 
-    return <TransitionWrapper
+    return <div
         className="px-4 xl:pl-0 w-full "
     >
         <div className="flex flex-col min-h-screen">
@@ -87,7 +86,7 @@ const PreferencesPage = () => {
                 </div>
             </Card>
         </div>
-    </TransitionWrapper>
+    </div>
 }
 
 export default PreferencesPage

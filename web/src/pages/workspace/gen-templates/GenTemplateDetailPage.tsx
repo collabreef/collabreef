@@ -9,7 +9,6 @@ import { uploadFile } from "@/api/file"
 import { useToastStore } from "@/stores/toast"
 import { TwoColumn, TwoColumnMain, TwoColumnSidebar, useTwoColumn } from "@/components/twocolumn"
 import GenHistoryCard from "@/components/genhistorycard/GenHistoryCard"
-import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
 
 const GenTemplateDetailPage = () => {
     const { t } = useTranslation()
@@ -261,7 +260,7 @@ const GenTemplateContent = ({ template, parameters, paramValues, setParamValues,
     const { isSidebarCollapsed, toggleSidebar } = useTwoColumn()
 
     return (
-        <TransitionWrapper className="px-4 xl:pl-0 w-full ">
+        <div className="px-4 xl:pl-0 w-full ">
             <div className="py-4 ">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -467,7 +466,7 @@ const GenTemplateContent = ({ template, parameters, paramValues, setParamValues,
                     </div>
                 </div>
             </div>
-        </TransitionWrapper>
+        </div>
     )
 }
 

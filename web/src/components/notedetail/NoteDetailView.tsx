@@ -4,7 +4,6 @@ import { ArrowLeft, ChevronLeft } from "lucide-react"
 import { NoteData } from "@/api/note"
 import FullNote from "../fullnote/FullNote"
 import Editor from "../editor/Editor"
-import TransitionWrapper from "../transitionwrapper/TransitionWrapper"
 
 interface NoteDetailViewProps {
     note: NoteData | null
@@ -16,7 +15,7 @@ interface NoteDetailViewProps {
 
 const NoteDetailView: FC<NoteDetailViewProps> = ({ note, backLink, menu, isEditable = false, onChange }) => {
     return (
-        <TransitionWrapper className="w-full">
+        <div className="w-full">
             {note && (
                 <div className="flex flex-col min-h-dvh">
                     <div className="p-2 flex items-center justify-between ">
@@ -40,7 +39,7 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({ note, backLink, menu, isEdita
                     </div>
                 </div>
             )}
-        </TransitionWrapper>
+        </div>
     )
 }
 

@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom"
-import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { useTranslation } from "react-i18next"
 import { useMutation } from "@tanstack/react-query"
@@ -64,7 +63,7 @@ const Settings = () => {
 
     return <OneColumn>
 
-        <TransitionWrapper
+        <div
             className="w-full"
         >
             <div className="flex flex-col min-h-screen">
@@ -106,7 +105,7 @@ const Settings = () => {
                     </div>
                 </div>
             </div>
-        </TransitionWrapper>
+        </div>
     </OneColumn>
 }
 

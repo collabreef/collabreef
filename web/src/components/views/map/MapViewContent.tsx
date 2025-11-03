@@ -1,6 +1,5 @@
 import { ArrowLeft, MapPin, PlusCircle, Settings } from "lucide-react"
 import { useTwoColumn } from "@/components/twocolumn"
-import TransitionWrapper from "@/components/transitionwrapper/TransitionWrapper"
 import MapViewComponent from "./MapViewComponent"
 import CreateViewObjectModal from "../CreateViewObjectModal"
 import MapViewSettingsModal from "./MapViewSettingsModal"
@@ -41,7 +40,7 @@ const MapViewContent = ({
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
     return (
-        <TransitionWrapper className="w-full h-full flex flex-col">
+        <div className="w-full h-full flex flex-col">
             {/* Header */}
             <div className="flex-shrink-0 px-4 py-4 border-b dark:border-neutral-700">
                 <div className="flex items-center justify-between">
@@ -107,7 +106,7 @@ const MapViewContent = ({
             <div className="flex-1 overflow-hidden">
                 <MapViewComponent viewObjects={viewObjects} view={view} />
             </div>
-        </TransitionWrapper>
+        </div>
     )
 }
 

@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'motion/react';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import SidebarButton from '@/components/sidebar/SidebarButton';
-import TransitionWrapper from '@/components/transitionwrapper/TransitionWrapper';
 import OneColumn from '@/components/onecolumn/OneColumn';
 import Loader from '@/components/loader/Loader';
 import { Tooltip } from 'radix-ui';
@@ -172,7 +171,7 @@ const FilesPage = () => {
 
     return (
         <OneColumn>
-            <TransitionWrapper className="w-full">
+            <div className="w-full">
                 <div className="py-2">
                     {
                         isSearchVisible ? <div className="block sm:hidden py-1">
@@ -393,7 +392,7 @@ const FilesPage = () => {
                         )}
                     </div>
                 </div>
-            </TransitionWrapper>
+            </div>
 
             {/* Preview Modal */}
             <AnimatePresence>
