@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { Plus, X, FileText, Search } from "lucide-react"
+import { Plus, X, FileText, Search, Trash2 } from "lucide-react"
 import { getNotesForViewObject, addNoteToViewObject, removeNoteFromViewObject } from "@/api/view"
 import { getNotes } from "@/api/note"
 import { useToastStore } from "@/stores/toast"
@@ -91,20 +91,24 @@ const ViewObjectNotesManager = ({
                     {linkedNotes.map((note: any) => (
                         <div
                             key={note.id}
-                            className="flex items-start justify-between p-2 bg-gray-50 dark:bg-neutral-800 rounded text-xs group"
+                            className="flex flex-col rounded border py-4 group bg-white dark:bg-neutral-900"
                         >
+                            <div>
+                                
+                            <button
+                                onClick={() => removeNoteMutation.mutate(note.id)}
+                                disabled={removeNoteMutation.isPending}
+                                aria-label="delete"
+                                className="px-4 hover:bg-red-100 dark:hover:bg-red-900/20 text-red-600 rounded disabled:opacity-50 flex-shrink-0 p-1"
+                            >
+                                <Trash2 size={12} />
+                            </button>
+                            </div>
                             <div className="flex-1 min-w-0 overflow-hidden max-h-16">
                                 <div className="line-clamp-2 text-xs [&_.prose]:text-xs [&_.prose]:leading-tight">
                                     <Renderer content={note.content} />
                                 </div>
                             </div>
-                            <button
-                                onClick={() => removeNoteMutation.mutate(note.id)}
-                                disabled={removeNoteMutation.isPending}
-                                className="ml-2 p-1 hover:bg-red-100 dark:hover:bg-red-900/20 text-red-600 rounded disabled:opacity-50 flex-shrink-0"
-                            >
-                                <X size={12} />
-                            </button>
                         </div>
                     ))}
                 </div>

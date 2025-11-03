@@ -60,7 +60,7 @@ const ViewObjectDetailPage = () => {
     }
 
     return (
-        <div className="w-full sm:w-96 bg-gray-50 dark:bg-neutral-900">
+        <div className="w-full bg-gray-50 dark:bg-neutral-900">
             {/* Header */}
             <div className="sticky top-0 bg-gray-50 dark:bg-neutral-900 border-b dark:border-neutral-700 px-4 py-4 z-10">
                 <div className="flex items-center justify-between mb-3">
@@ -136,7 +136,7 @@ const ViewObjectDetailPage = () => {
                 )}
 
                 {/* Linked Notes */}
-                <div className="bg-white dark:bg-neutral-800 rounded-lg border dark:border-neutral-700 p-4">
+                <div className="">
                     <ViewObjectNotesManager
                         workspaceId={workspaceId}
                         viewId={viewId!}
