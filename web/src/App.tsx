@@ -37,7 +37,7 @@ function App() {
   return (
     <>
       <AnimatePresence mode='wait'>
-        <Routes location={location} key={location.key}>
+        <Routes location={location}>
           <Route path='/workspace-setup' element={<Setup />} />
           <Route path='/' element={<RequireAuth />}>
             <Route index element={<Navigate to="/workspaces" replace />} />
