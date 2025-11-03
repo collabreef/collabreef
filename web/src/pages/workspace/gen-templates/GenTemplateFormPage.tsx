@@ -2,11 +2,11 @@ import { useState, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { ArrowLeft, Save, Upload, X } from "lucide-react"
+import { ArrowLeft, Save } from "lucide-react"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { createGenTemplate, updateGenTemplate, getGenTemplate, listGenModels } from "@/api/gen-template"
 import { uploadFile } from "@/api/file"
-import { Modality, GenModel } from "@/types/gen-template"
+import { Modality } from "@/types/gen-template"
 import { useToastStore } from "@/stores/toast"
 
 const GenTemplateFormPage = () => {
@@ -200,8 +200,8 @@ const GenTemplateFormPage = () => {
     }
 
     return (
-        <div className="w-full max-w-4xl">
-            <div className="py-4">
+        <div className="p-4 xl:px-0 xl:pr-4 w-full">
+            <div className="w-full max-w-3xl">
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => navigate(-1)}
