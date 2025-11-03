@@ -9,13 +9,12 @@ import TransitionWrapper from "../transitionwrapper/TransitionWrapper"
 interface NoteDetailViewProps {
     note: NoteData | null
     backLink: string
-    title: string
     menu?: ReactNode
     isEditable?: boolean
     onChange?: (data: any) => void
 }
 
-const NoteDetailView: FC<NoteDetailViewProps> = ({ note, backLink, title, menu, isEditable = false, onChange }) => {
+const NoteDetailView: FC<NoteDetailViewProps> = ({ note, backLink, menu, isEditable = false, onChange }) => {
     return (
         <TransitionWrapper className="w-full">
             {note && (
@@ -25,7 +24,6 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({ note, backLink, title, menu, 
                             <Link to={backLink} className="inline-flex p-3 rounded-full">
                                 <ArrowLeft size={20} />
                             </Link>
-                            <div className="text-lg font-semibold">{title}</div>
                         </div>
                         {menu && <div className="inline-flex">{menu}</div>}
                     </div>
