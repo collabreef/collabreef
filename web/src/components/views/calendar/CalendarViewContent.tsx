@@ -19,6 +19,7 @@ interface CalendarViewContentProps {
     setNewObjectData: (value: string) => void
     handleCreate: () => void
     createMutation: any
+    focusedObjectId?: string
 }
 
 const CalendarViewContent = ({
@@ -34,7 +35,8 @@ const CalendarViewContent = ({
     newObjectData,
     setNewObjectData,
     handleCreate,
-    createMutation
+    createMutation,
+    focusedObjectId
 }: CalendarViewContentProps) => {
     const { isSidebarCollapsed, toggleSidebar } = useTwoColumn()
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -100,7 +102,11 @@ const CalendarViewContent = ({
                     workspaceId={currentWorkspaceId}
                 />
 
-                <CalendarViewComponent viewObjects={viewObjects} />
+                <CalendarViewComponent
+                    key={focusedObjectId || 'default'}
+                    viewObjects={viewObjects}
+                    focusedObjectId={focusedObjectId}
+                />
             </div>
         </div>
     )

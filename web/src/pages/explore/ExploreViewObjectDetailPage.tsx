@@ -2,32 +2,31 @@ import { useNavigate, useParams, useOutletContext } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { ArrowLeft, Calendar, MapPin, ChevronDown } from "lucide-react"
-import { getViewObject } from "@/api/view"
-import ViewObjectNotesManager from "@/components/views/ViewObjectNotesManager"
+import { getPublicViewObject } from "@/api/view"
+import PublicViewObjectNotesManager from "@/components/views/PublicViewObjectNotesManager"
 import { useTwoColumn } from "@/components/twocolumn"
 
-interface ViewObjectDetailContext {
+interface ExploreViewObjectDetailContext {
     view: any
     viewObjects: any[]
-    workspaceId: string
     viewId: string
 }
 
-const ViewObjectDetailPage = () => {
+const ExploreViewObjectDetailPage = () => {
     const { t } = useTranslation()
     const navigate = useNavigate()
     const { objectId } = useParams<{ objectId: string }>()
     const { toggleSidebar } = useTwoColumn()
-    const { view, viewObjects, workspaceId, viewId } = useOutletContext<ViewObjectDetailContext>()
+    const { view, viewObjects, viewId } = useOutletContext<ExploreViewObjectDetailContext>()
 
     const { data: viewObject, isLoading } = useQuery({
-        queryKey: ['view-object', workspaceId, viewId, objectId],
-        queryFn: () => getViewObject(workspaceId, viewId!, objectId!),
-        enabled: !!workspaceId && !!viewId && !!objectId,
+        queryKey: ['public-view-object', viewId, objectId],
+        queryFn: () => getPublicViewObject(viewId!, objectId!),
+        enabled: !!viewId && !!objectId,
     })
 
     const handleBack = () => {
-        navigate(`/workspaces/${workspaceId}/views/${viewId}`)
+        navigate(`/explore/views/${viewId}`)
     }
 
     if (isLoading) {
@@ -138,11 +137,9 @@ const ViewObjectDetailPage = () => {
 
                 {/* Linked Notes */}
                 <div className="">
-                    <ViewObjectNotesManager
-                        workspaceId={workspaceId}
+                    <PublicViewObjectNotesManager
                         viewId={viewId!}
                         viewObjectId={objectId!}
-                        viewObjectName={viewObject.name}
                     />
                 </div>
             </div>
@@ -150,4 +147,4 @@ const ViewObjectDetailPage = () => {
     )
 }
 
-export default ViewObjectDetailPage
+export default ExploreViewObjectDetailPage

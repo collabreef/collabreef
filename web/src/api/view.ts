@@ -138,6 +138,12 @@ export const getPublicViewObjects = async (viewId: string, pageNum: number = 1, 
   return response.data as ViewObject[];
 };
 
+// Get a single public view object
+export const getPublicViewObject = async (viewId: string, objectId: string) => {
+  const response = await axios.get(`/api/v1/public/views/${viewId}/objects/${objectId}`, { withCredentials: true });
+  return response.data as ViewObject;
+};
+
 // Get notes for a public view object
 export const getPublicNotesForViewObject = async (viewId: string, objectId: string) => {
   const response = await axios.get(`/api/v1/public/views/${viewId}/objects/${objectId}/notes`, { withCredentials: true });

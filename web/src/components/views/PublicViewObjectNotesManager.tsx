@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import { FileText } from "lucide-react"
 import { getPublicNotesForViewObject } from "@/api/view"
 import Renderer from "@/components/renderer/Renderer"
+import NoteTime from "@/components/notetime/NoteTime"
 
 interface PublicViewObjectNotesManagerProps {
     viewId: string
@@ -24,22 +25,19 @@ const PublicViewObjectNotesManager = ({
 
     return (
         <div className="mt-4 border-t dark:border-neutral-700 pt-4">
-            <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                    <FileText size={14} />
-                    <div className="text-sm font-semibold">{t('views.linkedNotes')}</div>
-                    <span className="text-xs text-gray-500">({linkedNotes.length})</span>
-                </div>
-            </div>
-
             {/* Linked Notes List */}
-            {linkedNotes.length > 0 ? (
+                        {linkedNotes.length > 0 ? (
                 <div className="space-y-2">
                     {linkedNotes.map((note: any) => (
                         <div
                             key={note.id}
-                            className="flex items-start justify-between p-2 bg-gray-50 dark:bg-neutral-800 rounded text-xs"
+                            className="flex flex-col rounded border shadow-sm py-4 group bg-white dark:bg-neutral-900"
                         >
+                            <div className="flex justify-between px-4 pb-4">
+                                <div>
+                                    <NoteTime time={note.created_at} /> 
+                                </div>
+                            </div>
                             <div className="flex-1 min-w-0 overflow-hidden max-h-16">
                                 <div className="line-clamp-2 text-xs [&_.prose]:text-xs [&_.prose]:leading-tight">
                                     <Renderer content={note.content} />

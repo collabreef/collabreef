@@ -20,6 +20,8 @@ import ExploreNotesPage from './pages/explore/ExploreNotesPage';
 import ExploreNoteDetailPage from './pages/explore/ExploreNoteDetailPage';
 import ExploreViewsPage from './pages/explore/ExploreViewsPage';
 import ExploreViewDetailPage from './pages/explore/ExploreViewDetailPage';
+import ExploreViewObjectsList from './pages/explore/ExploreViewObjectsList';
+import ExploreViewObjectDetailPage from './pages/explore/ExploreViewObjectDetailPage';
 import ModelsPage from './pages/user/ModelsPage';
 import GenTemplatesPage from './pages/workspace/gen-templates/GenTemplatesPage';
 import GenTemplateFormPage from './pages/workspace/gen-templates/GenTemplateFormPage';
@@ -68,7 +70,10 @@ function App() {
             <Route path='explore/notes' element={<ExploreNotesPage />} />
             <Route path='explore/notes/:noteId' element={<ExploreNoteDetailPage />} />
             <Route path='explore/views' element={<ExploreViewsPage />} />
-            <Route path='explore/views/:viewId' element={<ExploreViewDetailPage />} />
+            <Route path='explore/views/:viewId' element={<ExploreViewDetailPage />}>
+              <Route index element={<ExploreViewObjectsList />} />
+              <Route path='objects/:objectId' element={<ExploreViewObjectDetailPage />} />
+            </Route>
           </Route>
           <Route path='signin' element={<SignIn />}></Route>
           <Route path='signup' element={<SignUp />}></Route>

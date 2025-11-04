@@ -138,7 +138,7 @@ const CreateViewObjectModal = ({
     }
 
     // Reverse geocoding
-    const reverseGeocode = async (lat: number, lng: number) => {
+    const reverseGeocode = async (lat: number, lng: number, forceUpdateName: boolean = false) => {
         setIsReverseGeocoding(true)
         try {
             const response = await fetch(
@@ -154,7 +154,8 @@ const CreateViewObjectModal = ({
             if (response.ok) {
                 const result = await response.json()
                 setReverseGeocodedAddress(result.display_name || '')
-                if (!name && result.display_name) {
+                // Update name if it's empty OR if force update is requested (from map click)
+                if (result.display_name && (!name || forceUpdateName)) {
                     setName(result.display_name.split(',')[0])
                 }
             }
@@ -169,7 +170,7 @@ const CreateViewObjectModal = ({
     const handleMapClick = (lat: number, lng: number) => {
         setLatitude(lat.toString())
         setLongitude(lng.toString())
-        reverseGeocode(lat, lng)
+        reverseGeocode(lat, lng, true) // Pass true to always update name on map click
     }
 
     // Get current location
