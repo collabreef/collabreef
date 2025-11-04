@@ -1,11 +1,14 @@
 import { useMemo } from 'react'
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, Tooltip } from 'react-leaflet'
 import { Icon } from 'leaflet'
 import { ViewObject, View, MapViewData } from '@/types/view'
+import { useNavigate, useParams } from 'react-router-dom'
 
 interface MapViewComponentProps {
     viewObjects?: ViewObject[]
     view?: View
+    focusedObjectId?: string
+    isPublic?: boolean
 }
 
 interface MapMarkerData {
@@ -13,7 +16,10 @@ interface MapMarkerData {
     lng: number
 }
 
-const MapViewComponent = ({ viewObjects = [], view }: MapViewComponentProps) => {
+const MapViewComponent = ({ viewObjects = [], view, focusedObjectId, isPublic = false }: MapViewComponentProps) => {
+    const navigate = useNavigate()
+    const { workspaceId, viewId } = useParams<{ workspaceId?: string; viewId: string }>()
+
     // Parse view data to get default settings
     const viewSettings = useMemo(() => {
         if (!view?.data) return null
@@ -48,8 +54,16 @@ const MapViewComponent = ({ viewObjects = [], view }: MapViewComponentProps) => 
             .filter((marker): marker is NonNullable<typeof marker> => marker !== null)
     }, [viewObjects])
 
-    // Calculate map center based on view settings or markers
+    // Calculate map center based on focused object, view settings, or markers
     const mapCenter: [number, number] = useMemo(() => {
+        // If there's a focused object, center on it
+        if (focusedObjectId) {
+            const focusedMarker = markers.find(m => m.id === focusedObjectId)
+            if (focusedMarker) {
+                return [focusedMarker.lat, focusedMarker.lng]
+            }
+        }
+
         // Use view settings center if available
         if (viewSettings?.center) {
             return [viewSettings.center.lat, viewSettings.center.lng]
@@ -63,7 +77,7 @@ const MapViewComponent = ({ viewObjects = [], view }: MapViewComponentProps) => 
         const avgLat = markers.reduce((sum, m) => sum + m.lat, 0) / markers.length
         const avgLng = markers.reduce((sum, m) => sum + m.lng, 0) / markers.length
         return [avgLat, avgLng]
-    }, [markers, viewSettings])
+    }, [markers, viewSettings, focusedObjectId])
 
     // Get zoom level from view settings or use default
     const mapZoom = useMemo(() => {
@@ -90,6 +104,7 @@ const MapViewComponent = ({ viewObjects = [], view }: MapViewComponentProps) => 
             {/* Map container - fills remaining space */}
             <div className="flex-1 w-full relative">
                 <MapContainer
+                    key={`${mapCenter[0]}-${mapCenter[1]}-${focusedObjectId || 'default'}`}
                     center={mapCenter}
                     zoom={mapZoom}
                     className="h-full w-full"
@@ -107,13 +122,32 @@ const MapViewComponent = ({ viewObjects = [], view }: MapViewComponentProps) => 
                             position={[marker.lat, marker.lng]}
                             icon={markerIcon}
                         >
+                            <Tooltip
+                                permanent
+                                direction="top"
+                                offset={[0, -35]}
+                                className="marker-label"
+                            >
+                                <div className="text-sm font-medium">{marker.name}</div>
+                            </Tooltip>
                             <Popup>
                                 <div className="p-2">
                                     <div className="font-semibold mb-1">{marker.name}</div>
-                                    <p className="text-xs text-gray-600">
+                                    <p className="text-xs text-gray-600 mb-2">
                                         Lat: {marker.lat.toFixed(4)}<br />
                                         Lng: {marker.lng.toFixed(4)}
                                     </p>
+                                    <button
+                                        onClick={() => {
+                                            const path = isPublic
+                                                ? `/explore/views/${viewId}/objects/${marker.id}`
+                                                : `/workspaces/${workspaceId}/views/${viewId}/objects/${marker.id}`
+                                            navigate(path)
+                                        }}
+                                        className="text-xs px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
+                                    >
+                                        View Details
+                                    </button>
                                 </div>
                             </Popup>
                         </Marker>

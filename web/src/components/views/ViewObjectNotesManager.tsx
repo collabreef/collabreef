@@ -7,6 +7,7 @@ import { getNotes } from "@/api/note"
 import { useToastStore } from "@/stores/toast"
 import { Dialog } from "radix-ui"
 import Renderer from "@/components/renderer/Renderer"
+import NoteTime from "@/components/notetime/NoteTime"
 
 interface ViewObjectNotesManagerProps {
     workspaceId: string
@@ -72,18 +73,14 @@ const ViewObjectNotesManager = ({
 
     return (
         <div >
-
-            {(
-                <div className="flex items-center justify-between mb-3">
-                    <button
-                        onClick={() => setIsAddingNote(true)}
-                        className="p-1 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded text-sm"
-                        title={t('views.addNote')}
-                    >
-                        <Plus size={14} />
-                    </button>
-                </div>
-            )}
+            <button
+                onClick={() => setIsAddingNote(true)}
+                className="px-2 py-1 mb-3 w-full border text-white bg-black text-sm flex gap-2 justify-center items-center rounded-lg"
+                title={t('views.addNote')}
+            >
+                <Plus size={14} />
+                {t('views.addNote')}
+            </button>
 
             {/* Linked Notes List */}
             {linkedNotes.length > 0 ? (
@@ -91,18 +88,21 @@ const ViewObjectNotesManager = ({
                     {linkedNotes.map((note: any) => (
                         <div
                             key={note.id}
-                            className="flex flex-col rounded border py-4 group bg-white dark:bg-neutral-900"
+                            className="flex flex-col rounded border shadow-sm py-4 group bg-white dark:bg-neutral-900"
                         >
-                            <div>
-                                
-                            <button
-                                onClick={() => removeNoteMutation.mutate(note.id)}
-                                disabled={removeNoteMutation.isPending}
-                                aria-label="delete"
-                                className="px-4 hover:bg-red-100 dark:hover:bg-red-900/20 text-red-600 rounded disabled:opacity-50 flex-shrink-0 p-1"
-                            >
-                                <Trash2 size={12} />
-                            </button>
+                            <div className="flex justify-between px-4 pb-4">
+                                <div>
+                                    <NoteTime time={note.created_at} /> 
+                                </div>
+
+                                <button
+                                    onClick={() => removeNoteMutation.mutate(note.id)}
+                                    disabled={removeNoteMutation.isPending}
+                                    aria-label="delete"
+                                    className=" hover:bg-red-100 dark:hover:bg-red-900/20 text-red-600 rounded disabled:opacity-50 flex-shrink-0 p-1"
+                                >
+                                    <Trash2 size={12} />
+                                </button>
                             </div>
                             <div className="flex-1 min-w-0 overflow-hidden max-h-16">
                                 <div className="line-clamp-2 text-xs [&_.prose]:text-xs [&_.prose]:leading-tight">

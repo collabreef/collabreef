@@ -392,3 +392,68 @@ func (h Handler) GetPublicViewObjects(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, res)
 }
+// GetPublicViewObject returns a single view object for a public view
+// This endpoint does not require workspace context and respects view visibility settings
+func (h Handler) GetPublicViewObject(c echo.Context) error {
+	viewId := c.Param("viewId")
+	id := c.Param("id")
+
+	if viewId == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "View id is required")
+	}
+
+	if id == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "View object id is required")
+	}
+
+	// Verify view exists
+	view, err := h.db.FindView(model.View{ID: viewId})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, "View not found")
+	}
+
+	// Check view visibility
+	var user *model.User
+	if u := c.Get("user"); u != nil {
+		if uu, ok := u.(model.User); ok {
+			user = &uu
+		}
+	}
+
+	isVisible := false
+
+	switch view.Visibility {
+	case "public":
+		isVisible = true
+	case "workspace":
+		// For workspace visibility, allow if user is authenticated
+		isVisible = user != nil
+	case "private":
+		isVisible = user != nil && view.CreatedBy == user.ID
+	}
+
+	if !isVisible {
+		return echo.NewHTTPError(http.StatusForbidden, "you do not have permission to see this View")
+	}
+
+	// Get the view object
+	vo := model.ViewObject{ID: id, ViewID: viewId}
+	vo, err = h.db.FindViewObject(vo)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, "View object not found")
+	}
+
+	res := GetViewObjectResponse{
+		ID:        vo.ID,
+		ViewID:    vo.ViewID,
+		Name:      vo.Name,
+		Type:      vo.Type,
+		Data:      vo.Data,
+		CreatedAt: vo.CreatedAt,
+		CreatedBy: h.getUserNameByID(vo.CreatedBy),
+		UpdatedAt: vo.UpdatedAt,
+		UpdatedBy: h.getUserNameByID(vo.UpdatedBy),
+	}
+
+	return c.JSON(http.StatusOK, res)
+}

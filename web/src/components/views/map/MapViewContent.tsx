@@ -19,6 +19,7 @@ interface MapViewContentProps {
     setNewObjectData: (value: string) => void
     handleCreate: () => void
     createMutation: any
+    focusedObjectId?: string
 }
 
 const MapViewContent = ({
@@ -34,7 +35,8 @@ const MapViewContent = ({
     newObjectData,
     setNewObjectData,
     handleCreate,
-    createMutation
+    createMutation,
+    focusedObjectId
 }: MapViewContentProps) => {
     const { isSidebarCollapsed, toggleSidebar } = useTwoColumn()
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -104,7 +106,7 @@ const MapViewContent = ({
 
             {/* Map - takes remaining space */}
             <div className="flex-1 overflow-hidden">
-                <MapViewComponent viewObjects={viewObjects} view={view} />
+                <MapViewComponent viewObjects={viewObjects} view={view} focusedObjectId={focusedObjectId} />
             </div>
         </div>
     )

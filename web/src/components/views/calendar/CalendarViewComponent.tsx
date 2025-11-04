@@ -1,12 +1,38 @@
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useNavigate, useParams } from 'react-router-dom'
 
 interface CalendarViewComponentProps {
     viewObjects?: any[]
+    focusedObjectId?: string
+    isPublic?: boolean
 }
 
-const CalendarViewComponent = ({ viewObjects = [] }: CalendarViewComponentProps) => {
-    const [currentDate, setCurrentDate] = useState(new Date())
+const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = false }: CalendarViewComponentProps) => {
+    const navigate = useNavigate()
+    const { workspaceId, viewId } = useParams<{ workspaceId?: string; viewId: string }>()
+
+    // Find the focused object's date
+    const focusedDate = useMemo(() => {
+        if (!focusedObjectId || !viewObjects) return null
+        const focusedObj = viewObjects.find(obj => obj.id === focusedObjectId)
+        if (focusedObj && focusedObj.data) {
+            const date = new Date(focusedObj.data)
+            if (!isNaN(date.getTime())) {
+                return date
+            }
+        }
+        return null
+    }, [focusedObjectId, viewObjects])
+
+    const [currentDate, setCurrentDate] = useState(focusedDate || new Date())
+
+    // Update currentDate when focusedDate changes
+    useEffect(() => {
+        if (focusedDate) {
+            setCurrentDate(focusedDate)
+        }
+    }, [focusedDate])
 
     const year = currentDate.getFullYear()
     const month = currentDate.getMonth()
@@ -180,13 +206,20 @@ const CalendarViewComponent = ({ viewObjects = [] }: CalendarViewComponentProps)
                                         {slotCount > 0 && (
                                             <div className="flex flex-wrap gap-1 mt-1">
                                                 {daySlots.slice(0, 3).map((slot, i) => (
-                                                    <div
+                                                    <button
                                                         key={i}
-                                                        className="text-xs px-1.5 py-0.5 bg-blue-500 text-white rounded truncate max-w-full"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            const path = isPublic
+                                                                ? `/explore/views/${viewId}/objects/${slot.id}`
+                                                                : `/workspaces/${workspaceId}/views/${viewId}/objects/${slot.id}`
+                                                            navigate(path)
+                                                        }}
+                                                        className="text-xs px-1.5 py-0.5 bg-blue-500 text-white rounded truncate max-w-full hover:bg-blue-600 transition-colors"
                                                         title={slot.name}
                                                     >
                                                         {slot.name}
-                                                    </div>
+                                                    </button>
                                                 ))}
                                                 {slotCount > 3 && (
                                                     <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">

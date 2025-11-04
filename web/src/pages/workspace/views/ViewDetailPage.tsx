@@ -14,7 +14,7 @@ import MapViewContent from "@/components/views/map/MapViewContent"
 const ViewDetailPage = () => {
     const { t } = useTranslation()
     const navigate = useNavigate()
-    const { viewId } = useParams<{ viewId: string }>()
+    const { viewId, objectId } = useParams<{ viewId: string; objectId?: string }>()
     const currentWorkspaceId = useCurrentWorkspaceId()
     const { addToast } = useToastStore()
     const [isCreating, setIsCreating] = useState(false)
@@ -111,6 +111,7 @@ const ViewDetailPage = () => {
                     setNewObjectData={setNewObjectData}
                     handleCreate={handleCreate}
                     createMutation={createMutation}
+                    focusedObjectId={objectId}
                 />
 
                 {/* Floating button to open bottom sheet on mobile - only show on mobile when sidebar is collapsed */}
