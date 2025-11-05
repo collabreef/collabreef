@@ -116,7 +116,12 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note, onClose }) => {
                                             date: obj.data, // data is already a date string like "2024-01-15"
                                             color: undefined
                                         }))
-                                        return <MiniCalendarView slots={slots} viewObjects={calendarViewObjects} />
+                                        return <MiniCalendarView
+                                            slots={slots}
+                                            viewObjects={calendarViewObjects}
+                                            viewId={viewGroup.view.id}
+                                            workspaceId={workspaceId}
+                                        />
                                     } catch (e) {
                                         console.error('Failed to parse calendar slot data:', e)
                                         return null
@@ -126,7 +131,12 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note, onClose }) => {
                                     try {
                                         const mapViewObjects = viewGroup.viewObjects.filter((obj: ViewObject) => obj.type === 'map_marker')
                                         const markers: MapMarkerData[] = mapViewObjects.map((obj: ViewObject) => JSON.parse(obj.data))
-                                        return <MiniMapView markers={markers} viewObjects={mapViewObjects} />
+                                        return <MiniMapView
+                                            markers={markers}
+                                            viewObjects={mapViewObjects}
+                                            viewId={viewGroup.view.id}
+                                            workspaceId={workspaceId}
+                                        />
                                     } catch (e) {
                                         console.error('Failed to parse map marker data:', e)
                                         return null

@@ -3,10 +3,13 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import { Icon } from 'leaflet'
 import { MapMarkerData, ViewObject } from '@/types/view'
 import { X } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 interface MiniMapViewProps {
     markers: MapMarkerData[]
     viewObjects: ViewObject[]
+    viewId: string
+    workspaceId?: string
 }
 
 // Component to force map to recalculate size
@@ -45,7 +48,7 @@ const MapResizer: FC = () => {
     return null
 }
 
-const MiniMapView: FC<MiniMapViewProps> = ({ markers, viewObjects }) => {
+const MiniMapView: FC<MiniMapViewProps> = ({ markers, viewObjects, viewId, workspaceId }) => {
     const [selectedMarkerIndex, setSelectedMarkerIndex] = useState<number | null>(null)
     const [isReady, setIsReady] = useState(false)
 
@@ -150,9 +153,16 @@ const MiniMapView: FC<MiniMapViewProps> = ({ markers, viewObjects }) => {
             {selectedMarker && (
                 <div className="mt-2 p-2 bg-neutral-50 dark:bg-neutral-800 rounded text-xs">
                     <div className="flex items-center justify-between mb-1">
-                        <div className="font-semibold">
+                        <Link
+                            to={workspaceId
+                                ? `/workspaces/${workspaceId}/views/${viewId}/objects/${selectedMarker.viewObject?.id}`
+                                : `/explore/views/${viewId}/objects/${selectedMarker.viewObject?.id}`
+                            }
+                            className="font-semibold hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                            onClick={(e) => e.stopPropagation()}
+                        >
                             {selectedMarker.viewObject?.name || 'Marker'}
-                        </div>
+                        </Link>
                         <button
                             onClick={(e) => {
                                 e.preventDefault()

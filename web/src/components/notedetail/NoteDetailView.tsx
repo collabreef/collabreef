@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react"
 import { Link } from "react-router-dom"
-import { ArrowLeft, ChevronLeft } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { NoteData } from "@/api/note"
 import FullNote from "../fullnote/FullNote"
 import Editor from "../editor/Editor"

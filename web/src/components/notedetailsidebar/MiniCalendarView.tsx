@@ -1,13 +1,16 @@
 import { FC, useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { CalendarSlotData, ViewObject } from '@/types/view'
+import { Link } from 'react-router-dom'
 
 interface MiniCalendarViewProps {
     slots: CalendarSlotData[]
     viewObjects: ViewObject[]
+    viewId: string
+    workspaceId?: string
 }
 
-const MiniCalendarView: FC<MiniCalendarViewProps> = ({ slots, viewObjects }) => {
+const MiniCalendarView: FC<MiniCalendarViewProps> = ({ slots, viewObjects, viewId, workspaceId }) => {
     // Find the earliest date to determine the default month
     const defaultDate = useMemo(() => {
         if (slots.length === 0) return new Date()
@@ -169,9 +172,17 @@ const MiniCalendarView: FC<MiniCalendarViewProps> = ({ slots, viewObjects }) => 
                     </div>
                     <div className="space-y-1">
                         {selectedDaySlots.map((item, index) => (
-                            <div key={index} className="text-gray-600 dark:text-gray-400">
+                            <Link
+                                key={index}
+                                to={workspaceId
+                                    ? `/workspaces/${workspaceId}/views/${viewId}/objects/${item.viewObject?.id}`
+                                    : `/explore/views/${viewId}/objects/${item.viewObject?.id}`
+                                }
+                                className="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 px-2 py-1 rounded transition-colors"
+                                onClick={(e) => e.stopPropagation()}
+                            >
                                 {item.viewObject?.name || `Slot ${index + 1}`}
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </div>

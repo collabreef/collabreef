@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { FileText } from "lucide-react"
 import { getPublicNotesForViewObject } from "@/api/view"
 import Renderer from "@/components/renderer/Renderer"
 import NoteTime from "@/components/notetime/NoteTime"
+import { Link } from "react-router-dom"
 
 interface PublicViewObjectNotesManagerProps {
     viewId: string
@@ -35,14 +35,17 @@ const PublicViewObjectNotesManager = ({
                         >
                             <div className="flex justify-between px-4 pb-4">
                                 <div>
-                                    <NoteTime time={note.created_at} /> 
+                                    <NoteTime time={note.created_at} />
                                 </div>
                             </div>
-                            <div className="flex-1 min-w-0 overflow-hidden max-h-16">
+                            <Link
+                                to={`/explore/notes/${note.id}`}
+                                className="flex-1 px-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800 rounded transition-colors"
+                            >
                                 <div className="line-clamp-2 text-xs [&_.prose]:text-xs [&_.prose]:leading-tight">
                                     <Renderer content={note.content} />
                                 </div>
-                            </div>
+                            </Link>
                         </div>
                     ))}
                 </div>
