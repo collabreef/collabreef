@@ -26,27 +26,27 @@ const PublicViewObjectNotesManager = ({
     return (
         <div className="mt-4 border-t dark:border-neutral-700 pt-4">
             {/* Linked Notes List */}
-                        {linkedNotes.length > 0 ? (
+            {linkedNotes.length > 0 ? (
                 <div className="space-y-2">
                     {linkedNotes.map((note: any) => (
-                        <div
+                        <Link
                             key={note.id}
-                            className="flex flex-col rounded border shadow-sm py-4 group bg-white dark:bg-neutral-900"
+                            to={`/explore/notes/${note.id}`}
+                            className="flex flex-col rounded border shadow-sm group bg-white dark:bg-neutral-900"
                         >
-                            <div className="flex justify-between px-4 pb-4">
+                            <div className="flex justify-between p-4">
                                 <div>
                                     <NoteTime time={note.created_at} />
                                 </div>
                             </div>
-                            <Link
-                                to={`/explore/notes/${note.id}`}
-                                className="flex-1 px-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800 rounded transition-colors"
+                            <div
+                                className="flex-1 cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800 rounded transition-colors"
                             >
                                 <div className="line-clamp-2 text-xs [&_.prose]:text-xs [&_.prose]:leading-tight">
                                     <Renderer content={note.content} />
                                 </div>
-                            </Link>
-                        </div>
+                            </div>
+                        </Link>
                     ))}
                 </div>
             ) : (
