@@ -113,10 +113,10 @@ const ViewObjectNotesManager = ({
                     {linkedNotes.map((note: any) => (
                         <div
                             key={note.id}
-                            className="flex flex-col rounded border shadow-sm py-4 group bg-white dark:bg-neutral-900 relative"
+                            className="flex flex-col rounded border shadow-sm group bg-white dark:bg-neutral-900 relative"
                         >
-                            <div className="flex justify-between px-4 pb-4">
-                                <div>
+                            <div className="flex justify-between p-4">
+                                <div className="">
                                     <NoteTime time={note.created_at} />
                                 </div>
 
@@ -135,9 +135,9 @@ const ViewObjectNotesManager = ({
                             </div>
                             <Link
                                 to={`/workspaces/${workspaceId}/note/${note.id}`}
-                                className="flex-1 px-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800 rounded transition-colors"
+                                className="flex-1 cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800 rounded transition-colors"
                             >
-                                <div className="line-clamp-2 text-xs [&_.prose]:text-xs [&_.prose]:leading-tight">
+                                <div className="line-clamp-2 ">
                                     <Renderer content={note.content} />
                                 </div>
                             </Link>
