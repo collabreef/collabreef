@@ -103,7 +103,6 @@ const NoteDetailContent: FC<NoteDetailContentProps> = ({ note, t, handleNoteChan
             >
                 <NoteDetailView
                     note={note}
-                    backLink=".."
                     menu={
                         note ? (
                             <div className="flex items-center gap-2">
