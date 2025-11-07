@@ -1,5 +1,5 @@
 import { FC, ReactNode } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { ArrowLeft } from "lucide-react"
 import { NoteData } from "@/api/note"
 import FullNote from "../fullnote/FullNote"
@@ -7,22 +7,23 @@ import Editor from "../editor/Editor"
 
 interface NoteDetailViewProps {
     note: NoteData | null
-    backLink: string
     menu?: ReactNode
     isEditable?: boolean
     onChange?: (data: any) => void
 }
 
-const NoteDetailView: FC<NoteDetailViewProps> = ({ note, backLink, menu, isEditable = false, onChange }) => {
+const NoteDetailView: FC<NoteDetailViewProps> = ({ note, menu, isEditable = false, onChange }) => {
+    const navigate = useNavigate()
+
     return (
         <div className="w-full">
             {note && (
                 <div className="flex flex-col min-h-dvh">
                     <div className="p-2 flex items-center justify-between ">
                         <div className="flex items-center gap-2">
-                            <Link to={backLink} className="inline-flex p-3 rounded-full">
+                            <button onClick={() => navigate(-1)} aria-label="back" className="inline-flex p-3 rounded-full">
                                 <ArrowLeft size={20} />
-                            </Link>
+                            </button>
                         </div>
                         {menu && <div className="inline-flex">{menu}</div>}
                     </div>

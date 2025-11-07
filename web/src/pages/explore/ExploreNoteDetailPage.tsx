@@ -47,8 +47,6 @@ const ExploreNoteDetailContent: FC<ExploreNoteDetailContentProps> = ({ note, t }
             >
                 <NoteDetailView
                     note={note}
-                    backLink="/explore/notes"
-                    title={t("pages.noteDetail.note")}
                     isEditable={false}
                     menu={
                         <button
