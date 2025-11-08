@@ -188,7 +188,7 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
                             <div
                                 key={index}
                                 className={`
-                                    aspect-square p-2 rounded-lg border dark:border-neutral-700
+                                    aspect-square p-2 rounded-lg border dark:border-neutral-700 overflow-y-auto
                                     ${day ? 'hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer' : 'border-transparent'}
                                     ${isToday(day) ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700' : 'bg-white dark:bg-neutral-900'}
                                     ${slotCount > 0 ? 'border-blue-400 dark:border-blue-600' : ''}
