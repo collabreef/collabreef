@@ -7,10 +7,11 @@ import { useNavigate } from "react-router-dom"
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query"
 import { useRef, useCallback, useState, useEffect } from "react"
 import { Tooltip } from "radix-ui"
-import Loader from "@/components/loader/Loader"
 import { useWorkspaceStore } from "@/stores/workspace"
 import NoteMasonry from "@/components/notecard/NoteMasonry"
 import NoteList from "@/components/notecard/NoteList"
+import NoteMasonrySkeleton from "@/components/notecard/NoteMasonrySkeleton"
+import NoteListSkeleton from "@/components/notecard/NoteListSkeleton"
 import { toast } from "@/stores/toast"
 import OneColumn from "@/components/onecolumn/OneColumn"
 
@@ -179,12 +180,17 @@ const NotesPage = () => {
                 <div className="flex flex-col gap-2 sm:gap-5">
                     <div className="w-full">
                         {
-                            isLoading ? <Loader /> :
+                            isLoading ? (
+                                isMasonryView ? <NoteMasonrySkeleton /> : <NoteListSkeleton />
+                            ) : (
                                 isMasonryView ? <NoteMasonry notes={notes} getLinkTo={(note) => `note/${note.id}`} />
-                                    : <NoteList notes={notes} getLinkTo={(note) => `note/${note.id}`} />}
+                                    : <NoteList notes={notes} getLinkTo={(note) => `note/${note.id}`} />
+                            )}
 
                         <div ref={loadMoreRef} className="h-8" ></div>
-                        {isFetchingNextPage && <Loader />}
+                        {isFetchingNextPage && (
+                            isMasonryView ? <NoteMasonrySkeleton count={3} /> : <NoteListSkeleton count={3} />
+                        )}
                         {!isLoading && !hasNextPage && <div className="text-center py-4 text-gray-400">{t("messages.noMoreNotes")}</div>}
                     </div>
                 </div>

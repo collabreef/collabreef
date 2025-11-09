@@ -4,10 +4,10 @@ import SidebarButton from "@/components/sidebar/SidebarButton"
 import { getPublicViews } from "@/api/view"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useRef, useCallback, useState } from "react"
-import Loader from "@/components/loader/Loader"
 import OneColumn from "@/components/onecolumn/OneColumn"
 import { Link } from "react-router-dom"
 import { View } from "@/types/view"
+import ViewsGridSkeleton from "@/components/skeletons/ViewsGridSkeleton"
 
 const PAGE_SIZE = 20;
 
@@ -86,7 +86,7 @@ const ExploreViewsPage = () => {
                 </div>
                 <div className="flex flex-col gap-2 sm:gap-5">
                     <div className="w-full">
-                        {isLoading ? <Loader /> :
+                        {isLoading ? <ViewsGridSkeleton /> :
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {views.map((view: View) => (
                                     <Link
@@ -113,7 +113,7 @@ const ExploreViewsPage = () => {
                         }
 
                         <div ref={loadMoreRef} className="h-8" ></div>
-                        {isFetchingNextPage && <Loader />}
+                        {isFetchingNextPage && <ViewsGridSkeleton count={3} />}
                         {!isLoading && !hasNextPage && <div className="text-center py-4 text-gray-400">{t("messages.noMoreViews")}</div>}
                     </div>
                 </div>

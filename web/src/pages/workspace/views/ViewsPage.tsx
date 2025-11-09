@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next"
 import OneColumn from "@/components/onecolumn/OneColumn"
 import { ViewType } from "@/types/view"
 import { useToastStore } from "@/stores/toast"
+import ViewsGridSkeleton from "@/components/skeletons/ViewsGridSkeleton"
 
 const ViewsPage = () => {
     const { t } = useTranslation()
@@ -242,7 +243,7 @@ const ViewsPage = () => {
 
                     <div className="mt-4">
                         {isLoading ? (
-                            <div className="text-center py-8">{t('common.loading')}</div>
+                            <ViewsGridSkeleton />
                         ) : viewsList.length === 0 ? (
                             <div className="text-center py-8 text-gray-500">
                                 {t('views.noViews')}

@@ -8,8 +8,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import SidebarButton from '@/components/sidebar/SidebarButton';
 import OneColumn from '@/components/onecolumn/OneColumn';
-import Loader from '@/components/loader/Loader';
 import { Tooltip } from 'radix-ui';
+import FilesGridSkeleton from '@/components/skeletons/FilesGridSkeleton';
 
 const PAGE_SIZE = 20;
 
@@ -253,7 +253,7 @@ const FilesPage = () => {
                 <div className="flex flex-col gap-2 sm:gap-5">
                     <div className="w-full">
                         {
-                            isLoading ? <Loader /> :
+                            isLoading ? <FilesGridSkeleton /> :
                                 <div className="grid grid-cols-auto-fill-140 gap-4">
                                     {files.map((file) => (
                                         <motion.div
@@ -385,7 +385,7 @@ const FilesPage = () => {
                         }
 
                         <div ref={loadMoreRef} className="h-8"></div>
-                        {isFetchingNextPage && <Loader />}
+                        {isFetchingNextPage && <FilesGridSkeleton count={4} />}
                         {!isLoading && !hasNextPage && files.length > 0 && (
                             <div className="text-center py-4 text-gray-400">{t("messages.noMore")}</div>
                         )}

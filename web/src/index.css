@@ -18,6 +18,9 @@ input, button {
   .masonry-grid_column > a { 
     @apply mb-2 sm:mb-4
   }
+  .masonry-grid_column > div { 
+    @apply mb-2 sm:mb-4
+  }
 
 h1 {
   @apply text-4xl font-bold leading-tight;

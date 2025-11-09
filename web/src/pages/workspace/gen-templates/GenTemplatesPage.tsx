@@ -7,8 +7,8 @@ import { Link } from "react-router-dom"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useRef, useCallback, useState, useEffect } from "react"
 import { Tooltip } from "radix-ui"
-import Loader from "@/components/loader/Loader"
 import OneColumn from "@/components/onecolumn/OneColumn"
+import GenTemplatesGridSkeleton from "@/components/skeletons/GenTemplatesGridSkeleton"
 
 const PAGE_SIZE = 20;
 
@@ -145,7 +145,7 @@ const GenTemplatesPage = () => {
                 <div className="flex flex-col gap-2 sm:gap-5">
                     <div className="w-full">
                         {
-                            isLoading ? <Loader /> :
+                            isLoading ? <GenTemplatesGridSkeleton /> :
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {templates.map((template) => (
                                         <Link
@@ -171,7 +171,7 @@ const GenTemplatesPage = () => {
                         }
 
                         <div ref={loadMoreRef} className="h-8"></div>
-                        {isFetchingNextPage && <Loader />}
+                        {isFetchingNextPage && <GenTemplatesGridSkeleton count={3} />}
                         {!isLoading && !hasNextPage && templates.length > 0 && (
                             <div className="text-center py-4 text-gray-400">{t("messages.noMore")}</div>
                         )}
