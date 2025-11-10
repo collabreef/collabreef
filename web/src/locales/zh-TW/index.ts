@@ -123,7 +123,8 @@ export default {
     back: "返回",
     relatedViews: "相關視圖",
     all: "全部",
-    views: "視圖"
+    views: "視圖",
+    noResults: "找不到結果"
   },
   visibility: {
     private: "私人 - 僅自己可見",

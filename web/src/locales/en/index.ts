@@ -124,7 +124,8 @@ export default {
     back: "Back",
     relatedViews: "Related Views",
     all: "All",
-    views: "Views"
+    views: "Views",
+    noResults: "No results found"
   },
   visibility: {
     private: "Private - Only visible to you",

@@ -63,23 +63,6 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note, onClose }) => {
 
     return (
         <div className="w-full h-full overflow-y-auto bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
-            {/* Sticky Header with Close Button */}
-            <div className="lg:hidden border-b dark:border-neutral-700 p-4 flex items-center justify-between sticky top-0 bg-neutral-100 dark:bg-neutral-900 z-10">
-                <div className="flex items-center gap-2">
-                    <Info size={18} />
-                    <div className="text-lg font-semibold">{t("pages.noteDetail.note")}</div>
-                </div>
-                {onClose && (
-                    <button
-                        onClick={onClose}
-                        className="lg:hidden p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg"
-                        title="Hide Info"
-                    >
-                        <ChevronRight size={18} />
-                    </button>
-                )}
-            </div>
-
             {/* Content */}
             <div className="p-6 space-y-6">
                 {/* View Objects Section */}

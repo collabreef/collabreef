@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { Outlet, useNavigate, useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
@@ -49,6 +50,13 @@ const ExploreViewDetailPage = () => {
 const ExploreViewContent = ({ view, viewObjects, navigate, objectId, viewId, t }: any) => {
     const { isSidebarCollapsed, toggleSidebar } = useTwoColumn()
 
+    // Auto-open sidebar when navigating to object detail page
+    useEffect(() => {
+        if (objectId && isSidebarCollapsed) {
+            toggleSidebar()
+        }
+    }, [objectId])
+
     return (
         <>
             <TwoColumnMain className="bg-white dark:bg-neutral-800 relative">
@@ -60,7 +68,7 @@ const ExploreViewContent = ({ view, viewObjects, navigate, objectId, viewId, t }
                 />
 
                 {/* Floating button to open bottom sheet on mobile - only show on mobile when sidebar is collapsed */}
-                {!isSidebarCollapsed && (
+                {isSidebarCollapsed && (
                     <button
                         onClick={toggleSidebar}
                         className="lg:hidden fixed bottom-6 right-6 z-30 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all duration-200 active:scale-95"

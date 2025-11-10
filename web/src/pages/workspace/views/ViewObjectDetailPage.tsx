@@ -63,26 +63,15 @@ const ViewObjectDetailPage = () => {
     return (
         <div className="w-full h-screen bg-gray-50 dark:bg-neutral-900">
             {/* Header */}
-            <div className="sticky top-0 bg-gray-50 dark:bg-neutral-900 border-b dark:border-neutral-700 px-4 py-4 z-10">
-                <div className="flex items-center justify-between mb-3">
-                    <button
-                        aria-label="back"
-                        onClick={handleBack}
-                        className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-                    >
-                        <ArrowLeft size={16} />
-                    </button>
-                    <button
-                        onClick={toggleSidebar}
-                        className="lg:hidden p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg"
-                        title={t('views.hideSidebar')}
-                    >
-                        <ChevronDown size={18} />
-                    </button>
-                </div>
-
+            <div className="sticky top-0 bg-gray-50 dark:bg-neutral-900 border-b dark:border-neutral-700 px-4 py-3 z-10">
+                <button
+                    onClick={handleBack}
+                    className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors mb-3"
+                >
+                    <ArrowLeft size={18} />
+                    <span className="text-sm font-medium">{t('common.back')}</span>
+                </button>
                 <div className="flex items-center gap-2">
-                    {getIcon()}
                     <div className="text-lg font-bold truncate">{viewObject.name}</div>
                 </div>
             </div>

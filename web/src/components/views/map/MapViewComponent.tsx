@@ -36,6 +36,12 @@ const MapViewComponent = ({ viewObjects = [], view, focusedObjectId, isPublic = 
         return viewObjects
             .filter(obj => obj.type === 'map_marker')
             .map(obj => {
+                // Skip if data is empty or invalid
+                if (!obj.data || typeof obj.data !== 'string') {
+                    console.warn('Marker has invalid data:', obj)
+                    return null
+                }
+
                 try {
                     const data: MapMarkerData = JSON.parse(obj.data)
                     if (data.lat && data.lng && !isNaN(data.lat) && !isNaN(data.lng)) {
@@ -45,9 +51,11 @@ const MapViewComponent = ({ viewObjects = [], view, focusedObjectId, isPublic = 
                             lat: data.lat,
                             lng: data.lng
                         }
+                    } else {
+                        console.warn('Marker data missing lat/lng:', obj.data)
                     }
                 } catch (e) {
-                    console.error('Failed to parse marker data:', obj.data)
+                    console.error('Failed to parse marker data:', obj.data, 'Error:', e)
                 }
                 return null
             })
@@ -138,13 +146,17 @@ const MapViewComponent = ({ viewObjects = [], view, focusedObjectId, isPublic = 
                                         Lng: {marker.lng.toFixed(4)}
                                     </p>
                                     <button
-                                        onClick={() => {
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            e.stopPropagation()
                                             const path = isPublic
                                                 ? `/explore/views/${viewId}/objects/${marker.id}`
                                                 : `/workspaces/${workspaceId}/views/${viewId}/objects/${marker.id}`
+                                            console.log('Navigating to:', path)
                                             navigate(path)
                                         }}
-                                        className="text-xs px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
+                                        type="button"
+                                        className="text-xs px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 w-full cursor-pointer"
                                     >
                                         View Details
                                     </button>

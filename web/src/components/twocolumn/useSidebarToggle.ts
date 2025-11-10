@@ -17,9 +17,17 @@ export const useSidebarToggle = (breakpoint = 1024) => {
     })
 
     useEffect(() => {
+        let previousWidth = window.innerWidth
+
         const handleResize = () => {
-            const shouldCollapse = window.innerWidth < breakpoint
-            setIsSidebarCollapsed(shouldCollapse)
+            const currentWidth = window.innerWidth
+
+            // Only update if width actually changed (ignore height-only changes from keyboard)
+            if (currentWidth !== previousWidth) {
+                const shouldCollapse = currentWidth < breakpoint
+                setIsSidebarCollapsed(shouldCollapse)
+                previousWidth = currentWidth
+            }
         }
 
         window.addEventListener('resize', handleResize)

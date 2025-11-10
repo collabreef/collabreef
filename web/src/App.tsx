@@ -6,7 +6,6 @@ import RequireAuth from './components/requireauth/RequireAuth';
 import NotesPage from './pages/workspace/notes/NotesPage';
 import Setup from './pages/workspacesetup/WorkspaceSetupPage';
 import NoteDetailPage from './pages/workspace/notes/NoteDetailPage';
-import Home from './pages/home/HomePage';
 import Settings from './pages/workspace/settings/SettingsPage';
 import { Toast } from './components/toast/Toast'
 import { useToastStore } from './stores/toast';

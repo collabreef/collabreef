@@ -1,6 +1,7 @@
+import { useState, useMemo } from "react"
 import { useNavigate, useOutletContext } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Trash2, Calendar, MapPin, ChevronDown } from "lucide-react"
+import { Trash2, Calendar, MapPin, ChevronDown, Search } from "lucide-react"
 import { useTwoColumn } from "@/components/twocolumn"
 import { ViewObject } from "@/types/view"
 
@@ -16,11 +17,17 @@ interface ViewObjectsListContext {
 const ViewObjectsList = () => {
     const { t } = useTranslation()
     const navigate = useNavigate()
-    const { toggleSidebar } = useTwoColumn()
+    const { isSidebarCollapsed, toggleSidebar } = useTwoColumn()
     const { view, viewObjects, handleDelete, deleteMutation, workspaceId, viewId } =
         useOutletContext<ViewObjectsListContext>()
+    const [searchQuery, setSearchQuery] = useState("")
+    const [isInputFocused, setIsInputFocused] = useState(false)
 
     const handleObjectClick = (objectId: string) => {
+        // Open sidebar if it's collapsed
+        if (isSidebarCollapsed) {
+            toggleSidebar()
+        }
         navigate(`/workspaces/${workspaceId}/views/${viewId}/objects/${objectId}`)
     }
 
@@ -48,25 +55,49 @@ const ViewObjectsList = () => {
         return 'Create your first one to get started'
     }
 
+    // Filter view objects based on search query (name only)
+    const filteredViewObjects = useMemo(() => {
+        if (!viewObjects || !searchQuery.trim()) return viewObjects
+
+        const query = searchQuery.toLowerCase().trim()
+        return viewObjects.filter((obj: ViewObject) => {
+            // Search in name only
+            return obj.name?.toLowerCase().includes(query)
+        })
+    }, [viewObjects, searchQuery])
+
     return (
         <div className="w-full sm:w-96">
-            <div className="sticky top-0 bg-gray-50 dark:bg-neutral-900 border-b dark:border-neutral-700 px-4 py-4 flex items-center justify-between z-10">
-                <div className="flex items-center gap-2">
-                    {getIcon()}
-                    <div className="text-lg font-semibold">{getTitle()}</div>
-                </div>
-                <button
-                    onClick={toggleSidebar}
-                    className="lg:hidden p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg"
-                    title={t('views.hideSidebar')}
+            <div className="p-4 flex flex-col gap-4 overflow-x-hidden bg-gray-50 dark:bg-neutral-900">
+                <div
+                    className="flex items-center gap-2 p-2 border rounded-lg bg-neutral-200 dark:bg-neutral-800"
+                    onClick={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    onTouchEnd={(e) => e.stopPropagation()}
                 >
-                    <ChevronDown size={18} />
-                </button>
-            </div>
-
-            <div className="p-4 space-y-4 overflow-x-hidden min-h-screen bg-gray-50 dark:bg-neutral-900">
-                {viewObjects && viewObjects.length > 0 ? (
-                    viewObjects.map((obj: ViewObject) => (
+                    <span>
+                        <Search size={16} />
+                    </span>
+                    <input
+                        className="bg-inherit outline-none flex-1"
+                        placeholder="Search"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        type="text"
+                        onClick={(e) => e.stopPropagation()}
+                        onTouchStart={(e) => e.stopPropagation()}
+                        onTouchMove={(e) => e.stopPropagation()}
+                        onTouchEnd={(e) => e.stopPropagation()}
+                        onFocus={() => setIsInputFocused(true)}
+                        onBlur={() => {
+                            // Delay blur to prevent backdrop click during keyboard close
+                            setTimeout(() => setIsInputFocused(false), 300)
+                        }}
+                    />
+                </div>
+                <div className="space-y-4">
+                {filteredViewObjects && filteredViewObjects.length > 0 ? (
+                    filteredViewObjects.map((obj: ViewObject) => (
                         <div
                             key={obj.id}
                             className="bg-white dark:bg-neutral-800 rounded-lg border dark:border-neutral-700 p-4 cursor-pointer transition-all hover:border-blue-500 dark:hover:border-blue-500"
@@ -134,10 +165,13 @@ const ViewObjectsList = () => {
                 ) : (
                     <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                         {getIcon()}
-                        <p className="text-sm mt-4">{getEmptyMessage()}</p>
-                        <p className="text-xs mt-2">{getEmptyHint()}</p>
+                        <p className="text-sm mt-4">
+                            {searchQuery.trim() ? t('common.noResults') : getEmptyMessage()}
+                        </p>
+                        {!searchQuery.trim() && <p className="text-xs mt-2">{getEmptyHint()}</p>}
                     </div>
                 )}
+                </div>
             </div>
         </div>
     )

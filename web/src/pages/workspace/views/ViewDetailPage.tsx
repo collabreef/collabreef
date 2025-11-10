@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Outlet, useNavigate, useParams } from "react-router-dom"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
@@ -96,40 +96,76 @@ const ViewDetailPage = () => {
 
     return (
         <TwoColumn>
+            <ViewDetailContent
+                view={view}
+                viewObjects={viewObjects}
+                navigate={navigate}
+                currentWorkspaceId={currentWorkspaceId}
+                isCreating={isCreating}
+                setIsCreating={setIsCreating}
+                handleCloseModal={handleCloseModal}
+                newObjectName={newObjectName}
+                setNewObjectName={setNewObjectName}
+                newObjectData={newObjectData}
+                setNewObjectData={setNewObjectData}
+                handleCreate={handleCreate}
+                createMutation={createMutation}
+                focusedObjectId={objectId}
+                handleDelete={handleDelete}
+                deleteMutation={deleteMutation}
+                refetchViewObjects={refetchViewObjects}
+                viewId={viewId!}
+                objectId={objectId}
+            />
+        </TwoColumn>
+    )
+}
+
+// Wrapper component to handle sidebar state
+const ViewDetailContent = (props: any) => {
+    const { isSidebarCollapsed, toggleSidebar } = useTwoColumn()
+    const { objectId } = props
+
+    // Auto-open sidebar when navigating to object detail page
+    useEffect(() => {
+        if (objectId && isSidebarCollapsed) {
+            toggleSidebar()
+        }
+    }, [objectId])
+
+    return (
+        <>
             <TwoColumnMain className="bg-white dark:bg-neutral-800 relative">
                 <ViewContent
-                    view={view}
-                    viewObjects={viewObjects}
-                    navigate={navigate}
-                    currentWorkspaceId={currentWorkspaceId}
-                    isCreating={isCreating}
-                    setIsCreating={setIsCreating}
-                    handleCloseModal={handleCloseModal}
-                    newObjectName={newObjectName}
-                    setNewObjectName={setNewObjectName}
-                    newObjectData={newObjectData}
-                    setNewObjectData={setNewObjectData}
-                    handleCreate={handleCreate}
-                    createMutation={createMutation}
-                    focusedObjectId={objectId}
+                    view={props.view}
+                    viewObjects={props.viewObjects}
+                    navigate={props.navigate}
+                    currentWorkspaceId={props.currentWorkspaceId}
+                    isCreating={props.isCreating}
+                    setIsCreating={props.setIsCreating}
+                    handleCloseModal={props.handleCloseModal}
+                    newObjectName={props.newObjectName}
+                    setNewObjectName={props.setNewObjectName}
+                    newObjectData={props.newObjectData}
+                    setNewObjectData={props.setNewObjectData}
+                    handleCreate={props.handleCreate}
+                    createMutation={props.createMutation}
+                    focusedObjectId={props.objectId}
                 />
-
-                {/* Floating button to open bottom sheet on mobile - only show on mobile when sidebar is collapsed */}
-                <FloatingBottomSheetButton />
             </TwoColumnMain>
 
             <TwoColumnSidebar className="bg-white">
                 <Outlet context={{
-                    view,
-                    viewObjects,
-                    handleDelete,
-                    deleteMutation,
-                    refetchViewObjects,
-                    workspaceId: currentWorkspaceId,
-                    viewId: viewId!
+                    view: props.view,
+                    viewObjects: props.viewObjects,
+                    handleDelete: props.handleDelete,
+                    deleteMutation: props.deleteMutation,
+                    refetchViewObjects: props.refetchViewObjects,
+                    workspaceId: props.currentWorkspaceId,
+                    viewId: props.viewId
                 }} />
             </TwoColumnSidebar>
-        </TwoColumn>
+        </>
     )
 }
 
@@ -144,23 +180,5 @@ const ViewContent = (props: any) => {
     return null
 }
 
-// Floating button to open bottom sheet on mobile
-const FloatingBottomSheetButton = () => {
-    const { t } = useTranslation()
-    const { isSidebarCollapsed, toggleSidebar } = useTwoColumn()
-
-    // Only show on mobile when sidebar is collapsed
-    if (!isSidebarCollapsed) return null
-
-    return (
-        <button
-            onClick={toggleSidebar}
-            className="lg:hidden fixed bottom-6 right-6 z-30 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all duration-200 active:scale-95"
-            title={t('views.showSidebar')}
-        >
-            <ChevronUp size={24} />
-        </button>
-    )
-}
 
 export default ViewDetailPage
