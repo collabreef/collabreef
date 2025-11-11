@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { useLocation } from "react-router";
 
 interface SidebarContextType {
   isOpen: boolean;
@@ -18,6 +19,7 @@ interface SidebarProviderProps {
 }
 
 export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) => {
+  const location = useLocation();
   const over1280 = window.innerWidth >= 1280;
   const [isOpen, setIsOpen] = useState(false);
   const [isCollapse, setIsCollapse] = useState(over1280 && true);
@@ -55,6 +57,13 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) =>
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Handle route changes - close sidebar on small screens, keep open on large screens
+  useEffect(() => {
+    if (!isOver1280) {
+      setIsOpen(false);
+    }
+  }, [location.pathname, isOver1280]);
 
   return (
     <SidebarContext.Provider value={{ isOpen, isCollapse, openSidebar, closeSidebar, toggleSidebar, collapseSidebar, expandSidebar, isOver1280 }}>

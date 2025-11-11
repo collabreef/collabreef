@@ -24,17 +24,17 @@ const queryClient = new QueryClient({
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <Toast.Provider>
     <Tooltip.Provider>
-      <SidebarProvider>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider>
-            <React.StrictMode>
-              <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <React.StrictMode>
+            <BrowserRouter>
+              <SidebarProvider>
                 <App />
-              </BrowserRouter>
-            </React.StrictMode>
-          </ThemeProvider>
-        </QueryClientProvider>
-      </SidebarProvider>
+              </SidebarProvider>
+            </BrowserRouter>
+          </React.StrictMode>
+        </ThemeProvider>
+      </QueryClientProvider>
     </Tooltip.Provider>
     <Toast.Viewport className="fixed bottom-4 right-4 flex flex-col gap-2 w-80 z-50 outline-none" />
   </Toast.Provider>,
