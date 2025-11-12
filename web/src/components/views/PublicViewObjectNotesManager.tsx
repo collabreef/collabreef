@@ -24,7 +24,7 @@ const PublicViewObjectNotesManager = ({
     })
 
     return (
-        <div className="mt-4 border-t dark:border-neutral-700 pt-4">
+        <div className="mt-4  dark:border-neutral-700 pt-4">
             {/* Linked Notes List */}
             {linkedNotes.length > 0 ? (
                 <div className="space-y-2">
@@ -32,7 +32,7 @@ const PublicViewObjectNotesManager = ({
                         <Link
                             key={note.id}
                             to={`/explore/notes/${note.id}`}
-                            className="flex flex-col rounded border shadow-sm group bg-white dark:bg-neutral-900"
+                            className="flex flex-col rounded shadow-sm group bg-white dark:bg-neutral-800"
                         >
                             <div className="flex justify-between p-4">
                                 <div>
@@ -40,7 +40,7 @@ const PublicViewObjectNotesManager = ({
                                 </div>
                             </div>
                             <div
-                                className="flex-1 cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-800 rounded transition-colors"
+                                className="flex-1 cursor-pointer  dark:hover:bg-neutral-800 rounded transition-colors"
                             >
                                 <div className="line-clamp-2 text-xs [&_.prose]:text-xs [&_.prose]:leading-tight">
                                     <Renderer content={note.content} />

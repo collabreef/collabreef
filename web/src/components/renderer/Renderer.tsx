@@ -67,7 +67,7 @@ const Renderer: React.FC<RendererProps> = ({ content }) => {
 
     return (
         <div
-            className='prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl px-4 max-w-full overflow-x-auto'
+            className='prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl px-4 max-w-full overflow-x-auto text-neutral-800 dark:text-gray-400'
             dangerouslySetInnerHTML={{ __html: processedContent }}
         />
     )

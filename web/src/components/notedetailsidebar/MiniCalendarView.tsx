@@ -165,6 +165,7 @@ const MiniCalendarView: FC<MiniCalendarViewProps> = ({ slots, viewObjects, viewI
                                 e.preventDefault()
                                 setSelectedDay(null)
                             }}
+                            aria-label='close'
                             className="p-0.5 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded"
                         >
                             <X size={12} />

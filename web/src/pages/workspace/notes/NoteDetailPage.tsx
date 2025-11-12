@@ -99,7 +99,7 @@ const NoteDetailContent: FC<NoteDetailContentProps> = ({ note, t, handleNoteChan
     return (
         <>
             <TwoColumnMain
-                className="bg-white dark:bg-neutral-950 "
+                className="bg-white dark:bg-neutral-800 text-neutral-800 dark:text-gray-400"
             >
                 <NoteDetailView
                     note={note}

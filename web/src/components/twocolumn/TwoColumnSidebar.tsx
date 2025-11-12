@@ -155,7 +155,7 @@ export const TwoColumnSidebar = ({ children, className = "" }: TwoColumnSidebarP
             >
                 {/* Drag handle - only visible on mobile */}
                 <div
-                    className="sticky top-0 z-10 flex items-center justify-center py-2 cursor-grab active:cursor-grabbing lg:hidden bg-neutral-100 dark:bg-neutral-800  touch-none"
+                    className="sticky top-0 z-10 flex items-center justify-center py-2 cursor-grab active:cursor-grabbing lg:hidden bg-neutral-100 dark:bg-neutral-900  touch-none"
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}

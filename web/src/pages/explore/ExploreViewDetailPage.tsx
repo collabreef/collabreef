@@ -97,39 +97,37 @@ const PublicViewContent = ({ view, viewObjects, navigate, focusedObjectId }: any
 
     if (view.type === 'calendar') {
         return (
-            <div className="px-4 w-full">
-                <div className="py-4">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                            <button
-                                onClick={() => navigate('/explore/views')}
-                                aria-label="back"
-                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-                            >
-                                <ArrowLeft size={20} />
-                            </button>
-                            <div className="flex items-center gap-2">
-                                <span className="text-2xl font-semibold">{view.name}</span>
-                            </div>
-                        </div>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={toggleSidebar}
-                                className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-                                title={isSidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}
-                            >
-                                <Calendar size={18} />
-                            </button>
+            <div className="w-full">
+                <div className="flex items-center justify-between p-4 bg-neutral-100 dark:bg-neutral-900">
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => navigate('/explore/views')}
+                            aria-label="back"
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                        >
+                            <ArrowLeft size={20} />
+                        </button>
+                        <div className="flex items-center gap-2">
+                            <span className="text-2xl font-semibold">{view.name}</span>
                         </div>
                     </div>
-
-                    <CalendarViewComponent
-                        key={focusedObjectId || 'default'}
-                        viewObjects={viewObjects}
-                        focusedObjectId={focusedObjectId}
-                        isPublic={true}
-                    />
+                    <div className="flex gap-2">
+                        <button
+                            onClick={toggleSidebar}
+                            className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                            title={isSidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}
+                        >
+                            <Calendar size={18} />
+                        </button>
+                    </div>
                 </div>
+
+                <CalendarViewComponent
+                    key={focusedObjectId || 'default'}
+                    viewObjects={viewObjects}
+                    focusedObjectId={focusedObjectId}
+                    isPublic={true}
+                />
             </div>
         )
     }
@@ -138,7 +136,7 @@ const PublicViewContent = ({ view, viewObjects, navigate, focusedObjectId }: any
         return (
             <div className="w-full h-full flex flex-col">
                 {/* Header */}
-                <div className="flex-shrink-0 px-4 py-4 border-b dark:border-neutral-700">
+                <div className="flex-shrink-0 p-4 border-b bg-neutral-100 dark:bg-neutral-900">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <button

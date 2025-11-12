@@ -44,7 +44,7 @@ const MapViewContent = ({
     return (
         <div className="w-full h-full flex flex-col">
             {/* Header */}
-            <div className="flex-shrink-0 px-4 py-4 border-b dark:border-neutral-700">
+            <div className="flex-shrink-0 p-4 bg-neutral-100 dark:bg-neutral-900">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <button

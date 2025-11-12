@@ -42,9 +42,8 @@ const CalendarViewContent = ({
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
     return (
-        <div className="px-4 w-full">
-            <div className="py-4">
-                <div className="flex items-center justify-between mb-6">
+        <div className="w-full">
+                <div className="flex items-center justify-between p-4  bg-neutral-100 dark:bg-neutral-900">
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => navigate(`/workspaces/${currentWorkspaceId}/views`)}
@@ -108,7 +107,6 @@ const CalendarViewContent = ({
                     focusedObjectId={focusedObjectId}
                 />
             </div>
-        </div>
     )
 }
 

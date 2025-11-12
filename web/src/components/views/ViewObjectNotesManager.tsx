@@ -100,7 +100,7 @@ const ViewObjectNotesManager = ({
         <div >
             <button
                 onClick={() => setIsAddingNote(true)}
-                className="px-2 py-1 mb-3 w-full border text-white bg-black text-sm flex gap-2 justify-center items-center rounded-lg"
+                className="px-2 py-1 mb-3 w-full text-white bg-black dark:bg-neutral-800 text-sm flex gap-2 justify-center items-center rounded-lg"
                 title={t('views.addNote')}
             >
                 <Plus size={14} />
@@ -113,7 +113,7 @@ const ViewObjectNotesManager = ({
                     {linkedNotes.map((note: any) => (
                         <div
                             key={note.id}
-                            className="flex flex-col rounded border shadow-sm group bg-white dark:bg-neutral-900 relative"
+                            className="flex flex-col rounded shadow-sm group bg-white dark:bg-neutral-800 relative"
                         >
                             <div className="flex justify-between p-4">
                                 <div className="">

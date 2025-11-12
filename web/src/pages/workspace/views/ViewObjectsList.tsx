@@ -68,9 +68,9 @@ const ViewObjectsList = () => {
 
     return (
         <div className="w-full sm:w-96">
-            <div className="p-4 flex flex-col gap-4 overflow-x-hidden bg-gray-50 dark:bg-neutral-900">
+            <div className="p-4 flex flex-col gap-4 overflow-x-hidden bg-neutral-100 dark:bg-neutral-900 min-h-screen">
                 <div
-                    className="flex items-center gap-2 p-2 border rounded-lg bg-neutral-200 dark:bg-neutral-800"
+                    className="flex items-center gap-2 p-2 rounded-lg bg-neutral-200 dark:bg-neutral-800"
                     onClick={(e) => e.stopPropagation()}
                     onTouchStart={(e) => e.stopPropagation()}
                     onTouchEnd={(e) => e.stopPropagation()}
@@ -100,7 +100,7 @@ const ViewObjectsList = () => {
                     filteredViewObjects.map((obj: ViewObject) => (
                         <div
                             key={obj.id}
-                            className="bg-white dark:bg-neutral-800 rounded-lg border dark:border-neutral-700 p-4 cursor-pointer transition-all hover:border-blue-500 dark:hover:border-blue-500"
+                            className="bg-white dark:bg-neutral-800 rounded-lg p-4 cursor-pointer transition-all hover:border-blue-500 dark:hover:border-blue-500"
                             onClick={() => handleObjectClick(obj.id)}
                         >
                             <div className="flex items-start justify-between">

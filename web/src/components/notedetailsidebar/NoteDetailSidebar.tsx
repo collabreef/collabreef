@@ -62,7 +62,7 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note, onClose }) => {
     }, [viewObjects, workspaceId])
 
     return (
-        <div className="w-full h-full overflow-y-auto bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100">
+        <div className="w-full h-full overflow-y-auto bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
             {/* Content */}
             <div className="p-6 space-y-6">
                 {/* View Objects Section */}
