@@ -26,7 +26,7 @@ const WorkspaceSetupPage = () => {
     };
 
     return (
-        <div className="w-full min-h-screen flex flex-col bg-neutral-800">
+        <div className="w-full min-h-screen flex flex-col bg-neutral-100">
             <div className="grow flex justify-center items-center">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                     <div className="flex flex-col gap-3 p-5">

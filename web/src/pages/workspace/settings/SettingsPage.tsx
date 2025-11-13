@@ -6,7 +6,7 @@ import { useWorkspaceStore } from "@/stores/workspace"
 import { deleteWorkspace, updateWorkspace } from "@/api/workspace"
 import { useEffect, useState } from "react"
 import SidebarButton from "@/components/sidebar/SidebarButton"
-import { Loader } from "lucide-react"
+import { Loader, Trash, Trash2 } from "lucide-react"
 import OneColumn from "@/components/onecolumn/OneColumn"
 
 const Settings = () => {
@@ -83,8 +83,8 @@ const Settings = () => {
                                             {t("pages.settings.workspaceName")}
                                         </div>
                                         <div className="flex gap-3 flex-wrap">
-                                            <input className="flex-1 px-3 py-2 border rounded-lg dark:bg-neutral-700" value={workspaceName} onChange={e => setWorkspaceName(e.target.value)} title="rename workspace" />
-                                            <button onClick={handleRenameClick} className=" px-3 py-2 border shadow-sm rounded-lg">
+                                            <input className="flex-1 px-3 py-2 border dark:border-none rounded-lg dark:bg-neutral-700" value={workspaceName} onChange={e => setWorkspaceName(e.target.value)} title="rename workspace" />
+                                            <button onClick={handleRenameClick} className=" px-3 py-2 border dark:border-none shadow-sm rounded-lg text-white bg-black">
                                                 {isRenaming ? <Loader size={16} className="animate-spin" /> : t("actions.rename")}
                                             </button>
                                         </div>
@@ -96,7 +96,9 @@ const Settings = () => {
                                             </div>
                                         </div>
                                         <div>
-                                            <button onClick={handleDeleteClick} className="px-3 py-2 border border-red-600 text-red-600 shadow-sm rounded-lg">{t("actions.delete")}</button>
+                                            <button onClick={handleDeleteClick} className="p-3 text-white bg-red-600 shadow-sm rounded-lg" aria-label="delete">
+                                                <Trash2 size={16} />
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

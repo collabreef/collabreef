@@ -40,7 +40,7 @@ const WorkspaceMenu = () => {
 
     return <WorkspaceDropdown
         className="w-full "
-        buttonClassName=" bg-white dark:bg-neutral-900 shadow border w-full px-3 py-1.5 rounded-md text-sm flex justify-center items-center truncate"
+        buttonClassName=" bg-white dark:bg-neutral-700 shadow border dark:border-none w-full px-3 py-1.5 rounded-md text-sm flex justify-center items-center truncate"
         buttonTooltip={getWorkspaceById(workspaceId!)?.name ?? ""}
         buttonContent={<>
             {
@@ -55,7 +55,7 @@ const WorkspaceMenu = () => {
         </>}
     >
         <div className="px-2 pb-2">
-            <input value={keyword} onChange={(e) => setKeyword(e.target.value)} className="border shadow-inner rounded-md w-full px-3 py-1 dark:bg-neutral-800 dark:text-neutral-100 " placeholder={t("placeholder.searchWorkspace")} />
+            <input value={keyword} onChange={(e) => setKeyword(e.target.value)} className="border dark:border-none shadow-inner rounded-md w-full px-3 py-1 dark:bg-neutral-700 dark:text-neutral-100 " placeholder={t("placeholder.searchWorkspace")} />
         </div>
         <div className=" overflow-y-auto pb-2">
             {

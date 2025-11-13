@@ -6,6 +6,7 @@ import { toast } from "@/stores/toast"
 import { useTheme, Theme } from "@/providers/Theme"
 import { useEffect } from "react"
 import Card from "@/components/card/Card"
+import Select from "@/components/select/Select"
 
 const PreferencesPage = () => {
     const { user } = useCurrentUserStore()
@@ -60,13 +61,13 @@ const PreferencesPage = () => {
                             {t("pages.preferences.language")}
                         </div>
                         <div>
-                            <select className="dark:bg-neutral-700 p-2 border" aria-label="select lang" value={i18n.language} onChange={handleSelectedLangChange}>
+                            <Select value={i18n.language} onChange={handleSelectedLangChange}>
                                 {supportedLanguages.map((lng) => (
                                     <option key={lng} value={lng}>
                                         {lng}
                                     </option>
                                 ))}
-                            </select>
+                            </Select>
                         </div>
                     </div>
                     <div className="flex flex-col">
@@ -74,13 +75,13 @@ const PreferencesPage = () => {
                             {t("pages.preferences.theme")}
                         </div>
                         <div>
-                            <select className="dark:bg-neutral-700 p-2 border" aria-label="select theme" value={theme} onChange={handleThemeChange}>
+                            <Select value={theme} onChange={handleThemeChange}>
                                 {themes.map((t) => (
                                     <option key={t} value={t}>
                                         {t}
                                     </option>
                                 ))}
-                            </select>
+                            </Select>
                         </div>
                     </div>
                 </div>

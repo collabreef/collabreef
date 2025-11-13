@@ -58,7 +58,7 @@ const WorkspaceDropdown = forwardRef(({ children, className, buttonClassName, bu
       </Tooltip.Root>
       {isOpen && (
         <div
-          className={twMerge(isCollapse ? "left-[calc(100%+8px)] -top-1" : " top-[calc(100%+4px)] ", "absolute z-[9999] w-[228px] bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border rounded-lg py-2 flex flex-col shadow-lg mt-1 max-h-[calc(100dvh-160px)]")}
+          className={twMerge(isCollapse ? "left-[calc(100%+8px)] -top-1" : " top-[calc(100%+4px)] ", "absolute z-[9999] w-[228px] bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 border dark:border-none rounded-lg py-2 flex flex-col shadow-lg mt-1 max-h-[calc(100dvh-160px)]")}
         >
           {children}
         </div>
