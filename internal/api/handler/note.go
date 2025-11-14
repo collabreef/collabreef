@@ -13,16 +13,19 @@ import (
 
 type CreateNoteRequest struct {
 	Visibility string `json:"visibility"  validate:"required"`
+	Title      string `json:"title"`
 	Content    string `json:"content"`
 }
 
 type UpdateNoteRequest struct {
+	Title   string `json:"title"`
 	Content string `json:"content"`
 }
 
 type GetNoteResponse struct {
 	ID         string   `json:"id"`
 	Visibility string   `json:"visibility"`
+	Title      string   `json:"title"`
 	Content    string   `json:"content"`
 	Tags       []string `json:"tags"`
 	Files      []string `json:"files"`
@@ -87,6 +90,7 @@ func (h Handler) GetPublicNotes(c echo.Context) error {
 			res = append(res, GetNoteResponse{
 				ID:         b.ID,
 				Visibility: b.Visibility,
+				Title:      b.Title,
 				Content:    b.Content,
 				CreatedAt:  b.CreatedAt,
 				CreatedBy:  h.getUserNameByID(b.CreatedBy),
@@ -98,6 +102,7 @@ func (h Handler) GetPublicNotes(c echo.Context) error {
 				res = append(res, GetNoteResponse{
 					ID:         b.ID,
 					Visibility: b.Visibility,
+					Title:      b.Title,
 					Content:    b.Content,
 					CreatedAt:  b.CreatedAt,
 					CreatedBy:  h.getUserNameByID(b.CreatedBy),
@@ -149,6 +154,7 @@ func (h Handler) GetPublicNote(c echo.Context) error {
 	res := GetNoteResponse{
 		ID:         b.ID,
 		Visibility: b.Visibility,
+		Title:      b.Title,
 		Content:    b.Content,
 		CreatedAt:  b.CreatedAt,
 		CreatedBy:  h.getUserNameByID(b.CreatedBy),
@@ -197,6 +203,7 @@ func (h Handler) GetNotes(c echo.Context) error {
 			res = append(res, GetNoteResponse{
 				ID:         b.ID,
 				Visibility: b.Visibility,
+				Title:      b.Title,
 				Content:    b.Content,
 				CreatedAt:  b.CreatedAt,
 				CreatedBy:  h.getUserNameByID(b.CreatedBy),
@@ -208,6 +215,7 @@ func (h Handler) GetNotes(c echo.Context) error {
 				res = append(res, GetNoteResponse{
 					ID:         b.ID,
 					Visibility: b.Visibility,
+					Title:      b.Title,
 					Content:    b.Content,
 					CreatedAt:  b.CreatedAt,
 					CreatedBy:  h.getUserNameByID(b.CreatedBy),
@@ -255,6 +263,7 @@ func (h Handler) GetNote(c echo.Context) error {
 	res := GetNoteResponse{
 		ID:         b.ID,
 		Visibility: b.Visibility,
+		Title:      b.Title,
 		Content:    b.Content,
 		CreatedAt:  b.CreatedAt,
 		CreatedBy:  h.getUserNameByID(b.CreatedBy),
@@ -287,6 +296,7 @@ func (h Handler) CreateNote(c echo.Context) error {
 	n.WorkspaceID = workspaceId
 	n.ID = util.NewId()
 	n.Visibility = req.Visibility
+	n.Title = req.Title
 	n.Content = req.Content
 	n.CreatedAt = time.Now().UTC().String()
 	n.CreatedBy = user.ID
@@ -365,7 +375,9 @@ func (h Handler) UpdateNote(c echo.Context) error {
 
 	n.WorkspaceID = workspaceId
 	n.ID = existingNote.ID
+	n.Title = req.Title
 	n.Content = req.Content
+	n.Visibility = existingNote.Visibility
 	n.CreatedAt = existingNote.CreatedAt
 	n.CreatedBy = existingNote.CreatedBy
 	n.UpdatedAt = time.Now().UTC().String()
@@ -416,6 +428,7 @@ func (h Handler) UpdateNoteVisibility(c echo.Context) error {
 	n.WorkspaceID = workspaceId
 	n.ID = existingNote.ID
 	n.Visibility = visibility
+	n.Title = existingNote.Title
 	n.Content = existingNote.Content
 	n.CreatedAt = existingNote.CreatedAt
 	n.CreatedBy = existingNote.CreatedBy

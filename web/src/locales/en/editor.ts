@@ -1,4 +1,5 @@
 export default {
+    "titlePlaceholder": "Untitled",
     "placeholder": "Start writing your note ...",
     "Paragraph": "Paragraph",
     "Code": "Code",

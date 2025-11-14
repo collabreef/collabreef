@@ -11,6 +11,7 @@ type NoteFilter struct {
 type Note struct {
 	WorkspaceID string `json:"workspace_id"`
 	ID          string `json:"id"`
+	Title       string `json:"title"`
 	Content     string `json:"content"`
 	Visibility  string `json:"visibility"`
 	CreatedAt   string `json:"created_at"`

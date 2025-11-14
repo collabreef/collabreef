@@ -10,6 +10,11 @@ interface Props {
 const FullNote: FC<Props> = ({ note }) => {
     return <>
         <PhotoProvider>
+            {note?.title && (
+                <div className="text-4xl font-bold px-4 mb-4 text-gray-900 dark:text-gray-100">
+                    {note.title}
+                </div>
+            )}
             <Renderer content={note?.content || ''} />
         </PhotoProvider>
     </>

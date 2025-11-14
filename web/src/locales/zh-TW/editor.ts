@@ -1,4 +1,5 @@
 export default {
+    "titlePlaceholder": "無標題",
     "placeholder": "輸入你的筆記 ...",
     "Paragraph": "文字",
     "Code": "程式碼",

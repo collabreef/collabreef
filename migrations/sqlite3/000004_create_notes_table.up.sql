@@ -1,6 +1,7 @@
 CREATE TABLE `notes` (
     `workspace_id` text,
     `id` text,
+    `title` text,
     `content` text,
     `visibility` text,
     `created_at` text,

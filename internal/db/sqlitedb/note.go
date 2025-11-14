@@ -13,7 +13,10 @@ func (s SqliteDB) CreateNote(n model.Note) error {
 }
 
 func (s SqliteDB) UpdateNote(n model.Note) error {
-	_, err := gorm.G[model.Note](s.getDB()).Where("id = ?", n.ID).Updates(context.Background(), n)
+	_, err := gorm.G[model.Note](s.getDB()).
+		Where("id = ?", n.ID).
+		Select("title", "content", "visibility", "updated_at", "updated_by").
+		Updates(context.Background(), n)
 	return err
 }
 
@@ -44,8 +47,8 @@ func (s SqliteDB) FindNotes(f model.NoteFilter) ([]model.Note, error) {
 
 	if f.Query != "" {
 		query := "%" + f.Query + "%"
-		conds = append(conds, "content LIKE ?")
-		args = append(args, query)
+		conds = append(conds, "(title LIKE ? OR content LIKE ?)")
+		args = append(args, query, query)
 	}
 
 	query := s.getDB().Model(&model.Note{})

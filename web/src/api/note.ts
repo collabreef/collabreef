@@ -7,6 +7,7 @@ export interface NoteData {
   created_by?: string;
   updated_at?: string;
   updated_by?: string;
+  title?: string;
   content: string;
   visibility?: Visibility;
 }
