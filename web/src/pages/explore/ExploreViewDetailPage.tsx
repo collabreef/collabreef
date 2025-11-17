@@ -2,11 +2,12 @@ import { useEffect } from "react"
 import { Outlet, useNavigate, useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { Calendar, MapPin, ArrowLeft, ChevronUp } from "lucide-react"
+import { Calendar, MapPin, ChevronUp } from "lucide-react"
 import { getPublicView, getPublicViewObjects } from "@/api/view"
 import { TwoColumn, TwoColumnMain, TwoColumnSidebar, useTwoColumn } from "@/components/twocolumn"
 import CalendarViewComponent from "@/components/views/calendar/CalendarViewComponent"
 import MapViewComponent from "@/components/views/map/MapViewComponent"
+import ViewHeader from "@/components/views/common/ViewHeader"
 
 const ExploreViewDetailPage = () => {
     const { t } = useTranslation()
@@ -92,26 +93,15 @@ const ExploreViewContent = ({ view, viewObjects, navigate, objectId, viewId, t }
 
 // Main content component - renders different views based on type (read-only for public)
 const PublicViewContent = ({ view, viewObjects, navigate, focusedObjectId }: any) => {
-    const { t } = useTranslation()
     const { isSidebarCollapsed, toggleSidebar } = useTwoColumn()
 
     if (view.type === 'calendar') {
         return (
             <div className="w-full">
-                <div className="flex items-center justify-between p-4 bg-neutral-100 dark:bg-neutral-900">
-                    <div className="flex items-center gap-3">
-                        <button
-                            onClick={() => navigate('/explore/views')}
-                            aria-label="back"
-                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-                        >
-                            <ArrowLeft size={20} />
-                        </button>
-                        <div className="flex items-center gap-2">
-                            <span className="text-2xl font-semibold">{view.name}</span>
-                        </div>
-                    </div>
-                    <div className="flex gap-2">
+                <ViewHeader
+                    viewName={view.name}
+                    onBack={() => navigate('/explore/views')}
+                    rightActions={
                         <button
                             onClick={toggleSidebar}
                             className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
@@ -119,8 +109,8 @@ const PublicViewContent = ({ view, viewObjects, navigate, focusedObjectId }: any
                         >
                             <Calendar size={18} />
                         </button>
-                    </div>
-                </div>
+                    }
+                />
 
                 <CalendarViewComponent
                     key={focusedObjectId || 'default'}
@@ -135,22 +125,11 @@ const PublicViewContent = ({ view, viewObjects, navigate, focusedObjectId }: any
     if (view.type === 'map') {
         return (
             <div className="w-full h-full flex flex-col">
-                {/* Header */}
-                <div className="flex-shrink-0 p-4 border-b bg-neutral-100 dark:bg-neutral-900">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <button
-                                onClick={() => navigate('/explore/views')}
-                                aria-label="back"
-                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-                            >
-                                <ArrowLeft size={20} />
-                            </button>
-                            <div className="flex items-center gap-2">
-                                <span className="text-2xl font-semibold">{view.name}</span>
-                            </div>
-                        </div>
-                        <div className="flex gap-2">
+                <div className="flex-shrink-0">
+                    <ViewHeader
+                        viewName={view.name}
+                        onBack={() => navigate('/explore/views')}
+                        rightActions={
                             <button
                                 onClick={toggleSidebar}
                                 className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
@@ -158,11 +137,10 @@ const PublicViewContent = ({ view, viewObjects, navigate, focusedObjectId }: any
                             >
                                 <MapPin size={18} />
                             </button>
-                        </div>
-                    </div>
+                        }
+                    />
                 </div>
 
-                {/* Map - takes remaining space */}
                 <div className="flex-1 overflow-hidden">
                     <MapViewComponent viewObjects={viewObjects} view={view} focusedObjectId={focusedObjectId} isPublic={true} />
                 </div>

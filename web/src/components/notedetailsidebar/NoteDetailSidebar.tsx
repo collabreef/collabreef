@@ -3,12 +3,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { deleteNote, NoteData, updateNoteVisibility } from "@/api/note"
 import { getViewObjectsForNote, getPublicViewObjectsForNote, getViews, getViewObjects, addNoteToViewObject, createViewObject } from "@/api/view"
 import { useTranslation } from "react-i18next"
-import { ChevronRight, Calendar, MapPin, Pin, Search, Plus, Trash2, Globe, Building, Lock } from "lucide-react"
+import { ChevronRight, ChevronDown, Calendar, MapPin, Pin, Search, Plus, Trash2, Globe, Building, Lock } from "lucide-react"
 import { CalendarSlotData, MapMarkerData, ViewObject, ViewObjectType } from "@/types/view"
 import MiniCalendarView from "./MiniCalendarView"
 import MiniMapView from "./MiniMapView"
 import { Link, useParams, useNavigate } from "react-router-dom"
 import * as Dialog from "@radix-ui/react-dialog"
+import * as Accordion from "@radix-ui/react-accordion"
 import { useToastStore } from "@/stores/toast"
 import CreateViewObjectModal from "@/components/views/CreateViewObjectModal"
 import { Visibility } from "@/types/visibility"
@@ -266,73 +267,54 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note }) => {
                 <div className="flex flex-col p-4">
                     {/* View Objects Section */}
                     {groupedByView.length > 0 && (
-                        <div className="space-y-4">
+                        <Accordion.Root
+                            type="multiple"
+                            defaultValue={groupedByView.map(g => g.view.id)}
+                            className="space-y-2"
+                        >
                             {groupedByView.map((viewGroup) => (
-                                <div key={viewGroup.view.id} className="flex flex-col gap-2">
-                                    <div className=" text-gray-400 ">
-                                        <Link
-                                            to={workspaceId
-                                                ? `/workspaces/${workspaceId}/views/${viewGroup.view.id}`
-                                                : `/explore/views/${viewGroup.view.id}`
-                                            }>
-                                            <span>
+                                <Accordion.Item
+                                    key={viewGroup.view.id}
+                                    value={viewGroup.view.id}
+                                    className="border border-gray-200 dark:border-neutral-700 rounded-lg overflow-hidden"
+                                >
+                                    <Accordion.Header>
+                                        <Accordion.Trigger className="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors group">
+                                            <Link
+                                                to={workspaceId
+                                                    ? `/workspaces/${workspaceId}/views/${viewGroup.view.id}`
+                                                    : `/explore/views/${viewGroup.view.id}`
+                                                }
+                                                className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 font-medium flex-1 text-left"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
                                                 {viewGroup.view.name}
-                                            </span>
-                                        </Link>
-                                    </div>
-                                    {viewGroup.view.type === 'calendar' && (() => {
-                                        try {
-                                            const calendarViewObjects = viewGroup.viewObjects.filter((obj: ViewObject) => obj.type === 'calendar_slot')
-                                            const slots: CalendarSlotData[] = calendarViewObjects.map((obj: ViewObject) => ({
-                                                date: obj.data, // data is already a date string like "2024-01-15"
-                                                color: undefined
-                                            }))
-                                            return <MiniCalendarView
-                                                slots={slots}
-                                                viewObjects={calendarViewObjects}
-                                                viewId={viewGroup.view.id}
-                                                workspaceId={workspaceId}
+                                            </Link>
+                                            <ChevronDown
+                                                size={16}
+                                                className="text-gray-400 transition-transform duration-200 group-data-[state=closed]:-rotate-90"
                                             />
-                                        } catch (e) {
-                                            console.error('Failed to parse calendar slot data:', e)
-                                            return null
-                                        }
-                                    })()}
-                                    {viewGroup.view.type === 'map' && (() => {
-                                        try {
-                                            const mapViewObjects = viewGroup.viewObjects.filter((obj: ViewObject) => obj.type === 'map_marker')
-                                            const markers: MapMarkerData[] = mapViewObjects.map((obj: ViewObject) => JSON.parse(obj.data))
-                                            return <MiniMapView
-                                                markers={markers}
-                                                viewObjects={mapViewObjects}
-                                                viewId={viewGroup.view.id}
-                                                workspaceId={workspaceId}
-                                            />
-                                        } catch (e) {
-                                            console.error('Failed to parse map marker data:', e)
-                                            return null
-                                        }
-                                    })()}
-                                    <div className="text-gray-400 flex flex-col gap-2">
-                                        {
-                                            viewGroup.viewObjects.map((vo: any) => (
-                                                <div key={vo.id}>
-                                                    <Link
-                                                        to={workspaceId
-                                                            ? `/workspaces/${workspaceId}/views/${viewGroup.view.id}/objects/${vo.id}`
-                                                            : `/explore/views/${viewGroup.view.id}/objects/${vo.id}`
-                                                        }
-                                                        className=" inline"
-                                                    >
-                                                        <span>{vo.name}</span>
-                                                    </Link>
-                                                </div>
-                                            ))
-                                        }
-                                    </div>
-                                </div>
+                                        </Accordion.Trigger>
+                                    </Accordion.Header>
+                                    <Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+                                        <div className="p-3 pt-0 flex flex-col gap-2 text-gray-600 dark:text-gray-400">
+                                            {viewGroup.viewObjects.map((vo: any) => (
+                                                <Link
+                                                    key={vo.id}
+                                                    to={workspaceId
+                                                        ? `/workspaces/${workspaceId}/views/${viewGroup.view.id}/objects/${vo.id}`
+                                                        : `/explore/views/${viewGroup.view.id}/objects/${vo.id}`
+                                                    }
+                                                    className="hover:text-gray-900 dark:hover:text-gray-200 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+                                                >
+                                                    {vo.name}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </Accordion.Content>
+                                </Accordion.Item>
                             ))}
-                        </div>
+                        </Accordion.Root>
                     )}
                 </div>
             </div>

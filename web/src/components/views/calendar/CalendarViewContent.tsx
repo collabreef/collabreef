@@ -1,9 +1,10 @@
-import { ArrowLeft, Calendar, PlusCircle, Settings } from "lucide-react"
+import { Calendar, Settings } from "lucide-react"
+import { useState } from "react"
 import { useTwoColumn } from "@/components/twocolumn"
 import CalendarViewComponent from "./CalendarViewComponent"
 import CreateViewObjectModal from "../CreateViewObjectModal"
 import CalendarViewSettingsModal from "./CalendarViewSettingsModal"
-import { useState } from "react"
+import ViewHeader from "../common/ViewHeader"
 
 interface CalendarViewContentProps {
     view: any
@@ -43,19 +44,11 @@ const CalendarViewContent = ({
 
     return (
         <div className="w-full">
-                <div className="flex items-center justify-between p-4  bg-neutral-100 dark:bg-neutral-900">
-                    <div className="flex items-center gap-3">
-                        <button
-                            onClick={() => navigate(`/workspaces/${currentWorkspaceId}/views`)}
-                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-                        >
-                            <ArrowLeft size={20} />
-                        </button>
-                        <div className="flex items-center gap-2">
-                            <span className="text-2xl font-semibold">{view.name}</span>
-                        </div>
-                    </div>
-                    <div className="flex gap-2">
+            <ViewHeader
+                viewName={view.name}
+                onBack={() => navigate(`/workspaces/${currentWorkspaceId}/views`)}
+                rightActions={
+                    <>
                         <button
                             onClick={toggleSidebar}
                             className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
@@ -70,43 +63,38 @@ const CalendarViewContent = ({
                         >
                             <Settings size={18} />
                         </button>
-                        <button
-                            onClick={() => setIsCreating(true)}
-                            className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-                        >
-                            <PlusCircle size={18} />
-                        </button>
-                    </div>
-                </div>
+                    </>
+                }
+            />
 
-                <CreateViewObjectModal
-                    open={isCreating}
-                    onOpenChange={(open) => {
-                        if (!open) handleCloseModal()
-                        else setIsCreating(true)
-                    }}
-                    viewType="calendar"
-                    name={newObjectName}
-                    setName={setNewObjectName}
-                    data={newObjectData}
-                    setData={setNewObjectData}
-                    onSubmit={handleCreate}
-                    isSubmitting={createMutation.isPending}
-                />
+            <CreateViewObjectModal
+                open={isCreating}
+                onOpenChange={(open) => {
+                    if (!open) handleCloseModal()
+                    else setIsCreating(true)
+                }}
+                viewType="calendar"
+                name={newObjectName}
+                setName={setNewObjectName}
+                data={newObjectData}
+                setData={setNewObjectData}
+                onSubmit={handleCreate}
+                isSubmitting={createMutation.isPending}
+            />
 
-                <CalendarViewSettingsModal
-                    open={isSettingsOpen}
-                    onOpenChange={setIsSettingsOpen}
-                    view={view}
-                    workspaceId={currentWorkspaceId}
-                />
+            <CalendarViewSettingsModal
+                open={isSettingsOpen}
+                onOpenChange={setIsSettingsOpen}
+                view={view}
+                workspaceId={currentWorkspaceId}
+            />
 
-                <CalendarViewComponent
-                    key={focusedObjectId || 'default'}
-                    viewObjects={viewObjects}
-                    focusedObjectId={focusedObjectId}
-                />
-            </div>
+            <CalendarViewComponent
+                key={focusedObjectId || 'default'}
+                viewObjects={viewObjects}
+                focusedObjectId={focusedObjectId}
+            />
+        </div>
     )
 }
 

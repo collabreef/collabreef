@@ -2,7 +2,6 @@ import { useState, useEffect } from "react"
 import { Outlet, useNavigate, useParams } from "react-router-dom"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { ChevronUp } from "lucide-react"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { getView, getViewObjects, createViewObject, deleteViewObject } from "@/api/view"
 import { useToastStore } from "@/stores/toast"
@@ -162,7 +161,8 @@ const ViewDetailContent = (props: any) => {
                     deleteMutation: props.deleteMutation,
                     refetchViewObjects: props.refetchViewObjects,
                     workspaceId: props.currentWorkspaceId,
-                    viewId: props.viewId
+                    viewId: props.viewId,
+                    setIsCreating: props.setIsCreating
                 }} />
             </TwoColumnSidebar>
         </>
