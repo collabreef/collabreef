@@ -278,24 +278,22 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note }) => {
                                     value={viewGroup.view.id}
                                     className="border border-gray-200 dark:border-neutral-700 rounded-lg overflow-hidden"
                                 >
-                                    <Accordion.Header>
-                                        <Accordion.Trigger className="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors group">
-                                            <Link
-                                                to={workspaceId
-                                                    ? `/workspaces/${workspaceId}/views/${viewGroup.view.id}`
-                                                    : `/explore/views/${viewGroup.view.id}`
-                                                }
-                                                className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 font-medium flex-1 text-left"
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                {viewGroup.view.name}
-                                            </Link>
-                                            <ChevronDown
-                                                size={16}
-                                                className="text-gray-400 transition-transform duration-200 group-data-[state=closed]:-rotate-90"
-                                            />
-                                        </Accordion.Trigger>
-                                    </Accordion.Header>
+                                    <Accordion.Trigger className="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors group">
+                                        <Link
+                                            to={workspaceId
+                                                ? `/workspaces/${workspaceId}/views/${viewGroup.view.id}`
+                                                : `/explore/views/${viewGroup.view.id}`
+                                            }
+                                            className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 font-medium flex-1 text-left"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            {viewGroup.view.name}
+                                        </Link>
+                                        <ChevronDown
+                                            size={16}
+                                            className="text-gray-400 transition-transform duration-200 group-data-[state=closed]:-rotate-90"
+                                        />
+                                    </Accordion.Trigger>
                                     <Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
                                         <div className="p-3 pt-0 flex flex-col gap-2 text-gray-600 dark:text-gray-400">
                                             {viewGroup.viewObjects.map((vo: any) => (
@@ -334,11 +332,10 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note }) => {
                                     key={visibility}
                                     onClick={() => handleUpdateVisibility(visibility)}
                                     disabled={updateVisibilityMutation.isPending}
-                                    className={`w-full text-left p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-700 disabled:opacity-50 transition-colors ${
-                                        note.visibility === visibility
+                                    className={`w-full text-left p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-700 disabled:opacity-50 transition-colors ${note.visibility === visibility
                                             ? 'border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20'
                                             : 'dark:border-neutral-600'
-                                    }`}
+                                        }`}
                                 >
                                     <div className="flex items-start gap-3">
                                         <div className="mt-0.5">

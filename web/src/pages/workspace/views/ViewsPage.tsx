@@ -142,7 +142,7 @@ const ViewsPage = () => {
                     {isCreating && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setIsCreating(false)}>
                             <div className="bg-white dark:bg-neutral-900 rounded-lg p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
-                                <h3 className="text-lg font-semibold mb-4">{t('views.createView')}</h3>
+                                <div className="text-lg font-semibold mb-4">{t('views.createView')}</div>
                                 <div className="space-y-4">
                                     <div>
                                         <label className="block text-sm font-medium mb-2">{t('views.viewName')}</label>
