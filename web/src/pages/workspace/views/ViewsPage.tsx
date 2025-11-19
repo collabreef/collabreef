@@ -1,15 +1,17 @@
-import { Trash2, MapPin, Calendar, PlusCircle, Edit2, Check, X } from "lucide-react"
+import { Trash2, PlusCircle, Edit2, Check, X, MoreVertical } from "lucide-react"
 import SidebarButton from "@/components/sidebar/SidebarButton"
 import { getViews, createView, deleteView, updateView } from "@/api/view"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
+import { useState, FC, ReactNode } from "react"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import OneColumn from "@/components/onecolumn/OneColumn"
 import { ViewType } from "@/types/view"
 import { useToastStore } from "@/stores/toast"
 import ViewsGridSkeleton from "@/components/skeletons/ViewsGridSkeleton"
+import { DropdownMenu } from "radix-ui"
+import { twMerge } from "tailwind-merge"
 
 const ViewsPage = () => {
     const { t } = useTranslation()
@@ -165,7 +167,6 @@ const ViewsPage = () => {
                                                     checked={newViewType === "map"}
                                                     onChange={(e) => setNewViewType(e.target.value as ViewType)}
                                                 />
-                                                <MapPin size={16} />
                                                 <span>{t('views.map')}</span>
                                             </label>
                                             <label className="flex items-center gap-2 cursor-pointer">
@@ -176,7 +177,6 @@ const ViewsPage = () => {
                                                     checked={newViewType === "calendar"}
                                                     onChange={(e) => setNewViewType(e.target.value as ViewType)}
                                                 />
-                                                <Calendar size={16} />
                                                 <span>{t('views.calendar')}</span>
                                             </label>
                                         </div>
@@ -258,11 +258,7 @@ const ViewsPage = () => {
                                     >
                                         <div className="flex items-start justify-between">
                                             <div className="flex items-center gap-3 flex-1 min-w-0">
-                                                {view.type === 'map' ? (
-                                                    <MapPin size={20} className="text-blue-500 flex-shrink-0" />
-                                                ) : (
-                                                    <Calendar size={20} className="text-green-500 flex-shrink-0" />
-                                                )}
+                                               
                                                 <div className="flex-1 min-w-0">
                                                     {editingViewId === view.id ? (
                                                         <input
@@ -308,28 +304,45 @@ const ViewsPage = () => {
                                                         </button>
                                                     </>
                                                 ) : (
-                                                    <>
-                                                        <button
-                                                            onClick={(e) => handleStartEdit(e, view)}
-                                                            className="text-blue-500 hover:text-blue-700 p-1"
-                                                            title={t('views.editView')}
-                                                        >
-                                                            <Edit2 size={16} />
-                                                        </button>
-                                                        <button
-                                                            onClick={(e) => handleDeleteView(e, view.id)}
-                                                            className="text-red-500 hover:text-red-700 p-1"
-                                                            title={t('views.deleteView')}
-                                                        >
-                                                            <Trash2 size={16} />
-                                                        </button>
-                                                    </>
+                                                    <DropdownMenu.Root>
+                                                        <DropdownMenu.Trigger asChild>
+                                                            <button
+                                                                onClick={(e) => e.stopPropagation()}
+                                                                className="p-1 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700"
+                                                                title="more"
+                                                            >
+                                                                <MoreVertical size={16} />
+                                                            </button>
+                                                        </DropdownMenu.Trigger>
+                                                        <DropdownMenu.Portal>
+                                                            <DropdownMenu.Content
+                                                                className="rounded-md w-48 bg-white text-gray-900 dark:bg-neutral-800 p-[5px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] z-50"
+                                                                align="end"
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            >
+                                                                <DropdownItem>
+                                                                    <button
+                                                                        onClick={(e) => handleStartEdit(e, view)}
+                                                                        className="flex gap-3 p-2 items-center w-full"
+                                                                    >
+                                                                        <Edit2 size={16} />
+                                                                        {t('actions.rename')}
+                                                                    </button>
+                                                                </DropdownItem>
+                                                                <DropdownMenu.Item className="text-red-600 select-none rounded-lg leading-none outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-red-100 dark:data-[highlighted]:text-red-900">
+                                                                    <button
+                                                                        onClick={(e) => handleDeleteView(e, view.id)}
+                                                                        className="flex gap-3 p-2 items-center w-full"
+                                                                    >
+                                                                        <Trash2 size={16} />
+                                                                        {t('actions.delete')}
+                                                                    </button>
+                                                                </DropdownMenu.Item>
+                                                            </DropdownMenu.Content>
+                                                        </DropdownMenu.Portal>
+                                                    </DropdownMenu.Root>
                                                 )}
                                             </div>
-                                        </div>
-                                        <div className="mt-3 text-xs text-gray-400">
-                                            <div>{t('views.createdBy')}: {view.created_by}</div>
-                                            <div>{t('views.updatedAt')}: {new Date(view.updated_at).toLocaleDateString()}</div>
                                         </div>
                                     </div>
                                 ))}
@@ -339,6 +352,24 @@ const ViewsPage = () => {
                 </div>
             </div>
         </OneColumn>
+    )
+}
+
+interface DropdownItemProps {
+    children: ReactNode
+    className?: string
+}
+
+const DropdownItem: FC<DropdownItemProps> = ({ children, className }) => {
+    return (
+        <DropdownMenu.Item
+            className={twMerge(
+                "select-none dark:text-gray-100 rounded-lg leading-none outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-neutral-300 dark:data-[highlighted]:text-neutral-700",
+                className
+            )}
+        >
+            {children}
+        </DropdownMenu.Item>
     )
 }
 
