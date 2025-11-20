@@ -1,4 +1,4 @@
-import { Edit, LayoutGrid, LayoutList, Search, X } from "lucide-react"
+import { Edit, Search, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import SidebarButton from "@/components/sidebar/SidebarButton"
 import { getNotes, NoteData, createNote } from "@/api/note"
@@ -9,9 +9,7 @@ import { useRef, useCallback, useState, useEffect } from "react"
 import { Tooltip } from "radix-ui"
 import { useWorkspaceStore } from "@/stores/workspace"
 import NoteMasonry from "@/components/notecard/NoteMasonry"
-import NoteList from "@/components/notecard/NoteList"
 import NoteMasonrySkeleton from "@/components/notecard/NoteMasonrySkeleton"
-import NoteListSkeleton from "@/components/notecard/NoteListSkeleton"
 import { toast } from "@/stores/toast"
 import OneColumn from "@/components/onecolumn/OneColumn"
 
@@ -24,7 +22,6 @@ const NotesPage = () => {
     const currentWorkspaceId = useCurrentWorkspaceId();
     const [isSearchVisible, setIsSearchVisible] = useState(false);
     const { t } = useTranslation()
-    const [isMasonryView, setIsMasonryView] = useState(true)
     const observerRef = useRef<IntersectionObserver | null>(null);
     const navigate = useNavigate();
 
@@ -126,15 +123,6 @@ const NotesPage = () => {
                                             <input type="text" value={query} onChange={e => setQuery(e.target.value)} className=" flex-1 bg-transparent" placeholder={t("placeholder.search")} />
                                         </div>
                                     </div>
-                                    <div className="hidden sm:block">
-                                        <div className="p-3 flex items-center ">
-                                            <button onClick={() => setIsMasonryView(!isMasonryView)}>
-                                                {
-                                                    isMasonryView ? <LayoutGrid size={20} /> : <LayoutList size={20} />
-                                                }
-                                            </button>
-                                        </div>
-                                    </div>
                                     <div className="sm:hidden">
                                         {
                                             !isSearchVisible && <Tooltip.Root>
@@ -179,18 +167,14 @@ const NotesPage = () => {
                 </div>
                 <div className="flex flex-col gap-2 sm:gap-5">
                     <div className="w-full">
-                        {
-                            isLoading ? (
-                                isMasonryView ? <NoteMasonrySkeleton /> : <NoteListSkeleton />
-                            ) : (
-                                isMasonryView ? <NoteMasonry notes={notes} getLinkTo={(note) => `note/${note.id}`} />
-                                    : <NoteList notes={notes} getLinkTo={(note) => `note/${note.id}`} />
-                            )}
+                        {isLoading ? (
+                            <NoteMasonrySkeleton />
+                        ) : (
+                            <NoteMasonry notes={notes} getLinkTo={(note) => `note/${note.id}`} />
+                        )}
 
                         <div ref={loadMoreRef} className="h-8" ></div>
-                        {isFetchingNextPage && (
-                            isMasonryView ? <NoteMasonrySkeleton count={3} /> : <NoteListSkeleton count={3} />
-                        )}
+                        {isFetchingNextPage && <NoteMasonrySkeleton count={3} />}
                         {!isLoading && !hasNextPage && <div className="text-center py-4 text-gray-400">{t("messages.noMoreNotes")}</div>}
                     </div>
                 </div>
