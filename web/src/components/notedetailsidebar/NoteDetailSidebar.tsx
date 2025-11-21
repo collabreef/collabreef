@@ -240,14 +240,16 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note }) => {
             <div className="flex flex-col divide-y divide-gray-300">
                 {
                     workspaceId &&
-                    <div className="flex gap-2 flex-wrap p-4">
+                    <div className="flex flex-col xl:flex-row gap-2 flex-wrap p-4">
                         <button
                             onClick={() => setIsVisibilitySelecting(true)}
                             disabled={!workspaceId}
                             className="px-2 py-1 inline-flex items-center justify-center gap-2 rounded-lg "
                         >
                             {getVisibilityIcon(note.visibility)}
-                            {t(`common.${note.visibility}`) || note.visibility}
+                            <div className="flex-1 text-left px-4">
+                                {t(`common.${note.visibility}`) || note.visibility}
+                            </div>
                         </button>
                         <button
                             onClick={() => setIsPinning(true)}
@@ -255,11 +257,15 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note }) => {
                             className="px-2 py-1 inline-flex items-center justify-center gap-2 rounded-lg "
                         >
                             <Pin size={16} />
-                            {t('views.pinTo') || 'Pin to...'}
+                            <div className="flex-1 text-left px-4">
+                                {t('views.pinTo') || 'Pin to...'}
+                            </div>
                         </button>
                         <button onClick={handleDelete} className="px-2 py-1 text-red-500 rounded-lg inline-flex items-center justify-center gap-2 ">
                             <Trash2 size={16} />
-                            {t("actions.delete")}
+                            <div className="flex-1 text-left px-4">
+                                {t("actions.delete")}
+                            </div>
                         </button>
                     </div>
                 }
