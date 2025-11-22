@@ -237,10 +237,10 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note }) => {
 
     return (
         <div className="w-full h-full overflow-y-auto bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
-            <div className="flex flex-col divide-y divide-gray-300">
+            <div className="flex flex-col">
                 {
                     workspaceId &&
-                    <div className="flex flex-col xl:flex-row gap-2 flex-wrap p-4">
+                    <div className="flex flex-col gap-2 flex-wrap p-4 pb-0">
                         <button
                             onClick={() => setIsVisibilitySelecting(true)}
                             disabled={!workspaceId}
