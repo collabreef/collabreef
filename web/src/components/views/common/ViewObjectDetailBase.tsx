@@ -1,6 +1,5 @@
 import { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { ArrowLeft } from "lucide-react"
 import { ViewObject } from "@/types/view"
 import ViewObjectDataDisplay from "./ViewObjectDataDisplay"
 import { Link } from "react-router-dom"
@@ -12,6 +11,7 @@ interface ViewObjectDetailBaseProps {
     onBack: () => void
     notFoundMessage: string
     children: ReactNode
+    headerAction?: ReactNode
 }
 
 const ViewObjectDetailBase = ({
@@ -20,7 +20,8 @@ const ViewObjectDetailBase = ({
     isLoading,
     onBack,
     notFoundMessage,
-    children
+    children,
+    headerAction
 }: ViewObjectDetailBaseProps) => {
     const { t } = useTranslation()
 
@@ -57,18 +58,22 @@ const ViewObjectDetailBase = ({
                 >
                     {viewName}
                 </Link>
-                <div className="flex items-center gap-2">
-                    <div className="text-lg font-bold truncate">{viewObject.name}</div>
+                <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                        <div className="text-lg font-bold truncate">{viewObject.name}</div>
+                        {viewObject.data && (
+                            <ViewObjectDataDisplay viewObject={viewObject} variant="detail" />
+                        )}
+                    </div>
+                    {headerAction && (
+                        <div className="flex-shrink-0">
+                            {headerAction}
+                        </div>
+                    )}
                 </div>
             </div>
 
-            <div className="p-4 pt-0  overflow-x-hidden">
-                {viewObject.data && (
-                    <div>
-                        <ViewObjectDataDisplay viewObject={viewObject} variant="detail" />
-                    </div>
-                )}
-
+            <div className="p-4 pt-0 overflow-x-hidden">
                 <div>{children}</div>
             </div>
         </div>

@@ -34,9 +34,9 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({ note, menu, isEditable = fals
         <div className="w-full">
             {note && (
                 <div className="flex flex-col min-h-dvh">
-                    <div className="p-2 flex items-center justify-between">
+                    <div className="p-2 xl:p-4 flex items-center justify-between">
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                            <button onClick={() => navigate(-1)} aria-label="back" className="inline-flex p-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0">
+                            <button onClick={() => navigate(-1)} aria-label="back" className="inline-flex xl:hidden p-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0">
                                 <ArrowLeft size={20} />
                             </button>
                             {isEditable ? (

@@ -10,11 +10,11 @@ interface ViewHeaderProps {
 
 const ViewHeader = ({ viewName, onBack, rightActions, icon }: ViewHeaderProps) => {
     return (
-        <div className="flex items-center justify-between p-4 xl:px-0 bg-neutral-100 dark:bg-neutral-900">
+        <div className="flex items-center justify-between p-2 xl:p-4  bg-neutral-100 dark:bg-neutral-900">
             <div className="flex items-center gap-3">
                 <button
                     onClick={onBack}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                    className="block xl:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
                     aria-label="back"
                 >
                     <ArrowLeft size={20} />

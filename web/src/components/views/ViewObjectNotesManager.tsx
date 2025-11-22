@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { Plus, Search, Trash2, FilePlus } from "lucide-react"
+import { Search, Trash2, FilePlus } from "lucide-react"
 import { getNotesForViewObject, addNoteToViewObject, removeNoteFromViewObject } from "@/api/view"
 import { getNotes, createNote } from "@/api/note"
 import { useToastStore } from "@/stores/toast"
@@ -15,19 +15,22 @@ interface ViewObjectNotesManagerProps {
     viewId: string
     viewObjectId: string
     viewObjectName: string
+    isAddingNote: boolean
+    setIsAddingNote: (value: boolean) => void
 }
 
 const ViewObjectNotesManager = ({
     workspaceId,
     viewId,
     viewObjectId,
-    viewObjectName
+    viewObjectName,
+    isAddingNote,
+    setIsAddingNote
 }: ViewObjectNotesManagerProps) => {
     const { t } = useTranslation()
     const { addToast } = useToastStore()
     const queryClient = useQueryClient()
     const navigate = useNavigate()
-    const [isAddingNote, setIsAddingNote] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
 
     // Fetch linked notes
@@ -97,16 +100,7 @@ const ViewObjectNotesManager = ({
     const availableNotes = Array.isArray(allNotes) ? allNotes.filter((note: any) => !linkedNoteIds.includes(note.id)) : []
 
     return (
-        <div >
-            <button
-                onClick={() => setIsAddingNote(true)}
-                className="px-2 py-1 mb-3 w-full text-white bg-black dark:bg-neutral-800 text-sm flex gap-2 justify-center items-center rounded-lg"
-                title={t('views.addNote')}
-            >
-                <Plus size={14} />
-                {t('views.addNote')}
-            </button>
-
+        <div>
             {/* Linked Notes List */}
             {linkedNotes.length > 0 ? (
                 <div className="space-y-2">
