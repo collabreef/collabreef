@@ -216,8 +216,8 @@ const GenTemplateSidebar = ({ histories, refetchHistories, t, isGenerating }: an
     const { toggleSidebar } = useTwoColumn()
 
     return (
-        <div className="w-full">
-            <div className="sticky top-0 bg-gray-50 dark:bg-neutral-900 border-b dark:border-neutral-700 px-4 py-4 flex items-center justify-between z-10">
+        <div className="w-full h-full overflow-auto bg-neutral-100 dark:bg-neutral-900">
+            <div className=" p-4 flex items-center justify-between z-10">
                 <div className="flex items-center gap-2">
                     <History size={18} />
                     <div className="text-lg font-semibold">{t("genHistory.title") || "Generation History"}</div>
@@ -231,7 +231,7 @@ const GenTemplateSidebar = ({ histories, refetchHistories, t, isGenerating }: an
                 </button>
             </div>
 
-            <div className="p-4 space-y-4">
+            <div className="px-4 pb-4 space-y-4">
                 {isGenerating && <GenHistorySkeleton />}
                 {histories && histories.length > 0 ? (
                     histories.map((history: any) => (
