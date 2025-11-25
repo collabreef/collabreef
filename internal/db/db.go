@@ -19,6 +19,7 @@ type DB interface {
 	ViewRepository
 	ViewObjectRepository
 	ViewObjectNoteRepository
+	WidgetRepository
 }
 type Uow interface {
 	Begin(ctx context.Context) (DB, error)
@@ -95,4 +96,11 @@ type ViewObjectNoteRepository interface {
 	RemoveNoteFromViewObject(v model.ViewObjectNote) error
 	FindNotesForViewObject(viewObjectID string) ([]model.Note, error)
 	FindViewObjectsForNote(noteID string) ([]model.ViewObject, error)
+}
+type WidgetRepository interface {
+	CreateWidget(w model.Widget) error
+	UpdateWidget(w model.Widget) error
+	DeleteWidget(w model.Widget) error
+	FindWidget(w model.Widget) (model.Widget, error)
+	FindWidgets(f model.WidgetFilter) ([]model.Widget, error)
 }

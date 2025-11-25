@@ -109,9 +109,9 @@ const MiniMapView: FC<MiniMapViewProps> = ({ markers, viewObjects, viewId, works
     } : null
 
     return (
-        <div onClick={(e) => e.preventDefault()}>
+        <div className="h-full flex flex-col" onClick={(e) => e.preventDefault()}>
             <div
-                className="h-48 w-full rounded-lg overflow-hidden border dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800"
+                className="flex-1 min-h-0 w-full rounded-lg overflow-hidden border dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800"
                 style={{ transform: 'translateZ(0)' }}
             >
                 {isReady ? (

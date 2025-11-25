@@ -1,0 +1,307 @@
+import { useState, useCallback, useMemo, useRef } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import { Responsive, WidthProvider, Layout, Layouts } from 'react-grid-layout';
+import { PlusCircle, Settings2 } from 'lucide-react';
+import OneColumn from '@/components/onecolumn/OneColumn';
+import SidebarButton from '@/components/sidebar/SidebarButton';
+import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
+import { getWidgets, updateWidget, deleteWidget, WidgetData } from '@/api/widget';
+import { useToastStore } from '@/stores/toast';
+import WidgetRenderer from '@/components/widgets/WidgetRenderer';
+import AddWidgetDialog from '@/components/widgets/AddWidgetDialog';
+import EditWidgetDialog from '@/components/widgets/EditWidgetDialog';
+import { parseWidgetPosition, stringifyWidgetPosition, WidgetPosition } from '@/types/widget';
+
+import 'react-grid-layout/css/styles.css';
+import { useWorkspaceStore } from '@/stores/workspace';
+
+const ResponsiveGridLayout = WidthProvider(Responsive);
+
+const LAYOUT_SAVE_DEBOUNCE_MS = 500;
+
+const WorkspaceHomePage = () => {
+  const { t } = useTranslation();
+  const workspaceId = useCurrentWorkspaceId();
+  const { getWorkspaceById } = useWorkspaceStore()
+  const queryClient = useQueryClient();
+  const { addToast } = useToastStore();
+
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [editingWidget, setEditingWidget] = useState<WidgetData | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const widgetsRef = useRef<WidgetData[]>([]);
+
+  const { data: widgetsData, isLoading } = useQuery({
+    queryKey: ['widgets', workspaceId],
+    queryFn: () => getWidgets(workspaceId, 1, 100),
+    enabled: !!workspaceId,
+  });
+
+  // Ensure widgets is always an array (API might return null)
+  const widgets = widgetsData ?? [];
+
+  // Keep widgets ref in sync for use in callbacks
+  widgetsRef.current = widgets;
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, position }: { id: string; position: string }) =>
+      updateWidget(workspaceId, { id, position }),
+    onError: () => {
+      addToast({ type: 'error', title: t('widgets.updateError') });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteWidget(workspaceId, id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['widgets', workspaceId] });
+      addToast({ type: 'success', title: t('widgets.deleteSuccess') });
+    },
+    onError: () => {
+      addToast({ type: 'error', title: t('widgets.deleteError') });
+    },
+  });
+
+  // Generate responsive layouts from widget positions
+  const layouts = useMemo((): Layouts => {
+    const baseLayout: Layout[] = widgets.map((widget, index) => {
+      const position = parseWidgetPosition(widget as any);
+      return {
+        i: widget.id!,
+        x: position.x ?? (index % 3) * 4,
+        y: position.y ?? Math.floor(index / 3) * 4,
+        w: position.width ?? 4,
+        h: position.height ?? 4,
+        minW: 2,
+        minH: 2,
+      };
+    });
+
+    // Sort by position (top to bottom, left to right) for smaller screens
+    const sortedLayout = [...baseLayout].sort((a, b) => {
+      if (a.y !== b.y) return a.y - b.y;
+      return a.x - b.x;
+    });
+
+    // Create responsive layouts for different breakpoints
+    // Pack widgets left-to-right, wrap to next row when full
+    const packLayout = (items: Layout[], cols: number, maxW?: number): Layout[] => {
+      const result: Layout[] = [];
+      let currentX = 0;
+      let currentY = 0;
+      let rowHeight = 0;
+
+      items.forEach((item) => {
+        const w = maxW ? Math.min(item.w, maxW) : item.w;
+
+        // If widget doesn't fit in current row, move to next row
+        if (currentX + w > cols) {
+          currentX = 0;
+          currentY += rowHeight;
+          rowHeight = 0;
+        }
+
+        result.push({
+          ...item,
+          w,
+          x: currentX,
+          y: currentY,
+        });
+
+        currentX += w;
+        rowHeight = Math.max(rowHeight, item.h);
+      });
+
+      return result;
+    };
+
+    return {
+      xl: baseLayout,
+      lg: packLayout(sortedLayout, 8, 8),
+      md: packLayout(sortedLayout, 6, 6),
+      sm: packLayout(sortedLayout, 4, 4),
+      xs: packLayout(sortedLayout, 2, 2),
+      xxs: packLayout(sortedLayout, 1, 1),
+    };
+  }, [widgets]);
+
+  // Save layout with debounce
+  const saveLayout = useCallback(
+    (allLayouts: Layouts) => {
+      // Use xl or lg layout (xl for larger screens, lg as fallback)
+      const layoutToSave = allLayouts.xl || allLayouts.lg;
+      if (!layoutToSave || layoutToSave.length === 0) return;
+
+      const updates: Promise<unknown>[] = [];
+      const currentWidgets = widgetsRef.current;
+
+      layoutToSave.forEach((item) => {
+        const widget = currentWidgets.find((w) => w.id === item.i);
+        if (widget) {
+          const currentPosition = parseWidgetPosition(widget as any);
+          const newPosition: WidgetPosition = {
+            x: item.x,
+            y: item.y,
+            width: item.w,
+            height: item.h,
+          };
+
+          // Only update if position changed
+          if (
+            currentPosition.x !== newPosition.x ||
+            currentPosition.y !== newPosition.y ||
+            currentPosition.width !== newPosition.width ||
+            currentPosition.height !== newPosition.height
+          ) {
+            updates.push(
+              updateMutation.mutateAsync({
+                id: widget.id!,
+                position: stringifyWidgetPosition(newPosition),
+              })
+            );
+          }
+        }
+      });
+
+      // Wait for all updates to complete, then refresh data
+      if (updates.length > 0) {
+        Promise.all(updates).then(() => {
+          queryClient.invalidateQueries({ queryKey: ['widgets', workspaceId] });
+        });
+      }
+    },
+    [updateMutation, queryClient, workspaceId]
+  );
+
+  const handleLayoutChange = useCallback(
+    (_currentLayout: Layout[], allLayouts: Layouts) => {
+      if (!isEditMode) return;
+
+      // Clear any pending save
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+
+      // Debounce the save operation
+      saveTimeoutRef.current = setTimeout(() => {
+        saveLayout(allLayouts);
+      }, LAYOUT_SAVE_DEBOUNCE_MS);
+    },
+    [isEditMode, saveLayout]
+  );
+
+  const handleDeleteWidget = (widgetId: string) => {
+    if (window.confirm(t('widgets.deleteConfirm'))) {
+      deleteMutation.mutate(widgetId);
+    }
+  };
+
+  const handleEditWidget = (widget: WidgetData) => {
+    setEditingWidget(widget);
+  };
+
+  return (
+    <OneColumn>
+      <div className="w-full">
+        <div className="py-2">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3 h-10">
+              <SidebarButton />
+              <div className="flex gap-2 items-center max-w-[calc(100vw-165px)] overflow-x-auto whitespace-nowrap sm:text-xl font-semibold hide-scrollbar">
+                {getWorkspaceById(workspaceId)?.name ?? ""}
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+              <button
+                aria-label="toggle edit mode"
+                onClick={() => setIsEditMode(!isEditMode)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${isEditMode
+                  ? 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400'
+                  : 'hover:bg-neutral-200 dark:hover:bg-neutral-800'
+                  }`}
+              >
+                <Settings2 size={20} />
+              </button>
+              <button
+                aria-label="add widget"
+                onClick={() => setIsAddDialogOpen(true)}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
+              >
+                <PlusCircle size={20} />
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-2">
+            {isLoading ? (
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="h-48 bg-neutral-200 dark:bg-neutral-800 rounded-lg animate-pulse"
+                  />
+                ))}
+              </div>
+            ) : widgets.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="text-gray-500 dark:text-gray-400 mb-4">
+                  {t('widgets.noWidgets')}
+                </div>
+                <button
+                  onClick={() => setIsAddDialogOpen(true)}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  {t('widgets.addFirst')}
+                </button>
+              </div>
+            ) : (
+              <ResponsiveGridLayout
+                className="layout"
+                layouts={layouts}
+                breakpoints={{ xl: 1400, lg: 1183, md: 983, sm: 640, xs: 480, xxs: 300 }}
+                cols={{ xl: 10, lg: 8, md: 6, sm: 4, xs: 2, xxs: 1 }}
+                rowHeight={60}
+                containerPadding={[0, 0]}
+                onLayoutChange={handleLayoutChange}
+                isDraggable={isEditMode}
+                isResizable={isEditMode}
+                draggableHandle=".widget-drag-handle"
+              >
+                {widgets.map((widget) => (
+                  <div
+                    key={widget.id}
+                    className="bg-white dark:bg-neutral-900 border dark:border-neutral-700 rounded-lg overflow-hidden"
+                  >
+                    <WidgetRenderer
+                      widget={widget}
+                      isEditMode={isEditMode}
+                      onEdit={() => handleEditWidget(widget)}
+                      onDelete={() => handleDeleteWidget(widget.id!)}
+                    />
+                  </div>
+                ))}
+              </ResponsiveGridLayout>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <AddWidgetDialog
+        isOpen={isAddDialogOpen}
+        onClose={() => setIsAddDialogOpen(false)}
+      />
+
+      {editingWidget && (
+        <EditWidgetDialog
+          widget={editingWidget}
+          isOpen={!!editingWidget}
+          onClose={() => setEditingWidget(null)}
+        />
+      )}
+    </OneColumn>
+  );
+};
+
+export default WorkspaceHomePage;

@@ -45,7 +45,7 @@ const WorkspaceDropdown:FC<DropdownProps> = ({ children, className, buttonClassN
           {
             isCollapse &&
             <Tooltip.Content
-              className="select-none rounded-lg bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-2 py-1 text-sm"
+              className="z-50 select-none rounded-lg bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-2 py-1 text-sm"
               side="right"
               sideOffset={5}
             > <>

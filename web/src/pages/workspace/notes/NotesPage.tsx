@@ -28,7 +28,7 @@ const NotesPage = () => {
     const createNoteMutation = useMutation({
         mutationFn: (data: NoteData) => createNote(currentWorkspaceId, data),
         onSuccess: (data) => {
-            navigate(`note/${data.id}`)
+            navigate(`./${data.id}`)
         },
         onError: (error) => {
             toast.error(t("messages.createNoteFailed"))
@@ -113,7 +113,7 @@ const NotesPage = () => {
                                 <div className="flex items-center gap-3 h-10">
                                     <SidebarButton />
                                     <div className="flex gap-2 items-center max-w-[calc(100vw-165px)] overflow-x-auto whitespace-nowrap sm:text-xl font-semibold hide-scrollbar">
-                                        {getWorkspaceById(currentWorkspaceId)?.name ?? ""}
+                                        {t("menu.notes")}
                                     </div>
                                 </div>
                                 <div className="flex items-center text-gray-600 dark:text-gray-400">
@@ -170,7 +170,7 @@ const NotesPage = () => {
                         {isLoading ? (
                             <NoteMasonrySkeleton />
                         ) : (
-                            <NoteMasonry notes={notes} getLinkTo={(note) => `note/${note.id}`} />
+                            <NoteMasonry notes={notes} getLinkTo={(note) => `${note.id}`} />
                         )}
 
                         <div ref={loadMoreRef} className="h-8" ></div>
