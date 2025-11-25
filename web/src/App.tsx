@@ -29,6 +29,7 @@ import ViewsPage from './pages/workspace/views/ViewsPage';
 import ViewDetailPage from './pages/workspace/views/ViewDetailPage';
 import ViewObjectsList from './pages/workspace/views/ViewObjectsList';
 import ViewObjectDetailPage from './pages/workspace/views/ViewObjectDetailPage';
+import WorkspaceHomePage from './pages/workspace/home/WorkspaceHomePage';
 
 function App() {
   const location = useLocation();
@@ -53,7 +54,7 @@ function App() {
           <Route index element={<Navigate to="/workspaces" replace />} />
           <Route path='workspaces' element={<WorkspaceLoader />} />
           <Route path='workspaces/:workspaceId' element={<WorkspaceLayout />}>
-            <Route path='note/:noteId' element={<NoteDetailPage />} ></Route>
+            <Route path='notes/:noteId' element={<NoteDetailPage />} ></Route>
             <Route path='notes' element={<NotesPage />}></Route>
             <Route path='gen-templates' element={<GenTemplatesPage />}></Route>
             <Route path='gen-templates/new' element={<GenTemplateFormPage />}></Route>
@@ -66,7 +67,8 @@ function App() {
               <Route path='objects/:objectId' element={<ViewObjectDetailPage />} />
             </Route>
             <Route path='settings' element={<Settings />}></Route>
-            <Route path='' element={<NotesPage />}></Route>
+            <Route path='home' element={<WorkspaceHomePage />}></Route>
+            <Route path='' element={<WorkspaceHomePage />}></Route>
           </Route>
           <Route path='user' element={<UserLayout />} >
             <Route index element={<Navigate to="/user/preferences" replace />} />

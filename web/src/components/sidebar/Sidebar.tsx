@@ -21,7 +21,7 @@ const Sidebar: FC<Props> = function ({ children }) {
             className={twMerge(isOver1280 ? "flex" :
                 isOpen ? "translate-x-0" : "-translate-x-full"
                 , isCollapse ? "w-[72px]" : " w-[260px]"
-                , " transition duration-200 ease-in-out transform fixed  top-0 left-0 xl:flex-col gap-0.5 h-[100dvh] bg-opacity-100 ")}
+                , " transition duration-200 ease-in-out transform fixed top-0 left-0 z-40 xl:flex-col gap-0.5 h-[100dvh] bg-opacity-100 ")}
             aria-label="Sidebar">
             <div className="px-4 bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col justify-between h-full">
                 {children}

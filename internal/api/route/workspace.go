@@ -67,4 +67,11 @@ func RegisterWorkspace(api *echo.Group, h handler.Handler, authMiddleware middle
 	g.GET("/:workspaceId/views/:viewId/objects/:id/notes", h.GetNotesForViewObject)
 	g.POST("/:workspaceId/views/:viewId/objects/:id/notes", h.AddNoteToViewObject)
 	g.DELETE("/:workspaceId/views/:viewId/objects/:id/notes/:noteId", h.RemoveNoteFromViewObject)
+
+	// Widgets
+	g.GET("/:workspaceId/widgets", h.GetWidgets)
+	g.POST("/:workspaceId/widgets", h.CreateWidget)
+	g.GET("/:workspaceId/widgets/:id", h.GetWidget)
+	g.PUT("/:workspaceId/widgets/:id", h.UpdateWidget)
+	g.DELETE("/:workspaceId/widgets/:id", h.DeleteWidget)
 }

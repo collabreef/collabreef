@@ -2,6 +2,7 @@ import { FC, useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { CalendarSlotData, ViewObject } from '@/types/view'
 import { Link } from 'react-router-dom'
+import { twMerge } from 'tailwind-merge'
 
 interface MiniCalendarViewProps {
     slots: CalendarSlotData[]
@@ -83,111 +84,120 @@ const MiniCalendarView: FC<MiniCalendarViewProps> = ({ slots, viewObjects, viewI
 
     const selectedDaySlots = useMemo(() => {
         if (!selectedDay) return []
-        const daySlots = getSlotsForDay(selectedDay)
-        return daySlots.map((slotData, index) => {
-            const slotDate = new Date(slotData.date)
-            const viewObject = viewObjects.find(vo => {
-                return vo.data === slotData.date
-            })
-            return { slotData, viewObject }
+
+        // Filter viewObjects directly by date to maintain 1:1 mapping
+        return viewObjects.filter(vo => {
+            try {
+                const date = new Date(vo.data)
+                return (
+                    date.getDate() === selectedDay &&
+                    date.getMonth() === month &&
+                    date.getFullYear() === year
+                )
+            } catch {
+                return false
+            }
         })
-    }, [selectedDay, slots, viewObjects, year, month])
+    }, [selectedDay, viewObjects, year, month])
 
     return (
         <div
-            className=""
+            className="h-full flex flex-col items-start p-3"
             onClick={(e) => e.preventDefault()}
         >
-            <div className="flex items-center justify-between py-3">
-                <button
-                    onClick={(e) => {
-                        e.preventDefault()
-                        previousMonth()
-                    }}
-                    className="p-3 rounded bg-white dark:bg-neutral-800"
-                    title="Previous month"
-                >
-                    <ChevronLeft size={14} />
-                </button>
+            <div className="flex items-center justify-between w-full">
                 <div className=" font-semibold">
                     {monthNames[month]} {year}
                 </div>
-                <button
-                    onClick={(e) => {
-                        e.preventDefault()
-                        nextMonth()
-                    }}
-                    className="p-3 rounded bg-white dark:bg-neutral-800"
-                    title="Next month"
-                >
-                    <ChevronRight size={14} />
-                </button>
+                <div className=''>
+
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault()
+                            previousMonth()
+                        }}
+                        className="p-3 rounded bg-white dark:bg-neutral-800"
+                        title="Previous month"
+                    >
+                        <ChevronLeft size={14} />
+                    </button>
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault()
+                            nextMonth()
+                        }}
+                        className="p-3 rounded bg-white dark:bg-neutral-800"
+                        title="Next month"
+                    >
+                        <ChevronRight size={14} />
+                    </button>
+                </div>
             </div>
 
-            <div className="grid grid-cols-7 gap-1">
-                {weekDays.map((d, i) => (
-                    <div key={i} className="flex items-center justify-center  text-gray-500 dark:text-gray-400 aspect-square">
-                        {d}
-                    </div>
-                ))}
-
-                {calendarDays.map((d, index) => {
-                    const daySlotsData = getSlotsForDay(d)
-                    const isHighlighted = daySlotsData.length > 0
-                    const isSelected = d === selectedDay
-
-                    return (
-                        <div
-                            key={index}
-                            onClick={() => handleDayClick(d)}
-                            className={`
-                                aspect-square flex items-center justify-center  rounded 
-                                ${d ? 'text-gray-700 dark:text-gray-300 bg-white dark:bg-neutral-800' : ''}
-                                ${isHighlighted ? `font-bold cursor-pointer bg-neutral-600 text-white dark:bg-neutral-300 dark:text-neutral-800` : ''}
-                                ${isSelected ? '' : ''}
-                            `}
-                        >
+            <div className='flex-1 flex flex-col justify-start w-full'>
+                <div className="grid grid-cols-7 gap-1">
+                    {weekDays.map((d, i) => (
+                        <div key={i} className="flex items-center justify-center  text-gray-500 dark:text-gray-400 aspect-square">
                             {d}
                         </div>
-                    )
-                })}
-            </div>
+                    ))}
 
-            {/* Selected day info */}
-            {selectedDay && selectedDaySlots.length > 0 && (
-                <div className="mt-2 p-2 bg-neutral-50 dark:bg-neutral-800 rounded ">
-                    <div className="flex items-center justify-between mb-1">
-                        <div className="font-semibold">
-                            {monthNames[month]} {selectedDay}, {year}
-                        </div>
-                        <button
-                            onClick={(e) => {
-                                e.preventDefault()
-                                setSelectedDay(null)
-                            }}
-                            aria-label='close'
-                            className="p-0.5 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded"
-                        >
-                            <X size={12} />
-                        </button>
-                    </div>
-                    <div className="space-y-1">
-                        {selectedDaySlots.map((item, index) => (
-                            <Link
+                    {calendarDays.map((d, index) => {
+                        const daySlotsData = getSlotsForDay(d)
+                        const isHighlighted = daySlotsData.length > 0
+
+                        return (
+                            <div
                                 key={index}
-                                to={workspaceId
-                                    ? `/workspaces/${workspaceId}/views/${viewId}/objects/${item.viewObject?.id}`
-                                    : `/explore/views/${viewId}/objects/${item.viewObject?.id}`
-                                }
-                                className="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 px-2 py-1 rounded transition-colors"
-                                onClick={(e) => e.stopPropagation()}
+                                onClick={() => handleDayClick(d)}
+                                className={twMerge(`
+                                aspect-square flex items-center justify-center  rounded`
+                                    , d ? 'text-gray-700 dark:text-gray-300 bg-white dark:bg-neutral-800' : ''
+                                    , isHighlighted ? `font-bold cursor-pointer text-blue-600` : ''
+                                )}
                             >
-                                {item.viewObject?.name || `Slot ${index + 1}`}
-                            </Link>
-                        ))}
-                    </div>
+                                {d}
+                            </div>
+                        )
+                    })}
                 </div>
-            )}
+
+                {/* Selected day info */}
+                {selectedDay && selectedDaySlots.length > 0 && (
+                    <div className="mt-2 p-2 bg-neutral-50 dark:bg-neutral-800 rounded ">
+                        <div className="flex items-center justify-between mb-1">
+                            <div className="font-semibold">
+                                {monthNames[month]} {selectedDay}, {year}
+                            </div>
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    setSelectedDay(null)
+                                }}
+                                aria-label='close'
+                                className="p-0.5 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded"
+                            >
+                                <X size={12} />
+                            </button>
+                        </div>
+                        <div className="space-y-1">
+                            {selectedDaySlots.map((viewObject) => (
+                                <Link
+                                    key={viewObject.id}
+                                    to={workspaceId
+                                        ? `/workspaces/${workspaceId}/views/${viewId}/objects/${viewObject.id}`
+                                        : `/explore/views/${viewId}/objects/${viewObject.id}`
+                                    }
+                                    className="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 px-2 py-1 rounded transition-colors"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    {viewObject.name}
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     )
 }
