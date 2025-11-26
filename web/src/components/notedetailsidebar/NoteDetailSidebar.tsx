@@ -3,13 +3,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { deleteNote, NoteData, updateNoteVisibility } from "@/api/note"
 import { getViewObjectsForNote, getPublicViewObjectsForNote, getViews, getViewObjects, addNoteToViewObject, createViewObject } from "@/api/view"
 import { useTranslation } from "react-i18next"
-import { ChevronRight, ChevronDown, Calendar, MapPin, Pin, Search, Plus, Trash2, Globe, Building, Lock } from "lucide-react"
-import { CalendarSlotData, MapMarkerData, ViewObject, ViewObjectType } from "@/types/view"
-import MiniCalendarView from "./MiniCalendarView"
-import MiniMapView from "./MiniMapView"
+import { ChevronRight, Calendar, MapPin, Pin, Search, Plus, Trash2, Globe, Building, Lock, Calendar1Icon } from "lucide-react"
+import { ViewObjectType } from "@/types/view"
 import { Link, useParams, useNavigate } from "react-router-dom"
 import * as Dialog from "@radix-ui/react-dialog"
-import * as Accordion from "@radix-ui/react-accordion"
 import { useToastStore } from "@/stores/toast"
 import CreateViewObjectModal from "@/components/views/CreateViewObjectModal"
 import { Visibility } from "@/types/visibility"
@@ -271,59 +268,33 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note }) => {
                 }
 
                 <div className="flex flex-col p-4">
-                    {/* View Objects Section */}
-                    {groupedByView.length > 0 && (
-                        <Accordion.Root
-                            type="multiple"
-                            defaultValue={[]}
-                            className="space-y-2"
-                        >
-                            {groupedByView.map((viewGroup) => (
-                                <Accordion.Item
-                                    key={viewGroup.view.id}
-                                    value={viewGroup.view.id}
-                                    className="border border-gray-200 dark:border-neutral-700 rounded-lg overflow-hidden"
-                                >
-                                    <Accordion.Trigger className="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors group">
-                                        <div className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 font-medium flex-1 text-left">
-
-                                            <Link
-                                                to={workspaceId
-                                                    ? `/workspaces/${workspaceId}/views/${viewGroup.view.id}`
-                                                    : `/explore/views/${viewGroup.view.id}`
+                    <div className="font-bold text-gray-400 p-2">
+                        Pinned
+                    </div>
+                    {groupedByView.length > 0 &&
+                        groupedByView.map((viewGroup) => (
+                            <div>
+                                {viewGroup.viewObjects.map((vo: any) => (
+                                    <Link
+                                        key={vo.id}
+                                        to={workspaceId
+                                            ? `/workspaces/${workspaceId}/views/${viewGroup.view.id}/objects/${vo.id}`
+                                            : `/explore/views/${viewGroup.view.id}/objects/${vo.id}`
+                                        }
+                                    >
+                                        <div className="flex items-center gap-2 text-gray-600 px-2 py-1">
+                                            <div >
+                                                {
+                                                    vo.type == "map_marker" ? <MapPin size={16} /> : <Calendar1Icon size={16} />
                                                 }
-                                                className=""
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                {viewGroup.view.name}
-                                            </Link>
+                                            </div>
+                                            <div className="flex-1 px-2">
+                                                {vo.name}
+                                            </div>
                                         </div>
-                                        <ChevronDown
-                                            size={16}
-                                            className="text-gray-400 transition-transform duration-200 group-data-[state=closed]:-rotate-90"
-                                        />
-
-                                    </Accordion.Trigger>
-                                    <Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-                                        <div className="p-3 flex flex-col gap-2 text-gray-600 dark:text-gray-400">
-                                            {viewGroup.viewObjects.map((vo: any) => (
-                                                <Link
-                                                    key={vo.id}
-                                                    to={workspaceId
-                                                        ? `/workspaces/${workspaceId}/views/${viewGroup.view.id}/objects/${vo.id}`
-                                                        : `/explore/views/${viewGroup.view.id}/objects/${vo.id}`
-                                                    }
-                                                    className="hover:text-gray-900 dark:hover:text-gray-200 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
-                                                >
-                                                    {vo.name}
-                                                </Link>
-                                            ))}
-                                        </div>
-                                    </Accordion.Content>
-                                </Accordion.Item>
-                            ))}
-                        </Accordion.Root>
-                    )}
+                                    </Link>
+                                ))}
+                            </div>))}
                 </div>
             </div>
             {/* Visibility Selection Dialog */}

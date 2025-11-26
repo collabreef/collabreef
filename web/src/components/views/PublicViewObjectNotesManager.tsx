@@ -24,7 +24,7 @@ const PublicViewObjectNotesManager = ({
     })
 
     return (
-        <div className=" dark:border-neutral-700 pt-4">
+        <div className=" dark:border-neutral-700">
             {/* Linked Notes List */}
             {linkedNotes.length > 0 ? (
                 <div className="space-y-2">
