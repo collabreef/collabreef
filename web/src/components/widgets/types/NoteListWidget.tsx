@@ -7,6 +7,7 @@ import { getNotes } from '@/api/note';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import { NoteListWidgetConfig } from '@/types/widget';
 import Widget from '@/components/widgets/Widget';
+import FullNote from '@/components/fullnote/FullNote';
 
 interface NoteListWidgetProps {
   config: NoteListWidgetConfig;
@@ -74,11 +75,10 @@ const NoteListWidget: FC<NoteListWidgetProps> = ({ config }) => {
             className="p-3 bg-gray-50 dark:bg-neutral-800 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors"
           >
             <div className="flex items-start gap-2">
-              <FileText size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 {note.content && (
                   <div className="text-xs text-gray-500 truncate mt-1">
-                    {note.content.replace(/<[^>]*>/g, '').slice(0, 100)}
+                    <FullNote note={note} />
                   </div>
                 )}
               </div>
