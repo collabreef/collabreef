@@ -1,0 +1,104 @@
+name: Pull Request CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  backend-test:
+    name: Backend Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          cache: true
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Run go vet
+        run: go vet ./...
+
+      - name: Run go test
+        run: go test -v -race -coverprofile=coverage.out ./...
+
+      - name: Build backend
+        run: go build -o bin/unseal ./cmd/unseal/unseal.go
+
+  frontend-test:
+    name: Frontend Build & Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./web
+        run: npm ci
+
+      - name: Run linter
+        working-directory: ./web
+        run: npm run lint
+
+      - name: Build frontend
+        working-directory: ./web
+        run: npm run build
+
+  docker-build-test:
+    name: Docker Build Test
+    runs-on: ubuntu-latest
+    needs: [backend-test, frontend-test]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image (no push)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: unseal:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  pr-summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: [backend-test, frontend-test, docker-build-test]
+    if: always()
+
+    steps:
+      - name: Check results
+        run: |
+          echo "Backend Test: ${{ needs.backend-test.result }}"
+          echo "Frontend Test: ${{ needs.frontend-test.result }}"
+          echo "Docker Build Test: ${{ needs.docker-build-test.result }}"
+
+          if [ "${{ needs.backend-test.result }}" != "success" ] || \
+             [ "${{ needs.frontend-test.result }}" != "success" ] || \
+             [ "${{ needs.docker-build-test.result }}" != "success" ]; then
+            echo "❌ CI checks failed"
+            exit 1
+          else
+            echo "✅ All CI checks passed"
+          fi
