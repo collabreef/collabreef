@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, ExternalLink, Calendar, User } from 'lucide-react';
+import { Loader2, ExternalLink, User } from 'lucide-react';
 import { getNote } from '@/api/note';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import { NoteWidgetConfig } from '@/types/widget';

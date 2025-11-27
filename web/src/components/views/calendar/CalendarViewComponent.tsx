@@ -99,25 +99,6 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
         return { year, month, day }
     }
 
-    // Check if a day has any slots
-    const hasSlots = (day: number | null) => {
-        if (!day || !viewObjects) return false
-
-        // Check if any viewObject has a date matching this day
-        return viewObjects.some(obj => {
-            if (!obj.data) return false
-
-            const parsed = parseDate(obj.data)
-            if (!parsed) return false
-
-            return (
-                parsed.day === day &&
-                parsed.month === month &&
-                parsed.year === year
-            )
-        })
-    }
-
     // Get slots for a specific day
     const getSlotsForDay = (day: number | null) => {
         if (!day || !viewObjects) return []

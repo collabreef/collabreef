@@ -1,6 +1,4 @@
-import { Building, ChevronDown, ChevronUp, Globe, Lock } from "lucide-react";
 import { FC } from "react";
-import { useTranslation } from "react-i18next";
 import { Visibility } from "@/types/visibility";
 
 interface Props {
@@ -9,8 +7,6 @@ interface Props {
 }
 
 const VisibilitySelect: FC<Props> = ({ value }) => {
-    const { t } = useTranslation();
-
     return <div>
         {value}
     </div>

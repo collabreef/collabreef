@@ -2,7 +2,7 @@ import { FC, useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
-import { updateWidget, WidgetData, WidgetType } from '@/api/widget';
+import { updateWidget, WidgetData } from '@/api/widget';
 import { getViews } from '@/api/view';
 import { getGenTemplates } from '@/api/gen-template';
 import { getNotes } from '@/api/note';
@@ -62,19 +62,19 @@ const EditWidgetDialog: FC<EditWidgetDialogProps> = ({ widget, isOpen, onClose }
         setNoteFormConfig({ ...noteFormConfig, ...(config as NoteFormWidgetConfig) });
         break;
       case 'stats':
-        setStatsConfig({ statType: 'note_count', ...(config as StatsWidgetConfig) });
+        setStatsConfig({ ...(config as StatsWidgetConfig) });
         break;
       case 'template_form':
-        setTemplateFormConfig({ templateId: '', ...(config as TemplateFormWidgetConfig) });
+        setTemplateFormConfig({ ...(config as TemplateFormWidgetConfig) });
         break;
       case 'view':
-        setViewConfig({ viewId: '', showControls: true, ...(config as ViewWidgetConfig) });
+        setViewConfig({ showControls: true, ...(config as ViewWidgetConfig) });
         break;
       case 'note_list':
         setNoteListConfig({ limit: 5, sortBy: 'created_at', sortOrder: 'desc', ...(config as NoteListWidgetConfig) });
         break;
       case 'note':
-        setNoteConfig({ noteId: '', showMetadata: true, ...(config as NoteWidgetConfig) });
+        setNoteConfig({ showMetadata: true, ...(config as NoteWidgetConfig) });
         break;
     }
   }, [widget]);

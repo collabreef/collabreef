@@ -23,7 +23,6 @@ const GenTemplateFormPage = () => {
     const [model, setModel] = useState("")
     const [modality, setModality] = useState<Modality>("text2text")
     const [imageUrls, setImageUrls] = useState<string[]>([])
-    const [_, setUploadingIndex] = useState<number | null>(null)
 
     // Fetch all available models
     const { data: allModels = [] } = useQuery({

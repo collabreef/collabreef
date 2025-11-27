@@ -30,7 +30,7 @@ const ViewObjectCard = ({
                     <div className="font-semibold mb-2">{viewObject.name}</div>
                     {viewObject.data && (
                         <div className="text-sm text-gray-600 dark:text-gray-400">
-                            <ViewObjectDataDisplay viewObject={viewObject} variant="card" />
+                            <ViewObjectDataDisplay viewObject={viewObject} />
                         </div>
                     )}
                     <p className="text-xs text-gray-400 mt-2">
