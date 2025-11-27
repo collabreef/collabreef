@@ -46,7 +46,7 @@ export const TwoColumnSidebar = ({ children, className = "" }: TwoColumnSidebarP
     }, [isSidebarCollapsed])
 
     // Handle drag to close on mobile
-    const handleDragStart = (clientY: number, target: EventTarget | null) => {
+    const handleDragStart = (clientY: number) => {
         if (window.innerWidth >= 1024) return // Only on mobile
         if (isSidebarCollapsed) return // Only when open
 
@@ -85,7 +85,7 @@ export const TwoColumnSidebar = ({ children, className = "" }: TwoColumnSidebarP
 
     // Touch event handlers
     const handleTouchStart = (e: React.TouchEvent) => {
-        handleDragStart(e.touches[0].clientY, e.target)
+        handleDragStart(e.touches[0].clientY)
     }
 
     const handleTouchMove = (e: React.TouchEvent) => {
@@ -101,7 +101,7 @@ export const TwoColumnSidebar = ({ children, className = "" }: TwoColumnSidebarP
 
     // Mouse event handlers (for testing on desktop)
     const handleMouseDown = (e: React.MouseEvent) => {
-        handleDragStart(e.clientY, e.target)
+        handleDragStart(e.clientY)
     }
 
     useEffect(() => {
@@ -130,7 +130,7 @@ export const TwoColumnSidebar = ({ children, className = "" }: TwoColumnSidebarP
             {!isSidebarCollapsed && (
                 <div
                     className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-                    onClick={(e) => {
+                    onClick={() => {
                         toggleSidebar()
                     }}
                 />

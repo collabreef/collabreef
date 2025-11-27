@@ -2,7 +2,7 @@ import { useCallback, useState, useEffect, useRef } from 'react';
 import { useMutation, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { deleteFile, FileInfo, getFileDownloadUrl, listFiles, renameFile } from '../../../api/file';
 import { useToastStore } from '../../../stores/toast';
-import { Download, FileIcon, Trash2, Edit2, X, Check, Search, Filter, Eye, Image as ImageIcon, FileText, Copy } from 'lucide-react';
+import { Download, FileIcon, Trash2, Edit2, X, Check, Search, Filter, Eye, FileText, Copy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'motion/react';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
@@ -108,16 +108,6 @@ const FilesPage = () => {
         const sizes = ['Bytes', 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-    };
-
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString(undefined, {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
     };
 
     const startEdit = (file: FileInfo) => {

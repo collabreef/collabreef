@@ -2,7 +2,6 @@ import { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ViewObject } from "@/types/view"
 import ViewObjectDataDisplay from "./ViewObjectDataDisplay"
-import { Link } from "react-router-dom"
 
 interface ViewObjectDetailBaseProps {
     viewName: string
@@ -15,10 +14,8 @@ interface ViewObjectDetailBaseProps {
 }
 
 const ViewObjectDetailBase = ({
-    viewName,
     viewObject,
     isLoading,
-    onBack,
     notFoundMessage,
     children,
     headerAction

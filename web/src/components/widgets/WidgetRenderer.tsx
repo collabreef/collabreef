@@ -24,7 +24,7 @@ const WidgetRenderer: FC<WidgetRendererProps> = ({
 }) => {
   const renderWidgetContent = () => {
     const widgetType = widget.type as WidgetType;
-    const config = parseWidgetConfig({ ...widget, config: widget.config || '{}' } as any);
+    const config: any = parseWidgetConfig({ ...widget, config: widget.config || '{}' } as any);
 
     switch (widgetType) {
       case 'note_form':

@@ -5,7 +5,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ArrowLeft, Save } from "lucide-react"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { createGenTemplate, updateGenTemplate, getGenTemplate, listGenModels } from "@/api/gen-template"
-import { uploadFile } from "@/api/file"
 import { Modality } from "@/types/gen-template"
 import { useToastStore } from "@/stores/toast"
 
@@ -24,7 +23,6 @@ const GenTemplateFormPage = () => {
     const [model, setModel] = useState("")
     const [modality, setModality] = useState<Modality>("text2text")
     const [imageUrls, setImageUrls] = useState<string[]>([])
-    const [_, setUploadingIndex] = useState<number | null>(null)
 
     // Fetch all available models
     const { data: allModels = [] } = useQuery({
@@ -162,37 +160,6 @@ const GenTemplateFormPage = () => {
         } else {
             createMutation.mutate()
         }
-    }
-
-    const handleFileUpload = async (file: File, index: number) => {
-        try {
-            setUploadingIndex(index)
-            const result = await uploadFile(currentWorkspaceId, file)
-            // Store the filename, not the full URL
-            const newUrls = [...imageUrls]
-            newUrls[index] = result.filename
-            setImageUrls(newUrls)
-            addToast({ title: t("messages.fileUploaded") || "File uploaded", type: "success" })
-        } catch (error) {
-            addToast({ title: t("messages.fileUploadFailed") || "File upload failed", type: "error" })
-        } finally {
-            setUploadingIndex(null)
-        }
-    }
-
-    // Helper function to get full image URL from filename
-    const getImageUrl = (filenameOrUrl: string) => {
-        if (!filenameOrUrl) return ""
-        // If it's already a full URL (http/https), return as is
-        if (filenameOrUrl.startsWith('http://') || filenameOrUrl.startsWith('https://')) {
-            return filenameOrUrl
-        }
-        // If it's a relative path starting with /, return as is
-        if (filenameOrUrl.startsWith('/')) {
-            return filenameOrUrl
-        }
-        // Otherwise, it's a filename, construct the full path
-        return `/api/v1/workspaces/${currentWorkspaceId}/files/${filenameOrUrl}`
     }
 
     if (isEdit && isLoading) {

@@ -1,8 +1,7 @@
 import { FC, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { Map, Calendar, ExternalLink, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { getView, getViewObjects } from '@/api/view';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import { ViewWidgetConfig } from '@/types/widget';
@@ -18,7 +17,6 @@ interface ViewWidgetProps {
 const ViewWidget: FC<ViewWidgetProps> = ({ config }) => {
   const { t } = useTranslation();
   const workspaceId = useCurrentWorkspaceId();
-  const navigate = useNavigate();
 
   const { data: view, isLoading: isLoadingView } = useQuery({
     queryKey: ['view', workspaceId, config.viewId],
@@ -86,10 +84,6 @@ const ViewWidget: FC<ViewWidgetProps> = ({ config }) => {
       </div>
     );
   }
-
-  const handleOpenView = () => {
-    navigate(`/workspaces/${workspaceId}/views/${config.viewId}`);
-  };
 
   return (
     <Widget withPadding={false}>

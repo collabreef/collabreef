@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom"
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query"
 import { useRef, useCallback, useState, useEffect } from "react"
 import { Tooltip } from "radix-ui"
-import { useWorkspaceStore } from "@/stores/workspace"
 import NoteMasonry from "@/components/notecard/NoteMasonry"
 import NoteMasonrySkeleton from "@/components/notecard/NoteMasonrySkeleton"
 import { toast } from "@/stores/toast"
@@ -18,7 +17,6 @@ const PAGE_SIZE = 20;
 const NotesPage = () => {
     const [query, setQuery] = useState("")
     const [debouncedQuery, setDebouncedQuery] = useState(query);
-    const { getWorkspaceById } = useWorkspaceStore()
     const currentWorkspaceId = useCurrentWorkspaceId();
     const [isSearchVisible, setIsSearchVisible] = useState(false);
     const { t } = useTranslation()

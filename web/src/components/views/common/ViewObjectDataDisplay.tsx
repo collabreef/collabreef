@@ -30,11 +30,7 @@ const ViewObjectDataDisplay = ({ viewObject}: ViewObjectDataDisplayProps) => {
         )
     }
 
-    return isDetailView ? (
-        <pre className="">{viewObject.data}</pre>
-    ) : (
-        <p className="whitespace-pre-wrap text-sm">{viewObject.data}</p>
-    )
+    return <pre className="">{viewObject.data}</pre>
 }
 
 export default ViewObjectDataDisplay
