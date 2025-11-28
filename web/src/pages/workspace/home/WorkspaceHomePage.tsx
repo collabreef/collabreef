@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Responsive, WidthProvider, Layout, Layouts } from 'react-grid-layout';
@@ -19,6 +19,7 @@ import { useWorkspaceStore } from '@/stores/workspace';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const LAYOUT_SAVE_DEBOUNCE_MS = 500;
+const MIN_SCREEN_WIDTH_FOR_LAYOUT_EDIT = 1024;
 
 const WorkspaceHomePage = () => {
   const { t } = useTranslation();
@@ -30,6 +31,8 @@ const WorkspaceHomePage = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingWidget, setEditingWidget] = useState<WidgetData | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [currentBreakpoint, setCurrentBreakpoint] = useState<string>('xl');
+  const [canEditLayout, setCanEditLayout] = useState(true);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const widgetsRef = useRef<WidgetData[]>([]);
 
@@ -130,8 +133,15 @@ const WorkspaceHomePage = () => {
   // Save layout with debounce
   const saveLayout = useCallback(
     (allLayouts: Layouts) => {
-      // Use xl or lg layout (xl for larger screens, lg as fallback)
-      const layoutToSave = allLayouts.xl || allLayouts.lg;
+      // Use current breakpoint's layout to save user changes
+      // Fallback order: current breakpoint -> xl -> lg -> any available layout
+      const layoutToSave =
+        allLayouts[currentBreakpoint as keyof Layouts] ||
+        allLayouts.xl ||
+        allLayouts.lg ||
+        allLayouts.md ||
+        allLayouts.sm;
+
       if (!layoutToSave || layoutToSave.length === 0) return;
 
       const updates: Promise<unknown>[] = [];
@@ -172,7 +182,7 @@ const WorkspaceHomePage = () => {
         });
       }
     },
-    [updateMutation, queryClient, workspaceId]
+    [currentBreakpoint, updateMutation, queryClient, workspaceId]
   );
 
   const handleLayoutChange = useCallback(
@@ -201,6 +211,27 @@ const WorkspaceHomePage = () => {
   const handleEditWidget = (widget: WidgetData) => {
     setEditingWidget(widget);
   };
+
+  const handleBreakpointChange = useCallback((newBreakpoint: string) => {
+    setCurrentBreakpoint(newBreakpoint);
+  }, []);
+
+  // Check screen size to determine if layout editing is allowed
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      setCanEditLayout(width >= MIN_SCREEN_WIDTH_FOR_LAYOUT_EDIT);
+    };
+
+    // Check on mount
+    checkScreenSize();
+
+    // Add resize listener
+    window.addEventListener('resize', checkScreenSize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   return (
     <OneColumn>
@@ -265,8 +296,9 @@ const WorkspaceHomePage = () => {
                 rowHeight={60}
                 containerPadding={[0, 0]}
                 onLayoutChange={handleLayoutChange}
-                isDraggable={isEditMode}
-                isResizable={isEditMode}
+                onBreakpointChange={handleBreakpointChange}
+                isDraggable={isEditMode && canEditLayout}
+                isResizable={isEditMode && canEditLayout}
                 draggableHandle=".widget-drag-handle"
               >
                 {widgets.map((widget) => (
@@ -277,6 +309,7 @@ const WorkspaceHomePage = () => {
                     <WidgetRenderer
                       widget={widget}
                       isEditMode={isEditMode}
+                      canDragResize={canEditLayout}
                       onEdit={() => handleEditWidget(widget)}
                       onDelete={() => handleDeleteWidget(widget.id!)}
                     />

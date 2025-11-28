@@ -12,6 +12,7 @@ import NoteWidget from './types/NoteWidget';
 interface WidgetRendererProps {
   widget: WidgetData;
   isEditMode: boolean;
+  canDragResize: boolean;
   onEdit: () => void;
   onDelete: () => void;
 }
@@ -19,6 +20,7 @@ interface WidgetRendererProps {
 const WidgetRenderer: FC<WidgetRendererProps> = ({
   widget,
   isEditMode,
+  canDragResize,
   onEdit,
   onDelete,
 }) => {
@@ -54,9 +56,11 @@ const WidgetRenderer: FC<WidgetRendererProps> = ({
       {isEditMode && (
         <div className="flex items-center justify-between px-3 py-2 border-b dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800">
           <div className="flex items-center gap-2">
-            <div className="widget-drag-handle cursor-move text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-              <GripVertical size={16} />
-            </div>
+            {canDragResize && (
+              <div className="widget-drag-handle cursor-move text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <GripVertical size={16} />
+              </div>
+            )}
             <span className="font-medium text-sm truncate">{widget.type}</span>
           </div>
           <div className="flex items-center gap-1">
