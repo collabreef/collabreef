@@ -120,6 +120,7 @@ export default {
     visibility: "Visibility",
     created: "Created",
     lastUpdated: "Last Updated",
+    pinned: "Pinned",
     creator: "Creator",
     author: "Author",
     public: "Public",

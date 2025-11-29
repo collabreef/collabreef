@@ -119,6 +119,7 @@ export default {
     visibility: "可見性",
     created: "建立時間",
     lastUpdated: "最後更新",
+    pinned: "已釘選",
     creator: "建立者",
     author: "作者",
     public: "公開",
