@@ -89,7 +89,7 @@ const ViewObjectNotesManager = ({
             refetchLinkedNotes()
             queryClient.invalidateQueries({ queryKey: ['view-object-notes', workspaceId, viewId, viewObjectId] })
             // Navigate to the note detail page
-            navigate(`/workspaces/${workspaceId}/note/${newNote.id}`)
+            navigate(`/workspaces/${workspaceId}/notes/${newNote.id}`)
         },
         onError: () => {
             addToast({ title: t('views.noteCreateError'), type: 'error' })
@@ -106,7 +106,7 @@ const ViewObjectNotesManager = ({
                 <div className="space-y-2">
                     {linkedNotes.map((note: any) => (
                         <Link
-                            to={`/workspaces/${workspaceId}/note/${note.id}`}
+                            to={`/workspaces/${workspaceId}/notes/${note.id}`}
                             key={note.id}
                             className="flex flex-col rounded shadow-sm group bg-white dark:bg-neutral-800 relative"
                         >
