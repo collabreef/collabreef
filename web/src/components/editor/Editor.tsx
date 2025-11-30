@@ -11,7 +11,7 @@ import { GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading
 import { CommandItem, SlashCommand } from './extensions/slashcommand/SlashCommand'
 import { Attachment } from './extensions/attachment/Attachment'
 import { ImageNode } from './extensions/imagenode/ImageNode'
-import { uploadFile } from '@/api/file'
+import { uploadFile, listFiles } from '@/api/file'
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id'
 import { NoteData } from '@/api/note'
 import { TextGenNode } from './extensions/textgen/TextGen'
@@ -71,7 +71,9 @@ const Editor: FC<Props> = ({ note, onChange }) => {
             src: `/api/v1/workspaces/${currentWorkspaceId}/files/${res.filename}`,
             name: res.original_name
           }
-        }
+        },
+        workspaceId: currentWorkspaceId,
+        listFiles: listFiles
       }),
       ImageNode.configure({
         upload: async (f: File) => {
@@ -81,7 +83,9 @@ const Editor: FC<Props> = ({ note, onChange }) => {
             src: `/api/v1/workspaces/${currentWorkspaceId}/files/${res.filename}`,
             name: res.original_name
           }
-        }
+        },
+        workspaceId: currentWorkspaceId,
+        listFiles: listFiles
       }),
       TableKit,
       TextGenNode.configure({
