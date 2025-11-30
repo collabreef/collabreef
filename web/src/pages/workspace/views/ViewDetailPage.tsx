@@ -134,7 +134,7 @@ const ViewDetailContent = (props: any) => {
 
     return (
         <>
-            <TwoColumnMain className="bg-white dark:bg-neutral-800 relative">
+            <TwoColumnMain className=" relative">
                 <ViewContent
                     view={props.view}
                     viewObjects={props.viewObjects}

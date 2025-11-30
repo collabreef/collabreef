@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useNavigate, useParams, useOutletContext } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { SquarePlus } from "lucide-react"
+import { CirclePlus } from "lucide-react"
 import { getViewObject } from "@/api/view"
 import ViewObjectNotesManager from "@/components/views/ViewObjectNotesManager"
 import ViewObjectDetailBase from "@/components/views/common/ViewObjectDetailBase"
@@ -37,7 +37,7 @@ const ViewObjectDetailPage = () => {
             className="p-2"
             title={t('views.addNote')}
         >
-            <SquarePlus className="stroke-[1]" />
+            <CirclePlus />
         </button>
     )
 

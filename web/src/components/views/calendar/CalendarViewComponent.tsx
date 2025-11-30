@@ -47,17 +47,45 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
     // Get total days in month
     const daysInMonth = lastDayOfMonth.getDate()
 
-    // Generate calendar days
-    const calendarDays: (number | null)[] = []
+    // Generate calendar days with previous/next month dates
+    const calendarDays: Array<{ day: number; isCurrentMonth: boolean; year: number; month: number }> = []
 
-    // Add empty cells for days before the first day of the month
-    for (let i = 0; i < firstDayOfWeek; i++) {
-        calendarDays.push(null)
+    // Add days from previous month
+    const prevMonthLastDay = new Date(year, month, 0).getDate()
+    for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+        const prevMonth = month === 0 ? 11 : month - 1
+        const prevYear = month === 0 ? year - 1 : year
+        calendarDays.push({
+            day: prevMonthLastDay - i,
+            isCurrentMonth: false,
+            year: prevYear,
+            month: prevMonth
+        })
     }
 
-    // Add all days of the month
+    // Add all days of the current month
     for (let day = 1; day <= daysInMonth; day++) {
-        calendarDays.push(day)
+        calendarDays.push({
+            day,
+            isCurrentMonth: true,
+            year,
+            month
+        })
+    }
+
+    // Add days from next month to complete the grid
+    const remainingCells = 7 - (calendarDays.length % 7)
+    if (remainingCells < 7) {
+        const nextMonth = month === 11 ? 0 : month + 1
+        const nextYear = month === 11 ? year + 1 : year
+        for (let day = 1; day <= remainingCells; day++) {
+            calendarDays.push({
+                day,
+                isCurrentMonth: false,
+                year: nextYear,
+                month: nextMonth
+            })
+        }
     }
 
     const monthNames = [
@@ -76,12 +104,11 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
     }
 
     const today = new Date()
-    const isToday = (day: number | null) => {
-        if (!day) return false
+    const isToday = (dayObj: { day: number; isCurrentMonth: boolean; year: number; month: number }) => {
         return (
-            day === today.getDate() &&
-            month === today.getMonth() &&
-            year === today.getFullYear()
+            dayObj.day === today.getDate() &&
+            dayObj.month === today.getMonth() &&
+            dayObj.year === today.getFullYear()
         )
     }
 
@@ -99,9 +126,10 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
         return { year, month, day }
     }
 
-    // Get slots for a specific day
-    const getSlotsForDay = (day: number | null) => {
-        if (!day || !viewObjects) return []
+    // Get slots for a specific day (only for current month)
+    const getSlotsForDay = (dayObj: { day: number; isCurrentMonth: boolean; year: number; month: number }) => {
+        // Don't show slots for previous/next month days
+        if (!dayObj.isCurrentMonth || !viewObjects) return []
 
         return viewObjects.filter(obj => {
             if (!obj.data) return false
@@ -110,17 +138,17 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
             if (!parsed) return false
 
             return (
-                parsed.day === day &&
-                parsed.month === month &&
-                parsed.year === year
+                parsed.day === dayObj.day &&
+                parsed.month === dayObj.month &&
+                parsed.year === dayObj.year
             )
         })
     }
 
     return (
-        <div className="p-6 rounded-lg border dark:border-neutral-700">
+        <div className="">
             <div className="mb-6">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between px-2">
                     <div className="text-2xl font-semibold">
                         {monthNames[month]} {year}
                     </div>
@@ -149,7 +177,7 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
                 </div>
 
                 {/* Calendar Grid */}
-                <div className="grid grid-cols-7 gap-2">
+                <div className="grid grid-cols-7 ">
                     {/* Week day headers */}
                     {weekDays.map((day) => (
                         <div
@@ -161,56 +189,56 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
                     ))}
 
                     {/* Calendar days */}
-                    {calendarDays.map((day, index) => {
-                        const daySlots = getSlotsForDay(day)
+                    {calendarDays.map((dayObj, index) => {
+                        const daySlots = getSlotsForDay(dayObj)
                         const slotCount = daySlots.length
+                        const isTodayCell = isToday(dayObj)
 
                         return (
                             <div
                                 key={index}
                                 className={`
-                                    aspect-square p-2 rounded-lg border dark:border-neutral-700 overflow-y-auto
-                                    ${day ? 'hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer' : 'border-transparent'}
-                                    ${isToday(day) ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700' : 'bg-white dark:bg-neutral-900'}
-                                    ${slotCount > 0 ? 'border-blue-400 dark:border-blue-600' : ''}
+                                    aspect-square p-2 border dark:border-neutral-700 overflow-y-auto
+                                    ${isTodayCell ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700' : 'bg-white dark:bg-neutral-900'}
+                                    ${dayObj.isCurrentMonth ? 'hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer' : ''}
+                                    ${dayObj.isCurrentMonth && slotCount > 0 ? 'border-blue-400 dark:border-blue-600' : ''}
                                     transition-colors
                                 `}
                             >
-                                {day && (
-                                    <div className="h-full flex flex-col justify-between">
-                                        <div className={`
-                                            text-sm font-medium
-                                            ${isToday(day) ? 'text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'}
-                                        `}>
-                                            {day}
-                                        </div>
-                                        {slotCount > 0 && (
-                                            <div className="flex flex-wrap gap-1 mt-1">
-                                                {daySlots.slice(0, 3).map((slot, i) => (
-                                                    <button
-                                                        key={i}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation()
-                                                            const path = isPublic
-                                                                ? `/explore/views/${viewId}/objects/${slot.id}`
-                                                                : `/workspaces/${workspaceId}/views/${viewId}/objects/${slot.id}`
-                                                            navigate(path)
-                                                        }}
-                                                        className="text-xs px-1.5 py-0.5 bg-blue-500 text-white rounded truncate max-w-full hover:bg-blue-600 transition-colors"
-                                                        title={slot.name}
-                                                    >
-                                                        {slot.name}
-                                                    </button>
-                                                ))}
-                                                {slotCount > 3 && (
-                                                    <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                                                        +{slotCount - 3}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
+                                <div className="h-full flex flex-col justify-between">
+                                    <div className={`
+                                        text-sm font-medium
+                                        ${isTodayCell ? 'text-blue-600 dark:text-blue-400' : ''}
+                                        ${dayObj.isCurrentMonth ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400 dark:text-gray-600'}
+                                    `}>
+                                        {dayObj.day}
                                     </div>
-                                )}
+                                    {slotCount > 0 && (
+                                        <div className="flex flex-wrap gap-1 mt-1">
+                                            {daySlots.slice(0, 3).map((slot, i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        const path = isPublic
+                                                            ? `/explore/views/${viewId}/objects/${slot.id}`
+                                                            : `/workspaces/${workspaceId}/views/${viewId}/objects/${slot.id}`
+                                                        navigate(path)
+                                                    }}
+                                                    className="text-xs px-1.5 py-0.5 bg-blue-500 text-white rounded truncate max-w-full hover:bg-blue-600 transition-colors"
+                                                    title={slot.name}
+                                                >
+                                                    {slot.name}
+                                                </button>
+                                            ))}
+                                            {slotCount > 3 && (
+                                                <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                                                    +{slotCount - 3}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         )
                     })}

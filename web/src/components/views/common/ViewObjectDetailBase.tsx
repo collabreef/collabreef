@@ -2,6 +2,8 @@ import { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ViewObject } from "@/types/view"
 import ViewObjectDataDisplay from "./ViewObjectDataDisplay"
+import { ArrowLeft } from "lucide-react"
+import { Link } from "react-router-dom"
 
 interface ViewObjectDetailBaseProps {
     viewName: string
@@ -45,11 +47,16 @@ const ViewObjectDetailBase = ({
             <div className="px-4 pt-4 z-10">
 
                 <div className="flex items-center justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                        {viewObject.data && (
-                            <ViewObjectDataDisplay viewObject={viewObject} />
-                        )}
-                        <div className="text-sm  truncate">{viewObject.name}</div>
+                    <div className="flex-1 min-w-0 flex gap-2 items-center">
+                        <Link to="..">
+                            <ArrowLeft />
+                        </Link>
+                        <div>
+                            {viewObject.data && (
+                                <ViewObjectDataDisplay viewObject={viewObject} />
+                            )}
+                            <div className="text-sm  truncate">{viewObject.name}</div>
+                        </div>
                     </div>
                     {headerAction && (
                         <div className="flex-shrink-0">
