@@ -1,5 +1,5 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
-import { DownloadIcon, Loader2, UploadCloud, FolderOpen, Upload } from "lucide-react"
+import { DownloadIcon, Loader2, FolderOpen, Upload } from "lucide-react"
 import { useRef, useState } from "react"
 import AllFilePickerDialog from "./AllFilePickerDialog"
 import { FileInfo } from "@/api/file"

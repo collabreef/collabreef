@@ -1,11 +1,14 @@
-import { PanelLeftClose, PanelLeftOpen, Settings } from "lucide-react"
+import { PanelLeftClose, PanelLeftOpen, Settings, LogOut } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import { useSidebar } from "./SidebarProvider"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { FC, ReactNode } from "react"
 import { useCurrentUserStore } from "@/stores/current-user"
 import Tooltip from "../tooltip/Tooltip"
 import { useTranslation } from "react-i18next"
+import { useMutation } from "@tanstack/react-query"
+import { signOut } from "@/api/auth"
+import { useWorkspaceStore } from "@/stores/workspace"
 
 interface Props {
     children: ReactNode
@@ -13,8 +16,28 @@ interface Props {
 
 const Sidebar: FC<Props> = function ({ children }) {
     const { isOpen, isCollapse, isOver1280, expandSidebar, collapseSidebar } = useSidebar()
-    const { user } = useCurrentUserStore();
+    const { user, resetCurrentUser } = useCurrentUserStore();
     const { t } = useTranslation()
+    const navigate = useNavigate()
+    const { resetWorkspaces } = useWorkspaceStore()
+
+    const signoutMutation = useMutation({
+        mutationFn: () => signOut(),
+        onSuccess: async () => {
+            try {
+                resetWorkspaces();
+                resetCurrentUser();
+                console.log("navigate to /")
+                navigate(`/`)
+            } catch (error) {
+                console.error('Error invalidating queries:', error)
+            }
+        },
+    })
+
+    const handleLogout = () => {
+        signoutMutation.mutate()
+    }
     return <>
         <aside id="logo-sidebar"
             onClick={e => e.stopPropagation()}
@@ -26,6 +49,17 @@ const Sidebar: FC<Props> = function ({ children }) {
             <div className="px-4 bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col justify-between h-full">
                 {children}
                 <div className={twMerge("sticky bottom-0 pt-1 pb-3 flex gap-1 flex-wrap-reverse", isCollapse ? "flex-col" : "flex-row")}>
+                    {
+                        user && <Tooltip
+                            text={t("actions.signout")}
+                            side="right"
+                            enabled={isCollapse}
+                        >
+                            <button onClick={handleLogout} className="p-2">
+                                <LogOut size={20} />
+                            </button>
+                        </Tooltip>
+                    }
                     {
                         user && <Tooltip
                             text={t("menu.user")}

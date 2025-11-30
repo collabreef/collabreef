@@ -1,5 +1,5 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
-import { Image, Loader2, FolderOpen, Upload } from "lucide-react"
+import { Loader2, FolderOpen, Upload } from "lucide-react"
 import { useRef, useState } from "react"
 import { twMerge } from "tailwind-merge"
 import FilePickerDialog from "./FilePickerDialog"

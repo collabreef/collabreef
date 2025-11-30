@@ -1,38 +1,14 @@
 import { useSidebar } from "../sidebar/SidebarProvider"
 import { Link, useNavigate } from "react-router-dom"
-import { Brain, CornerUpLeft, LogOut, Settings2 } from 'lucide-react'
+import { Brain, CornerUpLeft, Settings2 } from 'lucide-react'
 import { useTranslation } from "react-i18next"
-import { useMutation } from "@tanstack/react-query"
-import { signOut } from "@/api/auth"
-import { useWorkspaceStore } from "@/stores/workspace"
 import Tooltip from "../tooltip/Tooltip"
 import BaseLayout from "../baselayout/BaseLayout"
-import { useCurrentUserStore } from "@/stores/current-user"
 
 const UserLayout = () => {
     const { t } = useTranslation()
     const { isCollapse } = useSidebar()
     const navigate = useNavigate()
-    const { resetWorkspaces } = useWorkspaceStore()
-    const { resetCurrentUser } = useCurrentUserStore()
-    const signoutMutation = useMutation({
-        mutationFn: () => signOut(),
-        onSuccess: async () => {
-            try {
-                resetWorkspaces();
-                resetCurrentUser();
-                console.log("navigate to /")
-                navigate(`/`)
-            } catch (error) {
-                console.error('Error invalidating queries:', error)
-
-            }
-        },
-    })
-
-    const handleLogout = () => {
-        signoutMutation.mutate()
-    }
 
     const handleGoBack = () => {
         navigate(-1)
@@ -64,15 +40,6 @@ const UserLayout = () => {
                         <Brain size={20} />
                         {!isCollapse && <>{t("menu.models")}</>}
                     </Link>
-                </Tooltip>
-                <Tooltip
-                    text={t("actions.signout")}
-                    side="right"
-                    enabled={isCollapse}>
-                    <button onClick={handleLogout} className="w-full p-2 flex gap-2 items-center">
-                        <LogOut size={20} />
-                        {!isCollapse && <>{t("actions.signout")}</>}
-                    </button>
                 </Tooltip>
             </div>
         </div>
