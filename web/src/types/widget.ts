@@ -1,5 +1,5 @@
 // Widget types
-export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note_list' | 'note';
+export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note';
 
 // Widget position on dashboard
 export interface WidgetPosition {
@@ -50,18 +50,6 @@ export interface ViewWidgetConfig {
   zoom?: number;
 }
 
-// Note list widget - for displaying notes with conditions
-export interface NoteListWidgetConfig {
-  filter?: {
-    visibility?: 'public' | 'workspace' | 'private';
-    query?: string;
-    viewObjectId?: string;
-  };
-  limit?: number;
-  sortBy?: 'created_at' | 'updated_at' | 'title';
-  sortOrder?: 'asc' | 'desc';
-}
-
 // Note widget - for displaying a single note's complete content
 export interface NoteWidgetConfig {
   noteId: string;
@@ -87,7 +75,6 @@ export type WidgetConfigMap = {
   stats: StatsWidgetConfig;
   template_form: TemplateFormWidgetConfig;
   view: ViewWidgetConfig;
-  note_list: NoteListWidgetConfig;
   note: NoteWidgetConfig;
 };
 

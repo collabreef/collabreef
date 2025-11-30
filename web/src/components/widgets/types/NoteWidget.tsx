@@ -7,6 +7,8 @@ import { getNote, getNotes } from '@/api/note';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import { NoteWidgetConfig } from '@/types/widget';
 import Widget from '@/components/widgets/Widget';
+import FullNote from '@/components/fullnote/FullNote';
+import { extractTextFromTipTapJSON } from '@/utils/tiptap';
 import { registerWidget, WidgetProps, WidgetConfigFormProps } from '../widgetRegistry';
 
 interface NoteWidgetProps extends WidgetProps {
@@ -58,7 +60,7 @@ const NoteWidget: FC<NoteWidgetProps> = ({ config }) => {
   };
 
   return (
-    <Widget>
+    <Widget withPadding={false}>
       <div className="h-full flex flex-col overflow-auto">
         {/* Note Header */}
         <div className="flex items-start justify-between gap-2">
@@ -73,7 +75,7 @@ const NoteWidget: FC<NoteWidgetProps> = ({ config }) => {
 
         {/* Metadata */}
         {config.showMetadata && (
-          <div className='flex justify-between'>
+          <div className='flex justify-between p-4'>
             <div className="flex flex-wrap gap-3 text-xs text-gray-500 dark:text-gray-400">
               {note.created_at && (
                 <div className="flex items-center gap-1">
@@ -102,10 +104,9 @@ const NoteWidget: FC<NoteWidgetProps> = ({ config }) => {
 
         {/* Note Content */}
         {note.content && (
-          <div
-            className="flex-1 prose prose-sm dark:prose-invert max-w-none overflow-auto"
-            dangerouslySetInnerHTML={{ __html: note.content }}
-          />
+          <div className="flex-1 overflow-auto">
+            <FullNote note={note} />
+          </div>
         )}
 
         {!note.content && (
@@ -135,7 +136,7 @@ export const NoteWidgetConfigForm: FC<WidgetConfigFormProps<NoteWidgetConfig>> =
 
   const filteredNotes = notes.filter((note: any) => {
     if (!noteSearchQuery.trim()) return true;
-    const noteText = note.content ? note.content.replace(/<[^>]*>/g, '').toLowerCase() : '';
+    const noteText = extractTextFromTipTapJSON(note.content || '').toLowerCase();
     return noteText.includes(noteSearchQuery.toLowerCase());
   });
 
@@ -153,7 +154,7 @@ export const NoteWidgetConfigForm: FC<WidgetConfigFormProps<NoteWidgetConfig>> =
         <div className="border dark:border-neutral-600 rounded-lg max-h-60 overflow-y-auto">
           {filteredNotes.length > 0 ? (
             filteredNotes.map((note: any) => {
-              const noteText = note.content ? note.content.replace(/<[^>]*>/g, '').slice(0, 80) : t('notes.untitled');
+              const noteText = note.content ? extractTextFromTipTapJSON(note.content).slice(0, 80) : t('notes.untitled');
               const isSelected = config.noteId === note.id;
 
               return (
@@ -178,9 +179,9 @@ export const NoteWidgetConfigForm: FC<WidgetConfigFormProps<NoteWidgetConfig>> =
         {config.noteId && (
           <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             {t('widgets.config.selectedNote')}: {
-              notes.find((n: any) => n.id === config.noteId)?.content
-                ?.replace(/<[^>]*>/g, '')
-                .slice(0, 50) || t('notes.untitled')
+              extractTextFromTipTapJSON(
+                notes.find((n: any) => n.id === config.noteId)?.content || ''
+              ).slice(0, 50) || t('notes.untitled')
             }
           </div>
         )}
