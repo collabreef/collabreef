@@ -14,6 +14,10 @@ export const Attachment = Node.create({
         return{
           url: URL.createObjectURL(file), name: file.name
         }
+      },
+      workspaceId: '',
+      listFiles: async () => {
+        return { files: [] }
       }
     }
   },

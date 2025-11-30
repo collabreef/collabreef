@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -152,9 +153,17 @@ func (h Handler) List(c echo.Context) error {
 		PageNumber:  pageNumber,
 	}
 
-	// Parse extension filter
+	// Parse extension filter (split comma-separated extensions)
 	if extFilter != "" {
-		filter.Exts = []string{extFilter}
+		exts := make([]string, 0)
+		for _, ext := range splitAndTrim(extFilter, ",") {
+			if ext != "" {
+				exts = append(exts, ext)
+			}
+		}
+		if len(exts) > 0 {
+			filter.Exts = exts
+		}
 	}
 
 	files, err := h.db.FindFiles(filter)
@@ -230,4 +239,16 @@ func randStringRunes(n int) string {
 		b[i] = letterRunes[rand.Intn(len(letterRunes))]
 	}
 	return string(b)
+}
+
+func splitAndTrim(s string, sep string) []string {
+	parts := strings.Split(s, sep)
+	result := make([]string, 0, len(parts))
+	for _, part := range parts {
+		trimmed := strings.TrimSpace(part)
+		if trimmed != "" {
+			result = append(result, trimmed)
+		}
+	}
+	return result
 }

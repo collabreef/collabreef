@@ -1,13 +1,16 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
-import { DownloadIcon, Loader2, UploadCloud } from "lucide-react"
+import { DownloadIcon, Loader2, UploadCloud, FolderOpen, Upload } from "lucide-react"
 import { useRef, useState } from "react"
+import AllFilePickerDialog from "./AllFilePickerDialog"
+import { FileInfo } from "@/api/file"
 
 const AttachmentComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, extension }) => {
   const [isUploading, setIsUploading] = useState(false)
+  const [isPickerOpen, setIsPickerOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const { src, name } = node.attrs
 
-  const handleSelectFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -25,33 +28,62 @@ const AttachmentComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, 
     }
   }
 
+  const handleSelectExistingFile = (file: FileInfo) => {
+    const workspaceId = extension.options?.workspaceId
+    if (workspaceId) {
+      updateAttributes({
+        src: `/api/v1/workspaces/${workspaceId}/files/${file.name}`,
+        name: file.original_name
+      })
+    }
+  }
+
   if (!src) {
     return (
       <NodeViewWrapper className="file-node select-none border rounded p-2 bg-gray-100">
-        <button
-          className="rounded w-full h-32 flex gap-3 items-center justify-center"
-          onClick={() => inputRef.current?.click()}
-        >
-          {
-            isUploading ?
+        <div className="flex gap-2 w-full h-32">
+          <button
+            className="flex-1 rounded flex flex-col gap-2 items-center justify-center hover:bg-gray-200 transition-colors"
+            onClick={() => inputRef.current?.click()}
+            disabled={isUploading}
+          >
+            {isUploading ? (
               <>
                 <Loader2 className="animate-spin" size={20} />
-                Uploading
+                <span className="text-sm">Uploading</span>
               </>
-              :
+            ) : (
               <>
-                <UploadCloud size={20} />
-                Upload
+                <Upload size={20} />
+                <span className="text-sm">Upload New</span>
               </>
-          }
-        </button>
+            )}
+          </button>
+          <button
+            className="flex-1 rounded flex flex-col gap-2 items-center justify-center hover:bg-gray-200 transition-colors"
+            onClick={() => setIsPickerOpen(true)}
+            disabled={isUploading || !extension.options?.workspaceId}
+          >
+            <FolderOpen size={20} />
+            <span className="text-sm">Choose Existing</span>
+          </button>
+        </div>
         <input
           type="file"
           ref={inputRef}
           className="hidden"
           aria-label="upload"
-          onChange={handleSelectFile}
+          onChange={handleUploadFile}
         />
+        {extension.options?.workspaceId && (
+          <AllFilePickerDialog
+            open={isPickerOpen}
+            onOpenChange={setIsPickerOpen}
+            workspaceId={extension.options.workspaceId}
+            listFiles={extension.options.listFiles}
+            onSelect={handleSelectExistingFile}
+          />
+        )}
       </NodeViewWrapper>
     )
   }
