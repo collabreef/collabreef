@@ -268,9 +268,12 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note }) => {
                 }
 
                 <div className="flex flex-col p-4">
-                    <div className="font-bold text-gray-400 p-2">
-                        {t("common.pinned")}
-                    </div>
+                    {
+                        groupedByView.length > 0 && 
+                        <div className="font-bold text-gray-400 p-2">
+                            {t("common.pinned")}
+                        </div>
+                    }
                     {groupedByView.length > 0 &&
                         groupedByView.map((viewGroup) => (
                             <div>
