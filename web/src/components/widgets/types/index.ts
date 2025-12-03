@@ -14,6 +14,7 @@ import './NoteWidget';
 import './LatestNoteWidget';
 import './CountdownWidget';
 import './FileUploadWidget';
+import './CarouselWidget';
 
 // Re-export for convenience
 export { default as NoteFormWidget } from './NoteFormWidget';
@@ -24,3 +25,4 @@ export { default as NoteWidget } from './NoteWidget';
 export { default as LatestNoteWidget } from './LatestNoteWidget';
 export { default as CountdownWidget } from './CountdownWidget';
 export { default as FileUploadWidget } from './FileUploadWidget';
+export { default as CarouselWidget } from './CarouselWidget';

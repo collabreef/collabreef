@@ -406,6 +406,19 @@ export default {
         allowedExtensionsHint: "Leave empty to allow all file types"
       }
     },
+    carousel: {
+      noImages: "No images added. Please configure images in widget settings.",
+      previous: "Previous",
+      next: "Next",
+      config: {
+        imageUrls: "Images",
+        selectFromFiles: "Select from Files",
+        imageNumber: "Image {{number}}",
+        autoPlay: "Auto Play",
+        interval: "Auto Play Interval (seconds)",
+        intervalHint: "Time between slides in seconds"
+      }
+    },
     types: {
       noteForm: "Quick Note",
       noteFormDesc: "Quickly create notes from your dashboard",
@@ -424,7 +437,9 @@ export default {
       countdown: "Countdown Timer",
       countdownDesc: "Display a countdown to a specific date",
       fileUpload: "File Upload",
-      fileUploadDesc: "Upload files with drag and drop support"
+      fileUploadDesc: "Upload files with drag and drop support",
+      carousel: "Image Carousel",
+      carouselDesc: "Display images in a carousel slider"
     },
     config: {
       defaultVisibility: "Default Visibility",

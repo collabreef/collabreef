@@ -399,6 +399,19 @@ export default {
         allowedExtensionsHint: "留空表示允許所有檔案類型"
       }
     },
+    carousel: {
+      noImages: "尚未新增圖片。請在小工具設定中新增圖片。",
+      previous: "上一張",
+      next: "下一張",
+      config: {
+        imageUrls: "圖片",
+        selectFromFiles: "從檔案中選擇",
+        imageNumber: "圖片 {{number}}",
+        autoPlay: "自動播放",
+        interval: "自動播放間隔（秒）",
+        intervalHint: "每張圖片之間的間隔秒數"
+      }
+    },
     types: {
       noteForm: "快速筆記",
       noteFormDesc: "從儀表板快速建立筆記",
@@ -417,7 +430,9 @@ export default {
       countdown: "倒數計時器",
       countdownDesc: "顯示到特定日期的倒數計時",
       fileUpload: "檔案上傳",
-      fileUploadDesc: "支援拖放的檔案上傳功能"
+      fileUploadDesc: "支援拖放的檔案上傳功能",
+      carousel: "圖片輪播",
+      carouselDesc: "以輪播方式顯示圖片"
     },
     config: {
       defaultVisibility: "預設可見性",

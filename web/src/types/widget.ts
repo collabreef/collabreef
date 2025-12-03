@@ -1,5 +1,5 @@
 // Widget types
-export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note' | 'latest_note' | 'countdown' | 'file_upload';
+export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note' | 'latest_note' | 'countdown' | 'file_upload' | 'carousel';
 
 // Widget position on dashboard
 export interface WidgetPosition {
@@ -77,6 +77,13 @@ export interface FileUploadWidgetConfig {
   showRecentFiles?: boolean; // Show recently uploaded files (default: true)
 }
 
+// Carousel widget - for image carousel
+export interface CarouselWidgetConfig {
+  imageUrls?: string[]; // Array of image URLs
+  autoPlay?: boolean; // Auto play carousel (default: false)
+  interval?: number; // Auto play interval in seconds (default: 3)
+}
+
 // Request/Response types
 export interface CreateWidgetRequest {
   type: WidgetType;
@@ -100,6 +107,7 @@ export type WidgetConfigMap = {
   latest_note: LatestNoteWidgetConfig;
   countdown: CountdownWidgetConfig;
   file_upload: FileUploadWidgetConfig;
+  carousel: CarouselWidgetConfig;
 };
 
 // Parsed widget with typed config

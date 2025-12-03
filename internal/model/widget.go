@@ -12,6 +12,7 @@ const (
 	WidgetTypeNote         WidgetType = "note"          // Widget for displaying a single note's complete content
 	WidgetTypeCountdown    WidgetType = "countdown"     // Widget for countdown timer
 	WidgetTypeFileUpload   WidgetType = "file_upload"   // Widget for uploading files
+	WidgetTypeCarousel     WidgetType = "carousel"      // Widget for image carousel
 )
 
 type WidgetFilter struct {

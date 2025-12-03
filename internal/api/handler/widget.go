@@ -139,6 +139,7 @@ func (h Handler) CreateWidget(c echo.Context) error {
 		"latest_note":   true,
 		"countdown":     true,
 		"file_upload":   true,
+		"carousel":      true,
 	}
 	if !validTypes[req.Type] {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid widget type")
