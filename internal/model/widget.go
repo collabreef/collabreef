@@ -10,6 +10,8 @@ const (
 	WidgetTypeView         WidgetType = "view"          // Widget for displaying a view
 	WidgetTypeNoteList     WidgetType = "note_list"     // Widget for displaying notes with conditions
 	WidgetTypeNote         WidgetType = "note"          // Widget for displaying a single note's complete content
+	WidgetTypeCountdown    WidgetType = "countdown"     // Widget for countdown timer
+	WidgetTypeFileUpload   WidgetType = "file_upload"   // Widget for uploading files
 )
 
 type WidgetFilter struct {

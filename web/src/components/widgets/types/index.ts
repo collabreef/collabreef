@@ -12,6 +12,8 @@ import './TemplateFormWidget';
 import './ViewWidget';
 import './NoteWidget';
 import './LatestNoteWidget';
+import './CountdownWidget';
+import './FileUploadWidget';
 
 // Re-export for convenience
 export { default as NoteFormWidget } from './NoteFormWidget';
@@ -20,3 +22,5 @@ export { default as TemplateFormWidget } from './TemplateFormWidget';
 export { default as ViewWidget } from './ViewWidget';
 export { default as NoteWidget } from './NoteWidget';
 export { default as LatestNoteWidget } from './LatestNoteWidget';
+export { default as CountdownWidget } from './CountdownWidget';
+export { default as FileUploadWidget } from './FileUploadWidget';

@@ -67,6 +67,7 @@ export default {
     collapse: "Collapse",
     create: "Create",
     update: "Update",
+    add: "Add",
     newNote: "New Note",
     rename: "Rename",
     filter: "Filter",
@@ -369,6 +370,42 @@ export default {
     noteNotFound: "Note not found",
     emptyNote: "This note is empty",
     openNote: "Open note",
+    countdown: {
+      noTargetDate: "Please configure a target date for the countdown",
+      expired: "Time's up!",
+      days: "Days",
+      hours: "Hours",
+      minutes: "Minutes",
+      seconds: "Seconds",
+      config: {
+        targetDate: "Target Date",
+        title: "Title",
+        titlePlaceholder: "e.g., Project Launch",
+        description: "Description",
+        descriptionPlaceholder: "Optional description for the countdown"
+      }
+    },
+    fileUpload: {
+      clickOrDrag: "Click to select files or drag and drop",
+      allowedExtensions: "Allowed: {{extensions}}",
+      anyFileType: "Any file type",
+      maxSize: "Max size: {{size}} MB",
+      uploadSuccess: "{{name}} uploaded successfully",
+      uploadError: "Failed to upload {{name}}",
+      uploadComplete: "Upload complete",
+      errors: {
+        fileTooLarge: "File is too large. Maximum size is {{max}} MB",
+        invalidExtension: "Invalid file type. Allowed: {{allowed}}"
+      },
+      config: {
+        title: "Title",
+        titlePlaceholder: "e.g., Upload Documents",
+        maxFileSize: "Maximum File Size (MB)",
+        maxFileSizeHint: "Maximum size per file in megabytes",
+        allowedExtensions: "Allowed File Extensions",
+        allowedExtensionsHint: "Leave empty to allow all file types"
+      }
+    },
     types: {
       noteForm: "Quick Note",
       noteFormDesc: "Quickly create notes from your dashboard",
@@ -383,7 +420,11 @@ export default {
       note: "Note Display",
       noteDesc: "Display a single note's complete content",
       latestNote: "Latest Note",
-      latestNoteDesc: "Display the most recent note"
+      latestNoteDesc: "Display the most recent note",
+      countdown: "Countdown Timer",
+      countdownDesc: "Display a countdown to a specific date",
+      fileUpload: "File Upload",
+      fileUploadDesc: "Upload files with drag and drop support"
     },
     config: {
       defaultVisibility: "Default Visibility",

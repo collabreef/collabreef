@@ -66,6 +66,7 @@ export default {
     collapse: "收合",
     create: "建立",
     update: "更新",
+    add: "新增",
     newNote: "新增筆記",
     rename: "重新命名",
     filter: "篩選",
@@ -362,6 +363,42 @@ export default {
     noteNotFound: "找不到筆記",
     emptyNote: "此筆記為空",
     openNote: "開啟筆記",
+    countdown: {
+      noTargetDate: "請設定倒數計時的目標日期",
+      expired: "時間到！",
+      days: "天",
+      hours: "小時",
+      minutes: "分鐘",
+      seconds: "秒",
+      config: {
+        targetDate: "目標日期",
+        title: "標題",
+        titlePlaceholder: "例如：專案上線",
+        description: "描述",
+        descriptionPlaceholder: "倒數計時的選填描述"
+      }
+    },
+    fileUpload: {
+      clickOrDrag: "點擊選擇檔案或拖放檔案到這裡",
+      allowedExtensions: "允許的格式：{{extensions}}",
+      anyFileType: "任何檔案類型",
+      maxSize: "最大檔案大小：{{size}} MB",
+      uploadSuccess: "{{name}} 上傳成功",
+      uploadError: "上傳 {{name}} 失敗",
+      uploadComplete: "上傳完成",
+      errors: {
+        fileTooLarge: "檔案太大，最大允許 {{max}} MB",
+        invalidExtension: "無效的檔案類型。允許的格式：{{allowed}}"
+      },
+      config: {
+        title: "標題",
+        titlePlaceholder: "例如：上傳文件",
+        maxFileSize: "最大檔案大小 (MB)",
+        maxFileSizeHint: "每個檔案的最大大小（以 MB 為單位）",
+        allowedExtensions: "允許的檔案副檔名",
+        allowedExtensionsHint: "留空表示允許所有檔案類型"
+      }
+    },
     types: {
       noteForm: "快速筆記",
       noteFormDesc: "從儀表板快速建立筆記",
@@ -376,7 +413,11 @@ export default {
       note: "筆記顯示",
       noteDesc: "顯示單一筆記的完整內容",
       latestNote: "最新筆記",
-      latestNoteDesc: "顯示最新的一筆筆記"
+      latestNoteDesc: "顯示最新的一筆筆記",
+      countdown: "倒數計時器",
+      countdownDesc: "顯示到特定日期的倒數計時",
+      fileUpload: "檔案上傳",
+      fileUploadDesc: "支援拖放的檔案上傳功能"
     },
     config: {
       defaultVisibility: "預設可見性",

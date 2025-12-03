@@ -1,5 +1,5 @@
 // Widget types
-export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note' | 'latest_note';
+export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note' | 'latest_note' | 'countdown' | 'file_upload';
 
 // Widget position on dashboard
 export interface WidgetPosition {
@@ -63,6 +63,20 @@ export interface LatestNoteWidgetConfig {
   sortBy?: 'created_at' | 'updated_at'; // Sort by created or updated time (default: created_at)
 }
 
+// Countdown widget - for displaying countdown timer
+export interface CountdownWidgetConfig {
+  targetDate: string; // ISO date string
+  title?: string; // Title for the countdown
+  description?: string; // Description
+}
+
+// File upload widget - for uploading files
+export interface FileUploadWidgetConfig {
+  maxFileSize?: number; // Max file size in MB (default: 10)
+  allowedExtensions?: string[]; // Allowed file extensions (empty = all)
+  showRecentFiles?: boolean; // Show recently uploaded files (default: true)
+}
+
 // Request/Response types
 export interface CreateWidgetRequest {
   type: WidgetType;
@@ -84,6 +98,8 @@ export type WidgetConfigMap = {
   view: ViewWidgetConfig;
   note: NoteWidgetConfig;
   latest_note: LatestNoteWidgetConfig;
+  countdown: CountdownWidgetConfig;
+  file_upload: FileUploadWidgetConfig;
 };
 
 // Parsed widget with typed config
