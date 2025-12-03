@@ -374,7 +374,9 @@ export default {
       noteList: "筆記列表",
       noteListDesc: "顯示篩選後的筆記列表",
       note: "筆記顯示",
-      noteDesc: "顯示單一筆記的完整內容"
+      noteDesc: "顯示單一筆記的完整內容",
+      latestNote: "最新筆記",
+      latestNoteDesc: "顯示最新的一筆筆記"
     },
     config: {
       defaultVisibility: "預設可見性",
@@ -391,6 +393,8 @@ export default {
       showControls: "顯示控制項",
       limit: "筆記數量",
       sortBy: "排序依據",
+      sortByCreated: "建立日期",
+      sortByUpdated: "更新日期",
       createdAt: "建立日期",
       updatedAt: "更新日期",
       title: "標題",
@@ -402,6 +406,7 @@ export default {
       selectNote: "選擇筆記",
       selectNotePlaceholder: "選擇一個筆記...",
       showMetadata: "顯示元資料",
+      showFullContent: "顯示完整內容",
       selectedNote: "已選擇"
     }
   },

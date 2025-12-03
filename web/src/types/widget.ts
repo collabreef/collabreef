@@ -1,5 +1,5 @@
 // Widget types
-export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note';
+export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note' | 'latest_note';
 
 // Widget position on dashboard
 export interface WidgetPosition {
@@ -56,6 +56,13 @@ export interface NoteWidgetConfig {
   showMetadata?: boolean;
 }
 
+// Latest note widget - for displaying the most recent note
+export interface LatestNoteWidgetConfig {
+  showMetadata?: boolean; // Show metadata like date and author (default: true)
+  showFullContent?: boolean; // Show full content or just title and excerpt (default: false)
+  sortBy?: 'created_at' | 'updated_at'; // Sort by created or updated time (default: created_at)
+}
+
 // Request/Response types
 export interface CreateWidgetRequest {
   type: WidgetType;
@@ -76,6 +83,7 @@ export type WidgetConfigMap = {
   template_form: TemplateFormWidgetConfig;
   view: ViewWidgetConfig;
   note: NoteWidgetConfig;
+  latest_note: LatestNoteWidgetConfig;
 };
 
 // Parsed widget with typed config

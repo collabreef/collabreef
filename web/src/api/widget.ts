@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note';
+export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note' | 'latest_note';
 
 export interface WidgetPosition {
   x: number;

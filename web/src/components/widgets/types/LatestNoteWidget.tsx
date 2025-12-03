@@ -1,0 +1,210 @@
+import { FC } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { Loader2, ExternalLink, User, Clock } from 'lucide-react';
+import { getNotes } from '@/api/note';
+import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
+import { LatestNoteWidgetConfig } from '@/types/widget';
+import Widget from '@/components/widgets/Widget';
+import FullNote from '@/components/fullnote/FullNote';
+import { extractTextFromTipTapJSON } from '@/utils/tiptap';
+import { registerWidget, WidgetProps, WidgetConfigFormProps } from '../widgetRegistry';
+
+interface LatestNoteWidgetProps extends WidgetProps {
+  config: LatestNoteWidgetConfig;
+}
+
+const LatestNoteWidget: FC<LatestNoteWidgetProps> = ({ config }) => {
+  const { t } = useTranslation();
+  const workspaceId = useCurrentWorkspaceId();
+  const navigate = useNavigate();
+
+  const { data: notes = [], isLoading, error } = useQuery({
+    queryKey: ['notes', workspaceId, 'latest-widget'],
+    queryFn: () => getNotes(workspaceId, 1, 100, ''),
+    enabled: !!workspaceId,
+  });
+
+  if (isLoading) {
+    return (
+      <Widget>
+        <div className="h-full flex items-center justify-center">
+          <Loader2 className="animate-spin text-gray-500" size={24} />
+        </div>
+      </Widget>
+    );
+  }
+
+  if (error || notes.length === 0) {
+    return (
+      <Widget>
+        <div className="h-full flex items-center justify-center text-gray-500 text-sm">
+          {notes.length === 0 ? t('widgets.noNotes') : t('common.error')}
+        </div>
+      </Widget>
+    );
+  }
+
+  // Sort notes and get the latest one
+  const sortBy = config.sortBy || 'created_at';
+  const sortedNotes = [...notes].sort((a: any, b: any) => {
+    const dateA = new Date(a[sortBy]).getTime();
+    const dateB = new Date(b[sortBy]).getTime();
+    return dateB - dateA; // Most recent first
+  });
+
+  const latestNote = sortedNotes[0];
+
+  const handleOpenNote = () => {
+    navigate(`/workspaces/${workspaceId}/notes/${latestNote.id}`);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
+
+  const showMetadata = config.showMetadata !== false; // Default to true
+  const showFullContent = config.showFullContent === true; // Default to false
+
+  return (
+    <Widget withPadding={false}>
+      <div className="h-full flex flex-col overflow-auto py-4">
+        {/* Metadata */}
+        {showMetadata && (
+          <div className='flex justify-between px-4 mb-2'>
+            <div className="flex flex-wrap gap-3 text-xs text-gray-500 dark:text-gray-400">
+              {latestNote.created_at && (
+                <div className="flex items-center gap-1">
+                  <Clock size={12} />
+                  <span>{formatDate(sortBy === 'created_at' ? latestNote.created_at : latestNote.updated_at)}</span>
+                </div>
+              )}
+              {latestNote.created_by && (
+                <div className="flex items-center gap-1">
+                  <User size={12} />
+                  <span>{latestNote.created_by}</span>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <button
+                onClick={handleOpenNote}
+                className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-neutral-700 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 flex-shrink-0"
+                title={t('widgets.openNote')}
+              >
+                <ExternalLink size={16} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Note Header */}
+        <div className="px-4 mb-2">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              {latestNote.title && (
+                <div
+                  className="text-xl font-semibold text-gray-900 dark:text-gray-100 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  onClick={handleOpenNote}
+                >
+                  {latestNote.title}
+                </div>
+              )}
+              {!latestNote.title && (
+                <div
+                  className="text-xl font-semibold text-gray-400 dark:text-gray-500 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  onClick={handleOpenNote}
+                >
+                  {t('notes.untitled')}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Note Content */}
+        {latestNote.content && (
+          <div className="flex-1 overflow-auto">
+            {showFullContent ? (
+              <FullNote note={latestNote} />
+            ) : (
+              <div className="px-4 text-gray-700 dark:text-gray-300 text-sm line-clamp-3">
+                {extractTextFromTipTapJSON(latestNote.content).slice(0, 200)}
+                {extractTextFromTipTapJSON(latestNote.content).length > 200 && '...'}
+              </div>
+            )}
+          </div>
+        )}
+
+        {!latestNote.content && (
+          <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
+            {t('widgets.emptyNote')}
+          </div>
+        )}
+      </div>
+    </Widget>
+  );
+};
+
+// Configuration Form Component
+export const LatestNoteWidgetConfigForm: FC<WidgetConfigFormProps<LatestNoteWidgetConfig>> = ({
+  config,
+  onChange,
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium mb-2">{t('widgets.config.sortBy')}</label>
+        <select
+          value={config.sortBy || 'created_at'}
+          onChange={(e) => onChange({ ...config, sortBy: e.target.value as 'created_at' | 'updated_at' })}
+          className="w-full px-3 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
+        >
+          <option value="created_at">{t('widgets.config.sortByCreated')}</option>
+          <option value="updated_at">{t('widgets.config.sortByUpdated')}</option>
+        </select>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          id="showMetadata"
+          checked={config.showMetadata !== false}
+          onChange={(e) => onChange({ ...config, showMetadata: e.target.checked })}
+        />
+        <label htmlFor="showMetadata" className="text-sm">{t('widgets.config.showMetadata')}</label>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          id="showFullContent"
+          checked={config.showFullContent === true}
+          onChange={(e) => onChange({ ...config, showFullContent: e.target.checked })}
+        />
+        <label htmlFor="showFullContent" className="text-sm">{t('widgets.config.showFullContent')}</label>
+      </div>
+    </div>
+  );
+};
+
+// Register widget
+registerWidget({
+  type: 'latest_note',
+  label: 'widgets.types.latestNote',
+  description: 'widgets.types.latestNoteDesc',
+  defaultConfig: {
+    showMetadata: true,
+    showFullContent: false,
+    sortBy: 'created_at',
+  },
+  Component: LatestNoteWidget,
+  ConfigForm: LatestNoteWidgetConfigForm,
+});
+
+export default LatestNoteWidget;

@@ -381,7 +381,9 @@ export default {
       noteList: "Note List",
       noteListDesc: "Display a filtered list of notes",
       note: "Note Display",
-      noteDesc: "Display a single note's complete content"
+      noteDesc: "Display a single note's complete content",
+      latestNote: "Latest Note",
+      latestNoteDesc: "Display the most recent note"
     },
     config: {
       defaultVisibility: "Default Visibility",
@@ -398,6 +400,8 @@ export default {
       showControls: "Show Controls",
       limit: "Number of Notes",
       sortBy: "Sort By",
+      sortByCreated: "Created Date",
+      sortByUpdated: "Updated Date",
       createdAt: "Created Date",
       updatedAt: "Updated Date",
       title: "Title",
@@ -409,6 +413,7 @@ export default {
       selectNote: "Select Note",
       selectNotePlaceholder: "Choose a note...",
       showMetadata: "Show Metadata",
+      showFullContent: "Show Full Content",
       selectedNote: "Selected"
     }
   },

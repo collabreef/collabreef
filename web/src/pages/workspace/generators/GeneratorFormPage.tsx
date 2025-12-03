@@ -278,7 +278,7 @@ const GeneratorFormPage = () => {
                             <option value="">{t("genTemplates.selectModel") || "Select a model"}</option>
                             {availableModels.map(m => (
                                 <option key={m.id} value={m.id}>
-                                    {m.name} {m.description && `- ${m.description}`}
+                                    {m.name}
                                 </option>
                             ))}
                         </select>
