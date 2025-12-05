@@ -171,23 +171,23 @@ const HeatmapWidget: FC<HeatmapWidgetProps> = ({ config }) => {
 
   return (
     <Widget>
-      <div className="flex flex-col gap-3 overflow-auto">
+      <div className="flex flex-col gap-3 overflow-auto h-full">
         {/* Heatmap Grid */}
-        <div ref={scrollContainerRef} className="flex-1 overflow-x-auto overflow-y-hidden">
-          <div className="inline-flex gap-1">
-            {weeks.map((week, weekIndex) => (
-              <div key={weekIndex} className="flex flex-col gap-1">
-                {week.map((day, dayIndex) => (
-                  <div
-                    key={`${weekIndex}-${dayIndex}`}
-                    className={`w-3 h-3 rounded-sm transition-colors ${day.date ? getLevelColor(day.level) : 'bg-transparent'
-                      }`}
-                    title={day.date ? `${formatDate(day.date)}: ${day.count} notes` : ''}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
+        <div ref={scrollContainerRef} className="h-full flex gap-1 overflow-x-auto overflow-y-hidden">
+          {weeks.map((week, weekIndex) => (
+            <div key={weekIndex} className="h-full grid grid-rows-7 gap-1">
+              {week.map((day, dayIndex) => (
+                <div
+                  key={`${weekIndex}-${dayIndex}`}
+                  className={`h-full aspect-square rounded-sm transition-colors ${day.date ? getLevelColor(day.level) : 'bg-transparent'
+                    }`}
+                  title={day.date ? `${formatDate(day.date)}: ${day.count} notes` : ''}
+                />
+
+              ))}
+            </div>
+          ))}
+
         </div>
 
         {/* Legend */}
