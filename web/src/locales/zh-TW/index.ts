@@ -354,6 +354,7 @@ export default {
     noteCreationActivity: "筆記建立活動",
     less: "較少",
     more: "較多",
+    notesInDays: "{{dayCount}} 天內共 {{totalCount}} 筆筆記",
     objects: "個物件",
     openView: "開啟視圖",
     viewMore: "查看更多 {{count}} 個...",
