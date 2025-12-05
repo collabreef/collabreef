@@ -13,6 +13,7 @@ const (
 	WidgetTypeCountdown    WidgetType = "countdown"     // Widget for countdown timer
 	WidgetTypeFileUpload   WidgetType = "file_upload"   // Widget for uploading files
 	WidgetTypeCarousel     WidgetType = "carousel"      // Widget for image carousel
+	WidgetTypeRSS          WidgetType = "rss"           // Widget for displaying RSS feeds
 )
 
 type WidgetFilter struct {

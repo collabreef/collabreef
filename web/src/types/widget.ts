@@ -1,5 +1,5 @@
 // Widget types
-export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note' | 'latest_note' | 'countdown' | 'file_upload' | 'carousel' | 'heatmap';
+export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note' | 'latest_note' | 'countdown' | 'file_upload' | 'carousel' | 'heatmap' | 'rss';
 
 // Widget position on dashboard
 export interface WidgetPosition {
@@ -90,6 +90,15 @@ export interface HeatmapWidgetConfig {
   showLegend?: boolean; // Show color legend (default: true)
 }
 
+// RSS widget - for displaying RSS feeds
+export interface RssWidgetConfig {
+  feedUrl: string; // RSS feed URL
+  maxItems?: number; // Max items to display (default: 10)
+  showDescription?: boolean; // Show item descriptions (default: true)
+  showDate?: boolean; // Show publication date (default: true)
+  autoRefresh?: number; // Auto-refresh interval in minutes (0 = disabled)
+}
+
 // Request/Response types
 export interface CreateWidgetRequest {
   type: WidgetType;
@@ -115,6 +124,7 @@ export type WidgetConfigMap = {
   file_upload: FileUploadWidgetConfig;
   carousel: CarouselWidgetConfig;
   heatmap: HeatmapWidgetConfig;
+  rss: RssWidgetConfig;
 };
 
 // Parsed widget with typed config

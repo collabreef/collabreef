@@ -141,6 +141,7 @@ func (h Handler) CreateWidget(c echo.Context) error {
 		"file_upload":   true,
 		"carousel":      true,
 		"heatmap":       true,
+		"rss":           true,
 	}
 	if !validTypes[req.Type] {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid widget type")

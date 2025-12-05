@@ -445,7 +445,9 @@ export default {
       carousel: "Image Carousel",
       carouselDesc: "Display images in a carousel slider",
       heatmap: "Note Heatmap",
-      heatmapDesc: "Visualize note creation activity over time"
+      heatmapDesc: "Visualize note creation activity over time",
+      rss: "RSS Feed",
+      rssDesc: "Display items from an RSS/Atom feed"
     },
     config: {
       defaultVisibility: "Default Visibility",
@@ -480,6 +482,20 @@ export default {
       dayCount: "Number of Days",
       dayCountHint: "Number of days to display (30-365)",
       showLegend: "Show Color Legend"
+    },
+    rss: {
+      noFeedUrl: "Please configure an RSS feed URL",
+      fetchError: "Failed to fetch RSS feed",
+      noItems: "No items in feed",
+      config: {
+        feedUrl: "Feed URL",
+        feedUrlHint: "Enter the URL of an RSS or Atom feed",
+        maxItems: "Maximum Items",
+        showDescription: "Show descriptions",
+        showDate: "Show publication date",
+        autoRefresh: "Auto-refresh interval (minutes)",
+        autoRefreshHint: "Set to 0 to disable auto-refresh (maximum: 1440 minutes / 24 hours)"
+      }
     }
   },
   notes: {

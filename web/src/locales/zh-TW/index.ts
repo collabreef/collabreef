@@ -438,7 +438,9 @@ export default {
       carousel: "圖片輪播",
       carouselDesc: "以輪播方式顯示圖片",
       heatmap: "筆記熱力圖",
-      heatmapDesc: "視覺化顯示筆記建立活動"
+      heatmapDesc: "視覺化顯示筆記建立活動",
+      rss: "RSS 訂閱",
+      rssDesc: "顯示 RSS/Atom 訂閱內容"
     },
     config: {
       defaultVisibility: "預設可見性",
@@ -473,6 +475,20 @@ export default {
       dayCount: "天數",
       dayCountHint: "顯示的天數（30-365）",
       showLegend: "顯示顏色圖例"
+    },
+    rss: {
+      noFeedUrl: "請設定 RSS 訂閱網址",
+      fetchError: "無法取得 RSS 訂閱內容",
+      noItems: "訂閱中沒有任何項目",
+      config: {
+        feedUrl: "訂閱網址",
+        feedUrlHint: "輸入 RSS 或 Atom 訂閱的網址",
+        maxItems: "最多顯示項目數",
+        showDescription: "顯示描述",
+        showDate: "顯示發布日期",
+        autoRefresh: "自動更新間隔（分鐘）",
+        autoRefreshHint: "設為 0 停用自動更新（最大值：1440 分鐘 / 24 小時）"
+      }
     }
   },
   notes: {
