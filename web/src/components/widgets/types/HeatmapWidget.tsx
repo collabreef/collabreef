@@ -22,7 +22,6 @@ const HeatmapWidget: FC<HeatmapWidgetProps> = ({ config }) => {
   const workspaceId = useCurrentWorkspaceId();
   const dayCount = config.dayCount ?? 365;
   const showLegend = config.showLegend ?? true;
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Get timezone offset in minutes (negative for timezones ahead of UTC)
   const timezoneOffset = -new Date().getTimezoneOffset();
@@ -142,23 +141,6 @@ const HeatmapWidget: FC<HeatmapWidgetProps> = ({ config }) => {
     });
   };
 
-  // Scroll to the right (most recent dates) when data loads with smooth transition
-  useEffect(() => {
-    if (!isLoading && scrollContainerRef.current) {
-      // Use setTimeout to ensure DOM is fully rendered
-      const timer = setTimeout(() => {
-        if (scrollContainerRef.current) {
-          scrollContainerRef.current.scrollTo({
-            left: scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth,
-            behavior: 'smooth'
-          });
-        }
-      }, 100);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isLoading, heatmapData]);
-
   if (isLoading) {
     return (
       <Widget>
@@ -173,7 +155,7 @@ const HeatmapWidget: FC<HeatmapWidgetProps> = ({ config }) => {
     <Widget>
       <div className="flex flex-col gap-3 overflow-auto h-full">
         {/* Heatmap Grid */}
-        <div ref={scrollContainerRef} className="h-full flex gap-1 overflow-x-auto overflow-y-hidden">
+        <div className="h-full flex gap-1 overflow-x-auto overflow-y-hidden">
           {weeks.map((week, weekIndex) => (
             <div key={weekIndex} className="h-full grid grid-rows-7 gap-1">
               {week.map((day, dayIndex) => (
@@ -194,7 +176,7 @@ const HeatmapWidget: FC<HeatmapWidgetProps> = ({ config }) => {
         {showLegend && (
           <div className='flex justify-between'>
             <div className='text-gray-600 dark:text-gray-400 text-sm'>
-              {t('widgets.notesInDays', { totalCount, dayCount })}
+              {t('widgets.notesInLastDays', { totalCount, dayCount })}
             </div>
 
             <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
