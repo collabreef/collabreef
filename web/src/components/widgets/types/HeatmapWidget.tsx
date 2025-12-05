@@ -79,6 +79,15 @@ const HeatmapWidget: FC<HeatmapWidgetProps> = ({ config }) => {
     return days;
   }, [noteCountsData, dayCount]);
 
+  const totalCount = useMemo(() => {
+    let totalCount = 0
+    noteCountsData.forEach(item => {
+      totalCount += item.count
+    });
+
+    return totalCount
+  }, [noteCountsData])
+
   // Group days by week
   const weeks = useMemo(() => {
     const result: DayData[][] = [];
@@ -171,9 +180,8 @@ const HeatmapWidget: FC<HeatmapWidgetProps> = ({ config }) => {
                 {week.map((day, dayIndex) => (
                   <div
                     key={`${weekIndex}-${dayIndex}`}
-                    className={`w-3 h-3 rounded-sm transition-colors ${
-                      day.date ? getLevelColor(day.level) : 'bg-transparent'
-                    }`}
+                    className={`w-3 h-3 rounded-sm transition-colors ${day.date ? getLevelColor(day.level) : 'bg-transparent'
+                      }`}
                     title={day.date ? `${formatDate(day.date)}: ${day.count} notes` : ''}
                   />
                 ))}
@@ -184,17 +192,23 @@ const HeatmapWidget: FC<HeatmapWidgetProps> = ({ config }) => {
 
         {/* Legend */}
         {showLegend && (
-          <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-            <span>{t('widgets.less')}</span>
-            <div className="flex gap-1">
-              {[0, 1, 2, 3, 4].map((level) => (
-                <div
-                  key={level}
-                  className={`w-3 h-3 rounded-sm ${getLevelColor(level)}`}
-                />
-              ))}
+          <div className='flex justify-between'>
+            <div className='text-gray-600 dark:text-gray-400 text-sm'>
+              {t('widgets.notesInDays', { totalCount, dayCount })}
             </div>
-            <span>{t('widgets.more')}</span>
+
+            <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+              <span>{t('widgets.less')}</span>
+              <div className="flex gap-1">
+                {[0, 1, 2, 3, 4].map((level) => (
+                  <div
+                    key={level}
+                    className={`w-3 h-3 rounded-sm ${getLevelColor(level)}`}
+                  />
+                ))}
+              </div>
+              <span>{t('widgets.more')}</span>
+            </div>
           </div>
         )}
       </div>

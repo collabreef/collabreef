@@ -361,6 +361,7 @@ export default {
     noteCreationActivity: "Note Creation Activity",
     less: "Less",
     more: "More",
+    notesInDays: "{{totalCount}} notes in {{dayCount}} days",
     objects: "objects",
     openView: "Open View",
     viewMore: "View {{count}} more...",
