@@ -151,7 +151,21 @@ export default {
     minutes_ago: "{{count}} 分鐘前",
     hours_ago: "{{count}} 小時前",
     date_md: "{{month}}月{{day}}日",
-    date_ymd: "{{year}}年{{month}}月{{day}}日"
+    date_ymd: "{{year}}年{{month}}月{{day}}日",
+    months: {
+      1: "1月",
+      2: "2月",
+      3: "3月",
+      4: "4月",
+      5: "5月",
+      6: "6月",
+      7: "7月",
+      8: "8月",
+      9: "9月",
+      10: "10月",
+      11: "11月",
+      12: "12月"
+    }
   },
   genTemplates: {
     title: "AI 生成器",

@@ -12,13 +12,20 @@ interface HeatmapWidgetProps extends WidgetProps {
 }
 
 interface DayData {
+  isFirstDayOfMonth: boolean;
+  month?: number;
+  monthName?: string;
   date: string;
   count: number;
   level: number; // 0-4 for color intensity
 }
 
+interface WeekData {
+  days: DayData[]
+}
+
 const HeatmapWidget: FC<HeatmapWidgetProps> = ({ config }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const workspaceId = useCurrentWorkspaceId();
   const dayCount = config.dayCount ?? 365;
   const showLegend = config.showLegend ?? true;
@@ -51,6 +58,23 @@ const HeatmapWidget: FC<HeatmapWidgetProps> = ({ config }) => {
     // Find max count for normalization
     const maxCount = Math.max(...Array.from(countMap.values()), 1);
 
+    // Month names mapping
+    const monthNamesMap: { [key: number]: { en: string, zh: string } } = {
+      1: { en: 'Jan', zh: '1月' },
+      2: { en: 'Feb', zh: '2月' },
+      3: { en: 'Mar', zh: '3月' },
+      4: { en: 'Apr', zh: '4月' },
+      5: { en: 'May', zh: '5月' },
+      6: { en: 'Jun', zh: '6月' },
+      7: { en: 'Jul', zh: '7月' },
+      8: { en: 'Aug', zh: '8月' },
+      9: { en: 'Sep', zh: '9月' },
+      10: { en: 'Oct', zh: '10月' },
+      11: { en: 'Nov', zh: '11月' },
+      12: { en: 'Dec', zh: '12月' }
+    };
+    const lang = i18n.language.includes('zh') ? 'zh' : 'en';
+
     // Generate data for each day using local timezone
     for (let i = dayCount - 1; i >= 0; i--) {
       const date = new Date(today);
@@ -72,11 +96,21 @@ const HeatmapWidget: FC<HeatmapWidgetProps> = ({ config }) => {
         else level = 4;
       }
 
-      days.push({ date: dateStr, count, level });
+      const monthNum = date.getMonth() + 1;
+      const monthName = monthNamesMap[monthNum]?.[lang] || String(monthNum);
+
+      days.push({
+        isFirstDayOfMonth: date.getDate() === 1,
+        month: monthNum,
+        monthName,
+        date: dateStr,
+        count,
+        level
+      });
     }
 
     return days;
-  }, [noteCountsData, dayCount]);
+  }, [noteCountsData, dayCount, i18n.language]);
 
   const totalCount = useMemo(() => {
     let totalCount = 0
@@ -89,7 +123,7 @@ const HeatmapWidget: FC<HeatmapWidgetProps> = ({ config }) => {
 
   // Group days by week
   const weeks = useMemo(() => {
-    const result: DayData[][] = [];
+    const result: WeekData[] = [];
     let currentWeek: DayData[] = [];
 
     heatmapData.forEach((day, index) => {
@@ -100,7 +134,7 @@ const HeatmapWidget: FC<HeatmapWidgetProps> = ({ config }) => {
       if (index === 0) {
         // Fill in empty days at the start
         for (let i = 0; i < dayOfWeek; i++) {
-          currentWeek.push({ date: '', count: 0, level: 0 });
+          currentWeek.push({ isFirstDayOfMonth: false, date: '', count: 0, level: 0 });
         }
       }
 
@@ -110,9 +144,10 @@ const HeatmapWidget: FC<HeatmapWidgetProps> = ({ config }) => {
       if (dayOfWeek === 6 || index === heatmapData.length - 1) {
         // Fill in empty days at the end if needed
         while (currentWeek.length < 7) {
-          currentWeek.push({ date: '', count: 0, level: 0 });
+          currentWeek.push({ isFirstDayOfMonth: false, date: '', count: 0, level: 0 });
         }
-        result.push(currentWeek);
+
+        result.push({ days: currentWeek });
         currentWeek = [];
       }
     });
@@ -157,8 +192,16 @@ const HeatmapWidget: FC<HeatmapWidgetProps> = ({ config }) => {
         {/* Heatmap Grid */}
         <div className="h-full flex gap-1 overflow-x-auto overflow-y-hidden">
           {weeks.map((week, weekIndex) => (
-            <div key={weekIndex} className="h-full grid grid-rows-7 gap-1">
-              {week.map((day, dayIndex) => (
+            <div key={weekIndex} className="h-full grid grid-rows-8 text-nowrap gap-1">
+              <div className="text-xs text-gray-600 dark:text-gray-400 relative">
+                <div className=' absolute'>
+                {(() => {
+                  const firstDay = week.days.find(x => x.isFirstDayOfMonth);
+                  return firstDay?.monthName || "";
+                })()}
+                </div>
+              </div>
+              {week.days.map((day, dayIndex) => (
                 <div
                   key={`${weekIndex}-${dayIndex}`}
                   className={`h-full aspect-square rounded-sm transition-colors ${day.date ? getLevelColor(day.level) : 'bg-transparent'

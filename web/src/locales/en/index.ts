@@ -152,7 +152,21 @@ export default {
     minutes_ago: "{{count}} minutes ago",
     hours_ago: "{{count}} hours ago",
     date_md: "{{month}}/{{day}}",
-    date_ymd: "{{year}}/{{month}}/{{day}}"
+    date_ymd: "{{year}}/{{month}}/{{day}}",
+    months: {
+      1: "Jan",
+      2: "Feb",
+      3: "Mar",
+      4: "Apr",
+      5: "May",
+      6: "Jun",
+      7: "Jul",
+      8: "Aug",
+      9: "Sep",
+      10: "Oct",
+      11: "Nov",
+      12: "Dec"
+    }
   },
   genTemplates: {
     title: "AI Generators",
