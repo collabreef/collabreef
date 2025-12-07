@@ -58,18 +58,16 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({ note, menu, isEditable = fals
             {note && (
                 <div className="flex flex-col min-h-dvh">
                     <div className="p-2 xl:p-0 flex items-center justify-between">
-                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                            <button onClick={() => navigate(-1)} aria-label="back" className="inline-flex xl:hidden p-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0">
+                        <div className="flex items-center gap-2 flex-1 min-w-0 xl:hidden">
+                            <button onClick={() => navigate(-1)} aria-label="back" className="inline-flex p-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0">
                                 <ArrowLeft size={20} />
                             </button>
                             <EditableDiv
                                 key={note.id}
                                 value={note.title}
                                 placeholder={t("notes.untitled")}
-                                className="xl:hidden flex-1 text-lg font-semibold border-none outline-none bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600 min-w-0"
+                                className="flex-1 text-lg font-semibold border-none outline-none bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600 min-w-0"
                                 onChange={handleTitleChange} />
-                        </div>
-                        <div className="flex items-center gap-2 xl:hidden">
                             {/* Save Status Indicator */}
                             {saveStatus === 'saving' && (
                                 <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 px-2">
@@ -90,15 +88,14 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({ note, menu, isEditable = fals
                         <div className="w-full m-auto">
                             <div className="lg:p-4">
                                 <div className="flex flex-col gap-2">
-                                    <div className="hidden xl:flex xl:flex-col xl:gap-2 p-4">
+                                    <div className="hidden xl:flex xl:gap-2 p-4">
                                         <EditableDiv
                                             key={note.id}
                                             value={note.title}
                                             placeholder={t("notes.untitled")}
                                             className="flex-1 text-4xl font-semibold border-none outline-none bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600 min-w-0"
                                             onChange={handleTitleChange} />
-                                        {/* Save Status Indicator for Desktop */}
-                                        <div className="hidden xl:flex items-center gap-2 min-h-[24px]">
+                                        <div>
                                             {saveStatus === 'saving' && (
                                                 <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
                                                     <Loader className="animate-spin" size={16} />
