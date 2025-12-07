@@ -1,14 +1,13 @@
-import { FC } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { FC, useState, useCallback, useRef, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, ExternalLink, User, Clock } from 'lucide-react';
-import { getNotes } from '@/api/note';
+import { Loader2, ExternalLink, User, Clock, Check, Loader } from 'lucide-react';
+import { getNotes, updateNote } from '@/api/note';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import { LatestNoteWidgetConfig } from '@/types/widget';
 import Widget from '@/components/widgets/Widget';
-import FullNote from '@/components/fullnote/FullNote';
-import { extractTextFromTipTapJSON } from '@/utils/tiptap';
+import Editor from '@/components/editor/Editor';
 import { registerWidget, WidgetProps, WidgetConfigFormProps } from '../widgetRegistry';
 
 interface LatestNoteWidgetProps extends WidgetProps {
@@ -19,12 +18,70 @@ const LatestNoteWidget: FC<LatestNoteWidgetProps> = ({ config }) => {
   const { t } = useTranslation();
   const workspaceId = useCurrentWorkspaceId();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
 
   const { data: notes = [], isLoading, error } = useQuery({
     queryKey: ['notes', workspaceId, 'latest-widget'],
     queryFn: () => getNotes(workspaceId, 1, 100, ''),
     enabled: !!workspaceId,
   });
+
+  const updateNoteMutation = useMutation({
+    mutationFn: (data: { content: string; noteId: string }) => {
+      return updateNote(workspaceId, {
+        id: data.noteId,
+        content: data.content,
+      });
+    },
+    onSuccess: () => {
+      setSaveStatus('saved');
+      queryClient.invalidateQueries({ queryKey: ['notes', workspaceId, 'latest-widget'] });
+      setTimeout(() => setSaveStatus('idle'), 2000);
+    },
+    onError: () => {
+      setSaveStatus('idle');
+    },
+  });
+
+  // Sort notes and get the latest one
+  const sortBy = config.sortBy || 'created_at';
+  const sortedNotes = notes.length > 0 ? [...notes].sort((a: any, b: any) => {
+    const dateA = new Date(a[sortBy]).getTime();
+    const dateB = new Date(b[sortBy]).getTime();
+    return dateB - dateA; // Most recent first
+  }) : [];
+
+  const latestNote = sortedNotes[0];
+
+  const handleNoteChange = useCallback((data: { content: string }) => {
+    if (!latestNote?.id) return;
+
+    // Clear existing timer
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+    }
+
+    setSaveStatus('saving');
+
+    // Set new debounced save timer (1 second delay)
+    saveTimerRef.current = setTimeout(() => {
+      updateNoteMutation.mutate({
+        noteId: latestNote.id!,
+        content: data.content,
+      });
+    }, 1000);
+  }, [latestNote?.id, updateNoteMutation]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+      }
+    };
+  }, []);
 
   if (isLoading) {
     return (
@@ -46,16 +103,6 @@ const LatestNoteWidget: FC<LatestNoteWidgetProps> = ({ config }) => {
     );
   }
 
-  // Sort notes and get the latest one
-  const sortBy = config.sortBy || 'created_at';
-  const sortedNotes = [...notes].sort((a: any, b: any) => {
-    const dateA = new Date(a[sortBy]).getTime();
-    const dateB = new Date(b[sortBy]).getTime();
-    return dateB - dateA; // Most recent first
-  });
-
-  const latestNote = sortedNotes[0];
-
   const handleOpenNote = () => {
     navigate(`/workspaces/${workspaceId}/notes/${latestNote.id}`);
   };
@@ -66,7 +113,6 @@ const LatestNoteWidget: FC<LatestNoteWidgetProps> = ({ config }) => {
   };
 
   const showMetadata = config.showMetadata !== false; // Default to true
-  const showFullContent = config.showFullContent === true; // Default to false
 
   return (
     <Widget withPadding={false}>
@@ -89,7 +135,21 @@ const LatestNoteWidget: FC<LatestNoteWidgetProps> = ({ config }) => {
               )}
             </div>
 
-            <div>
+            <div className="flex items-center gap-2">
+              {/* Save Status Indicator */}
+              {saveStatus === 'saving' && (
+                <div className="flex items-center gap-1 text-xs text-gray-500">
+                  <Loader className="animate-spin" size={12} />
+                  <span>{t('widgets.saving')}</span>
+                </div>
+              )}
+              {saveStatus === 'saved' && (
+                <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                  <Check size={12} />
+                  <span>{t('widgets.saved')}</span>
+                </div>
+              )}
+
               <button
                 onClick={handleOpenNote}
                 className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-neutral-700 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 flex-shrink-0"
@@ -101,41 +161,10 @@ const LatestNoteWidget: FC<LatestNoteWidgetProps> = ({ config }) => {
           </div>
         )}
 
-        {/* Note Header */}
-        <div className="px-4 mb-2">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1 min-w-0">
-              {latestNote.title && (
-                <div
-                  className="text-xl font-semibold text-gray-900 dark:text-gray-100 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                  onClick={handleOpenNote}
-                >
-                  {latestNote.title}
-                </div>
-              )}
-              {!latestNote.title && (
-                <div
-                  className="text-xl font-semibold text-gray-400 dark:text-gray-500 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                  onClick={handleOpenNote}
-                >
-                  {t('notes.untitled')}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Note Content */}
+        {/* Note Content - Editable Editor */}
         {latestNote.content && (
           <div className="flex-1 overflow-auto">
-            {showFullContent ? (
-              <FullNote note={latestNote} />
-            ) : (
-              <div className="px-4 text-gray-700 dark:text-gray-300 text-sm line-clamp-3">
-                {extractTextFromTipTapJSON(latestNote.content).slice(0, 200)}
-                {extractTextFromTipTapJSON(latestNote.content).length > 200 && '...'}
-              </div>
-            )}
+            <Editor note={latestNote} onChange={handleNoteChange} />
           </div>
         )}
 
@@ -179,16 +208,6 @@ export const LatestNoteWidgetConfigForm: FC<WidgetConfigFormProps<LatestNoteWidg
         />
         <label htmlFor="showMetadata" className="text-sm">{t('widgets.config.showMetadata')}</label>
       </div>
-
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="showFullContent"
-          checked={config.showFullContent === true}
-          onChange={(e) => onChange({ ...config, showFullContent: e.target.checked })}
-        />
-        <label htmlFor="showFullContent" className="text-sm">{t('widgets.config.showFullContent')}</label>
-      </div>
     </div>
   );
 };
@@ -200,7 +219,6 @@ registerWidget({
   description: 'widgets.types.latestNoteDesc',
   defaultConfig: {
     showMetadata: true,
-    showFullContent: false,
     sortBy: 'created_at',
   },
   Component: LatestNoteWidget,

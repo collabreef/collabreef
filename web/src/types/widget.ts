@@ -59,7 +59,6 @@ export interface NoteWidgetConfig {
 // Latest note widget - for displaying the most recent note
 export interface LatestNoteWidgetConfig {
   showMetadata?: boolean; // Show metadata like date and author (default: true)
-  showFullContent?: boolean; // Show full content or just title and excerpt (default: false)
   sortBy?: 'created_at' | 'updated_at'; // Sort by created or updated time (default: created_at)
 }
 
