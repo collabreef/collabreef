@@ -144,6 +144,7 @@ func (h Handler) CreateWidget(c echo.Context) error {
 		"rss":           true,
 		"music":         true,
 		"video":         true,
+		"iframe":        true,
 	}
 	if !validTypes[req.Type] {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid widget type")

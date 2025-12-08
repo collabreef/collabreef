@@ -42,7 +42,7 @@ const WidgetRenderer: FC<WidgetRendererProps> = ({
       {/* Widget Header - Only show in edit mode */}
       {isEditMode && (
         <div className='absolute widget-drag-handle w-full h-full'>
-          <div className='absolute top-0 right-0 p-1 bg-neutral-200 dark:bg-neutral-800 rounded-lg border border-neutral-500 space-x-0.5'>
+          <div className='absolute top-0 right-0 z-[9999] p-1 bg-neutral-200 dark:bg-neutral-800 rounded-lg border border-neutral-500 space-x-0.5'>
             <button
               onMouseDown={e => e.stopPropagation()}
               onClick={onEdit}

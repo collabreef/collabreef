@@ -467,7 +467,9 @@ export default {
       music: "Music Player",
       musicDesc: "Play audio files from your workspace",
       video: "Video Player",
-      videoDesc: "Play video files from your workspace"
+      videoDesc: "Play video files from your workspace",
+      iframe: "Web Page",
+      iframeDesc: "Embed external web pages or services"
     },
     config: {
       defaultVisibility: "Default Visibility",
@@ -543,6 +545,63 @@ export default {
         selectVideoFiles: "Select Video Files",
         noVideoFiles: "No video files found",
         videoNumber: "Video {{number}}"
+      }
+    },
+    iframe: {
+      noUrl: "No URL configured. Please configure a URL in widget settings.",
+      config: {
+        url: "URL",
+        urlHint: "Enter the URL of the webpage you want to embed",
+        title: "Title",
+        titlePlaceholder: "e.g., Dashboard",
+        allowFullscreen: "Allow Fullscreen",
+        showAdvanced: "Show Advanced Settings",
+        hideAdvanced: "Hide Advanced Settings",
+        sandbox: "Sandbox Permissions",
+        sandboxHint: "Select which capabilities to allow for the embedded content. Unchecked options will be restricted.",
+        sandboxWarning: "Warning: Changing sandbox or permission settings may affect iframe functionality or security.",
+        permissions: "Feature Permissions (Allow)",
+        permissionsHint: "Select which browser features the embedded content can access. These permissions use the 'allow' attribute.",
+        securityNotice: "Note: Only embed trusted websites. Some sites may block embedding via X-Frame-Options.",
+        sandboxOptions: {
+          "allow-downloads": "Allow downloading files",
+          "allow-forms": "Allow form submissions",
+          "allow-modals": "Allow modal windows (alert, confirm, print, prompt)",
+          "allow-orientation-lock": "Allow screen orientation lock",
+          "allow-pointer-lock": "Allow pointer lock API",
+          "allow-popups": "Allow popups (window.open, target=\"_blank\")",
+          "allow-popups-to-escape-sandbox": "Allow popups without sandbox restrictions",
+          "allow-presentation": "Allow presentation sessions",
+          "allow-same-origin": "Allow same-origin access (cookies, storage, APIs)",
+          "allow-scripts": "Allow JavaScript execution",
+          "allow-storage-access-by-user-activation": "Allow Storage Access API (Experimental)",
+          "allow-top-navigation": "Allow top-level navigation",
+          "allow-top-navigation-by-user-activation": "Allow top-level navigation via user gesture",
+          "allow-top-navigation-to-custom-protocols": "Allow navigation to custom protocols"
+        },
+        permissionOptions: {
+          "accelerometer": "Access accelerometer sensor",
+          "ambient-light-sensor": "Access ambient light sensor",
+          "autoplay": "Auto-play media files",
+          "battery": "Access battery status information",
+          "camera": "Access camera device",
+          "display-capture": "Capture screen/window content",
+          "document-domain": "Set document.domain",
+          "encrypted-media": "Play encrypted/DRM-protected media",
+          "fullscreen": "Enter fullscreen mode",
+          "geolocation": "Access device location",
+          "gyroscope": "Access gyroscope sensor",
+          "magnetometer": "Access magnetometer sensor",
+          "microphone": "Access microphone device",
+          "midi": "Access MIDI devices",
+          "payment": "Use Payment Request API",
+          "picture-in-picture": "Use picture-in-picture mode",
+          "publickey-credentials-get": "Access stored credentials (WebAuthn)",
+          "screen-wake-lock": "Prevent screen from sleeping",
+          "usb": "Access USB devices",
+          "web-share": "Use Web Share API",
+          "xr-spatial-tracking": "Access XR/VR spatial tracking"
+        }
       }
     }
   },

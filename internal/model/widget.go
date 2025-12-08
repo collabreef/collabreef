@@ -16,6 +16,7 @@ const (
 	WidgetTypeRSS          WidgetType = "rss"           // Widget for displaying RSS feeds
 	WidgetTypeMusic        WidgetType = "music"         // Widget for playing audio files
 	WidgetTypeVideo        WidgetType = "video"         // Widget for playing video files
+	WidgetTypeIframe       WidgetType = "iframe"        // Widget for embedding external web pages
 )
 
 type WidgetFilter struct {

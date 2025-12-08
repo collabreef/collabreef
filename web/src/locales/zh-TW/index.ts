@@ -460,7 +460,9 @@ export default {
       music: "音樂播放器",
       musicDesc: "播放工作區中的音訊檔案",
       video: "影片播放器",
-      videoDesc: "播放工作區中的影片檔案"
+      videoDesc: "播放工作區中的影片檔案",
+      iframe: "網頁嵌入",
+      iframeDesc: "嵌入外部網頁或服務"
     },
     config: {
       defaultVisibility: "預設可見性",
@@ -536,6 +538,63 @@ export default {
         selectVideoFiles: "選取影片檔案",
         noVideoFiles: "找不到影片檔案",
         videoNumber: "影片 {{number}}"
+      }
+    },
+    iframe: {
+      noUrl: "尚未設定網址。請在小工具設定中設定網址。",
+      config: {
+        url: "網址",
+        urlHint: "輸入您想要嵌入的網頁網址",
+        title: "標題",
+        titlePlaceholder: "例如：儀表板",
+        allowFullscreen: "允許全螢幕",
+        showAdvanced: "顯示進階設定",
+        hideAdvanced: "隱藏進階設定",
+        sandbox: "沙盒權限",
+        sandboxHint: "選擇允許嵌入內容使用的功能。未勾選的選項將被限制。",
+        sandboxWarning: "警告：變更沙盒或權限設定可能會影響 iframe 的功能或安全性。",
+        permissions: "功能權限 (Allow)",
+        permissionsHint: "選擇允許嵌入內容存取的瀏覽器功能。這些權限使用 'allow' 屬性。",
+        securityNotice: "注意：僅嵌入可信任的網站。某些網站可能會透過 X-Frame-Options 阻擋嵌入。",
+        sandboxOptions: {
+          "allow-downloads": "允許下載檔案",
+          "allow-forms": "允許表單提交",
+          "allow-modals": "允許模態視窗（alert、confirm、print、prompt）",
+          "allow-orientation-lock": "允許鎖定螢幕方向",
+          "allow-pointer-lock": "允許指標鎖定 API",
+          "allow-popups": "允許彈出視窗（window.open、target=\"_blank\"）",
+          "allow-popups-to-escape-sandbox": "允許彈出視窗不受沙盒限制",
+          "allow-presentation": "允許簡報模式",
+          "allow-same-origin": "允許同源存取（cookies、儲存、APIs）",
+          "allow-scripts": "允許執行 JavaScript",
+          "allow-storage-access-by-user-activation": "允許儲存存取 API（實驗性功能）",
+          "allow-top-navigation": "允許頂層導覽",
+          "allow-top-navigation-by-user-activation": "允許使用者手勢觸發的頂層導覽",
+          "allow-top-navigation-to-custom-protocols": "允許導覽至自訂協定"
+        },
+        permissionOptions: {
+          "accelerometer": "存取加速度感測器",
+          "ambient-light-sensor": "存取環境光源感測器",
+          "autoplay": "自動播放媒體檔案",
+          "battery": "存取電池狀態資訊",
+          "camera": "存取攝影機裝置",
+          "display-capture": "擷取螢幕/視窗內容",
+          "document-domain": "設定 document.domain",
+          "encrypted-media": "播放加密/DRM 保護的媒體",
+          "fullscreen": "進入全螢幕模式",
+          "geolocation": "存取裝置位置",
+          "gyroscope": "存取陀螺儀感測器",
+          "magnetometer": "存取磁力計感測器",
+          "microphone": "存取麥克風裝置",
+          "midi": "存取 MIDI 裝置",
+          "payment": "使用付款請求 API",
+          "picture-in-picture": "使用子母畫面模式",
+          "publickey-credentials-get": "存取儲存的憑證（WebAuthn）",
+          "screen-wake-lock": "防止螢幕休眠",
+          "usb": "存取 USB 裝置",
+          "web-share": "使用網頁分享 API",
+          "xr-spatial-tracking": "存取 XR/VR 空間追蹤"
+        }
       }
     }
   },

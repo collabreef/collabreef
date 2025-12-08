@@ -19,6 +19,7 @@ import './HeatmapWidget';
 import './RssWidget';
 import './MusicWidget';
 import './VideoWidget';
+import './IframeWidget';
 
 // Re-export for convenience
 export { default as NoteFormWidget } from './NoteFormWidget';
@@ -34,3 +35,4 @@ export { default as HeatmapWidget } from './HeatmapWidget';
 export { default as RssWidget } from './RssWidget';
 export { default as MusicWidget } from './MusicWidget';
 export { default as VideoWidget } from './VideoWidget';
+export { default as IframeWidget } from './IframeWidget';

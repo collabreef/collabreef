@@ -1,5 +1,5 @@
 // Widget types
-export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note' | 'latest_note' | 'countdown' | 'file_upload' | 'carousel' | 'heatmap' | 'rss' | 'music' | 'video';
+export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note' | 'latest_note' | 'countdown' | 'file_upload' | 'carousel' | 'heatmap' | 'rss' | 'music' | 'video' | 'iframe';
 
 // Widget position on dashboard
 export interface WidgetPosition {
@@ -109,6 +109,16 @@ export interface VideoWidgetConfig {
   videoUrls?: string[]; // Array of video file URLs
 }
 
+// Iframe widget - for embedding external web pages
+export interface IframeWidgetConfig {
+  url: string; // URL to embed
+  title?: string; // Optional title for the iframe
+  allowFullscreen?: boolean; // Allow fullscreen (default: true)
+  sandbox?: string[]; // Array of sandbox attributes (e.g., ['allow-scripts', 'allow-same-origin'])
+  allow?: string[]; // Array of allowed features (e.g., ['camera', 'microphone', 'geolocation'])
+  permissionPolicy?: string[]; // Array of permission policy directives (same as allow but newer standard)
+}
+
 // Request/Response types
 export interface CreateWidgetRequest {
   type: WidgetType;
@@ -137,6 +147,7 @@ export type WidgetConfigMap = {
   rss: RssWidgetConfig;
   music: MusicWidgetConfig;
   video: VideoWidgetConfig;
+  iframe: IframeWidgetConfig;
 };
 
 // Parsed widget with typed config
