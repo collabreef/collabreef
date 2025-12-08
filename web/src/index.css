@@ -83,6 +83,11 @@ svg.lucide-icon{
   scrollbar-width: none;     /* Firefox */
 }
 
+[contenteditable="true"][data-placeholder]:empty:before {
+  content: attr(data-placeholder);
+  pointer-events: none;
+}
+
 /* Target the placeholder for an empty paragraph */
 p.is-editor-empty:first-child::before {
   content: attr(data-placeholder); /* Displays the placeholder text defined in the extension */
