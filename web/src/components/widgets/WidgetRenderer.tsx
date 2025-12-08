@@ -39,29 +39,21 @@ const WidgetRenderer: FC<WidgetRendererProps> = ({
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col relative">
       {/* Widget Header - Only show in edit mode */}
       {isEditMode && (
-        <div className="flex items-center justify-between px-3 py-2 border-b dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800">
-          <div className="flex items-center gap-2">
-            {canDragResize && (
-              <div className="widget-drag-handle cursor-move text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                <GripVertical size={16} />
-              </div>
-            )}
-            <span className="font-medium text-sm truncate">{widget.type}</span>
-          </div>
-          <div className="flex items-center gap-1">
+        <div className='absolute widget-drag-handle w-full h-full'>
+          <div className='absolute top-0 right-0 p-1 bg-neutral-200 dark:bg-neutral-800 rounded-lg border border-neutral-500 space-x-0.5'>
             <button
               onClick={onEdit}
-              className="p-1 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+              className="p-1.5 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
               title="Edit"
             >
               <Edit2 size={14} />
             </button>
             <button
               onClick={onDelete}
-              className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900 text-gray-500 hover:text-red-600"
+              className="p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900 text-gray-500 hover:text-red-600"
               title="Delete"
             >
               <Trash2 size={14} />
