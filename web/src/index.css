@@ -43,8 +43,9 @@ h5 {
 }
 
 h6 {
-  @apply text-base font-medium leading-snug text-gray-700;
+  @apply text-base font-medium leading-snug;
 }
+
 p>a {
   @apply text-indigo-600
 }
@@ -86,6 +87,10 @@ svg.lucide-icon{
 [contenteditable="true"][data-placeholder]:empty:before {
   content: attr(data-placeholder);
   pointer-events: none;
+}
+
+[contenteditable="true"][data-placeholder]:empty:before {
+  @apply text-gray-400 dark:text-gray-600;
 }
 
 /* Target the placeholder for an empty paragraph */
