@@ -15,12 +15,14 @@ type CreateWidgetRequest struct {
 	Type     string `json:"type" validate:"required"`
 	Config   string `json:"config"`
 	Position string `json:"position"`
+	ParentID string `json:"parent_id"`
 }
 
 type UpdateWidgetRequest struct {
 	Type     string `json:"type"`
 	Config   string `json:"config"`
 	Position string `json:"position"`
+	ParentID string `json:"parent_id"`
 }
 
 type GetWidgetResponse struct {
@@ -28,6 +30,7 @@ type GetWidgetResponse struct {
 	Type      string `json:"type"`
 	Config    string `json:"config"`
 	Position  string `json:"position"`
+	ParentID  string `json:"parent_id"`
 	CreatedAt string `json:"created_at"`
 	CreatedBy string `json:"created_by"`
 	UpdatedAt string `json:"updated_at"`
@@ -51,6 +54,7 @@ func (h Handler) GetWidgets(c echo.Context) error {
 
 	query := c.QueryParam("query")
 	widgetType := c.QueryParam("type")
+	parentID := c.QueryParam("parent_id")
 
 	filter := model.WidgetFilter{
 		WorkspaceID: workspaceId,
@@ -58,6 +62,7 @@ func (h Handler) GetWidgets(c echo.Context) error {
 		PageNumber:  pageNumber,
 		Query:       query,
 		Type:        widgetType,
+		ParentID:    parentID,
 	}
 
 	widgets, err := h.db.FindWidgets(filter)
@@ -72,6 +77,7 @@ func (h Handler) GetWidgets(c echo.Context) error {
 			Type:      w.Type,
 			Config:    w.Config,
 			Position:  w.Position,
+			ParentID:  w.ParentID,
 			CreatedAt: w.CreatedAt,
 			CreatedBy: h.getUserNameByID(w.CreatedBy),
 			UpdatedAt: w.UpdatedAt,
@@ -104,6 +110,7 @@ func (h Handler) GetWidget(c echo.Context) error {
 		Type:      w.Type,
 		Config:    w.Config,
 		Position:  w.Position,
+		ParentID:  w.ParentID,
 		CreatedAt: w.CreatedAt,
 		CreatedBy: h.getUserNameByID(w.CreatedBy),
 		UpdatedAt: w.UpdatedAt,
@@ -111,6 +118,53 @@ func (h Handler) GetWidget(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, res)
+}
+
+// GetWidgetPath returns the full path from root to the specified widget
+func (h Handler) GetWidgetPath(c echo.Context) error {
+	workspaceId := c.Param("workspaceId")
+	if workspaceId == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Workspace id is required")
+	}
+
+	id := c.Param("id")
+	if id == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Widget id is required")
+	}
+
+	// Build path by traversing up the parent chain
+	var path []GetWidgetResponse
+	currentId := id
+	visited := make(map[string]bool) // Prevent infinite loops
+
+	for currentId != "" {
+		if visited[currentId] {
+			return echo.NewHTTPError(http.StatusBadRequest, "Circular reference detected in widget hierarchy")
+		}
+		visited[currentId] = true
+
+		w := model.Widget{WorkspaceID: workspaceId, ID: currentId}
+		w, err := h.db.FindWidget(w)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+
+		path = append([]GetWidgetResponse{{
+			ID:        w.ID,
+			Type:      w.Type,
+			Config:    w.Config,
+			Position:  w.Position,
+			ParentID:  w.ParentID,
+			CreatedAt: w.CreatedAt,
+			CreatedBy: h.getUserNameByID(w.CreatedBy),
+			UpdatedAt: w.UpdatedAt,
+			UpdatedBy: h.getUserNameByID(w.UpdatedBy),
+		}}, path...)
+
+		currentId = w.ParentID
+	}
+
+	return c.JSON(http.StatusOK, path)
 }
 
 func (h Handler) CreateWidget(c echo.Context) error {
@@ -145,6 +199,7 @@ func (h Handler) CreateWidget(c echo.Context) error {
 		"music":         true,
 		"video":         true,
 		"iframe":        true,
+		"folder":        true,
 	}
 	if !validTypes[req.Type] {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid widget type")
@@ -158,6 +213,7 @@ func (h Handler) CreateWidget(c echo.Context) error {
 	w.Type = req.Type
 	w.Config = req.Config
 	w.Position = req.Position
+	w.ParentID = req.ParentID
 	w.CreatedAt = time.Now().UTC().String()
 	w.CreatedBy = user.ID
 	w.UpdatedAt = time.Now().UTC().String()
@@ -217,6 +273,10 @@ func (h Handler) UpdateWidget(c echo.Context) error {
 	w.Position = req.Position
 	if w.Position == "" {
 		w.Position = existingWidget.Position
+	}
+	w.ParentID = req.ParentID
+	if w.ParentID == "" {
+		w.ParentID = existingWidget.ParentID
 	}
 	w.CreatedAt = existingWidget.CreatedAt
 	w.CreatedBy = existingWidget.CreatedBy

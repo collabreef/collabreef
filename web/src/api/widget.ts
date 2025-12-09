@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note' | 'latest_note' | 'countdown' | 'file_upload' | 'carousel' | 'heatmap' | 'rss' | 'music' | 'video';
+export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note' | 'latest_note' | 'countdown' | 'file_upload' | 'carousel' | 'heatmap' | 'rss' | 'music' | 'video' | 'iframe' | 'folder';
 
 export interface WidgetPosition {
   x: number;
@@ -18,12 +18,14 @@ export interface WidgetData {
   type: WidgetType;
   config?: string;
   position?: string;
+  parent_id?: string;
 }
 
 export interface CreateWidgetData {
   type: WidgetType;
   config?: string;
   position?: string;
+  parent_id?: string;
 }
 
 export interface UpdateWidgetData {
@@ -31,6 +33,7 @@ export interface UpdateWidgetData {
   type?: WidgetType;
   config?: string;
   position?: string;
+  parent_id?: string;
 }
 
 export const getWidgets = async (
@@ -38,7 +41,8 @@ export const getWidgets = async (
   pageNum: number,
   pageSize: number,
   query?: string,
-  type?: WidgetType
+  type?: WidgetType,
+  parentId?: string
 ) => {
   let url = `/api/v1/workspaces/${workspaceId}/widgets?pageSize=${pageSize}&pageNumber=${pageNum}`;
   if (query) {
@@ -46,6 +50,9 @@ export const getWidgets = async (
   }
   if (type) {
     url += `&type=${type}`;
+  }
+  if (parentId !== undefined) {
+    url += `&parent_id=${parentId}`;
   }
   const response = await axios.get(url, { withCredentials: true });
   return response.data as WidgetData[];
@@ -57,6 +64,14 @@ export const getWidget = async (workspaceId: string, widgetId: string) => {
     { withCredentials: true }
   );
   return response.data as WidgetData;
+};
+
+export const getWidgetPath = async (workspaceId: string, widgetId: string) => {
+  const response = await axios.get(
+    `/api/v1/workspaces/${workspaceId}/widgets/${widgetId}/path`,
+    { withCredentials: true }
+  );
+  return response.data as WidgetData[];
 };
 
 export const createWidget = async (workspaceId: string, data: CreateWidgetData) => {

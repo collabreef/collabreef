@@ -462,7 +462,9 @@ export default {
       video: "影片播放器",
       videoDesc: "播放工作區中的影片檔案",
       iframe: "網頁嵌入",
-      iframeDesc: "嵌入外部網頁或服務"
+      iframeDesc: "嵌入外部網頁或服務",
+      folder: "資料夾",
+      folderDesc: "用資料夾階層結構組織小工具"
     },
     config: {
       defaultVisibility: "預設可見性",

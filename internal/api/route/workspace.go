@@ -72,6 +72,7 @@ func RegisterWorkspace(api *echo.Group, h handler.Handler, authMiddleware middle
 	g.GET("/:workspaceId/widgets", h.GetWidgets)
 	g.POST("/:workspaceId/widgets", h.CreateWidget)
 	g.GET("/:workspaceId/widgets/:id", h.GetWidget)
+	g.GET("/:workspaceId/widgets/:id/path", h.GetWidgetPath)
 	g.PUT("/:workspaceId/widgets/:id", h.UpdateWidget)
 	g.DELETE("/:workspaceId/widgets/:id", h.DeleteWidget)
 

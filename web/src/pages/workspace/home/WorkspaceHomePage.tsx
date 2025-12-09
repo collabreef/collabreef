@@ -1,17 +1,18 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { Responsive, WidthProvider, Layout, Layouts } from 'react-grid-layout';
-import { PlusCircle, Settings2 } from 'lucide-react';
+import { PlusCircle, Settings2, ChevronDown, Home } from 'lucide-react';
 import OneColumn from '@/components/onecolumn/OneColumn';
 import SidebarButton from '@/components/sidebar/SidebarButton';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
-import { getWidgets, updateWidget, deleteWidget, WidgetData } from '@/api/widget';
+import { getWidgets, updateWidget, deleteWidget, WidgetData, getWidget, getWidgetPath } from '@/api/widget';
 import { useToastStore } from '@/stores/toast';
 import WidgetRenderer from '@/components/widgets/WidgetRenderer';
 import AddWidgetDialog from '@/components/widgets/AddWidgetDialog';
 import EditWidgetDialog from '@/components/widgets/EditWidgetDialog';
-import { parseWidgetPosition, stringifyWidgetPosition, WidgetPosition } from '@/types/widget';
+import { parseWidgetPosition, stringifyWidgetPosition, WidgetPosition, parseWidgetConfig, FolderWidgetConfig } from '@/types/widget';
 
 import 'react-grid-layout/css/styles.css';
 import { useWorkspaceStore } from '@/stores/workspace';
@@ -27,19 +28,31 @@ const WorkspaceHomePage = () => {
   const { getWorkspaceById } = useWorkspaceStore()
   const queryClient = useQueryClient();
   const { addToast } = useToastStore();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingWidget, setEditingWidget] = useState<WidgetData | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentBreakpoint, setCurrentBreakpoint] = useState<string>('xl');
   const [canEditLayout, setCanEditLayout] = useState(true);
+  const [isPathDropdownOpen, setIsPathDropdownOpen] = useState(false);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const widgetsRef = useRef<WidgetData[]>([]);
 
+  // Get current folder from URL params
+  const currentFolderId = searchParams.get('folder') || '';
+
   const { data: widgetsData, isLoading } = useQuery({
-    queryKey: ['widgets', workspaceId],
-    queryFn: () => getWidgets(workspaceId, 1, 100),
+    queryKey: ['widgets', workspaceId, currentFolderId],
+    queryFn: () => getWidgets(workspaceId, 1, 100, undefined, undefined, currentFolderId),
     enabled: !!workspaceId,
+  });
+
+  // Fetch current folder path if we're inside a folder
+  const { data: folderPath } = useQuery({
+    queryKey: ['widgetPath', workspaceId, currentFolderId],
+    queryFn: () => getWidgetPath(workspaceId, currentFolderId),
+    enabled: !!workspaceId && !!currentFolderId,
   });
 
   // Ensure widgets is always an array (API might return null)
@@ -216,6 +229,30 @@ const WorkspaceHomePage = () => {
     setCurrentBreakpoint(newBreakpoint);
   }, []);
 
+  // Navigate to a folder
+  const handleFolderClick = useCallback((folderId: string) => {
+    setSearchParams({ folder: folderId });
+    setIsPathDropdownOpen(false);
+  }, [setSearchParams]);
+
+  // Navigate to root
+  const handleNavigateToRoot = useCallback(() => {
+    setSearchParams({});
+    setIsPathDropdownOpen(false);
+  }, [setSearchParams]);
+
+  // Get current folder name
+  const currentFolderName = useMemo(() => {
+    if (!folderPath || folderPath.length === 0) return '';
+    const lastFolder = folderPath[folderPath.length - 1];
+    try {
+      const config = parseWidgetConfig(lastFolder as any) as FolderWidgetConfig;
+      return config.name || 'Folder';
+    } catch {
+      return 'Folder';
+    }
+  }, [folderPath]);
+
   // Check screen size to determine if layout editing is allowed
   useEffect(() => {
     const checkScreenSize = () => {
@@ -240,8 +277,54 @@ const WorkspaceHomePage = () => {
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3 h-10">
               <SidebarButton />
-              <div className="flex gap-2 items-center max-w-[calc(100vw-165px)] overflow-x-auto whitespace-nowrap sm:text-xl font-semibold hide-scrollbar">
-                {getWorkspaceById(workspaceId)?.name ?? ""}
+
+              {/* Folder Path Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsPathDropdownOpen(!isPathDropdownOpen)}
+                  className="flex gap-2 items-center max-w-[calc(100vw-165px)] overflow-x-auto whitespace-nowrap sm:text-xl font-semibold hide-scrollbar hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg px-2 py-1 transition-colors"
+                >
+                  
+                  {currentFolderId ? 
+                      <span>{currentFolderName}</span>
+                      :<span>{getWorkspaceById(workspaceId)?.name ?? ""}</span>
+                  }
+                </button>
+
+                {/* Dropdown Menu */}
+                {isPathDropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setIsPathDropdownOpen(false)}
+                    />
+                    <div className="absolute top-full left-0 mt-1 bg-white dark:bg-neutral-900 border dark:border-neutral-700 rounded-lg shadow-lg z-20 min-w-[200px]">
+                      <div className="py-1">
+                        <button
+                          onClick={handleNavigateToRoot}
+                          className="w-full flex items-center gap-2 px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-left"
+                        >
+                          <span>{getWorkspaceById(workspaceId)?.name ?? ""}</span>
+                        </button>
+
+                        {folderPath && folderPath.map((folder, index) => {
+                          const config = parseWidgetConfig(folder as any) as FolderWidgetConfig;
+                          const folderName = config.name || 'Folder';
+                          return (
+                            <button
+                              key={folder.id}
+                              onClick={() => handleFolderClick(folder.id!)}
+                              className="w-full flex items-center gap-2 px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-left"
+                              style={{ paddingLeft: `${(index + 1) * 12 + 16}px` }}
+                            >
+                              <span>{folderName}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
@@ -312,6 +395,7 @@ const WorkspaceHomePage = () => {
                       canDragResize={canEditLayout}
                       onEdit={() => handleEditWidget(widget)}
                       onDelete={() => handleDeleteWidget(widget.id!)}
+                      onFolderClick={handleFolderClick}
                     />
                   </div>
                 ))}
@@ -324,6 +408,7 @@ const WorkspaceHomePage = () => {
       <AddWidgetDialog
         isOpen={isAddDialogOpen}
         onClose={() => setIsAddDialogOpen(false)}
+        parentId={currentFolderId}
       />
 
       {editingWidget && (

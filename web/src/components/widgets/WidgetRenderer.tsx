@@ -10,6 +10,7 @@ interface WidgetRendererProps {
   canDragResize: boolean;
   onEdit: () => void;
   onDelete: () => void;
+  onFolderClick?: (folderId: string) => void;
 }
 
 const WidgetRenderer: FC<WidgetRendererProps> = ({
@@ -17,6 +18,7 @@ const WidgetRenderer: FC<WidgetRendererProps> = ({
   isEditMode,
   onEdit,
   onDelete,
+  onFolderClick,
 }) => {
   const renderWidgetContent = () => {
     const widgetType = widget.type as WidgetType;
@@ -35,6 +37,13 @@ const WidgetRenderer: FC<WidgetRendererProps> = ({
 
     const WidgetComponent = widgetModule.Component;
     return <WidgetComponent config={config} />;
+  };
+
+  // Handle folder click
+  const handleClick = () => {
+    if (widget.type === 'folder' && !isEditMode && onFolderClick && widget.id) {
+      onFolderClick(widget.id);
+    }
   };
 
   return (
@@ -64,7 +73,12 @@ const WidgetRenderer: FC<WidgetRendererProps> = ({
       )}
 
       {/* Widget Content */}
-      <div className="flex-1 overflow-auto">{renderWidgetContent()}</div>
+      <div
+        className="flex-1 overflow-auto"
+        onClick={handleClick}
+      >
+        {renderWidgetContent()}
+      </div>
     </div>
   );
 };

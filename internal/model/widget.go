@@ -17,23 +17,26 @@ const (
 	WidgetTypeMusic        WidgetType = "music"         // Widget for playing audio files
 	WidgetTypeVideo        WidgetType = "video"         // Widget for playing video files
 	WidgetTypeIframe       WidgetType = "iframe"        // Widget for embedding external web pages
+	WidgetTypeFolder       WidgetType = "folder"        // Widget for organizing widgets in a folder
 )
 
 type WidgetFilter struct {
-	WorkspaceID string
-	WidgetIDs   string
-	Type        string
-	PageSize    int
-	PageNumber  int
-	Query       string
+	WorkspaceID      string
+	WidgetIDs        string
+	Type             string
+	ParentID         string // Filter by parent widget ID (empty string = root widgets, "*" = all widgets)
+	PageSize         int
+	PageNumber       int
+	Query            string
 }
 
 type Widget struct {
 	WorkspaceID string `json:"workspace_id"`
 	ID          string `json:"id"`
-	Type        string `json:"type"`     // Widget type (note_form, stats, template_form, view, note_list, note)
+	Type        string `json:"type"`     // Widget type (note_form, stats, template_form, view, note_list, note, folder)
 	Config      string `json:"config"`   // JSON configuration for the widget
 	Position    string `json:"position"` // JSON position data (x, y, width, height)
+	ParentID    string `json:"parent_id"` // Parent widget ID for hierarchical structure (null for root widgets)
 	CreatedAt   string `json:"created_at"`
 	CreatedBy   string `json:"created_by"`
 	UpdatedAt   string `json:"updated_at"`

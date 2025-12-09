@@ -15,7 +15,7 @@ func (s SqliteDB) CreateWidget(w model.Widget) error {
 func (s SqliteDB) UpdateWidget(w model.Widget) error {
 	_, err := gorm.G[model.Widget](s.getDB()).
 		Where("id = ?", w.ID).
-		Select("type", "config", "position", "updated_at", "updated_by").
+		Select("type", "config", "position", "parent_id", "updated_at", "updated_by").
 		Updates(context.Background(), w)
 	return err
 }
@@ -50,6 +50,18 @@ func (s SqliteDB) FindWidgets(f model.WidgetFilter) ([]model.Widget, error) {
 		args = append(args, f.Type)
 	}
 
+	// Handle parent_id filtering
+	// Empty string = root widgets (parent_id IS NULL or parent_id = '')
+	// "*" = all widgets (no parent_id filter)
+	// Any other value = widgets with that specific parent_id
+	if f.ParentID != "*" {
+		if f.ParentID == "" {
+			conds = append(conds, "(parent_id IS NULL OR parent_id = '')")
+		} else {
+			conds = append(conds, "parent_id = ?")
+			args = append(args, f.ParentID)
+		}
+	}
 
 	query := s.getDB().Model(&model.Widget{})
 

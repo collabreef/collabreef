@@ -469,7 +469,9 @@ export default {
       video: "Video Player",
       videoDesc: "Play video files from your workspace",
       iframe: "Web Page",
-      iframeDesc: "Embed external web pages or services"
+      iframeDesc: "Embed external web pages or services",
+      folder: "Folder",
+      folderDesc: "Organize widgets in a hierarchical folder structure"
     },
     config: {
       defaultVisibility: "Default Visibility",

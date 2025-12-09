@@ -11,9 +11,10 @@ import { getAllWidgets, getWidget } from './widgetRegistry';
 interface AddWidgetDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  parentId?: string;
 }
 
-const AddWidgetDialog: FC<AddWidgetDialogProps> = ({ isOpen, onClose }) => {
+const AddWidgetDialog: FC<AddWidgetDialogProps> = ({ isOpen, onClose, parentId }) => {
   const { t } = useTranslation();
   const workspaceId = useCurrentWorkspaceId();
   const queryClient = useQueryClient();
@@ -32,9 +33,11 @@ const AddWidgetDialog: FC<AddWidgetDialogProps> = ({ isOpen, onClose }) => {
         type: selectedType!,
         config: stringifyWidgetConfig(config),
         position: stringifyWidgetPosition({ x: 0, y: 0, width: 4, height: 4 }),
+        parent_id: parentId || undefined,
       });
     },
     onSuccess: () => {
+      // Invalidate both the general widgets query and the specific folder query
       queryClient.invalidateQueries({ queryKey: ['widgets', workspaceId] });
       addToast({ type: 'success', title: t('widgets.createSuccess') });
       handleClose();

@@ -1,5 +1,5 @@
 // Widget types
-export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note' | 'latest_note' | 'countdown' | 'file_upload' | 'carousel' | 'heatmap' | 'rss' | 'music' | 'video' | 'iframe';
+export type WidgetType = 'note_form' | 'stats' | 'template_form' | 'view' | 'note' | 'latest_note' | 'countdown' | 'file_upload' | 'carousel' | 'heatmap' | 'rss' | 'music' | 'video' | 'iframe' | 'folder';
 
 // Widget position on dashboard
 export interface WidgetPosition {
@@ -16,6 +16,7 @@ export interface Widget {
   type: WidgetType;
   config: string; // JSON string of widget-specific config
   position: string; // JSON string of WidgetPosition
+  parent_id?: string; // Parent widget ID for hierarchical structure (null/undefined for root widgets)
   created_at: string;
   created_by: string;
   updated_at: string;
@@ -117,6 +118,14 @@ export interface IframeWidgetConfig {
   sandbox?: string[]; // Array of sandbox attributes (e.g., ['allow-scripts', 'allow-same-origin'])
   allow?: string[]; // Array of allowed features (e.g., ['camera', 'microphone', 'geolocation'])
   permissionPolicy?: string[]; // Array of permission policy directives (same as allow but newer standard)
+  referrerPolicy?: string; // Referrer policy (e.g., 'no-referrer', 'origin', 'strict-origin-when-cross-origin')
+}
+
+// Folder widget - for organizing widgets in a folder
+export interface FolderWidgetConfig {
+  name: string; // Folder name
+  icon?: string; // Optional icon name (lucide-react icon)
+  description?: string; // Optional description
 }
 
 // Request/Response types
@@ -124,12 +133,14 @@ export interface CreateWidgetRequest {
   type: WidgetType;
   config?: string;
   position?: string;
+  parent_id?: string;
 }
 
 export interface UpdateWidgetRequest {
   type?: WidgetType;
   config?: string;
   position?: string;
+  parent_id?: string;
 }
 
 // Helper type to get the config type for a given widget type
@@ -148,6 +159,7 @@ export type WidgetConfigMap = {
   music: MusicWidgetConfig;
   video: VideoWidgetConfig;
   iframe: IframeWidgetConfig;
+  folder: FolderWidgetConfig;
 };
 
 // Parsed widget with typed config
