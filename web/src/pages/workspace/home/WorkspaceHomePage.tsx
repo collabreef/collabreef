@@ -21,7 +21,6 @@ import { useWorkspaceStore } from '@/stores/workspace';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const LAYOUT_SAVE_DEBOUNCE_MS = 500;
-const MIN_SCREEN_WIDTH_FOR_LAYOUT_EDIT = 1024;
 
 const WorkspaceHomePage = () => {
   const { t } = useTranslation();
@@ -35,7 +34,6 @@ const WorkspaceHomePage = () => {
   const [editingWidget, setEditingWidget] = useState<WidgetData | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentBreakpoint, setCurrentBreakpoint] = useState<string>('xl');
-  const [canEditLayout, setCanEditLayout] = useState(true);
   const [isPathDropdownOpen, setIsPathDropdownOpen] = useState(false);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const widgetsRef = useRef<WidgetData[]>([]);
@@ -100,25 +98,34 @@ const WorkspaceHomePage = () => {
       };
     });
 
-    // Sort by position (top to bottom, left to right) for smaller screens
-    const sortedLayout = [...baseLayout].sort((a, b) => {
-      if (a.y !== b.y) return a.y - b.y;
-      return a.x - b.x;
-    });
+    // Helper function to clamp width for smaller breakpoints
+    const clampLayoutWidth = (layout: Layout[], maxCols: number): Layout[] => {
+      return layout.map(item => ({
+        ...item,
+        w: Math.min(item.w, maxCols),
+        x: Math.min(item.x, Math.max(0, maxCols - item.w)),
+      }));
+    };
 
-    // Create responsive layouts for different breakpoints
-    // Pack widgets left-to-right, wrap to next row when full
-    const packLayout = (items: Layout[], cols: number, maxW?: number): Layout[] => {
+    // Helper function to reflow layout for small screens (sort by y then x, then pack)
+    const reflowLayout = (layout: Layout[], maxCols: number): Layout[] => {
+      // Sort by y (vertical) first, then x (horizontal)
+      const sorted = [...layout].sort((a, b) => {
+        if (a.y !== b.y) return a.y - b.y;
+        return a.x - b.x;
+      });
+
+      // Pack items into new layout
       const result: Layout[] = [];
       let currentX = 0;
       let currentY = 0;
       let rowHeight = 0;
 
-      items.forEach((item) => {
-        const w = maxW ? Math.min(item.w, maxW) : item.w;
+      sorted.forEach((item) => {
+        const w = Math.min(item.w, maxCols);
 
         // If widget doesn't fit in current row, move to next row
-        if (currentX + w > cols) {
+        if (currentX + w > maxCols) {
           currentX = 0;
           currentY += rowHeight;
           rowHeight = 0;
@@ -140,11 +147,11 @@ const WorkspaceHomePage = () => {
 
     return {
       xl: baseLayout,
-      lg: packLayout(sortedLayout, 8, 8),
-      md: packLayout(sortedLayout, 6, 6),
-      sm: packLayout(sortedLayout, 4, 4),
-      xs: packLayout(sortedLayout, 2, 2),
-      xxs: packLayout(sortedLayout, 1, 1),
+      lg: clampLayoutWidth(baseLayout, 8),
+      md: clampLayoutWidth(baseLayout, 6),
+      sm: reflowLayout(baseLayout, 4),
+      xs: reflowLayout(baseLayout, 2),
+      xxs: reflowLayout(baseLayout, 1),
     };
   }, [widgets]);
 
@@ -258,23 +265,6 @@ const WorkspaceHomePage = () => {
     }
   }, [folderPath]);
 
-  // Check screen size to determine if layout editing is allowed
-  useEffect(() => {
-    const checkScreenSize = () => {
-      const width = window.innerWidth;
-      setCanEditLayout(width >= MIN_SCREEN_WIDTH_FOR_LAYOUT_EDIT);
-    };
-
-    // Check on mount
-    checkScreenSize();
-
-    // Add resize listener
-    window.addEventListener('resize', checkScreenSize);
-
-    // Cleanup
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
-
   return (
     <OneColumn>
       <div className="w-full">
@@ -385,9 +375,11 @@ const WorkspaceHomePage = () => {
                 containerPadding={[0, 0]}
                 onLayoutChange={handleLayoutChange}
                 onBreakpointChange={handleBreakpointChange}
-                isDraggable={isEditMode && canEditLayout}
-                isResizable={isEditMode && canEditLayout}
+                isDraggable={isEditMode}
+                isResizable={isEditMode}
                 draggableHandle=".widget-drag-handle"
+                compactType={null}
+                preventCollision={true}
               >
                 {widgets.map((widget) => (
                   <div
@@ -397,7 +389,7 @@ const WorkspaceHomePage = () => {
                     <WidgetRenderer
                       widget={widget}
                       isEditMode={isEditMode}
-                      canDragResize={canEditLayout}
+                      canDragResize={isEditMode}
                       onEdit={() => handleEditWidget(widget)}
                       onDelete={() => handleDeleteWidget(widget.id!)}
                       onFolderClick={handleFolderClick}
