@@ -17,6 +17,7 @@ import { NoteData } from '@/api/note'
 import { TextGenNode } from './extensions/textgen/TextGen'
 import { listModels, textGen, TextGenModel } from '@/api/tool'
 import { toast } from '@/stores/toast'
+import { PhotoProvider } from 'react-photo-view'
 
 interface Props {
   note: NoteData
@@ -258,7 +259,9 @@ const Editor: FC<Props> = ({ note, onChange, canDrag = true }) => {
           <button className='p-2' onClick={() => editor.chain().focus().addRowAfter().run()}>{t("table.addRow")}</button>
         </div>
       </BubbleMenu>
-      <EditorContent editor={editor} />
+      <PhotoProvider>
+        <EditorContent editor={editor} />
+      </PhotoProvider>
     </EditorContext.Provider>
   )
 }
