@@ -10,9 +10,9 @@ const FolderWidget: FC<WidgetProps> = ({ config }) => {
 
   return (
     <div className="flex h-full p-4 cursor-pointer hover:shadow-lg transition-shadow">
-      <div className="relative flex gap-2 items-center text-left text-gray-600 dark:text-gray-400 ">
-        <Folder size={20} />
-        <div className="truncate">
+      <div className="relative flex gap-2 items-center w-full text-left select-none text-gray-600 dark:text-gray-400 ">
+        <Folder className='shrink-0' size={20} />
+        <div className="flex-1 truncate">
           {folderConfig.name || 'Untitled Folder'}
         </div>
       </div>

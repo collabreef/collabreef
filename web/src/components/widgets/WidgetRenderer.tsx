@@ -48,12 +48,20 @@ const WidgetRenderer: FC<WidgetRendererProps> = ({
 
   return (
     <div className="h-full flex flex-col relative">
-      {/* Widget Header - Only show in edit mode */}
+      <div
+        className="flex-1 overflow-auto"
+        onClick={handleClick}
+      >
+        {renderWidgetContent()}
+      </div>
+
       {isEditMode && (
-        <div className='absolute widget-drag-handle w-full h-full'>
-          <div className='absolute top-0 right-0 z-[9999] p-1 bg-neutral-200 dark:bg-neutral-800 rounded-lg border border-neutral-500 space-x-0.5'>
+        <div className='absolute w-full h-full'>
+          <div className=' absolute top-0 right-0 w-full h-full widget-drag-handle'>
+            
+          </div>
+          <div className='absolute z-10 top-0 right-0 p-1 bg-neutral-200 dark:bg-neutral-800 rounded-lg border border-neutral-500 space-x-0.5'>
             <button
-              onMouseDown={e => e.stopPropagation()}
               onClick={onEdit}
               className="p-1.5 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
               title="Edit"
@@ -61,7 +69,6 @@ const WidgetRenderer: FC<WidgetRendererProps> = ({
               <Edit2 size={14} />
             </button>
             <button
-              onMouseDown={e => e.stopPropagation()}
               onClick={onDelete}
               className="p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900 text-gray-500 hover:text-red-600"
               title="Delete"
@@ -71,14 +78,6 @@ const WidgetRenderer: FC<WidgetRendererProps> = ({
           </div>
         </div>
       )}
-
-      {/* Widget Content */}
-      <div
-        className="flex-1 overflow-auto"
-        onClick={handleClick}
-      >
-        {renderWidgetContent()}
-      </div>
     </div>
   );
 };
