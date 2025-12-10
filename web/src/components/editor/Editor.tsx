@@ -5,7 +5,7 @@ import StarterKit from "@tiptap/starter-kit"
 import { Placeholder } from "@tiptap/extensions"
 import { BubbleMenu } from "@tiptap/react/menus"
 import { TableKit } from "@tiptap/extension-table"
-import { FC, useMemo } from "react"
+import { FC, useMemo, useRef, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, List, ListTodo, Paperclip, Quote, Sparkles, Table, Type } from 'lucide-react'
 import { CommandItem, SlashCommand } from './extensions/slashcommand/SlashCommand'
@@ -28,6 +28,7 @@ interface Props {
 const Editor: FC<Props> = ({ note, onChange, canDrag = true }) => {
   const currentWorkspaceId = useCurrentWorkspaceId()
   const { t } = useTranslation("editor")
+  const lastContentRef = useRef<string>(note.content)
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -216,10 +217,21 @@ const Editor: FC<Props> = ({ note, onChange, canDrag = true }) => {
       if (onChange) {
         // Save as JSON string (recommended by TipTap)
         const json = editor.getJSON()
-        onChange({ content: JSON.stringify(json) })
+        const newContent = JSON.stringify(json)
+
+        // Only trigger onChange if content actually changed
+        if (newContent !== lastContentRef.current) {
+          lastContentRef.current = newContent
+          onChange({ content: newContent })
+        }
       }
     },
   })
+
+  // Update ref when note prop changes (e.g., navigating to different note)
+  useEffect(() => {
+    lastContentRef.current = note.content
+  }, [note.content])
 
   const providerValue = useMemo(() => ({ editor }), [editor])
   const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
