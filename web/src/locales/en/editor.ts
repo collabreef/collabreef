@@ -20,6 +20,7 @@ export default {
         "addColumn": "add column",
         "deleteRow": "delete row",
         "addRow": "add row",
+        "deleteTable": "delete table"
     },
     "textGen": {
         "name": "Text Gen",

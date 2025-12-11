@@ -20,6 +20,7 @@ export default {
         "addColumn": "新增欄",
         "deleteRow": "刪除列",
         "addRow": "新增列",
+        "deleteTable": "刪除表"
     },
     "textGen": {
         "name": "文字生成",
