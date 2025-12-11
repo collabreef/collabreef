@@ -11,8 +11,6 @@ import { Toast } from './components/toast/Toast'
 import { useToastStore } from './stores/toast';
 import WorkspaceLayout from './components/workspacelayout/WorkspaceLayout';
 import WorkspaceLoader from './components/workspaceloader/WorkspaceLoader';
-import PreferencesPage from './pages/user/PreferencesPage';
-import UserLayout from './components/userlayout/UserLayout';
 import PublicLayout from './components/publiclayout/PublicLayout';
 import ExploreNotesPage from './pages/explore/ExploreNotesPage';
 import ExploreNoteDetailPage from './pages/explore/ExploreNoteDetailPage';
@@ -20,7 +18,6 @@ import ExploreViewsPage from './pages/explore/ExploreViewsPage';
 import ExploreViewDetailPage from './pages/explore/ExploreViewDetailPage';
 import ExploreViewObjectsList from './pages/explore/ExploreViewObjectsList';
 import ExploreViewObjectDetailPage from './pages/explore/ExploreViewObjectDetailPage';
-import ModelsPage from './pages/user/ModelsPage';
 import GeneratorsPage from './pages/workspace/generators/GeneratorsPage';
 import GeneratorFormPage from './pages/workspace/generators/GeneratorFormPage';
 import GeneratorDetailPage from './pages/workspace/generators/GeneratorDetailPage';
@@ -69,11 +66,6 @@ function App() {
             <Route path='settings' element={<Settings />}></Route>
             <Route path='home' element={<WorkspaceHomePage />}></Route>
             <Route path='' element={<WorkspaceHomePage />}></Route>
-          </Route>
-          <Route path='user' element={<UserLayout />} >
-            <Route index element={<Navigate to="/user/preferences" replace />} />
-            <Route path='preferences' element={<PreferencesPage />} />
-            <Route path='models' element={<ModelsPage />} />
           </Route>
         </Route>
         <Route path="*" element={<NotFound />} />

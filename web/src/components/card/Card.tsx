@@ -7,7 +7,7 @@ interface Props {
 }
 
 const Card: FC<Props> = ({ children, className }) => {
-    return <div className={twMerge(className, "bg-white dark:bg-neutral-800 rounded-xl shadow-sm p-5")}>
+    return <div className={twMerge(className, "bg-white dark:bg-neutral-800 rounded-xl shadow-sm")}>
         {children}
     </div>
 }

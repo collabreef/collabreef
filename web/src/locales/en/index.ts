@@ -14,6 +14,7 @@ export default {
     workspaceSettings: "Workspace Settings",
     workspace: "Workspace",
     user: "User",
+    userSettings: "User Settings",
     models: "AI Models",
     preferences: "Preferences",
     explore: "Explore",

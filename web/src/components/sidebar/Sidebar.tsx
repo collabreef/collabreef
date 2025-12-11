@@ -1,25 +1,29 @@
-import { PanelLeftClose, PanelLeftOpen, Settings, LogOut } from "lucide-react"
+import { PanelLeftClose, PanelLeftOpen, Settings, LogOut, User as UserIcon, Palette } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import { useSidebar } from "./SidebarProvider"
-import { Link, useNavigate } from "react-router-dom"
-import { FC, ReactNode } from "react"
+import { useNavigate } from "react-router-dom"
+import { FC, ReactNode, useState } from "react"
 import { useCurrentUserStore } from "@/stores/current-user"
 import Tooltip from "../tooltip/Tooltip"
 import { useTranslation } from "react-i18next"
 import { useMutation } from "@tanstack/react-query"
 import { signOut } from "@/api/auth"
 import { useWorkspaceStore } from "@/stores/workspace"
+import UserSettingsModal from "@/components/user/UserSettingsModal"
+import { DropdownMenu } from "radix-ui"
 
 interface Props {
     children: ReactNode
 }
 
 const Sidebar: FC<Props> = function ({ children }) {
-    const { isOpen, isCollapse, isOver1280, expandSidebar, collapseSidebar } = useSidebar()
+    const { isOpen, isCollapse, isOver1280, expandSidebar, collapseSidebar, closeSidebar } = useSidebar()
     const { user, resetCurrentUser } = useCurrentUserStore();
     const { t } = useTranslation()
     const navigate = useNavigate()
     const { resetWorkspaces } = useWorkspaceStore()
+    const [isUserSettingsOpen, setIsUserSettingsOpen] = useState(false)
+    const [userSettingsTab, setUserSettingsTab] = useState<'preferences' | 'models'>('preferences')
 
     const signoutMutation = useMutation({
         mutationFn: () => signOut(),
@@ -38,6 +42,15 @@ const Sidebar: FC<Props> = function ({ children }) {
     const handleLogout = () => {
         signoutMutation.mutate()
     }
+
+    const openUserSettings = (tab: 'preferences' | 'models' = 'preferences') => {
+        setUserSettingsTab(tab)
+        setIsUserSettingsOpen(true)
+        // Close sidebar on small screens when opening settings modal
+        if (!isOver1280) {
+            closeSidebar()
+        }
+    }
     return <>
         <aside id="logo-sidebar"
             onClick={e => e.stopPropagation()}
@@ -48,28 +61,56 @@ const Sidebar: FC<Props> = function ({ children }) {
             aria-label="Sidebar">
             <div className="px-4 bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col justify-between h-full">
                 {children}
-                <div className={twMerge("sticky bottom-0 pt-1 pb-3 flex gap-1 flex-wrap-reverse", isCollapse ? "flex-col" : "flex-row")}>
+                <div className={twMerge("sticky bottom-0 pt-1 pb-3 flex gap-1 items-center flex-wrap-reverse", isCollapse ? "flex-col" : "flex-row")}>
                     {
-                        user && <Tooltip
-                            text={t("actions.signout")}
-                            side="right"
-                            enabled={isCollapse}
-                        >
-                            <button onClick={handleLogout} className="p-2">
-                                <LogOut size={20} />
-                            </button>
-                        </Tooltip>
-                    }
-                    {
-                        user && <Tooltip
-                            text={t("menu.user")}
-                            side="right"
-                            enabled={isCollapse}
-                        >
-                            <Link to="/user/" className="p-2">
-                                <Settings size={20} />
-                            </Link>
-                        </Tooltip>
+                        user && <DropdownMenu.Root>
+                            <DropdownMenu.Trigger asChild>
+                                <button
+                                    className="p-2 rounded-full bg-blue-500 text-white font-semibold flex items-center justify-center w-8 h-8 hover:bg-blue-600 transition-colors"
+                                    title={t("menu.user")}
+                                >
+                                    {user.name ? user.name.charAt(0).toUpperCase() : <UserIcon size={20} />}
+                                </button>
+                            </DropdownMenu.Trigger>
+
+                            <DropdownMenu.Portal>
+                                <DropdownMenu.Content
+                                    className="rounded-md w-56 bg-white text-gray-900 dark:bg-neutral-800 dark:text-gray-100 p-[5px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade z-[9999]"
+                                    align="end"
+                                    side="top"
+                                    alignOffset={10}
+                                    sideOffset={10}
+                                >
+                                    <div className="px-3 py-2 border-b dark:border-neutral-600">
+                                        <p className="font-semibold">{user.name}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">{user.email}</p>
+                                    </div>
+
+                                    <DropdownMenu.Item className="select-none rounded-lg leading-none outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-neutral-200 dark:data-[highlighted]:bg-neutral-700">
+                                        <button onClick={() => openUserSettings('preferences')} className="flex gap-3 p-3 items-center w-full">
+                                            <Palette size={18} />
+                                            {t("menu.preferences")}
+                                        </button>
+                                    </DropdownMenu.Item>
+
+                                    <DropdownMenu.Item className="select-none rounded-lg leading-none outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-neutral-200 dark:data-[highlighted]:bg-neutral-700">
+                                        <button onClick={() => openUserSettings('models')} className="flex gap-3 p-3 items-center w-full">
+                                            <Settings size={18} />
+                                            {t("menu.models")}
+                                        </button>
+                                    </DropdownMenu.Item>
+
+                                    <DropdownMenu.Separator className="h-[1px] bg-neutral-200 dark:bg-neutral-600 m-1" />
+
+                                    <DropdownMenu.Item className="text-red-600 select-none rounded-lg leading-none outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-red-100 dark:data-[highlighted]:bg-red-900/30 dark:data-[highlighted]:text-red-400">
+                                        <button onClick={handleLogout} className="flex gap-3 p-3 items-center w-full">
+                                            <LogOut size={18} />
+                                            {t("actions.signout")}
+                                        </button>
+                                    </DropdownMenu.Item>
+                                </DropdownMenu.Content>
+                            </DropdownMenu.Portal>
+                        </DropdownMenu.Root>
                     }
                     {
                         isOver1280 &&
@@ -88,6 +129,11 @@ const Sidebar: FC<Props> = function ({ children }) {
                 </div>
             </div>
         </aside>
+        <UserSettingsModal
+            open={isUserSettingsOpen}
+            onOpenChange={setIsUserSettingsOpen}
+            defaultTab={userSettingsTab}
+        />
     </>
 }
 export default Sidebar
