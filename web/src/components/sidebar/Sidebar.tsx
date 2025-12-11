@@ -61,12 +61,12 @@ const Sidebar: FC<Props> = function ({ children }) {
             aria-label="Sidebar">
             <div className="px-4 bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col justify-between h-full">
                 {children}
-                <div className={twMerge("sticky bottom-0 pt-1 pb-3 flex gap-1 items-center flex-wrap-reverse", isCollapse ? "flex-col" : "flex-row")}>
+                <div className={twMerge("sticky bottom-0 pt-1 pb-3 flex gap-2 items-center flex-wrap-reverse", isCollapse ? "flex-col" : "flex-row")}>
                     {
                         user && <DropdownMenu.Root>
                             <DropdownMenu.Trigger asChild>
                                 <button
-                                    className="p-2 rounded-full bg-blue-500 text-white font-semibold flex items-center justify-center w-8 h-8 hover:bg-blue-600 transition-colors"
+                                    className="p-2 rounded-full bg-blue-500 text-white font-semibold flex items-center justify-center w-6 h-6 hover:bg-blue-600 transition-colors"
                                     title={t("menu.user")}
                                 >
                                     {user.name ? user.name.charAt(0).toUpperCase() : <UserIcon size={20} />}
@@ -76,9 +76,9 @@ const Sidebar: FC<Props> = function ({ children }) {
                             <DropdownMenu.Portal>
                                 <DropdownMenu.Content
                                     className="rounded-md w-56 bg-white text-gray-900 dark:bg-neutral-800 dark:text-gray-100 p-[5px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade z-[9999]"
-                                    align="end"
+                                    align="start"
                                     side="top"
-                                    alignOffset={10}
+                                    alignOffset={0}
                                     sideOffset={10}
                                 >
                                     <div className="px-3 py-2 border-b dark:border-neutral-600">
