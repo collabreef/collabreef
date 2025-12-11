@@ -1,8 +1,8 @@
 import { useCallback, useState, useEffect, useRef } from 'react';
 import { useMutation, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { deleteFile, FileInfo, getFileDownloadUrl, listFiles, renameFile } from '../../../api/file';
+import { deleteFile, FileInfo, getFileDownloadUrl, listFiles, renameFile, uploadFile } from '../../../api/file';
 import { useToastStore } from '../../../stores/toast';
-import { Download, FileIcon, Trash2, Edit2, X, Check, Search, Filter, Eye, FileText, Copy } from 'lucide-react';
+import { Download, FileIcon, Trash2, Edit2, X, Check, Search, Filter, Eye, FileText, Copy, Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'motion/react';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
@@ -26,6 +26,7 @@ const FilesPage = () => {
     const queryClient = useQueryClient();
     const { addToast } = useToastStore();
     const observerRef = useRef<IntersectionObserver | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -88,6 +89,20 @@ const FilesPage = () => {
         },
     });
 
+    const uploadMutation = useMutation({
+        mutationFn: (file: File) => uploadFile(currentWorkspaceId!, file),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['files', currentWorkspaceId] });
+            addToast({ type: 'success', title: t('files.upload_success') });
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        },
+        onError: () => {
+            addToast({ type: 'error', title: t('files.upload_error') });
+        },
+    });
+
     const loadMoreRef = useCallback((node: HTMLDivElement | null) => {
         if (observerRef.current) {
             observerRef.current.disconnect();
@@ -138,6 +153,17 @@ const FilesPage = () => {
         }
     };
 
+    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            uploadMutation.mutate(file);
+        }
+    };
+
+    const triggerFileInput = () => {
+        fileInputRef.current?.click();
+    };
+
     const isImageFile = (ext: string) => {
         return ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp'].includes(ext.toLowerCase());
     };
@@ -162,6 +188,13 @@ const FilesPage = () => {
     return (
         <OneColumn>
             <div className="w-full">
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    aria-label="file upload input"
+                />
                 <div className="py-2">
                     {
                         isSearchVisible ? <div className="block sm:hidden py-1">
@@ -216,7 +249,38 @@ const FilesPage = () => {
                                             </select>
                                         </div>
                                     </div>
-                                    <div className="sm:hidden">
+                                    <div className="hidden sm:block px-1.5">
+                                        <Tooltip.Root>
+                                            <Tooltip.Trigger asChild>
+                                                <button
+                                                    onClick={triggerFileInput}
+                                                    disabled={uploadMutation.isPending}
+                                                    className="p-2.5 rounded-xl dark:border-neutral-60 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    aria-label="upload file"
+                                                >
+                                                    <Upload size={18} />
+                                                </button>
+                                            </Tooltip.Trigger>
+                                            <Tooltip.Portal>
+                                                <Tooltip.Content
+                                                    className="select-none rounded-lg bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-2 py-1 text-sm"
+                                                    side="bottom"
+                                                >
+                                                    <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-100" />
+                                                    {t("actions.selectFileToUpload")}
+                                                </Tooltip.Content>
+                                            </Tooltip.Portal>
+                                        </Tooltip.Root>
+                                    </div>
+                                    <div className="sm:hidden flex items-center">
+                                        <button
+                                            onClick={triggerFileInput}
+                                            disabled={uploadMutation.isPending}
+                                            className="p-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            aria-label="upload file"
+                                        >
+                                            <Upload size={20} />
+                                        </button>
                                         {
                                             !isSearchVisible && <Tooltip.Root>
                                                 <Tooltip.Trigger asChild>
