@@ -3,14 +3,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { Responsive, WidthProvider, Layout, Layouts } from 'react-grid-layout';
-import { PlusCircle, Settings2 } from 'lucide-react';
+import { Settings2 } from 'lucide-react';
 import OneColumn from '@/components/onecolumn/OneColumn';
 import SidebarButton from '@/components/sidebar/SidebarButton';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import { getWidgets, updateWidget, deleteWidget, WidgetData, getWidgetPath } from '@/api/widget';
 import { useToastStore } from '@/stores/toast';
 import WidgetRenderer from '@/components/widgets/WidgetRenderer';
-import AddWidgetDialog from '@/components/widgets/AddWidgetDialog';
+import AddWidgetMenu from '@/components/widgets/AddWidgetMenu';
 import EditWidgetDialog from '@/components/widgets/EditWidgetDialog';
 import { parseWidgetPosition, stringifyWidgetPosition, WidgetPosition, parseWidgetConfig, FolderWidgetConfig } from '@/types/widget';
 import { getWidget } from '@/components/widgets/widgetRegistry';
@@ -30,7 +30,6 @@ const WorkspaceHomePage = () => {
   const { addToast } = useToastStore();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingWidget, setEditingWidget] = useState<WidgetData | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentBreakpoint, setCurrentBreakpoint] = useState<string>('xl');
@@ -333,13 +332,7 @@ const WorkspaceHomePage = () => {
               >
                 <Settings2 size={20} />
               </button>
-              <button
-                aria-label="add widget"
-                onClick={() => setIsAddDialogOpen(true)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
-              >
-                <PlusCircle size={20} />
-              </button>
+              <AddWidgetMenu parentId={currentFolderId} />
             </div>
           </div>
 
@@ -358,12 +351,6 @@ const WorkspaceHomePage = () => {
                 <div className="text-gray-500 dark:text-gray-400 mb-4">
                   {t('widgets.noWidgets')}
                 </div>
-                <button
-                  onClick={() => setIsAddDialogOpen(true)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                >
-                  {t('widgets.addFirst')}
-                </button>
               </div>
             ) : (
               <ResponsiveGridLayout
@@ -401,12 +388,6 @@ const WorkspaceHomePage = () => {
           </div>
         </div>
       </div>
-
-      <AddWidgetDialog
-        isOpen={isAddDialogOpen}
-        onClose={() => setIsAddDialogOpen(false)}
-        parentId={currentFolderId}
-      />
 
       {editingWidget && (
         <EditWidgetDialog
