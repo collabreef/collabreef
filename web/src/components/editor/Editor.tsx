@@ -269,6 +269,7 @@ const Editor: FC<Props> = ({ note, onChange, canDrag = true }) => {
           <button className='p-2' onClick={() => editor.chain().focus().addColumnAfter().run()}>{t("table.addColumn")}</button>
           <button className='p-2' onClick={() => editor.chain().focus().deleteRow().run()}>{t("table.deleteRow")}</button>
           <button className='p-2' onClick={() => editor.chain().focus().addRowAfter().run()}>{t("table.addRow")}</button>
+          <button className='p-2' onClick={() => editor.chain().focus().deleteTable().run()}>{t('table.deleteTable')}</button>
         </div>
       </BubbleMenu>
       <PhotoProvider>
