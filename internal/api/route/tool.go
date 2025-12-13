@@ -14,8 +14,4 @@ func RegisterTool(api *echo.Group, h handler.Handler, authMiddleware middlewares
 
 	g.POST("/fetchfile", h.FetchFile)
 	g.GET("/fetch-rss", h.FetchRSS)
-
-	textgenGroup := g.Group("/textgen")
-	textgenGroup.GET("/models", h.ListTextModels)
-	textgenGroup.POST("/generate", h.GenerateText)
 }

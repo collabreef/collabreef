@@ -1,5 +1,5 @@
 // Widget types
-export type WidgetType = 'note_form' | 'template_form' | 'view' | 'note' | 'latest_note' | 'countdown' | 'file_upload' | 'carousel' | 'heatmap' | 'rss' | 'music' | 'video' | 'iframe' | 'folder' | 'link';
+export type WidgetType = 'note_form' | 'view' | 'note' | 'latest_note' | 'countdown' | 'file_upload' | 'carousel' | 'heatmap' | 'rss' | 'music' | 'video' | 'iframe' | 'folder' | 'link';
 
 // Widget position on dashboard
 export interface WidgetPosition {
@@ -46,12 +46,6 @@ export interface NoteFormWidgetConfig {
     showImage?: boolean;
     showTable?: boolean;
   };
-}
-
-// Template form widget - for generating content from templates
-export interface TemplateFormWidgetConfig {
-  templateId: string;
-  showHistory?: boolean;
 }
 
 // View widget - for displaying a view
@@ -161,7 +155,6 @@ export interface UpdateWidgetRequest {
 // Helper type to get the config type for a given widget type
 export type WidgetConfigMap = {
   note_form: NoteFormWidgetConfig;
-  template_form: TemplateFormWidgetConfig;
   view: ViewWidgetConfig;
   note: NoteWidgetConfig;
   latest_note: LatestNoteWidgetConfig;

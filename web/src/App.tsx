@@ -18,9 +18,6 @@ import ExploreViewsPage from './pages/explore/ExploreViewsPage';
 import ExploreViewDetailPage from './pages/explore/ExploreViewDetailPage';
 import ExploreViewObjectsList from './pages/explore/ExploreViewObjectsList';
 import ExploreViewObjectDetailPage from './pages/explore/ExploreViewObjectDetailPage';
-import GeneratorsPage from './pages/workspace/generators/GeneratorsPage';
-import GeneratorFormPage from './pages/workspace/generators/GeneratorFormPage';
-import GeneratorDetailPage from './pages/workspace/generators/GeneratorDetailPage';
 import FilesPage from './pages/workspace/files/FilesPage';
 import ViewsPage from './pages/workspace/views/ViewsPage';
 import ViewDetailPage from './pages/workspace/views/ViewDetailPage';
@@ -53,10 +50,6 @@ function App() {
           <Route path='workspaces/:workspaceId' element={<WorkspaceLayout />}>
             <Route path='notes/:noteId' element={<NoteDetailPage />} ></Route>
             <Route path='notes' element={<NotesPage />}></Route>
-            <Route path='generators' element={<GeneratorsPage />}></Route>
-            <Route path='generators/new' element={<GeneratorFormPage />}></Route>
-            <Route path='generators/:id/edit' element={<GeneratorFormPage />}></Route>
-            <Route path='generators/:id' element={<GeneratorDetailPage />}></Route>
             <Route path='files' element={<FilesPage />}></Route>
             <Route path='views' element={<ViewsPage />}></Route>
             <Route path='views/:viewId' element={<ViewDetailPage />}>

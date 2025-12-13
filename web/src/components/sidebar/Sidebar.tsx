@@ -1,4 +1,4 @@
-import { PanelLeftClose, PanelLeftOpen, Settings, LogOut, User as UserIcon, Palette } from "lucide-react"
+import { PanelLeftClose, PanelLeftOpen, LogOut, User as UserIcon, Palette } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import { useSidebar } from "./SidebarProvider"
 import { useNavigate } from "react-router-dom"
@@ -23,7 +23,6 @@ const Sidebar: FC<Props> = function ({ children }) {
     const navigate = useNavigate()
     const { resetWorkspaces } = useWorkspaceStore()
     const [isUserSettingsOpen, setIsUserSettingsOpen] = useState(false)
-    const [userSettingsTab, setUserSettingsTab] = useState<'preferences' | 'models'>('preferences')
 
     const signoutMutation = useMutation({
         mutationFn: () => signOut(),
@@ -43,8 +42,7 @@ const Sidebar: FC<Props> = function ({ children }) {
         signoutMutation.mutate()
     }
 
-    const openUserSettings = (tab: 'preferences' | 'models' = 'preferences') => {
-        setUserSettingsTab(tab)
+    const openUserSettings = () => {
         setIsUserSettingsOpen(true)
         // Close sidebar on small screens when opening settings modal
         if (!isOver1280) {
@@ -87,16 +85,9 @@ const Sidebar: FC<Props> = function ({ children }) {
                                     </div>
 
                                     <DropdownMenu.Item className="select-none rounded-lg leading-none outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-neutral-200 dark:data-[highlighted]:bg-neutral-700">
-                                        <button onClick={() => openUserSettings('preferences')} className="flex gap-3 p-3 items-center w-full">
+                                        <button onClick={() => openUserSettings()} className="flex gap-3 p-3 items-center w-full">
                                             <Palette size={18} />
                                             {t("menu.preferences")}
-                                        </button>
-                                    </DropdownMenu.Item>
-
-                                    <DropdownMenu.Item className="select-none rounded-lg leading-none outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-neutral-200 dark:data-[highlighted]:bg-neutral-700">
-                                        <button onClick={() => openUserSettings('models')} className="flex gap-3 p-3 items-center w-full">
-                                            <Settings size={18} />
-                                            {t("menu.models")}
                                         </button>
                                     </DropdownMenu.Item>
 
@@ -132,7 +123,6 @@ const Sidebar: FC<Props> = function ({ children }) {
         <UserSettingsModal
             open={isUserSettingsOpen}
             onOpenChange={setIsUserSettingsOpen}
-            defaultTab={userSettingsTab}
         />
     </>
 }

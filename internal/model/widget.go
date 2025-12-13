@@ -4,20 +4,19 @@ package model
 type WidgetType string
 
 const (
-	WidgetTypeNoteForm     WidgetType = "note_form"     // Widget for creating/editing notes
-	WidgetTypeTemplateForm WidgetType = "template_form" // Widget for generating content from templates
-	WidgetTypeView         WidgetType = "view"          // Widget for displaying a view
-	WidgetTypeNoteList     WidgetType = "note_list"     // Widget for displaying notes with conditions
-	WidgetTypeNote         WidgetType = "note"          // Widget for displaying a single note's complete content
-	WidgetTypeCountdown    WidgetType = "countdown"     // Widget for countdown timer
-	WidgetTypeFileUpload   WidgetType = "file_upload"   // Widget for uploading files
-	WidgetTypeCarousel     WidgetType = "carousel"      // Widget for image carousel
-	WidgetTypeRSS          WidgetType = "rss"           // Widget for displaying RSS feeds
-	WidgetTypeMusic        WidgetType = "music"         // Widget for playing audio files
-	WidgetTypeVideo        WidgetType = "video"         // Widget for playing video files
-	WidgetTypeIframe       WidgetType = "iframe"        // Widget for embedding external web pages
-	WidgetTypeFolder       WidgetType = "folder"        // Widget for organizing widgets in a folder
-	WidgetTypeLink         WidgetType = "link"          // Widget for displaying a clickable link
+	WidgetTypeNoteForm   WidgetType = "note_form"   // Widget for creating/editing notes
+	WidgetTypeView       WidgetType = "view"        // Widget for displaying a view
+	WidgetTypeNoteList   WidgetType = "note_list"   // Widget for displaying notes with conditions
+	WidgetTypeNote       WidgetType = "note"        // Widget for displaying a single note's complete content
+	WidgetTypeCountdown  WidgetType = "countdown"   // Widget for countdown timer
+	WidgetTypeFileUpload WidgetType = "file_upload" // Widget for uploading files
+	WidgetTypeCarousel   WidgetType = "carousel"    // Widget for image carousel
+	WidgetTypeRSS        WidgetType = "rss"         // Widget for displaying RSS feeds
+	WidgetTypeMusic      WidgetType = "music"       // Widget for playing audio files
+	WidgetTypeVideo      WidgetType = "video"       // Widget for playing video files
+	WidgetTypeIframe     WidgetType = "iframe"      // Widget for embedding external web pages
+	WidgetTypeFolder     WidgetType = "folder"      // Widget for organizing widgets in a folder
+	WidgetTypeLink       WidgetType = "link"        // Widget for displaying a clickable link
 )
 
 type WidgetFilter struct {

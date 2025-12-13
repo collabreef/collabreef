@@ -122,8 +122,8 @@ ul[data-type="taskList"] > li input[type=checkbox]{
    @apply transform mr-2 
 }
 
-ul[data-type="taskList"] > li > div{
-   @apply inline-block
+ul[data-type="taskList"] > li{
+   @apply flex 
 }
 
 .tiptap table {

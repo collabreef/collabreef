@@ -9,13 +9,10 @@ import (
 type DB interface {
 	Uow
 	UserRepository
-	UserSettingsRepository
 	NoteRepository
 	FileRepository
 	WorkspaceRepository
 	WorkspaceUserRepository
-	GeneratorRepository
-	GenHistoryRepository
 	ViewRepository
 	ViewObjectRepository
 	ViewObjectNoteRepository
@@ -32,10 +29,6 @@ type UserRepository interface {
 	FindUserByID(id string) (model.User, error)
 	UpdateUser(u model.User) error
 	DeleteUser(id string) error
-}
-type UserSettingsRepository interface {
-	SaveUserSettings(u model.UserSettings) error
-	FindUserSettingsByID(id string) (model.UserSettings, error)
 }
 type NoteRepository interface {
 	CreateNote(n model.Note) error
@@ -64,19 +57,6 @@ type WorkspaceUserRepository interface {
 	CreateWorkspaceUser(w model.WorkspaceUser) error
 	UpdateWorkspaceUser(w model.WorkspaceUser) error
 	DeleteWorkspaceUser(w model.WorkspaceUser) error
-}
-type GeneratorRepository interface {
-	CreateGenerator(g model.Generator) error
-	UpdateGenerator(g model.Generator) error
-	DeleteGenerator(g model.Generator) error
-	FindGenerator(g model.Generator) (model.Generator, error)
-	FindGenerators(f model.GeneratorFilter) ([]model.Generator, error)
-}
-type GenHistoryRepository interface {
-	CreateGenHistory(h model.GenHistory) error
-	DeleteGenHistory(h model.GenHistory) error
-	FindGenHistory(h model.GenHistory) (model.GenHistory, error)
-	FindGenHistories(f model.GenHistoryFilter) ([]model.GenHistory, error)
 }
 type ViewRepository interface {
 	CreateView(v model.View) error
