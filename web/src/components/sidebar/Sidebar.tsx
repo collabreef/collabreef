@@ -57,7 +57,7 @@ const Sidebar: FC<Props> = function ({ children }) {
                 , isCollapse ? "w-[72px]" : " w-[260px]"
                 , " transition duration-200 ease-in-out transform fixed top-0 left-0 z-40 xl:flex-col gap-0.5 h-[100dvh] bg-opacity-100 ")}
             aria-label="Sidebar">
-            <div className="px-4 bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col justify-between h-full">
+            <div className={twMerge(isCollapse ? "bg-neutral-100 dark:bg-neutral-900" : "bg-neutral-200 dark:bg-neutral-800 mr-4","px-4  text-neutral-900 dark:text-neutral-100 flex flex-col justify-between h-full")}>
                 {children}
                 <div className={twMerge("sticky bottom-0 pt-1 pb-3 flex gap-2 items-center flex-wrap-reverse", isCollapse ? "flex-col" : "flex-row")}>
                     {
@@ -73,7 +73,7 @@ const Sidebar: FC<Props> = function ({ children }) {
 
                             <DropdownMenu.Portal>
                                 <DropdownMenu.Content
-                                    className="rounded-md w-56 bg-white text-gray-900 dark:bg-neutral-800 dark:text-gray-100 p-[5px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade z-[9999]"
+                                    className="rounded-md w-52 bg-white text-gray-900 dark:bg-neutral-700 dark:text-gray-100 p-[5px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade z-[9999]"
                                     align="start"
                                     side="top"
                                     alignOffset={0}
@@ -93,7 +93,7 @@ const Sidebar: FC<Props> = function ({ children }) {
 
                                     <DropdownMenu.Separator className="h-[1px] bg-neutral-200 dark:bg-neutral-600 m-1" />
 
-                                    <DropdownMenu.Item className="text-red-600 select-none rounded-lg leading-none outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-red-100 dark:data-[highlighted]:bg-red-900/30 dark:data-[highlighted]:text-red-400">
+                                    <DropdownMenu.Item className="text-red-600 dark:text-red-400 select-none rounded-lg leading-none outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-red-100 dark:data-[highlighted]:bg-red-900/30 dark:data-[highlighted]:text-red-400">
                                         <button onClick={handleLogout} className="flex gap-3 p-3 items-center w-full">
                                             <LogOut size={18} />
                                             {t("actions.signout")}
