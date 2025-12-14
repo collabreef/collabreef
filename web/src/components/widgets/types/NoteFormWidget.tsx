@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Send, Bold, Italic, Underline, Strikethrough, Code, Heading, List, ListOrdered, Quote, FileCode, Table, Trash2 } from 'lucide-react';
+import { Send, Bold, Italic, Underline, Strikethrough, Code, Heading, List, ListOrdered, Quote, FileCode, Table, Trash2, ListTodo, ChevronDown } from 'lucide-react';
 import { createNote, NoteData } from '@/api/note';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import { useToastStore } from '@/stores/toast';
@@ -13,6 +13,7 @@ import StarterKit from '@tiptap/starter-kit';
 import { Placeholder } from '@tiptap/extensions';
 import { TableKit } from '@tiptap/extension-table';
 import UnderlineExtension from '@tiptap/extension-underline';
+import { TaskItem, TaskList } from "@tiptap/extension-list";
 import { uploadFile, listFiles } from '@/api/file';
 import { Attachment } from '@/components/editor/extensions/attachment/Attachment';
 import { ImageNode } from '@/components/editor/extensions/imagenode/ImageNode';
@@ -48,6 +49,12 @@ const NoteFormWidget: FC<NoteFormWidgetProps> = ({ config }) => {
         }
       }),
       UnderlineExtension,
+      TaskList.configure({
+        HTMLAttributes: {
+          class: 'list-none',
+        },
+      }),
+      TaskItem,
       Placeholder.configure({
         placeholder: config.placeholder || t('notes.contentPlaceholder')
       }),
@@ -108,6 +115,7 @@ const NoteFormWidget: FC<NoteFormWidgetProps> = ({ config }) => {
   };
 
   const toolbar = config.toolbar || {};
+  const [showHeadingMenu, setShowHeadingMenu] = useState(false);
 
   const ToolbarButton: FC<{
     onClick: () => void;
@@ -124,6 +132,41 @@ const NoteFormWidget: FC<NoteFormWidgetProps> = ({ config }) => {
     >
       {icon}
     </button>
+  );
+
+  const HeadingDropdown: FC = () => (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setShowHeadingMenu(!showHeadingMenu)}
+        title={t('common.heading')}
+        className={`p-2 rounded hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors flex items-center gap-1 ${
+          editor?.isActive('heading') ? 'bg-gray-200 dark:bg-neutral-600' : ''
+        }`}
+      >
+        <Heading size={16} />
+        <ChevronDown size={12} />
+      </button>
+      {showHeadingMenu && (
+        <div className="absolute bg-white dark:bg-neutral-800 border dark:border-neutral-700 rounded shadow-lg z-10 w-16 max-h-[200px] overflow-y-scroll">
+          {[1, 2, 3, 4, 5, 6].map((level) => (
+            <button
+              key={level}
+              type="button"
+              onClick={() => {
+                editor?.chain().focus().toggleHeading({ level: level as 1 | 2 | 3 | 4 | 5 | 6 }).run();
+                setShowHeadingMenu(false);
+              }}
+              className={`w-full text-left hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors ${
+                editor?.isActive('heading', { level }) ? 'bg-gray-200 dark:bg-neutral-600' : ''
+              }`}
+            >
+              <span style={{ fontSize: `${2 - level * 0.2}em`, fontWeight: 'bold' }}>H{level}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 
   return (
@@ -172,16 +215,7 @@ const NoteFormWidget: FC<NoteFormWidgetProps> = ({ config }) => {
                 title={t('common.code')}
               />
             )}
-            {toolbar.showHeading && (
-              <>
-                <ToolbarButton
-                  onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
-                  active={editor?.isActive('heading', { level: 1 })}
-                  icon={<Heading size={16} />}
-                  title={t('common.heading')}
-                />
-              </>
-            )}
+            {toolbar.showHeading && <HeadingDropdown />}
             {toolbar.showBulletList && (
               <ToolbarButton
                 onClick={() => editor?.chain().focus().toggleBulletList().run()}
@@ -196,6 +230,14 @@ const NoteFormWidget: FC<NoteFormWidgetProps> = ({ config }) => {
                 active={editor?.isActive('orderedList')}
                 icon={<ListOrdered size={16} />}
                 title={t('common.orderedList')}
+              />
+            )}
+            {toolbar.showTaskList && (
+              <ToolbarButton
+                onClick={() => editor?.chain().focus().toggleTaskList().run()}
+                active={editor?.isActive('taskList')}
+                icon={<ListTodo size={16} />}
+                title={t('common.taskList')}
               />
             )}
             {toolbar.showBlockquote && (
@@ -424,6 +466,19 @@ export const NoteFormWidgetConfigForm: FC<WidgetConfigFormProps<NoteFormWidgetCo
             <label className="flex items-center space-x-2 cursor-pointer">
               <input
                 type="checkbox"
+                checked={toolbar.showTaskList || false}
+                onChange={(e) => handleToolbarChange('showTaskList', e.target.checked)}
+                className="rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+              />
+              <span className="text-sm flex items-center gap-1">
+                <ListTodo size={14} />
+                {t('common.taskList')}
+              </span>
+            </label>
+
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
                 checked={toolbar.showBlockquote || false}
                 onChange={(e) => handleToolbarChange('showBlockquote', e.target.checked)}
                 className="rounded border-gray-300 text-blue-500 focus:ring-blue-500"
@@ -481,6 +536,7 @@ registerWidget({
       showHeading: true,
       showBulletList: true,
       showOrderedList: true,
+      showTaskList: false,
       showBlockquote: false,
       showCodeBlock: false,
       showLink: false,

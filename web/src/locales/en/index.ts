@@ -145,6 +145,7 @@ export default {
     heading: "Heading",
     bulletList: "Bullet List",
     orderedList: "Numbered List",
+    taskList: "Task List",
     blockquote: "Quote",
     codeBlock: "Code Block",
     link: "Link",

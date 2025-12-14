@@ -144,6 +144,7 @@ export default {
     heading: "標題",
     bulletList: "項目符號清單",
     orderedList: "編號清單",
+    taskList: "待辦清單",
     blockquote: "引用",
     codeBlock: "程式碼區塊",
     link: "連結",

@@ -40,6 +40,7 @@ export interface NoteFormWidgetConfig {
     showHeading?: boolean;
     showBulletList?: boolean;
     showOrderedList?: boolean;
+    showTaskList?: boolean;
     showBlockquote?: boolean;
     showCodeBlock?: boolean;
     showLink?: boolean;
