@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"github.com/unsealdev/unseal/internal/db"
-	"github.com/unsealdev/unseal/internal/storage"
+	"github.com/notepia/notepia/internal/db"
+	"github.com/notepia/notepia/internal/storage"
 )
 
 type Handler struct {

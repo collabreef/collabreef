@@ -28,7 +28,7 @@ COPY --from=frontend /app/web/dist /app/internal/server/dist
 
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
-    GOOS=linux GOARCH=amd64 go build -o /out/app ./cmd/unseal/unseal.go
+    GOOS=linux GOARCH=amd64 go build -o /out/app ./cmd/notepia/notepia.go
 
 # ---------- Stage 3: final runtime ----------
 

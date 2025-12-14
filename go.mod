@@ -1,4 +1,4 @@
-module github.com/unsealdev/unseal
+module github.com/notepia/notepia
 
 go 1.24.0
 

@@ -3,8 +3,8 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/unsealdev/unseal/internal/api/auth"
-	"github.com/unsealdev/unseal/internal/db"
+	"github.com/notepia/notepia/internal/api/auth"
+	"github.com/notepia/notepia/internal/db"
 
 	"github.com/labstack/echo/v4"
 )

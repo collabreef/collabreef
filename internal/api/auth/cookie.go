@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/unsealdev/unseal/internal/config"
-	"github.com/unsealdev/unseal/internal/model"
+	"github.com/notepia/notepia/internal/config"
+	"github.com/notepia/notepia/internal/model"
 
 	"github.com/golang-jwt/jwt"
 )

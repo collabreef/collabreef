@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/unsealdev/unseal/internal/config"
+	"github.com/notepia/notepia/internal/config"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"

@@ -3,9 +3,9 @@ package bootstrap
 import (
 	"fmt"
 
-	"github.com/unsealdev/unseal/internal/config"
-	"github.com/unsealdev/unseal/internal/storage"
-	"github.com/unsealdev/unseal/internal/storage/localfile"
+	"github.com/notepia/notepia/internal/config"
+	"github.com/notepia/notepia/internal/storage"
+	"github.com/notepia/notepia/internal/storage/localfile"
 )
 
 func NewStorage() (storage.Storage, error) {

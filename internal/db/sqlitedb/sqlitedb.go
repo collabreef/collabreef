@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/unsealdev/unseal/internal/config"
-	"github.com/unsealdev/unseal/internal/db"
+	"github.com/notepia/notepia/internal/config"
+	"github.com/notepia/notepia/internal/db"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/unsealdev/unseal/internal/model"
+	"github.com/notepia/notepia/internal/model"
 )
 
 type AddNoteToViewObjectRequest struct {

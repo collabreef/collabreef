@@ -3,9 +3,9 @@ package bootstrap
 import (
 	"fmt"
 
-	"github.com/unsealdev/unseal/internal/config"
-	"github.com/unsealdev/unseal/internal/db"
-	"github.com/unsealdev/unseal/internal/db/sqlitedb"
+	"github.com/notepia/notepia/internal/config"
+	"github.com/notepia/notepia/internal/db"
+	"github.com/notepia/notepia/internal/db/sqlitedb"
 )
 
 func NewDB() (db.DB, error) {

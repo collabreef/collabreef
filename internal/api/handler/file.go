@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/unsealdev/unseal/internal/model"
-	"github.com/unsealdev/unseal/internal/util"
+	"github.com/notepia/notepia/internal/model"
+	"github.com/notepia/notepia/internal/util"
 )
 
 func (h Handler) Upload(c echo.Context) error {

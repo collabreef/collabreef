@@ -46,7 +46,7 @@ func Init() {
 	C = viper.New()
 
 	C.SetDefault(DB_DRIVER, "sqlite3")
-	C.SetDefault(DB_DSN, "bin/unseal.db")
+	C.SetDefault(DB_DSN, "bin/notepia.db")
 	C.SetDefault(DB_MIGRATIONS_PATH, "file://migrations/sqlite3")
 	C.SetDefault(STORAGE_TYPE, "local")
 	C.SetDefault(STORAGE_ROOT, "./bin/uploads/")

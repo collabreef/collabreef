@@ -8,13 +8,13 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/unsealdev/unseal/internal/api/handler"
-	"github.com/unsealdev/unseal/internal/api/middlewares"
-	"github.com/unsealdev/unseal/internal/api/route"
-	"github.com/unsealdev/unseal/internal/api/validate"
-	"github.com/unsealdev/unseal/internal/config"
-	"github.com/unsealdev/unseal/internal/db"
-	"github.com/unsealdev/unseal/internal/storage"
+	"github.com/notepia/notepia/internal/api/handler"
+	"github.com/notepia/notepia/internal/api/middlewares"
+	"github.com/notepia/notepia/internal/api/route"
+	"github.com/notepia/notepia/internal/api/validate"
+	"github.com/notepia/notepia/internal/config"
+	"github.com/notepia/notepia/internal/db"
+	"github.com/notepia/notepia/internal/storage"
 )
 
 //go:embed dist/*

@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/unsealdev/unseal/internal/bootstrap"
-	"github.com/unsealdev/unseal/internal/config"
-	"github.com/unsealdev/unseal/internal/server"
+	"github.com/notepia/notepia/internal/bootstrap"
+	"github.com/notepia/notepia/internal/config"
+	"github.com/notepia/notepia/internal/server"
 )
 
 func main() {
