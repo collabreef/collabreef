@@ -14,8 +14,10 @@ const RequireAuth = () => {
   useEffect(() => {
     (async () => {
       const currentUser = await fetchUser();
+
       if (!currentUser) {
         navigate("/explore/notes");
+        return;
       }
 
       //load preferences
@@ -27,8 +29,10 @@ const RequireAuth = () => {
           setTheme(currentUser.preferences.theme)
         }
       }
-
+      
       setIsChecking(false)
+
+      navigate("/workspaces");
     })();
   }, [])
 
