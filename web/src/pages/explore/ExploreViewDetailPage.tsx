@@ -60,7 +60,7 @@ const ExploreViewContent = ({ view, viewObjects, navigate, objectId, viewId, t }
 
     return (
         <>
-            <TwoColumnMain className="bg-white dark:bg-neutral-800 relative">
+            <TwoColumnMain className=" relative">
                 <PublicViewContent
                     view={view}
                     viewObjects={viewObjects}

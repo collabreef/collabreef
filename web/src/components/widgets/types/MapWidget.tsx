@@ -215,10 +215,10 @@ const MapWidget: FC<MapWidgetProps> = ({ config }) => {
                 <Link
                   to={`/workspaces/${workspaceId}/views/${config.viewId}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="absolute top-2 right-2 z-[1000] p-2 bg-white dark:bg-neutral-800 rounded shadow-md hover:shadow-lg transition-shadow border dark:border-neutral-600 flex items-center gap-1.5"
+                  className="absolute top-2 right-2 z-[1000] p-2 bg-white text-neutral-800 rounded shadow-md hover:shadow-lg transition-shadow border flex items-center gap-1.5"
                   title="Go to View"
                 >
-                  <ExternalLink size={18} className="text-neutral-700 dark:text-neutral-300" />
+                  <ExternalLink size={18} />
                 </Link>
 
                 {/* Selected marker info */}
