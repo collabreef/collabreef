@@ -23,7 +23,7 @@ const ViewObjectSearchBar = ({
             onTouchEnd={(e) => e.stopPropagation()}
         >
             <span>
-                <Search size={16} />
+                <Search size={16} className="text-gray-400" />
             </span>
             <input
                 className="bg-inherit outline-none flex-1"
