@@ -343,6 +343,7 @@ export default {
     noNotes: "No notes found",
     noViewSelected: "No view selected",
     viewNotFound: "View not found",
+    invalidViewType: "Invalid view type for this widget",
     noNoteSelected: "No note selected",
     noteNotFound: "Note not found",
     emptyNote: "This note is empty",
@@ -401,8 +402,6 @@ export default {
     types: {
       noteForm: "Quick Note",
       noteFormDesc: "Quickly create notes from your dashboard",
-      view: "View",
-      viewDesc: "Display a view on your dashboard",
       noteList: "Note List",
       noteListDesc: "Display a filtered list of notes",
       note: "Note Display",
@@ -428,7 +427,11 @@ export default {
       folder: "Folder",
       folderDesc: "Organize widgets in a hierarchical folder structure",
       link: "Link",
-      linkDesc: "Display a clickable link"
+      linkDesc: "Display a clickable link",
+      map: "Map",
+      mapDesc: "Display a map view with markers",
+      calendar: "Calendar",
+      calendarDesc: "Display a calendar view with slots"
     },
     config: {
       defaultVisibility: "Default Visibility",

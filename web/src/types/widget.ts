@@ -1,5 +1,5 @@
 // Widget types
-export type WidgetType = 'note_form' | 'view' | 'note' | 'latest_note' | 'countdown' | 'file_upload' | 'carousel' | 'heatmap' | 'rss' | 'music' | 'video' | 'iframe' | 'folder' | 'link';
+export type WidgetType = 'note_form' | 'note' | 'latest_note' | 'countdown' | 'file_upload' | 'carousel' | 'heatmap' | 'rss' | 'music' | 'video' | 'iframe' | 'folder' | 'link' | 'map' | 'calendar';
 
 // Widget position on dashboard
 export interface WidgetPosition {
@@ -46,13 +46,6 @@ export interface NoteFormWidgetConfig {
     showImage?: boolean;
     showTable?: boolean;
   };
-}
-
-// View widget - for displaying a view
-export interface ViewWidgetConfig {
-  viewId: string;
-  showControls?: boolean;
-  zoom?: number;
 }
 
 // Note widget - for displaying a single note's complete content
@@ -137,6 +130,19 @@ export interface LinkWidgetConfig {
   name?: string; // Optional display name for the link
 }
 
+// Map widget - for displaying a map view
+export interface MapWidgetConfig {
+  viewId: string;
+  showControls?: boolean;
+  zoom?: number;
+}
+
+// Calendar widget - for displaying a calendar view
+export interface CalendarWidgetConfig {
+  viewId: string;
+  showControls?: boolean;
+}
+
 // Request/Response types
 export interface CreateWidgetRequest {
   type: WidgetType;
@@ -155,7 +161,6 @@ export interface UpdateWidgetRequest {
 // Helper type to get the config type for a given widget type
 export type WidgetConfigMap = {
   note_form: NoteFormWidgetConfig;
-  view: ViewWidgetConfig;
   note: NoteWidgetConfig;
   latest_note: LatestNoteWidgetConfig;
   countdown: CountdownWidgetConfig;
@@ -168,6 +173,8 @@ export type WidgetConfigMap = {
   iframe: IframeWidgetConfig;
   folder: FolderWidgetConfig;
   link: LinkWidgetConfig;
+  map: MapWidgetConfig;
+  calendar: CalendarWidgetConfig;
 };
 
 // Parsed widget with typed config

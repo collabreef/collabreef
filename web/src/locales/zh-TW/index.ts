@@ -336,6 +336,7 @@ export default {
     noNotes: "找不到筆記",
     noViewSelected: "未選擇視圖",
     viewNotFound: "找不到視圖",
+    invalidViewType: "此小工具的視圖類型無效",
     noNoteSelected: "未選擇筆記",
     noteNotFound: "找不到筆記",
     emptyNote: "此筆記為空",
@@ -394,8 +395,6 @@ export default {
     types: {
       noteForm: "快速筆記",
       noteFormDesc: "從儀表板快速建立筆記",
-      view: "視圖",
-      viewDesc: "在儀表板上顯示視圖",
       noteList: "筆記列表",
       noteListDesc: "顯示篩選後的筆記列表",
       note: "筆記顯示",
@@ -421,7 +420,11 @@ export default {
       folder: "資料夾",
       folderDesc: "用資料夾階層結構組織小工具",
       link: "連結",
-      linkDesc: "顯示可點擊的連結"
+      linkDesc: "顯示可點擊的連結",
+      map: "地圖",
+      mapDesc: "顯示帶有標記的地圖視圖",
+      calendar: "行事曆",
+      calendarDesc: "顯示帶有時段的行事曆視圖"
     },
     config: {
       defaultVisibility: "預設可見性",

@@ -186,7 +186,6 @@ func (h Handler) CreateWidget(c echo.Context) error {
 	// Validate widget type
 	validTypes := map[string]bool{
 		"note_form":   true,
-		"view":        true,
 		"note":        true,
 		"latest_note": true,
 		"countdown":   true,
@@ -199,6 +198,8 @@ func (h Handler) CreateWidget(c echo.Context) error {
 		"iframe":      true,
 		"folder":      true,
 		"link":        true,
+		"map":         true,
+		"calendar":    true,
 	}
 	if !validTypes[req.Type] {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid widget type")

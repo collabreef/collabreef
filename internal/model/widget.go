@@ -5,7 +5,6 @@ type WidgetType string
 
 const (
 	WidgetTypeNoteForm   WidgetType = "note_form"   // Widget for creating/editing notes
-	WidgetTypeView       WidgetType = "view"        // Widget for displaying a view
 	WidgetTypeNoteList   WidgetType = "note_list"   // Widget for displaying notes with conditions
 	WidgetTypeNote       WidgetType = "note"        // Widget for displaying a single note's complete content
 	WidgetTypeCountdown  WidgetType = "countdown"   // Widget for countdown timer
@@ -17,6 +16,8 @@ const (
 	WidgetTypeIframe     WidgetType = "iframe"      // Widget for embedding external web pages
 	WidgetTypeFolder     WidgetType = "folder"      // Widget for organizing widgets in a folder
 	WidgetTypeLink       WidgetType = "link"        // Widget for displaying a clickable link
+	WidgetTypeMap        WidgetType = "map"         // Widget for displaying a map view
+	WidgetTypeCalendar   WidgetType = "calendar"    // Widget for displaying a calendar view
 )
 
 type WidgetFilter struct {
