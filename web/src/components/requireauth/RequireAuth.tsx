@@ -31,8 +31,6 @@ const RequireAuth = () => {
       }
       
       setIsChecking(false)
-
-      navigate("/workspaces");
     })();
   }, [])
 
