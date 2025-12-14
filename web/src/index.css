@@ -129,9 +129,37 @@ ul[data-type="taskList"] > li{
 .tiptap table {
   @apply w-full table-fixed
 }
+/* Table container */
+.tiptap table {
+  @apply w-full border border-gray-200 border-collapse
+         text-sm text-gray-800;
+}
 
+/* Header */
+.tiptap th {
+  @apply bg-gray-100;
+}
+
+.tiptap th {
+  @apply border border-gray-300 px-3 py-2
+         text-left font-semibold text-gray-700
+         whitespace-nowrap;
+}
+
+/* Body cells */
 .tiptap td {
-  @apply border
+  @apply border border-gray-200 px-3 py-2
+         align-top;
+}
+
+/* Zebra striping */
+.tiptap tbody tr:nth-child(odd) td {
+  @apply bg-gray-50;
+}
+
+/* Hover */
+.tiptap tbody tr:hover td {
+  @apply bg-gray-100;
 }
 
 /* Leaflet map z-index fix to prevent covering modals */
