@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 
-	"github.com/unsealdev/unseal/internal/model"
+	"github.com/notepia/notepia/internal/model"
 )
 
 type DB interface {

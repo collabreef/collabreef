@@ -1,8 +1,8 @@
 package route
 
 import (
-	"github.com/unsealdev/unseal/internal/api/handler"
-	"github.com/unsealdev/unseal/internal/api/middlewares"
+	"github.com/notepia/notepia/internal/api/handler"
+	"github.com/notepia/notepia/internal/api/middlewares"
 
 	"github.com/labstack/echo/v4"
 )

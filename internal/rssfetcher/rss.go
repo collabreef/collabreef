@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/mmcdole/gofeed"
-	"github.com/unsealdev/unseal/internal/urlfetcher"
+	"github.com/notepia/notepia/internal/urlfetcher"
 )
 
 // RSSItem represents a single RSS feed item

@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/unsealdev/unseal/internal/api/auth"
-	"github.com/unsealdev/unseal/internal/config"
-	"github.com/unsealdev/unseal/internal/model"
-	"github.com/unsealdev/unseal/internal/util"
+	"github.com/notepia/notepia/internal/api/auth"
+	"github.com/notepia/notepia/internal/config"
+	"github.com/notepia/notepia/internal/model"
+	"github.com/notepia/notepia/internal/util"
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -226,7 +226,7 @@ func (h *Handler) GetUserInfo(c echo.Context) error {
 	u, err := h.db.FindUserByID(user.ID)
 
 	if err != nil {
-		return echo.ErrUnauthorized
+		return echo.NewHTTPError(http.StatusUnauthorized, "failed to get user by ID")
 	}
 
 	res := GetUserInfoResponse{

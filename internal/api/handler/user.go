@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/unsealdev/unseal/internal/api/auth"
+	"github.com/notepia/notepia/internal/api/auth"
 	"golang.org/x/crypto/bcrypt"
 )
 

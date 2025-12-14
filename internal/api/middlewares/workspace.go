@@ -3,9 +3,9 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/unsealdev/unseal/internal/config"
-	"github.com/unsealdev/unseal/internal/db"
-	"github.com/unsealdev/unseal/internal/model"
+	"github.com/notepia/notepia/internal/config"
+	"github.com/notepia/notepia/internal/db"
+	"github.com/notepia/notepia/internal/model"
 
 	"github.com/labstack/echo/v4"
 )

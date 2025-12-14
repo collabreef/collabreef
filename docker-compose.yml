@@ -1,9 +1,9 @@
 services:
-  unseal:
+  notepia:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: unseal
+    container_name: notepia
     ports:
       - "8080:8080"
     volumes:

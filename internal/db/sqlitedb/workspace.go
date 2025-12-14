@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/unsealdev/unseal/internal/model"
+	"github.com/notepia/notepia/internal/model"
 	"gorm.io/gorm"
 )
 

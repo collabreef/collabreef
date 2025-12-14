@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/unsealdev/unseal/internal/storage"
+	"github.com/notepia/notepia/internal/storage"
 )
 
 type LocalFile struct {

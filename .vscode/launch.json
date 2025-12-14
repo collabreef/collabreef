@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "program": "${workspaceFolder}\\cmd\\unseal",
+            "program": "${workspaceFolder}\\cmd\\notepia",
             "cwd": "${workspaceFolder}",
             "envFile": "${workspaceFolder}\\.env"
         }

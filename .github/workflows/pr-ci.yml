@@ -31,7 +31,7 @@ jobs:
         run: go test -v -race -coverprofile=coverage.out ./...
 
       - name: Build backend
-        run: go build -o bin/unseal ./cmd/unseal/unseal.go
+        run: go build -o bin/notepia ./cmd/notepia/notepia.go
 
   frontend-test:
     name: Frontend Build & Lint
@@ -74,7 +74,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: false
-          tags: unseal:test
+          tags: notepia:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

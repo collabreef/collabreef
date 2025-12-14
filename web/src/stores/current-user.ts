@@ -15,7 +15,7 @@ export const useCurrentUserStore = create<CurrentUserStore>((set) => ({
       const loginedUser = await me();
       set({ user: loginedUser });
       return loginedUser;
-    } catch {
+    } catch(e) {
       set({ user: null });
       return null;
     }
