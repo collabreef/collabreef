@@ -2,15 +2,15 @@ import { FC, useState, useCallback, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, ExternalLink, User, Check, Loader, FileText } from 'lucide-react';
-import { getNote, getNotes, updateNote, createNote } from '@/api/note';
+import { Loader2, ExternalLink, User, Check, Loader, FileText, Plus, Search } from 'lucide-react';
+import { getNote, getNotes, updateNote, createNote, NoteData } from '@/api/note';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import { NoteWidgetConfig } from '@/types/widget';
 import Widget from '@/components/widgets/Widget';
 import Editor from '@/components/editor/Editor';
 import { registerWidget, WidgetProps, WidgetConfigFormProps } from '../widgetRegistry';
 import { useToastStore } from '@/stores/toast';
-import NotePickerDialog from '../NotePickerDialog';
+import { extractTextFromTipTapJSON } from '@/utils/tiptap';
 
 interface NoteWidgetProps extends WidgetProps {
   config: NoteWidgetConfig;
@@ -186,7 +186,7 @@ export const NoteWidgetConfigForm: FC<WidgetConfigFormProps<NoteWidgetConfig>> =
   const workspaceId = useCurrentWorkspaceId();
   const queryClient = useQueryClient();
   const { addToast } = useToastStore();
-  const [showNotePickerDialog, setShowNotePickerDialog] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { data: notes = [] } = useQuery({
     queryKey: ['notes', workspaceId, 'widget-config'],
@@ -225,34 +225,144 @@ export const NoteWidgetConfigForm: FC<WidgetConfigFormProps<NoteWidgetConfig>> =
     onChange({ ...config, noteId });
   };
 
+  const filteredNotes = notes.filter((note: NoteData) => {
+    if (!searchQuery.trim()) return true;
+    const noteText = extractTextFromTipTapJSON(note.content || '').toLowerCase();
+    return noteText.includes(searchQuery.toLowerCase());
+  });
+
+  const selectedNote = notes.find((n: NoteData) => n.id === config.noteId);
+
   return (
     <div className="space-y-4">
-      <div>
-        <div className="space-y-2">
-          {/* Single Action Button */}
-          <button
-            type="button"
-            onClick={() => setShowNotePickerDialog(true)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 border rounded-lg"
-          >
-            <FileText size={18} />
-            <span className="text-sm font-medium">
-              {config.noteId ? t('widgets.config.changeNote') : t('widgets.config.selectNote')}
-            </span>
-          </button>
+      {/* Selected Note Display */}
+      {config.noteId && selectedNote && (
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            {t('widgets.config.selectedNote')}
+          </label>
+          <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-500">
+            <div className="flex items-center gap-2">
+              <FileText size={16} className="text-green-600 dark:text-green-400 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                  {extractTextFromTipTapJSON(selectedNote.content || '').slice(0, 60) || t('notes.untitled')}
+                </p>
+                {selectedNote.created_at && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {new Date(selectedNote.created_at).toLocaleDateString()}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
-          {/* Note Picker Dialog */}
-          <NotePickerDialog
-            open={showNotePickerDialog}
-            onOpenChange={setShowNotePickerDialog}
-            notes={notes}
-            selectedNoteId={config.noteId}
-            onSelect={handleNoteSelect}
-            onCreateNote={handleCreateNote}
-            isCreatingNote={createNoteMutation.isPending}
-          />
+      {/* Create New Note Button */}
+      <div>
+        <button
+          type="button"
+          onClick={handleCreateNote}
+          disabled={createNoteMutation.isPending}
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          {createNoteMutation.isPending ? (
+            <>
+              <Loader size={18} className="animate-spin" />
+              <span className="text-sm font-medium">{t('common.creating')}</span>
+            </>
+          ) : (
+            <>
+              <Plus size={18} />
+              <span className="text-sm font-medium">{t('notes.createNew')}</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Search and Note List */}
+      <div>
+        <label className="block text-sm font-medium mb-2">
+          {t('widgets.config.selectNote')}
+        </label>
+
+        {/* Search input */}
+        <div className="mb-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t('views.searchNotes') || 'Search notes...'}
+              className="w-full pl-10 pr-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
+            />
+          </div>
+        </div>
+
+        {/* Notes List */}
+        <div className="border dark:border-neutral-600 rounded-lg max-h-80 overflow-y-auto">
+          {filteredNotes.length > 0 ? (
+            <div className="divide-y dark:divide-neutral-700">
+              {filteredNotes.map((note: NoteData) => {
+                const noteText = note.content
+                  ? extractTextFromTipTapJSON(note.content).slice(0, 80)
+                  : t('notes.untitled');
+                const isSelected = config.noteId === note.id;
+
+                return (
+                  <button
+                    key={note.id}
+                    type="button"
+                    onClick={() => note.id && handleNoteSelect(note.id)}
+                    className={`w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors flex items-center justify-between ${
+                      isSelected ? 'bg-green-50 dark:bg-green-900/20' : ''
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        isSelected
+                          ? 'bg-green-500 border-green-500'
+                          : 'border-gray-300 dark:border-neutral-600'
+                      }`}>
+                        {isSelected && (
+                          <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
+                      <FileText
+                        size={18}
+                        className={isSelected ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className={`text-sm truncate ${isSelected ? 'font-medium' : ''}`}>
+                          {noteText}
+                        </div>
+                        {note.created_at && (
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            {new Date(note.created_at).toLocaleDateString()}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
+              <FileText size={32} className="mb-2" />
+              <p className="text-sm">
+                {searchQuery.trim() ? t('views.noNotesFound') : t('widgets.config.selectNotePlaceholder')}
+              </p>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Show Metadata Checkbox */}
       <div className="flex items-center gap-2">
         <input
           type="checkbox"

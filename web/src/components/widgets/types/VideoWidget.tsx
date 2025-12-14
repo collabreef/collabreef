@@ -1,12 +1,11 @@
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Video as VideoIcon, FolderOpen, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Video as VideoIcon, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { VideoWidgetConfig } from '@/types/widget';
 import { FileInfo, listFiles } from '@/api/file';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import Widget from '@/components/widgets/Widget';
 import { registerWidget, WidgetProps, WidgetConfigFormProps } from '../widgetRegistry';
-import MultiFilePickerDialog from '../MultiFilePickerDialog';
 
 interface VideoWidgetProps extends WidgetProps {
   config: VideoWidgetConfig;
@@ -100,15 +99,54 @@ export const VideoWidgetConfigForm: FC<WidgetConfigFormProps<VideoWidgetConfig>>
 }) => {
   const { t } = useTranslation();
   const workspaceId = useCurrentWorkspaceId();
-  const [filePickerOpen, setFilePickerOpen] = useState(false);
+  const [availableFiles, setAvailableFiles] = useState<FileInfo[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSelectFiles = (files: FileInfo[]) => {
-    const fileUrls = files.map(file => `/api/v1/workspaces/${workspaceId}/files/${file.name}`);
+  // Load video files
+  useEffect(() => {
+    const loadVideoFiles = async () => {
+      setIsLoading(true);
+      try {
+        const result = await listFiles(workspaceId, searchQuery, '.mp4,.webm,.ogg,.mov,.avi,.mkv', 100, 1);
+        setAvailableFiles(result.files || []);
+      } catch (error) {
+        console.error('Failed to load video files:', error);
+        setAvailableFiles([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      loadVideoFiles();
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [workspaceId, searchQuery]);
+
+  const handleToggleFile = (file: FileInfo) => {
+    const fileUrl = `/api/v1/workspaces/${workspaceId}/files/${file.name}`;
     const currentUrls = config.videoUrls || [];
-    onChange({
-      ...config,
-      videoUrls: [...currentUrls, ...fileUrls]
-    });
+
+    if (currentUrls.includes(fileUrl)) {
+      // Remove file
+      onChange({
+        ...config,
+        videoUrls: currentUrls.filter(url => url !== fileUrl)
+      });
+    } else {
+      // Add file
+      onChange({
+        ...config,
+        videoUrls: [...currentUrls, fileUrl]
+      });
+    }
+  };
+
+  const isFileSelected = (file: FileInfo) => {
+    const fileUrl = `/api/v1/workspaces/${workspaceId}/files/${file.name}`;
+    return (config.videoUrls || []).includes(fileUrl);
   };
 
   const handleRemoveUrl = (index: number) => {
@@ -121,68 +159,102 @@ export const VideoWidgetConfigForm: FC<WidgetConfigFormProps<VideoWidgetConfig>>
 
   return (
     <div className="space-y-4">
-      {/* Video URLs */}
-      <div>
-        <label className="block text-sm font-medium mb-2">
-          {t('widgets.video.config.videoFiles')}
-        </label>
-        <div className="mb-2">
-          <button
-            type="button"
-            onClick={() => setFilePickerOpen(true)}
-            className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center justify-center gap-2"
-          >
-            <FolderOpen size={18} />
-            {t('widgets.video.config.selectFromFiles')}
-          </button>
-        </div>
-
-        {/* Display added video files */}
-        {(config.videoUrls || []).length > 0 && (
-          <div className="space-y-2 max-h-64 overflow-y-auto">
+      {/* Selected video files */}
+      {(config.videoUrls || []).length > 0 && (
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            {t('widgets.video.config.videoFiles')} ({config.videoUrls?.length || 0})
+          </label>
+          <div className="space-y-2 max-h-40 overflow-y-auto">
             {(config.videoUrls || []).map((url, index) => {
               const fileName = decodeURIComponent(url.split('/').pop() || '');
               return (
                 <div
                   key={index}
-                  className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-neutral-800 rounded-lg"
+                  className="flex items-center gap-2 p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg border-2 border-purple-500"
                 >
-                  <VideoIcon size={20} className="text-purple-500 flex-shrink-0" />
-
+                  <VideoIcon size={16} className="text-purple-500 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-gray-700 dark:text-gray-300 truncate">
                       {fileName}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {t('widgets.video.config.videoNumber', { number: index + 1 })}
-                    </p>
                   </div>
-
                   <button
                     type="button"
                     onClick={() => handleRemoveUrl(index)}
                     className="flex-shrink-0 text-gray-400 hover:text-red-500 dark:hover:text-red-400"
                   >
-                    <X size={18} />
+                    <X size={16} />
                   </button>
                 </div>
               );
             })}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* File Picker Dialog */}
-      <MultiFilePickerDialog
-        open={filePickerOpen}
-        onOpenChange={setFilePickerOpen}
-        workspaceId={workspaceId}
-        listFiles={listFiles}
-        onSelect={handleSelectFiles}
-        fileExtensions=".mp4,.webm,.ogg,.mov,.avi,.mkv"
-        title={t('widgets.video.config.selectVideoFiles')}
-        emptyMessage={t('widgets.video.config.noVideoFiles')}
-      />
+      {/* Search and file list */}
+      <div>
+        <label className="block text-sm font-medium mb-2">
+          {t('widgets.video.config.selectVideoFiles')}
+        </label>
+
+        {/* Search input */}
+        <div className="mb-2">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t('common.search') || 'Search files...'}
+            className="w-full px-3 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
+          />
+        </div>
+
+        {/* File list */}
+        <div className="border dark:border-neutral-600 rounded-lg max-h-64 overflow-y-auto">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+            </div>
+          ) : availableFiles.length > 0 ? (
+            <div className="divide-y dark:divide-neutral-700">
+              {availableFiles.map((file) => (
+                <button
+                  key={file.id}
+                  type="button"
+                  onClick={() => handleToggleFile(file)}
+                  className={`w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors ${
+                    isFileSelected(file) ? 'bg-purple-50 dark:bg-purple-900/20' : ''
+                  }`}
+                >
+                  <div className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center ${
+                    isFileSelected(file)
+                      ? 'bg-purple-500 border-purple-500'
+                      : 'border-gray-300 dark:border-neutral-600'
+                  }`}>
+                    {isFileSelected(file) && (
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                  <VideoIcon size={18} className="text-purple-500 flex-shrink-0" />
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                      {file.original_name}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
+              <VideoIcon size={32} className="mb-2" />
+              <p className="text-sm">{t('widgets.video.config.noVideoFiles')}</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
