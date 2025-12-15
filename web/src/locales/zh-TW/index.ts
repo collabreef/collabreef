@@ -50,6 +50,26 @@ export default {
     preferences: {
       language: "語言",
       theme: "主題",
+      apiKeys: "API 金鑰",
+      apiKeyManagement: "API 金鑰管理",
+      apiKeyDescription: "管理用於程式化存取帳號的 API 金鑰",
+      generateNewKey: "產生新金鑰",
+      noApiKeys: "尚無 API 金鑰。建立一個以開始使用。",
+      keyName: "名稱",
+      keyPrefix: "金鑰前綴",
+      created: "建立時間",
+      lastUsed: "最後使用",
+      expires: "到期時間",
+      expired: "已過期",
+      never: "永不過期",
+      createNewKey: "建立新的 API 金鑰",
+      keyNamePlaceholder: "例如：行動應用程式",
+      expirationDate: "到期日期（選填）",
+      createKey: "建立 API 金鑰",
+      deleteKeyConfirm: "確定要刪除此 API 金鑰嗎？此操作無法復原。",
+      saveKeyWarning: "請立即儲存此金鑰！您將無法再次查看它。",
+      yourApiKey: "您的 API 金鑰",
+      done: "完成",
     }
   },
   actions: {
@@ -105,7 +125,13 @@ export default {
     updateVisibilityFailed: "可見性更新失敗",
     confirmDelete: "確定要刪除這個筆記嗎？",
     noteDeleted: "筆記刪除成功",
-    deleteNoteFailed: "筆記刪除失敗"
+    deleteNoteFailed: "筆記刪除失敗",
+    apiKeyCreated: "API 金鑰建立成功",
+    apiKeyDeleted: "API 金鑰刪除成功",
+    apiKeyLoadFailed: "載入 API 金鑰失敗",
+    apiKeyCreateFailed: "建立 API 金鑰失敗",
+    apiKeyDeleteFailed: "刪除 API 金鑰失敗",
+    apiKeyNameRequired: "請輸入 API 金鑰名稱"
   },
   button: {
     new: "新增",

@@ -51,6 +51,26 @@ export default {
     preferences: {
       language: "Langueage",
       theme: "Theme",
+      apiKeys: "API Keys",
+      apiKeyManagement: "API Key Management",
+      apiKeyDescription: "Manage API keys for programmatic access to your account",
+      generateNewKey: "Generate New Key",
+      noApiKeys: "No API keys yet. Create one to get started.",
+      keyName: "Name",
+      keyPrefix: "Key Prefix",
+      created: "Created",
+      lastUsed: "Last Used",
+      expires: "Expires",
+      expired: "Expired",
+      never: "Never",
+      createNewKey: "Create New API Key",
+      keyNamePlaceholder: "e.g., Mobile App",
+      expirationDate: "Expiration Date (Optional)",
+      createKey: "Create API Key",
+      deleteKeyConfirm: "Are you sure you want to delete this API key? This action cannot be undone.",
+      saveKeyWarning: "Save this key now! You won't be able to see it again.",
+      yourApiKey: "Your API Key",
+      done: "Done",
     }
   },
   actions: {
@@ -106,7 +126,13 @@ export default {
     updateVisibilityFailed: "Failed to update visibility",
     confirmDelete: "Are you sure you want to delete this note?",
     noteDeleted: "Note deleted successfully",
-    deleteNoteFailed: "Failed to delete note"
+    deleteNoteFailed: "Failed to delete note",
+    apiKeyCreated: "API key created successfully",
+    apiKeyDeleted: "API key deleted successfully",
+    apiKeyLoadFailed: "Failed to load API keys",
+    apiKeyCreateFailed: "Failed to create API key",
+    apiKeyDeleteFailed: "Failed to delete API key",
+    apiKeyNameRequired: "Please enter a name for the API key"
   },
   button: {
     new: "New",

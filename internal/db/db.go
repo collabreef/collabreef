@@ -17,6 +17,7 @@ type DB interface {
 	ViewObjectRepository
 	ViewObjectNoteRepository
 	WidgetRepository
+	APIKeyRepository
 }
 type Uow interface {
 	Begin(ctx context.Context) (DB, error)
@@ -84,4 +85,12 @@ type WidgetRepository interface {
 	DeleteWidget(w model.Widget) error
 	FindWidget(w model.Widget) (model.Widget, error)
 	FindWidgets(f model.WidgetFilter) ([]model.Widget, error)
+}
+type APIKeyRepository interface {
+	CreateAPIKey(k model.APIKey) error
+	FindAPIKeys(f model.APIKeyFilter) ([]model.APIKey, error)
+	FindAPIKeyByID(id string) (model.APIKey, error)
+	FindAPIKeyByPrefix(prefix string) (model.APIKey, error)
+	UpdateAPIKey(k model.APIKey) error
+	DeleteAPIKey(id string) error
 }

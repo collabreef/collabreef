@@ -2,11 +2,15 @@ package middlewares
 
 import (
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/notepia/notepia/internal/api/auth"
 	"github.com/notepia/notepia/internal/db"
+	"github.com/notepia/notepia/internal/util"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthMiddleware struct {
@@ -22,6 +26,62 @@ func NewAuthMiddleware(db db.DB) *AuthMiddleware {
 func (a AuthMiddleware) ParseJWT() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) (returnErr error) {
+			// STEP 1: Check for Authorization header with Bearer token (API Key)
+			authHeader := c.Request().Header.Get("Authorization")
+			if authHeader != "" && strings.HasPrefix(authHeader, "Bearer ") {
+				apiKey := strings.TrimPrefix(authHeader, "Bearer ")
+
+				// Validate API key format
+				if !util.ValidateAPIKeyFormat(apiKey) {
+					return echo.NewHTTPError(http.StatusUnauthorized, "invalid API key format")
+				}
+
+				// Extract prefix for lookup
+				prefix := util.ExtractPrefix(apiKey)
+
+				// Find API key by prefix
+				apiKeyRecord, err := a.db.FindAPIKeyByPrefix(prefix)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusUnauthorized, "invalid API key")
+				}
+
+				// Check expiration
+				if apiKeyRecord.ExpiresAt != "" {
+					expiresAt, err := time.Parse(time.RFC3339, apiKeyRecord.ExpiresAt)
+					if err == nil && time.Now().UTC().After(expiresAt) {
+						return echo.NewHTTPError(http.StatusUnauthorized, "API key expired")
+					}
+				}
+
+				// Verify full key with bcrypt (constant-time comparison)
+				err = bcrypt.CompareHashAndPassword([]byte(apiKeyRecord.KeyHash), []byte(apiKey))
+				if err != nil {
+					return echo.NewHTTPError(http.StatusUnauthorized, "invalid API key")
+				}
+
+				// Load user
+				user, err := a.db.FindUserByID(apiKeyRecord.UserID)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusUnauthorized, "user not found")
+				}
+
+				// Check if user is disabled
+				if user.Disabled {
+					return echo.NewHTTPError(http.StatusUnauthorized, "user account disabled")
+				}
+
+				// Update last_used_at asynchronously (don't block request)
+				go func() {
+					apiKeyRecord.LastUsedAt = time.Now().UTC().Format(time.RFC3339)
+					a.db.UpdateAPIKey(apiKeyRecord)
+				}()
+
+				// Set user in context
+				c.Set("user", user)
+				return next(c)
+			}
+
+			// STEP 2: Fall back to cookie-based JWT authentication
 			cookie, err := c.Cookie("token")
 			if err != nil || cookie.Value == "" {
 				return next(c)
