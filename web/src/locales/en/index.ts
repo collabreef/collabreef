@@ -71,23 +71,6 @@ export default {
       saveKeyWarning: "Save this key now! You won't be able to see it again.",
       yourApiKey: "Your API Key",
       done: "Done",
-      oauthApps: "OAuth Apps",
-      oauthAppDescription: "Manage OAuth applications that can access your account",
-      createNewApp: "Create New App",
-      noOAuthClients: "No OAuth applications yet. Create one to get started.",
-      clientId: "Client ID",
-      clientSecret: "Client Secret",
-      appName: "Application Name",
-      appNamePlaceholder: "e.g., My Mobile App",
-      appDescription: "Description",
-      appDescriptionPlaceholder: "e.g., Access notes from mobile app",
-      redirectURIs: "Redirect URIs",
-      redirectURIsPlaceholder: "https://example.com/callback\nhttps://example.com/oauth/callback",
-      redirectURIsHint: "Enter one URL per line. These are used during OAuth authorization flow.",
-      createApp: "Create Application",
-      deleteOAuthClientConfirm: "Are you sure you want to delete this OAuth application? This will revoke all tokens and cannot be undone.",
-      saveClientSecretWarning: "Save this client secret now! You won't be able to see it again.",
-      optional: "Optional",
     }
   },
   actions: {
@@ -149,13 +132,7 @@ export default {
     apiKeyLoadFailed: "Failed to load API keys",
     apiKeyCreateFailed: "Failed to create API key",
     apiKeyDeleteFailed: "Failed to delete API key",
-    apiKeyNameRequired: "Please enter a name for the API key",
-    oauthClientCreated: "OAuth application created successfully",
-    oauthClientDeleted: "OAuth application deleted successfully",
-    oauthClientLoadFailed: "Failed to load OAuth applications",
-    oauthClientCreateFailed: "Failed to create OAuth application",
-    oauthClientDeleteFailed: "Failed to delete OAuth application",
-    oauthClientNameRequired: "Please enter an application name"
+    apiKeyNameRequired: "Please enter a name for the API key"
   },
   button: {
     new: "New",

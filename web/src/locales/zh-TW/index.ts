@@ -70,23 +70,6 @@ export default {
       saveKeyWarning: "請立即儲存此金鑰！您將無法再次查看它。",
       yourApiKey: "您的 API 金鑰",
       done: "完成",
-      oauthApps: "OAuth 應用程式",
-      oauthAppDescription: "管理可以存取您帳號的 OAuth 應用程式",
-      createNewApp: "建立新應用程式",
-      noOAuthClients: "尚無 OAuth 應用程式。建立一個以開始使用。",
-      clientId: "Client ID",
-      clientSecret: "Client Secret",
-      appName: "應用程式名稱",
-      appNamePlaceholder: "例如：我的行動應用程式",
-      appDescription: "描述",
-      appDescriptionPlaceholder: "例如：從行動應用程式存取筆記",
-      redirectURIs: "重新導向 URI",
-      redirectURIsPlaceholder: "https://example.com/callback\nhttps://example.com/oauth/callback",
-      redirectURIsHint: "每行輸入一個 URL。這些將在 OAuth 授權流程中使用。",
-      createApp: "建立應用程式",
-      deleteOAuthClientConfirm: "確定要刪除此 OAuth 應用程式嗎？這將撤銷所有權杖且無法復原。",
-      saveClientSecretWarning: "請立即儲存此 client secret！您將無法再次查看它。",
-      optional: "選填",
     }
   },
   actions: {
@@ -148,13 +131,7 @@ export default {
     apiKeyLoadFailed: "載入 API 金鑰失敗",
     apiKeyCreateFailed: "建立 API 金鑰失敗",
     apiKeyDeleteFailed: "刪除 API 金鑰失敗",
-    apiKeyNameRequired: "請輸入 API 金鑰名稱",
-    oauthClientCreated: "OAuth 應用程式建立成功",
-    oauthClientDeleted: "OAuth 應用程式刪除成功",
-    oauthClientLoadFailed: "載入 OAuth 應用程式失敗",
-    oauthClientCreateFailed: "建立 OAuth 應用程式失敗",
-    oauthClientDeleteFailed: "刪除 OAuth 應用程式失敗",
-    oauthClientNameRequired: "請輸入應用程式名稱"
+    apiKeyNameRequired: "請輸入 API 金鑰名稱"
   },
   button: {
     new: "新增",

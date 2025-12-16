@@ -18,9 +18,6 @@ type DB interface {
 	ViewObjectNoteRepository
 	WidgetRepository
 	APIKeyRepository
-	OAuthClientRepository
-	OAuthAuthorizationCodeRepository
-	OAuthTokenRepository
 }
 type Uow interface {
 	Begin(ctx context.Context) (DB, error)
@@ -96,29 +93,4 @@ type APIKeyRepository interface {
 	FindAPIKeyByPrefix(prefix string) (model.APIKey, error)
 	UpdateAPIKey(k model.APIKey) error
 	DeleteAPIKey(id string) error
-}
-
-type OAuthClientRepository interface {
-	CreateOAuthClient(c model.OAuthClient) error
-	FindOAuthClients(f model.OAuthClientFilter) ([]model.OAuthClient, error)
-	FindOAuthClientByID(id string) (model.OAuthClient, error)
-	FindOAuthClientByClientID(clientID string) (model.OAuthClient, error)
-	UpdateOAuthClient(c model.OAuthClient) error
-	DeleteOAuthClient(id string) error
-}
-
-type OAuthAuthorizationCodeRepository interface {
-	CreateOAuthAuthorizationCode(c model.OAuthAuthorizationCode) error
-	FindOAuthAuthorizationCode(code string) (model.OAuthAuthorizationCode, error)
-	MarkOAuthAuthorizationCodeAsUsed(code string) error
-	DeleteExpiredOAuthAuthorizationCodes() error
-}
-
-type OAuthTokenRepository interface {
-	CreateOAuthToken(t model.OAuthToken) error
-	FindOAuthTokenByAccessPrefix(prefix string) (model.OAuthToken, error)
-	FindOAuthTokenByRefreshPrefix(prefix string) (model.OAuthToken, error)
-	UpdateOAuthToken(t model.OAuthToken) error
-	RevokeOAuthToken(accessTokenPrefix string) error
-	DeleteOAuthToken(id string) error
 }

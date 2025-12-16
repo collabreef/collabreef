@@ -18,12 +18,4 @@ func RegisterUser(api *echo.Group, h handler.Handler, authMiddleware middlewares
 	apiKeys.GET("", h.ListAPIKeys)           // GET /api/v1/users/:id/api-keys
 	apiKeys.POST("", h.CreateAPIKey)         // POST /api/v1/users/:id/api-keys
 	apiKeys.DELETE("/:keyId", h.DeleteAPIKey) // DELETE /api/v1/users/:id/api-keys/:keyId
-
-	// OAuth Client management routes
-	oauthClients := g.Group("/:id/oauth-clients")
-	oauthClients.GET("", h.ListOAuthClients)                    // GET /api/v1/users/:id/oauth-clients
-	oauthClients.POST("", h.CreateOAuthClient)                  // POST /api/v1/users/:id/oauth-clients
-	oauthClients.GET("/:clientId", h.GetOAuthClient)            // GET /api/v1/users/:id/oauth-clients/:clientId
-	oauthClients.PATCH("/:clientId", h.UpdateOAuthClient)       // PATCH /api/v1/users/:id/oauth-clients/:clientId
-	oauthClients.DELETE("/:clientId", h.DeleteOAuthClient)      // DELETE /api/v1/users/:id/oauth-clients/:clientId
 }
