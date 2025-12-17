@@ -1,4 +1,3 @@
-import { Calendar, MapPin } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import SidebarButton from "@/components/sidebar/SidebarButton"
 import { getPublicViews } from "@/api/view"

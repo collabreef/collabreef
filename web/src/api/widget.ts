@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export type WidgetType = 'note_form' | 'view' | 'note' | 'latest_note' | 'countdown' | 'file_upload' | 'carousel' | 'heatmap' | 'rss' | 'music' | 'video' | 'iframe' | 'folder' | 'link';
+export type WidgetType = 'note_form' | 'note' | 'latest_note' | 'countdown' | 'file_upload' | 'carousel' | 'heatmap' | 'rss' | 'music' | 'video' | 'iframe' | 'folder' | 'link' | 'map' | 'calendar';
 
 export interface WidgetPosition {
   x: number;
