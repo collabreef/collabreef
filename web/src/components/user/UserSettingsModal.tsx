@@ -76,7 +76,7 @@ const UserSettingsModal = ({ open, onOpenChange }: UserSettingsModalProps) => {
         try {
             await updatePreferences(updatedUser)
         } catch (err) {
-            toast.error(t("messages.preferencesUpdateFailed"))
+            toast.error(t("messages.settingsUpdateFailed"))
         }
     }
 
@@ -293,7 +293,7 @@ const UserSettingsModal = ({ open, onOpenChange }: UserSettingsModalProps) => {
                     <Dialog.Overlay className="fixed inset-0 bg-black/50 z-[1000]" />
                     <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-neutral-800 rounded-lg shadow-xl p-6 w-[90vw] max-w-[800px] max-h-[85vh] z-[1001] flex flex-col">
                         <Dialog.Title className="text-xl font-semibold mb-4">
-                            {t("menu.preferences")}
+                            {t("menu.settings")}
                         </Dialog.Title>
 
                         {/* Tabs */}

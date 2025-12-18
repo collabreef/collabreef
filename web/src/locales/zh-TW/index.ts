@@ -12,7 +12,7 @@ export default {
     workspace: "工作區",
     user: "使用者",
     userSettings: "使用者設定",
-    preferences: "偏好設定",
+    settings: "設定",
     explore: "探索",
   },
   form: {
@@ -51,19 +51,6 @@ export default {
       memberRemoved: "成員移除成功",
       memberRoleUpdated: "成員角色更新成功",
       leftWorkspace: "已離開工作區"
-    },
-    workspaceSetup: {
-      createYourFirstWorkspace: "建立你的第一個工作區",
-      pleaseEnterYourWorkspaceName: "請輸入你的工作區名稱",
-      workspaceName: "工作區名稱",
-      workspaceNamePlaceholder: "工作區名稱",
-    },
-    noteEdit: {
-      newNote: "新增筆記",
-      editNote: "編輯筆記",
-    },
-    noteDetail: {
-      note: "筆記",
     },
     preferences: {
       language: "語言",
@@ -113,6 +100,19 @@ export default {
       roleOwner: "擁有者",
       roleAdmin: "管理員",
       roleUser: "使用者",
+    },
+    workspaceSetup: {
+      createYourFirstWorkspace: "建立你的第一個工作區",
+      pleaseEnterYourWorkspaceName: "請輸入你的工作區名稱",
+      workspaceName: "工作區名稱",
+      workspaceNamePlaceholder: "工作區名稱",
+    },
+    noteEdit: {
+      newNote: "新增筆記",
+      editNote: "編輯筆記",
+    },
+    noteDetail: {
+      note: "筆記",
     }
   },
   actions: {
@@ -156,8 +156,8 @@ export default {
     noMoreNotes: "沒有更多的筆記",
     noMore: "沒有更多了",
     noMoreViews: "沒有更多視圖",
-    preferencesUpdated: "偏好設定已更新",
-    preferencesUpdateFailed: "偏好設定更新失敗",
+    settingsUpdated: "設定已更新",
+    settingsUpdateFailed: "設定更新失敗",
     networkError: "網路異常",
     fileUploaded: "檔案上傳成功",
     fileUploadFailed: "檔案上傳失敗",

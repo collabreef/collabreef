@@ -1,4 +1,4 @@
-import { PanelLeftClose, PanelLeftOpen, LogOut, User as UserIcon, Palette } from "lucide-react"
+import { PanelLeftClose, PanelLeftOpen, LogOut, User as UserIcon, Settings } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import { useSidebar } from "./SidebarProvider"
 import { useNavigate } from "react-router-dom"
@@ -86,8 +86,8 @@ const Sidebar: FC<Props> = function ({ children }) {
 
                                     <DropdownMenu.Item className="select-none rounded-lg leading-none outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-neutral-200 dark:data-[highlighted]:bg-neutral-700">
                                         <button onClick={() => openUserSettings()} className="flex gap-3 p-3 items-center w-full">
-                                            <Palette size={18} />
-                                            {t("menu.preferences")}
+                                            <Settings size={18} />
+                                            {t("menu.settings")}
                                         </button>
                                     </DropdownMenu.Item>
 

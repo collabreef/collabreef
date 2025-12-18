@@ -13,7 +13,7 @@ export default {
     workspace: "Workspace",
     user: "User",
     userSettings: "User Settings",
-    preferences: "Preferences",
+    preferences: "Settings",
     explore: "Explore",
   },
   form: {
@@ -52,19 +52,6 @@ export default {
       memberRemoved: "Member removed successfully",
       memberRoleUpdated: "Member role updated successfully",
       leftWorkspace: "You have left the workspace"
-    },
-    workspaceSetup: {
-      createYourFirstWorkspace: "Create your first workspace",
-      pleaseEnterYourWorkspaceName: "Please enter your workspace name",
-      workspaceName: "Workspace name",
-      workspaceNamePlaceholder: "workspace name",
-    },
-    noteEdit: {
-      newNote: "New Note",
-      editNote: "Edit Note",
-    },
-    noteDetail: {
-      note: "Note",
     },
     preferences: {
       language: "Langueage",
@@ -114,6 +101,19 @@ export default {
       roleOwner: "Owner",
       roleAdmin: "Admin",
       roleUser: "User",
+    },
+    workspaceSetup: {
+      createYourFirstWorkspace: "Create your first workspace",
+      pleaseEnterYourWorkspaceName: "Please enter your workspace name",
+      workspaceName: "Workspace name",
+      workspaceNamePlaceholder: "workspace name",
+    },
+    noteEdit: {
+      newNote: "New Note",
+      editNote: "Edit Note",
+    },
+    noteDetail: {
+      note: "Note",
     }
   },
   actions: {
@@ -157,8 +157,8 @@ export default {
     noMoreNotes: "No more notes",
     noMore: "No more items",
     noMoreViews: "No more views",
-    preferencesUpdated: "Preferences updated",
-    preferencesUpdateFailed: "Could not update preferences",
+    settingsUpdated: "Settings updated",
+    settingsUpdateFailed: "Could not update settings",
     networkError: "Network error. Please try again",
     fileUploaded: "File uploaded successfully",
     fileUploadFailed: "File upload failed",
