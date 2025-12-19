@@ -43,7 +43,7 @@ const ViewObjectsListBase = ({
     }, [viewObjects, searchQuery])
 
     return (
-        <div className="w-full sm:w-96">
+        <div className="w-full">
             <div className="p-4 flex flex-col gap-4 overflow-x-hidden bg-neutral-100 dark:bg-neutral-900 min-h-screen">
                 <div className="flex items-center gap-2">
                     <ViewObjectSearchBar
