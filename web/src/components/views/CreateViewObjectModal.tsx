@@ -270,7 +270,7 @@ const CreateViewObjectModal = ({
                                         searchLocation()
                                     }
                                 }}
-                                className="flex-1 px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
+                                className="flex-1 min-w-0 px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
                                 placeholder={t('views.searchLocationPlaceholder')}
                             />
                             <button
