@@ -15,12 +15,18 @@ export default {
     userSettings: "用户设置",
     settings: "设置",
     explore: "浏览",
+    about: "关于",
   },
   form: {
     email: "邮箱",
     username: "用户名",
     password: "密码",
     comfirmPassword: "确认密码",
+  },
+  about: {
+    description: "现代化笔记应用程序",
+    version: "版本",
+    copyright: "© 2025 Notepia. 保留所有权利。",
   },
   pages: {
     signin: {

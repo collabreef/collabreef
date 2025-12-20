@@ -9,7 +9,12 @@ import (
 	"github.com/notepia/notepia/internal/server"
 )
 
+// Version is set at build time via ldflags
+var Version = "dev"
+
 func main() {
+	log.Printf("Starting Notepia version: %s", Version)
+
 	config.Init()
 
 	if err := bootstrap.RunMigration(); err != nil {

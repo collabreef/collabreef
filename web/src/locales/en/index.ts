@@ -15,12 +15,18 @@ export default {
     userSettings: "User Settings",
     settings: "Settings",
     explore: "Explore",
+    about: "About",
   },
   form: {
     email: "Email",
     username: "Username",
     password: "Password",
     comfirmPassword: "Confirm Password",
+  },
+  about: {
+    description: "A modern note-taking application",
+    version: "Version",
+    copyright: "© 2025 Notepia. All rights reserved.",
   },
   pages: {
     signin: {
