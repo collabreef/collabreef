@@ -26,7 +26,6 @@ export default {
   about: {
     description: "A modern note-taking application",
     version: "Version",
-    copyright: "© 2025 Notepia. All rights reserved.",
   },
   pages: {
     signin: {

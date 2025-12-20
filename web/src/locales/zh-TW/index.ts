@@ -25,7 +25,6 @@ export default {
   about: {
     description: "現代化筆記應用程式",
     version: "版本",
-    copyright: "© 2025 Notepia. 保留所有權利。",
   },
   pages: {
     signin: {

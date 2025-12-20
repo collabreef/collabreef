@@ -26,7 +26,6 @@ export default {
   about: {
     description: "现代化笔记应用程序",
     version: "版本",
-    copyright: "© 2025 Notepia. 保留所有权利。",
   },
   pages: {
     signin: {
