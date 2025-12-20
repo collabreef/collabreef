@@ -24,10 +24,22 @@ import ViewDetailPage from './pages/workspace/views/ViewDetailPage';
 import ViewObjectsList from './pages/workspace/views/ViewObjectsList';
 import ViewObjectDetailPage from './pages/workspace/views/ViewObjectDetailPage';
 import WorkspaceHomePage from './pages/workspace/home/WorkspaceHomePage';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 function App() {
   const location = useLocation();
   const toasts = useToastStore((s) => s.toasts);
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    const rtlLanguages = ['ar'];
+    const currentLang = i18n.language;
+    const direction = rtlLanguages.includes(currentLang) ? 'rtl' : 'ltr';
+
+    document.documentElement.setAttribute('dir', direction);
+    document.documentElement.setAttribute('lang', currentLang);
+  }, [i18n.language]);
 
   return (
     <>
