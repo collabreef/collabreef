@@ -8,7 +8,7 @@ const TextGenComponent: React.FC<NodeViewProps> = ({ editor, extension }) => {
     const [prompt, setPrompt] = useState("")
     const [selectedModel, setSelectedModel] = useState<TextGenModel>()
     const [models, setModels] = useState<TextGenModel[]>([])
-    const { t } = useTranslation("editor")
+    const { t } = useTranslation()
 
     useEffect(() => {
         async function fetchModels() {
@@ -28,7 +28,7 @@ const TextGenComponent: React.FC<NodeViewProps> = ({ editor, extension }) => {
         <NodeViewWrapper className="select-none">
             <div className="flex flex-col sm:flex-row gap-2 items-center rounded-3xl p-3 w-full border">
                 <div className="flex gap-2 flex-1 w-full">
-                    <input value={prompt} onChange={e => setPrompt(e.target.value)} className="w-full p-2 select-none dark:bg-stone-800 " placeholder={t("textGen.placeholder")} aria-label="prompt input" />
+                    <input value={prompt} onChange={e => setPrompt(e.target.value)} className="w-full p-2 select-none dark:bg-stone-800 " placeholder={t("editor.textGen.placeholder")} aria-label="prompt input" />
                 </div>
                 <div className="flex justify-between gap-3 w-full sm:w-auto">
                     <select className="w-24 outline-none select-none bg-white dark:bg-stone-800" value={selectedModel?.id} onChange={e => setSelectedModel(models.find(x => x.id == e.target.value))} aria-label="text gen models select">

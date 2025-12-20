@@ -27,7 +27,7 @@ interface Props {
 
 const Editor: FC<Props> = ({ note, onChange, canDrag = true }) => {
   const currentWorkspaceId = useCurrentWorkspaceId()
-  const { t } = useTranslation("editor")
+  const { t } = useTranslation()
   const lastContentRef = useRef<string>(note.content)
   const editor = useEditor({
     extensions: [
@@ -44,7 +44,7 @@ const Editor: FC<Props> = ({ note, onChange, canDrag = true }) => {
         }
       }),
       Placeholder.configure({
-        placeholder: t("placeholder")
+        placeholder: t("editor.placeholder")
       }),
       TaskList.configure({
         HTMLAttributes: {
@@ -103,98 +103,98 @@ const Editor: FC<Props> = ({ note, onChange, canDrag = true }) => {
             return [
               {
                 icon: <Type size={14} />,
-                label: t("Paragraph"),
+                label: t("editor.Paragraph"),
                 keywords: ["text"],
                 command: ({ editor }: any) =>
                   editor.chain().focus().setParagraph().run(),
               },
               {
                 icon: <Quote size={14} />,
-                label: t("Quote"),
+                label: t("editor.Quote"),
                 keywords: ["quote"],
                 command: ({ editor }: any) =>
                   editor.chain().focus().setBlockquote().run(),
               },
               {
                 icon: <List size={16} />,
-                label: t("BulletList"),
+                label: t("editor.BulletList"),
                 keywords: ["list"],
                 command: ({ editor }: any) =>
                   editor.chain().focus().toggleBulletList().run(),
               },
               {
                 icon: <ListTodo size={16} />,
-                label: t("TaskList"),
+                label: t("editor.TaskList"),
                 keywords: ["list"],
                 command: ({ editor }: any) =>
                   editor.chain().focus().toggleTaskList().run(),
               },
               {
                 icon: <Paperclip size={16} />,
-                label: t("Attachment"),
+                label: t("editor.Attachment"),
                 keywords: ["file"],
                 command: ({ editor }: any) =>
                   editor?.chain().focus().setFile({ src: null, name: null }).run()
               },
               {
                 icon: <Image size={16} />,
-                label: t("Image"),
+                label: t("editor.Image"),
                 keywords: ["image"],
                 command: ({ editor }: any) =>
                   editor?.chain().focus().setImage({ src: null, name: null }).run()
               },
               {
                 icon: <Table size={16} />,
-                label: t("table.name"),
+                label: t("editor.table.name"),
                 keywords: ["table"],
                 command: ({ editor }: any) =>
                   editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: false }).run(),
               },
               {
                 icon: <Sparkles size={16} />,
-                label: t("textGen.name"),
+                label: t("editor.textGen.name"),
                 keywords: ["ai", "text gen"],
                 command: ({ editor }: any) =>
                   editor.chain().focus().addTextGen().run(),
               },
               {
                 icon: <Heading1 size={16} />,
-                label: t("Heading 1"),
+                label: t("editor.Heading 1"),
                 keywords: ["h1", "title", "header", "heading"],
                 command: ({ editor }: any) =>
                   editor.chain().focus().toggleHeading({ level: 1 }).run(),
               },
               {
                 icon: <Heading2 size={16} />,
-                label: t("Heading 2"),
+                label: t("editor.Heading 2"),
                 keywords: ["h2", "title", "header", "heading"],
                 command: ({ editor }: any) =>
                   editor.chain().focus().toggleHeading({ level: 2 }).run(),
               },
               {
                 icon: <Heading3 size={16} />,
-                label: t("Heading 3"),
+                label: t("editor.Heading 3"),
                 keywords: ["h3", "title", "header", "heading"],
                 command: ({ editor }: any) =>
                   editor.chain().focus().toggleHeading({ level: 3 }).run(),
               },
               {
                 icon: <Heading4 size={16} />,
-                label: t("Heading 4"),
+                label: t("editor.Heading 4"),
                 keywords: ["h4", "title", "header", "heading"],
                 command: ({ editor }: any) =>
                   editor.chain().focus().toggleHeading({ level: 4 }).run(),
               },
               {
                 icon: <Heading5 size={16} />,
-                label: t("Heading 5"),
+                label: t("editor.Heading 5"),
                 keywords: ["h5", "title", "header", "heading"],
                 command: ({ editor }: any) =>
                   editor.chain().focus().toggleHeading({ level: 5 }).run(),
               },
               {
                 icon: <Heading6 size={16} />,
-                label: t("Heading 6"),
+                label: t("editor.Heading 6"),
                 keywords: ["h6", "title", "header", "heading"],
                 command: ({ editor }: any) =>
                   editor.chain().focus().toggleHeading({ level: 6 }).run(),
@@ -265,11 +265,11 @@ const Editor: FC<Props> = ({ note, onChange, canDrag = true }) => {
         options={{ placement: 'top-start', offset: 8 }}
       >
         <div className="flex gap-1 divide-x-2 bg-slate-50 border rounded shadow">
-          <button className='p-2' onClick={() => editor.chain().focus().deleteColumn().run()}>{t("table.deleteColumn")}</button>
-          <button className='p-2' onClick={() => editor.chain().focus().addColumnAfter().run()}>{t("table.addColumn")}</button>
-          <button className='p-2' onClick={() => editor.chain().focus().deleteRow().run()}>{t("table.deleteRow")}</button>
-          <button className='p-2' onClick={() => editor.chain().focus().addRowAfter().run()}>{t("table.addRow")}</button>
-          <button className='p-2' onClick={() => editor.chain().focus().deleteTable().run()}>{t('table.deleteTable')}</button>
+          <button className='p-2' onClick={() => editor.chain().focus().deleteColumn().run()}>{t("editor.table.deleteColumn")}</button>
+          <button className='p-2' onClick={() => editor.chain().focus().addColumnAfter().run()}>{t("editor.table.addColumn")}</button>
+          <button className='p-2' onClick={() => editor.chain().focus().deleteRow().run()}>{t("editor.table.deleteRow")}</button>
+          <button className='p-2' onClick={() => editor.chain().focus().addRowAfter().run()}>{t("editor.table.addRow")}</button>
+          <button className='p-2' onClick={() => editor.chain().focus().deleteTable().run()}>{t('editor.table.deleteTable')}</button>
         </div>
       </BubbleMenu>
       <PhotoProvider>
