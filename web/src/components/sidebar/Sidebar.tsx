@@ -1,4 +1,4 @@
-import { PanelLeftClose, PanelLeftOpen, LogOut, User as UserIcon, Settings } from "lucide-react"
+import { PanelLeftClose, PanelLeftOpen, LogOut, User as UserIcon, Settings, Info } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import { useSidebar } from "./SidebarProvider"
 import { useNavigate } from "react-router-dom"
@@ -10,6 +10,7 @@ import { useMutation } from "@tanstack/react-query"
 import { signOut } from "@/api/auth"
 import { useWorkspaceStore } from "@/stores/workspace"
 import UserSettingsModal from "@/components/user/UserSettingsModal"
+import AboutModal from "@/components/user/AboutModal"
 import { DropdownMenu } from "radix-ui"
 
 interface Props {
@@ -23,6 +24,7 @@ const Sidebar: FC<Props> = function ({ children }) {
     const navigate = useNavigate()
     const { resetWorkspaces } = useWorkspaceStore()
     const [isUserSettingsOpen, setIsUserSettingsOpen] = useState(false)
+    const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
 
     const signoutMutation = useMutation({
         mutationFn: () => signOut(),
@@ -45,6 +47,14 @@ const Sidebar: FC<Props> = function ({ children }) {
     const openUserSettings = () => {
         setIsUserSettingsOpen(true)
         // Close sidebar on small screens when opening settings modal
+        if (!isOver1280) {
+            closeSidebar()
+        }
+    }
+
+    const openAboutModal = () => {
+        setIsAboutModalOpen(true)
+        // Close sidebar on small screens when opening about modal
         if (!isOver1280) {
             closeSidebar()
         }
@@ -91,6 +101,13 @@ const Sidebar: FC<Props> = function ({ children }) {
                                         </button>
                                     </DropdownMenu.Item>
 
+                                    <DropdownMenu.Item className="select-none rounded-lg leading-none outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-neutral-200 dark:data-[highlighted]:bg-neutral-700">
+                                        <button onClick={() => openAboutModal()} className="flex gap-3 p-3 items-center w-full">
+                                            <Info size={18} />
+                                            {t("menu.about")}
+                                        </button>
+                                    </DropdownMenu.Item>
+
                                     <DropdownMenu.Separator className="h-[1px] bg-neutral-200 dark:bg-neutral-600 m-1" />
 
                                     <DropdownMenu.Item className="text-red-600 dark:text-red-400 select-none rounded-lg leading-none outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-red-100 dark:data-[highlighted]:bg-red-900/30 dark:data-[highlighted]:text-red-400">
@@ -123,6 +140,10 @@ const Sidebar: FC<Props> = function ({ children }) {
         <UserSettingsModal
             open={isUserSettingsOpen}
             onOpenChange={setIsUserSettingsOpen}
+        />
+        <AboutModal
+            open={isAboutModalOpen}
+            onOpenChange={setIsAboutModalOpen}
         />
     </>
 }

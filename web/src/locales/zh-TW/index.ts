@@ -14,12 +14,17 @@ export default {
     userSettings: "使用者設定",
     settings: "設定",
     explore: "探索",
+    about: "關於",
   },
   form: {
     email: "Email",
     username: "使用者名稱",
     password: "密碼",
     comfirmPassword: "再次輸入密碼",
+  },
+  about: {
+    description: "現代化筆記應用程式",
+    version: "版本",
   },
   pages: {
     signin: {
