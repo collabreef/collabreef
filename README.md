@@ -4,7 +4,7 @@
 
 Build your own workspace with widgets, keep everything in one place, and stay in full control of your data.
 
-
+![screenshot](https://github.com/notepia/notepia/blob/main/web/src/assets/screenshot.png)
 
 ## ✨ Features
 
