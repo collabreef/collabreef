@@ -7,12 +7,18 @@ axios.interceptors.response.use(
   (error) => {
     // Check if the error is a 401 Unauthorized
     if (error.response && error.response.status === 401) {
-      // Clear user state
-      useCurrentUserStore.getState().resetCurrentUser();
+      // Exclude /explore/... paths and root path from redirect
+      const currentPath = window.location.pathname;
+      const shouldRedirect = !currentPath.startsWith('/explore/') && currentPath !== '/';
 
-      // Redirect to sign-in page if not already there
-      if (!window.location.pathname.startsWith('/signin')) {
-        window.location.href = '/signin';
+      if (shouldRedirect) {
+        // Clear user state
+        useCurrentUserStore.getState().resetCurrentUser();
+
+        // Redirect to sign-in page if not already there
+        if (!window.location.pathname.startsWith('/signin')) {
+          window.location.href = '/signin';
+        }
       }
     }
 
