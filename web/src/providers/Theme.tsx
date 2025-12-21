@@ -11,7 +11,7 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
-const DEFAULT_PRIMARY_COLOR = "#f97316"; // Orange
+const DEFAULT_PRIMARY_COLOR = "#1c6c6d";
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>("light");
