@@ -7,16 +7,13 @@ import { BubbleMenu } from "@tiptap/react/menus"
 import { TableKit } from "@tiptap/extension-table"
 import { FC, useMemo, useRef, useEffect } from "react"
 import { useTranslation } from "react-i18next"
-import { GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, List, ListTodo, Paperclip, Quote, Sparkles, Table, Type } from 'lucide-react'
+import { GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, List, ListTodo, Paperclip, Quote, Table, Type } from 'lucide-react'
 import { CommandItem, SlashCommand } from './extensions/slashcommand/SlashCommand'
 import { Attachment } from './extensions/attachment/Attachment'
 import { ImageNode } from './extensions/imagenode/ImageNode'
 import { uploadFile, listFiles } from '@/api/file'
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id'
 import { NoteData } from '@/api/note'
-import { TextGenNode } from './extensions/textgen/TextGen'
-import { listModels, textGen, TextGenModel } from '@/api/tool'
-import { toast } from '@/stores/toast'
 import { PhotoProvider } from 'react-photo-view'
 
 interface Props {
@@ -77,26 +74,6 @@ const Editor: FC<Props> = ({ note, onChange, canDrag = true }) => {
         listFiles: listFiles
       }),
       TableKit,
-      TextGenNode.configure({
-        listModels: async () => {
-          try {
-            const response = await listModels()
-            return response
-          }
-          catch (e) {
-            toast.error(JSON.stringify(e))
-          }
-        },
-        generate: async (prompt: string, model: TextGenModel) => {
-          try {
-            const response = await textGen(prompt, model)
-            return response
-          }
-          catch (e) {
-            toast.error(JSON.stringify(e))
-          }
-        }
-      }),
       SlashCommand.configure({
         suggestion: {
           items: ({ query }: { query: string }): CommandItem[] => {
@@ -149,13 +126,6 @@ const Editor: FC<Props> = ({ note, onChange, canDrag = true }) => {
                 keywords: ["table"],
                 command: ({ editor }: any) =>
                   editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: false }).run(),
-              },
-              {
-                icon: <Sparkles size={16} />,
-                label: t("editor.textGen.name"),
-                keywords: ["ai", "text gen"],
-                command: ({ editor }: any) =>
-                  editor.chain().focus().addTextGen().run(),
               },
               {
                 icon: <Heading1 size={16} />,
