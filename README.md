@@ -1,10 +1,10 @@
-# 📝Notepia
+# Notepia
 
 **Notepia** is an open-source, self-hosted pinboard service designed to help you organize links, notes, and resources in a flexible and visual way.
 
 Build your own workspace with widgets, keep everything in one place, and stay in full control of your data.
 
-![screenshot](https://github.com/notepia/notepia/blob/main/web/src/assets/screenshot.png)
+![screenshot](https://github.com/notepia/notepia/blob/main/web/src/assets/app.png)
 
 ## ✨ Features
 
@@ -50,7 +50,6 @@ Notepia is available on Docker Hub.
 docker run -d \
   --name notepia \
   -p 8080:8080 \
-  -e APP_DISABLE_SIGNUP=true \
   -e APP_SECRET=change-me-to-a-secure-random-string \
   notepia/notepia
 ```
@@ -73,7 +72,6 @@ services:
     ports:
       - "8080:8080"
     environment:
-      APP_DISABLE_SIGNUP: "true"
       APP_SECRET: change-me-to-a-secure-random-string
     restart: unless-stopped
 ```
