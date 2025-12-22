@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { Outlet, useNavigate, useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { Calendar, MapPin, ChevronUp } from "lucide-react"
+import { Calendar, MapPin } from "lucide-react"
 import { getPublicView, getPublicViewObjects } from "@/api/view"
 import { TwoColumn, TwoColumnMain, TwoColumnSidebar, useTwoColumn } from "@/components/twocolumn"
 import CalendarViewComponent from "@/components/views/calendar/CalendarViewComponent"
@@ -67,17 +67,6 @@ const ExploreViewContent = ({ view, viewObjects, navigate, objectId, viewId, t }
                     navigate={navigate}
                     focusedObjectId={objectId}
                 />
-
-                {/* Floating button to open bottom sheet on mobile - only show on mobile when sidebar is collapsed */}
-                {isSidebarCollapsed && (
-                    <button
-                        onClick={toggleSidebar}
-                        className="lg:hidden fixed bottom-6 right-6 z-30 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all duration-200 active:scale-95"
-                        title={t('views.showSidebar')}
-                    >
-                        <ChevronUp size={24} />
-                    </button>
-                )}
             </TwoColumnMain>
 
             <TwoColumnSidebar className="bg-white">
