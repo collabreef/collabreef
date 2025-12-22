@@ -48,7 +48,7 @@ const ExploreViewDetailPage = () => {
     )
 }
 
-const ExploreViewContent = ({ view, viewObjects, navigate, objectId, viewId, t }: any) => {
+const ExploreViewContent = ({ view, viewObjects, navigate, objectId, viewId }: any) => {
     const { isSidebarCollapsed, toggleSidebar } = useTwoColumn()
 
     // Auto-open sidebar when navigating to object detail page
