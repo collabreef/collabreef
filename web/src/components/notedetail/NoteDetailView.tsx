@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom"
 import { ArrowLeft, Check, Loader } from "lucide-react"
 import { NoteData } from "@/api/note"
 import { useTranslation } from "react-i18next"
-import FullNote from "../fullnote/FullNote"
 import Editor from "../editor/Editor"
 import EditableDiv from "@/components/editablediv/EditableDiv"
+import Renderer from "@/components/renderer/Renderer"
 
 interface NoteDetailViewProps {
     note: NoteData | null
@@ -113,7 +113,7 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({ note, menu, isEditable = fals
                                     <div className="px-4">
                                         {isEditable && onChange ?
                                             <Editor key={note.id} note={note} onChange={onChange} />
-                                            : <FullNote note={note} />}
+                                            : <Renderer content={note?.content || ''} />}
                                     </div>
                                 </div>
                             </div>
