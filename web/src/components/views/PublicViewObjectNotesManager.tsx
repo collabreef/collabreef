@@ -32,9 +32,9 @@ const PublicViewObjectNotesManager = ({
                         <Link
                             key={note.id}
                             to={`/explore/notes/${note.id}`}
-                            className="flex flex-col rounded shadow-sm group bg-white dark:bg-neutral-800"
+                            className="flex flex-col gap-2 p-3 rounded shadow-sm group bg-white dark:bg-neutral-800"
                         >
-                            <div className="flex justify-between p-4">
+                            <div className="flex justify-between">
                                 <div>
                                     <NoteTime time={note.created_at} />
                                 </div>
@@ -42,7 +42,7 @@ const PublicViewObjectNotesManager = ({
                             <div
                                 className="flex-1 cursor-pointer  dark:hover:bg-neutral-800 rounded transition-colors"
                             >
-                                <div className="line-clamp-2 text-xs [&_.prose]:text-xs [&_.prose]:leading-tight">
+                                <div className="line-clamp-2">
                                     <Renderer content={note.content} />
                                 </div>
                             </div>
