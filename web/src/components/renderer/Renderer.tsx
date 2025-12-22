@@ -5,6 +5,7 @@ import { TaskItem, TaskList } from '@tiptap/extension-list'
 import { TableKit } from '@tiptap/extension-table'
 import { Attachment } from '../editor/extensions/attachment/Attachment'
 import { ImageNode } from '../editor/extensions/imagenode/ImageNode'
+import { PhotoProvider } from 'react-photo-view'
 
 interface RendererProps {
     content: string
@@ -45,7 +46,9 @@ const Renderer: React.FC<RendererProps> = ({ content }) => {
         },
     })
 
-    return <EditorContent editor={editor} />
+    return <PhotoProvider>
+        <EditorContent editor={editor} />
+    </PhotoProvider>
 }
 
 export default Renderer

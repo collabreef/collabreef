@@ -2,7 +2,7 @@ import { FC } from "react"
 import { Link } from "react-router-dom"
 import { NoteData } from "@/api/note"
 import NoteTime from "../notetime/NoteTime"
-import FullNote from "../fullnote/FullNote"
+import Renderer from "@/components/renderer/Renderer"
 
 interface NoteCardProps {
     note: NoteData
@@ -24,7 +24,7 @@ const NoteCard: FC<NoteCardProps> = ({ note, linkTo }) => {
                         {note.title}
                     </div>
                 ) : (
-                    <FullNote note={note} />
+                    <Renderer content={note?.content || ''} />
                 )}
             </div>
         </>
