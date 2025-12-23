@@ -5,16 +5,21 @@ import (
 )
 
 type DatabaseConfig struct {
-	Driver        string
-	DSN           string
-	MaxIdle       int
-	MaxOpen       int
-	MigrationPath string
+	Driver  string
+	DSN     string
+	MaxIdle int
+	MaxOpen int
 }
 
 type StorageConfig struct {
 	Type string
 	Root string
+	// S3/MinIO Configuration
+	S3Endpoint        string
+	S3AccessKeyID     string
+	S3SecretAccessKey string
+	S3Bucket          string
+	S3UseSSL          bool
 }
 
 type ServerConfig struct {
@@ -32,14 +37,18 @@ type AppConfig struct {
 var C *viper.Viper
 
 const (
-	DB_DRIVER            = "db_driver"
-	DB_DSN               = "db_dsn"
-	DB_MIGRATIONS_PATH   = "db_migrations_path"
-	STORAGE_TYPE         = "storage_type"
-	STORAGE_ROOT         = "storage_root"
-	SERVER_API_ROOT_PATH = "server_api_root_path"
-	APP_DISABLE_SIGNUP   = "app_disable_signup"
-	APP_SECRET           = "app_secret"
+	DB_DRIVER               = "db_driver"
+	DB_DSN                  = "db_dsn"
+	STORAGE_TYPE            = "storage_type"
+	STORAGE_ROOT            = "storage_root"
+	STORAGE_S3_ENDPOINT     = "storage_s3_endpoint"
+	STORAGE_S3_ACCESS_KEY   = "storage_s3_access_key"
+	STORAGE_S3_SECRET_KEY   = "storage_s3_secret_key"
+	STORAGE_S3_BUCKET       = "storage_s3_bucket"
+	STORAGE_S3_USE_SSL      = "storage_s3_use_ssl"
+	SERVER_API_ROOT_PATH    = "server_api_root_path"
+	APP_DISABLE_SIGNUP      = "app_disable_signup"
+	APP_SECRET              = "app_secret"
 )
 
 func Init() {
@@ -47,9 +56,13 @@ func Init() {
 
 	C.SetDefault(DB_DRIVER, "sqlite3")
 	C.SetDefault(DB_DSN, "bin/notepia.db")
-	C.SetDefault(DB_MIGRATIONS_PATH, "file://migrations/sqlite3")
 	C.SetDefault(STORAGE_TYPE, "local")
 	C.SetDefault(STORAGE_ROOT, "./bin/uploads/")
+	C.SetDefault(STORAGE_S3_ENDPOINT, "localhost:9000")
+	C.SetDefault(STORAGE_S3_ACCESS_KEY, "")
+	C.SetDefault(STORAGE_S3_SECRET_KEY, "")
+	C.SetDefault(STORAGE_S3_BUCKET, "notepia")
+	C.SetDefault(STORAGE_S3_USE_SSL, false)
 	C.SetDefault(SERVER_API_ROOT_PATH, "/api/v1")
 	C.SetDefault(APP_DISABLE_SIGNUP, false)
 	C.SetDefault(APP_SECRET, "default_secret")

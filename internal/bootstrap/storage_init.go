@@ -6,6 +6,7 @@ import (
 	"github.com/notepia/notepia/internal/config"
 	"github.com/notepia/notepia/internal/storage"
 	"github.com/notepia/notepia/internal/storage/localfile"
+	"github.com/notepia/notepia/internal/storage/s3storage"
 )
 
 func NewStorage() (storage.Storage, error) {
@@ -15,7 +16,16 @@ func NewStorage() (storage.Storage, error) {
 	switch storageType {
 	case "local":
 		return localfile.NewLocalFileStorage(storageRoot), nil
+	case "s3", "minio":
+		s3Config := s3storage.S3Config{
+			Endpoint:        config.C.GetString(config.STORAGE_S3_ENDPOINT),
+			AccessKeyID:     config.C.GetString(config.STORAGE_S3_ACCESS_KEY),
+			SecretAccessKey: config.C.GetString(config.STORAGE_S3_SECRET_KEY),
+			Bucket:          config.C.GetString(config.STORAGE_S3_BUCKET),
+			UseSSL:          config.C.GetBool(config.STORAGE_S3_USE_SSL),
+		}
+		return s3storage.NewS3Storage(s3Config)
 	}
 
-	return nil, fmt.Errorf("unsupported database driver: %s", storageType)
+	return nil, fmt.Errorf("unsupported storage type: %s", storageType)
 }

@@ -39,7 +39,7 @@ func runSqlite3Migrations() error {
 	}
 
 	migrateInstance, err := migrate.NewWithDatabaseInstance(
-		config.C.GetString(config.DB_MIGRATIONS_PATH),
+		"file://migrations/sqlite3",
 		"main",
 		driver,
 	)
@@ -69,7 +69,7 @@ func runPostgresMigrations() error {
 	}
 
 	migrateInstance, err := migrate.NewWithDatabaseInstance(
-		config.C.GetString(config.DB_MIGRATIONS_PATH),
+		"file://migrations/postgres",
 		"postgres",
 		driver,
 	)
