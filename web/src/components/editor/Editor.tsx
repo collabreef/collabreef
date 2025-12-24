@@ -14,7 +14,6 @@ import { ImageNode } from './extensions/imagenode/ImageNode'
 import { uploadFile, listFiles } from '@/api/file'
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id'
 import { NoteData } from '@/api/note'
-import { PhotoProvider } from 'react-photo-view'
 
 interface Props {
   note: NoteData
@@ -242,9 +241,7 @@ const Editor: FC<Props> = ({ note, onChange, canDrag = true }) => {
           <button className='p-2' onClick={() => editor.chain().focus().deleteTable().run()}>{t('editor.table.deleteTable')}</button>
         </div>
       </BubbleMenu>
-      <PhotoProvider>
-        <EditorContent editor={editor} />
-      </PhotoProvider>
+      <EditorContent editor={editor} />
     </EditorContext.Provider>
   )
 }

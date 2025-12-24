@@ -4,7 +4,6 @@ import { useRef, useState, useEffect } from "react"
 import { twMerge } from "tailwind-merge"
 import FilePickerDialog from "./FilePickerDialog"
 import { FileInfo } from "@/api/file"
-import { PhotoView } from "react-photo-view"
 
 const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttributes, selected, editor, deleteNode }) => {
     const [isUploading, setIsUploading] = useState(false)
@@ -22,6 +21,13 @@ const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttrib
             editor.setEditable(false)
         } else {
             if (wasEditableRef.current) {
+                editor.setEditable(true)
+            }
+        }
+
+        // Cleanup: restore editor state when component unmounts
+        return () => {
+            if (wasEditableRef.current && !editor.isEditable) {
                 editor.setEditable(true)
             }
         }
@@ -121,16 +127,14 @@ const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttrib
                 onMouseEnter={() => isEditable && setShowActions(true)}
                 onMouseLeave={() => setShowActions(false)}
             >
-                <PhotoView src={src}>
-                    <img
-                        src={src}
-                        className={twMerge(
-                            "image-node select-none rounded box-border w-auto max-w-full"
-                        )}
-                        alt={name}
-                        draggable={false}
-                    />
-                </PhotoView>
+                <img
+                    src={src}
+                    className={twMerge(
+                        "image-node select-none rounded box-border w-auto max-w-full"
+                    )}
+                    alt={name}
+                    draggable={false}
+                />
                 {isEditable && (showActions || selected) && (
                     <div className="absolute top-2 right-2 flex gap-1">
                         <button
