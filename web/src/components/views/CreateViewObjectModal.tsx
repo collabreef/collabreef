@@ -59,6 +59,10 @@ const CreateViewObjectModal = ({
     const [isReverseGeocoding, setIsReverseGeocoding] = useState(false)
     const [isGettingLocation, setIsGettingLocation] = useState(false)
 
+    // Kanban-specific state (for creating columns)
+    const [columnColor, setColumnColor] = useState('')
+    const [columnOrder, setColumnOrder] = useState('')
+
     // Parse existing data when modal opens for map type
     useEffect(() => {
         if (viewType === 'map' && data) {
@@ -79,6 +83,8 @@ const CreateViewObjectModal = ({
             setSearchResults([])
             setLatitude("")
             setLongitude("")
+            setColumnColor('')
+            setColumnOrder('')
         }
     }, [open])
 
@@ -92,6 +98,23 @@ const CreateViewObjectModal = ({
             }
         }
     }, [latitude, longitude, viewType, setData])
+
+    // Update data for kanban type (column creation)
+    useEffect(() => {
+        if (viewType === 'kanban') {
+            const kanbanData: any = {}
+            if (columnColor) {
+                kanbanData.color = columnColor
+            }
+            if (columnOrder) {
+                const order = parseInt(columnOrder)
+                if (!isNaN(order)) {
+                    kanbanData.order = order
+                }
+            }
+            setData(JSON.stringify(kanbanData))
+        }
+    }, [columnColor, columnOrder, viewType, setData])
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -225,12 +248,14 @@ const CreateViewObjectModal = ({
     const getTitle = () => {
         if (viewType === 'calendar') return t('views.createCalendarSlot')
         if (viewType === 'map') return t('views.createMapMarker')
+        if (viewType === 'kanban') return t('views.createKanbanColumn') || 'Create Kanban Column'
         return 'Create Object'
     }
 
     const getNameLabel = () => {
         if (viewType === 'calendar') return t('views.slotName')
         if (viewType === 'map') return t('views.markerName')
+        if (viewType === 'kanban') return t('views.columnName') || 'Column Name'
         return 'Name'
     }
 
@@ -399,6 +424,60 @@ const CreateViewObjectModal = ({
                                     placeholder="121.5654"
                                 />
                             </div>
+                        </div>
+                    </div>
+                </>
+            )
+        }
+
+        if (viewType === 'kanban') {
+            return (
+                <>
+                    {/* Column Order (Optional) */}
+                    <div>
+                        <label className="block text-sm font-medium mb-2">
+                            {t('views.order') || 'Order'} ({t('common.optional') || 'Optional'})
+                        </label>
+                        <input
+                            type="number"
+                            value={columnOrder}
+                            onChange={(e) => setColumnOrder(e.target.value)}
+                            placeholder="0"
+                            className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                            {t('views.columnOrderHint') || 'Lower numbers appear first'}
+                        </p>
+                    </div>
+
+                    {/* Color Picker (Optional) */}
+                    <div>
+                        <label className="block text-sm font-medium mb-2">
+                            {t('views.color') || 'Color'} ({t('common.optional') || 'Optional'})
+                        </label>
+                        <div className="flex gap-2">
+                            <input
+                                type="color"
+                                value={columnColor || '#3B82F6'}
+                                onChange={(e) => setColumnColor(e.target.value)}
+                                className="w-20 h-10 rounded-lg border dark:border-neutral-600 cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={columnColor}
+                                onChange={(e) => setColumnColor(e.target.value)}
+                                placeholder="#3B82F6"
+                                className="flex-1 px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
+                            />
+                            {columnColor && (
+                                <button
+                                    type="button"
+                                    onClick={() => setColumnColor('')}
+                                    className="px-4 py-2 border dark:border-neutral-600 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                                >
+                                    {t('common.clear') || 'Clear'}
+                                </button>
+                            )}
                         </div>
                     </div>
                 </>

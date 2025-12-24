@@ -150,8 +150,8 @@ const MapViewComponent = ({ viewObjects = [], view, focusedObjectId, isPublic = 
                                             e.preventDefault()
                                             e.stopPropagation()
                                             const path = isPublic
-                                                ? `/explore/views/${viewId}/objects/${marker.id}`
-                                                : `/workspaces/${workspaceId}/views/${viewId}/objects/${marker.id}`
+                                                ? `/explore/map/${viewId}/marker/${marker.id}`
+                                                : `/workspaces/${workspaceId}/map/${viewId}/marker/${marker.id}`
                                             console.log('Navigating to:', path)
                                             navigate(path)
                                         }}

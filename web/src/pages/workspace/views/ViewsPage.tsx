@@ -115,7 +115,14 @@ const ViewsPage = () => {
 
     const handleViewClick = (view: any) => {
         if (editingViewId !== view.id) {
-            navigate(`/workspaces/${currentWorkspaceId}/views/${view.id}`);
+            // Navigate to type-specific routes
+            if (view.type === 'calendar') {
+                navigate(`/workspaces/${currentWorkspaceId}/calendar/${view.id}`);
+            } else if (view.type === 'map') {
+                navigate(`/workspaces/${currentWorkspaceId}/map/${view.id}`);
+            } else if (view.type === 'kanban') {
+                navigate(`/workspaces/${currentWorkspaceId}/kanban/${view.id}`);
+            }
         }
     }
 
@@ -158,7 +165,7 @@ const ViewsPage = () => {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium mb-2">{t('views.viewType')}</label>
-                                        <div className="flex gap-4">
+                                        <div className="flex flex-col gap-2">
                                             <label className="flex items-center gap-2 cursor-pointer">
                                                 <input
                                                     type="radio"
@@ -178,6 +185,16 @@ const ViewsPage = () => {
                                                     onChange={(e) => setNewViewType(e.target.value as ViewType)}
                                                 />
                                                 <span>{t('views.calendar')}</span>
+                                            </label>
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    name="viewType"
+                                                    value="kanban"
+                                                    checked={newViewType === "kanban"}
+                                                    onChange={(e) => setNewViewType(e.target.value as ViewType)}
+                                                />
+                                                <span>{t('views.kanban') || 'Kanban'}</span>
                                             </label>
                                         </div>
                                     </div>
@@ -249,7 +266,7 @@ const ViewsPage = () => {
                                 {t('views.noViews')}
                             </div>
                         ) : (
-                            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                            <div className="grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                                 {viewsList.map((view) => (
                                     <div
                                         key={view.id}
@@ -281,7 +298,10 @@ const ViewsPage = () => {
                                                         <div className="font-semibold truncate">{view.name}</div>
                                                     )}
                                                     <p className="text-sm text-gray-500 capitalize">
-                                                        {view.type === 'map' ? t('views.map') : t('views.calendar')}
+                                                        {view.type === 'map' ? t('views.map') :
+                                                         view.type === 'calendar' ? t('views.calendar') :
+                                                         view.type === 'kanban' ? (t('views.kanban') || 'Kanban') :
+                                                         view.type}
                                                     </p>
                                                 </div>
                                             </div>

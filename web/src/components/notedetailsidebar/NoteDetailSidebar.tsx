@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { deleteNote, NoteData, updateNoteVisibility } from "@/api/note"
 import { getViewObjectsForNote, getPublicViewObjectsForNote, getViews, getViewObjects, addNoteToViewObject, createViewObject } from "@/api/view"
 import { useTranslation } from "react-i18next"
-import { ChevronRight, Calendar, MapPin, Pin, Search, Plus, Trash2, Globe, Building, Lock, Calendar1Icon } from "lucide-react"
+import { ChevronRight, Calendar, MapPin, Pin, Search, Plus, Trash2, Globe, Building, Lock, Calendar1Icon, LayoutGrid } from "lucide-react"
 import { ViewObjectType } from "@/types/view"
 import { Link, useParams, useNavigate } from "react-router-dom"
 import * as Dialog from "@radix-ui/react-dialog"
@@ -150,6 +150,7 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note }) => {
     const getObjectType = (): ViewObjectType => {
         if (selectedView?.type === 'calendar') return 'calendar_slot'
         if (selectedView?.type === 'map') return 'map_marker'
+        if (selectedView?.type === 'kanban') return 'kanban_column'
         return 'calendar_slot' // default
     }
 
@@ -277,26 +278,56 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note }) => {
                     {groupedByView.length > 0 &&
                         groupedByView.map((viewGroup) => (
                             <div>
-                                {viewGroup.viewObjects.map((vo: any) => (
-                                    <Link
-                                        key={vo.id}
-                                        to={workspaceId
-                                            ? `/workspaces/${workspaceId}/views/${viewGroup.view.id}/objects/${vo.id}`
-                                            : `/explore/views/${viewGroup.view.id}/objects/${vo.id}`
+                                {viewGroup.viewObjects.map((vo: any) => {
+                                    // Determine the URL based on view type and object type
+                                    const getObjectUrl = () => {
+                                        const viewType = viewGroup.view.type
+                                        const viewId = viewGroup.view.id
+                                        const objectId = vo.id
+
+                                        if (workspaceId) {
+                                            if (viewType === 'calendar') {
+                                                return `/workspaces/${workspaceId}/calendar/${viewId}/slot/${objectId}`
+                                            } else if (viewType === 'map') {
+                                                return `/workspaces/${workspaceId}/map/${viewId}/marker/${objectId}`
+                                            } else if (viewType === 'kanban') {
+                                                // Kanban doesn't have object detail pages
+                                                return `/workspaces/${workspaceId}/kanban/${viewId}`
+                                            }
+                                        } else {
+                                            if (viewType === 'calendar') {
+                                                return `/explore/calendar/${viewId}/slot/${objectId}`
+                                            } else if (viewType === 'map') {
+                                                return `/explore/map/${viewId}/marker/${objectId}`
+                                            } else if (viewType === 'kanban') {
+                                                return `/explore/kanban/${viewId}`
+                                            }
                                         }
-                                    >
+                                        return '#'
+                                    }
+
+                                    return (
+                                        <Link
+                                            key={vo.id}
+                                            to={getObjectUrl()}
+                                        >
                                         <div className="flex items-center gap-2 text-gray-600 px-2 py-1">
                                             <div >
-                                                {
-                                                    vo.type == "map_marker" ? <MapPin size={16} /> : <Calendar1Icon size={16} />
-                                                }
+                                                {vo.type === "map_marker" ? (
+                                                    <MapPin size={16} />
+                                                ) : vo.type === "kanban_column" ? (
+                                                    <LayoutGrid size={16} />
+                                                ) : (
+                                                    <Calendar1Icon size={16} />
+                                                )}
                                             </div>
                                             <div className="flex-1 px-2">
                                                 {vo.name}
                                             </div>
                                         </div>
                                     </Link>
-                                ))}
+                                    )
+                                })}
                             </div>))}
                 </div>
             </div>
@@ -390,6 +421,8 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note }) => {
                                             <div className="flex items-center gap-3">
                                                 {view.type === 'calendar' ? (
                                                     <Calendar size={20} className="text-gray-500" />
+                                                ) : view.type === 'kanban' ? (
+                                                    <LayoutGrid size={20} className="text-gray-500" />
                                                 ) : (
                                                     <MapPin size={20} className="text-gray-500" />
                                                 )}
@@ -421,7 +454,11 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note }) => {
                                     className="w-full mb-4 px-4 py-3 bg-black text-white dark:bg-neutral-700 rounded-lg flex items-center justify-center gap-2 hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-colors"
                                 >
                                     <Plus size={18} />
-                                    {selectedView?.type === 'calendar' ? (t('views.newSlot') || 'New Slot') : (t('views.newMarker') || 'New Marker')}
+                                    {selectedView?.type === 'calendar'
+                                        ? (t('views.newSlot') || 'New Slot')
+                                        : selectedView?.type === 'kanban'
+                                        ? (t('views.newColumn') || 'New Column')
+                                        : (t('views.newMarker') || 'New Marker')}
                                 </button>
 
                                 {availableViewObjects.length > 0 ? (
@@ -432,7 +469,25 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note }) => {
                                             disabled={pinNoteMutation.isPending}
                                             className="w-full text-left p-4 border dark:border-neutral-600 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-700 disabled:opacity-50"
                                         >
-                                            <div className="font-medium">{obj.name}</div>
+                                            <div className="flex items-center gap-2">
+                                                {obj.type === 'kanban_column' && (() => {
+                                                    try {
+                                                        const columnData = JSON.parse(obj.data)
+                                                        if (columnData.color) {
+                                                            return (
+                                                                <div
+                                                                    className="w-3 h-3 rounded"
+                                                                    style={{ backgroundColor: columnData.color }}
+                                                                ></div>
+                                                            )
+                                                        }
+                                                    } catch {
+                                                        return null
+                                                    }
+                                                    return null
+                                                })()}
+                                                <div className="font-medium">{obj.name}</div>
+                                            </div>
                                             {obj.type === 'calendar_slot' && (
                                                 <div className="text-xs text-gray-500 mt-1">
                                                     {new Date(obj.data).toLocaleDateString()}
@@ -448,6 +503,11 @@ const NoteDetailSidebar: FC<NoteDetailSidebarProps> = ({ note }) => {
                                                             return ''
                                                         }
                                                     })()}
+                                                </div>
+                                            )}
+                                            {obj.type === 'kanban_column' && (
+                                                <div className="text-xs text-gray-500 mt-1">
+                                                    {t('views.column')}
                                                 </div>
                                             )}
                                         </button>

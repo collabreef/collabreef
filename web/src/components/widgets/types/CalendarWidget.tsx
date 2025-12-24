@@ -275,7 +275,7 @@ const CalendarWidget: FC<CalendarWidgetProps> = ({ config }) => {
               {selectedDaySlots.map((viewObject) => (
                 <Link
                   key={viewObject.id}
-                  to={`/workspaces/${workspaceId}/views/${config.viewId}/objects/${viewObject.id}`}
+                  to={`/workspaces/${workspaceId}/calendar/${config.viewId}/slot/${viewObject.id}`}
                   className="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 px-2 py-1.5 rounded transition-colors"
                   onClick={(e) => e.stopPropagation()}
                 >

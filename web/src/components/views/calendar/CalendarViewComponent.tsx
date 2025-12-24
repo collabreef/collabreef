@@ -221,8 +221,8 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
                                                     onClick={(e) => {
                                                         e.stopPropagation()
                                                         const path = isPublic
-                                                            ? `/explore/views/${viewId}/objects/${slot.id}`
-                                                            : `/workspaces/${workspaceId}/views/${viewId}/objects/${slot.id}`
+                                                            ? `/explore/calendar/${viewId}/slot/${slot.id}`
+                                                            : `/workspaces/${workspaceId}/calendar/${viewId}/slot/${slot.id}`
                                                         navigate(path)
                                                     }}
                                                     className="text-xs px-1.5 py-0.5 bg-blue-500 text-white rounded truncate max-w-full hover:bg-blue-600 transition-colors"

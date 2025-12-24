@@ -15,14 +15,18 @@ import PublicLayout from './components/publiclayout/PublicLayout';
 import ExploreNotesPage from './pages/explore/ExploreNotesPage';
 import ExploreNoteDetailPage from './pages/explore/ExploreNoteDetailPage';
 import ExploreViewsPage from './pages/explore/ExploreViewsPage';
-import ExploreViewDetailPage from './pages/explore/ExploreViewDetailPage';
-import ExploreViewObjectsList from './pages/explore/ExploreViewObjectsList';
-import ExploreViewObjectDetailPage from './pages/explore/ExploreViewObjectDetailPage';
+import ExploreCalendarPage from './pages/explore/ExploreCalendarPage';
+import ExploreCalendarSlotDetailPage from './pages/explore/ExploreCalendarSlotDetailPage';
+import ExploreMapPage from './pages/explore/ExploreMapPage';
+import ExploreMapMarkerDetailPage from './pages/explore/ExploreMapMarkerDetailPage';
+import ExploreKanbanPage from './pages/explore/ExploreKanbanPage';
 import FilesPage from './pages/workspace/files/FilesPage';
 import ViewsPage from './pages/workspace/views/ViewsPage';
-import ViewDetailPage from './pages/workspace/views/ViewDetailPage';
-import ViewObjectsList from './pages/workspace/views/ViewObjectsList';
-import ViewObjectDetailPage from './pages/workspace/views/ViewObjectDetailPage';
+import CalendarPage from './pages/workspace/calendar/CalendarPage';
+import CalendarSlotDetailPage from './pages/workspace/calendar/CalendarSlotDetailPage';
+import MapPage from './pages/workspace/map/MapPage';
+import MapMarkerDetailPage from './pages/workspace/map/MapMarkerDetailPage';
+import KanbanPage from './pages/workspace/kanban/KanbanPage';
 import WorkspaceHomePage from './pages/workspace/home/WorkspaceHomePage';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -48,10 +52,13 @@ function App() {
           <Route path='notes' element={<ExploreNotesPage />} />
           <Route path='notes/:noteId' element={<ExploreNoteDetailPage />} />
           <Route path='views' element={<ExploreViewsPage />} />
-          <Route path='views/:viewId' element={<ExploreViewDetailPage />}>
-            <Route index element={<ExploreViewObjectsList />} />
-            <Route path='objects/:objectId' element={<ExploreViewObjectDetailPage />} />
+          <Route path='calendar/:calendarId' element={<ExploreCalendarPage />}>
+            <Route path='slot/:slotId' element={<ExploreCalendarSlotDetailPage />} />
           </Route>
+          <Route path='map/:mapId' element={<ExploreMapPage />}>
+            <Route path='marker/:markerId' element={<ExploreMapMarkerDetailPage />} />
+          </Route>
+          <Route path='kanban/:kanbanId' element={<ExploreKanbanPage />} />
         </Route>
         <Route path='signin' element={<SignIn />}></Route>
         <Route path='signup' element={<SignUp />}></Route>
@@ -64,10 +71,13 @@ function App() {
             <Route path='notes' element={<NotesPage />}></Route>
             <Route path='files' element={<FilesPage />}></Route>
             <Route path='views' element={<ViewsPage />}></Route>
-            <Route path='views/:viewId' element={<ViewDetailPage />}>
-              <Route index element={<ViewObjectsList />} />
-              <Route path='objects/:objectId' element={<ViewObjectDetailPage />} />
+            <Route path='calendar/:calendarId' element={<CalendarPage />}>
+              <Route path='slot/:slotId' element={<CalendarSlotDetailPage />} />
             </Route>
+            <Route path='map/:mapId' element={<MapPage />}>
+              <Route path='marker/:markerId' element={<MapMarkerDetailPage />} />
+            </Route>
+            <Route path='kanban/:kanbanId' element={<KanbanPage />} />
             <Route path='settings' element={<Settings />}></Route>
             <Route path='home' element={<WorkspaceHomePage />}></Route>
             <Route path='' element={<WorkspaceHomePage />}></Route>

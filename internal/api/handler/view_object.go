@@ -171,6 +171,9 @@ func (h Handler) CreateViewObject(c echo.Context) error {
 	if view.Type == "map" && req.Type != "map_marker" {
 		return echo.NewHTTPError(http.StatusBadRequest, "Object type must be 'map_marker' for map views")
 	}
+	if view.Type == "kanban" && req.Type != "kanban_column" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Object type must be 'kanban_column' for kanban views")
+	}
 
 	user := c.Get("user").(model.User)
 
@@ -241,6 +244,9 @@ func (h Handler) UpdateViewObject(c echo.Context) error {
 	}
 	if req.Type != "" && view.Type == "map" && req.Type != "map_marker" {
 		return echo.NewHTTPError(http.StatusBadRequest, "Object type must be 'map_marker' for map views")
+	}
+	if req.Type != "" && view.Type == "kanban" && req.Type != "kanban_column" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Object type must be 'kanban_column' for kanban views")
 	}
 
 	user := c.Get("user").(model.User)

@@ -1,5 +1,5 @@
-export type ViewType = 'map' | 'calendar';
-export type ViewObjectType = 'calendar_slot' | 'map_marker';
+export type ViewType = 'map' | 'calendar' | 'kanban';
+export type ViewObjectType = 'calendar_slot' | 'map_marker' | 'kanban_column';
 
 // View data structures
 export interface MapViewData {
@@ -13,6 +13,10 @@ export interface MapViewData {
 export interface CalendarViewData {
   defaultYear?: number;
   defaultMonth?: number;
+}
+
+export interface KanbanViewData {
+  // Kanban view settings (columns are view objects)
 }
 
 export interface View {
@@ -80,4 +84,9 @@ export interface MapMarkerData {
   lat: number;
   lng: number;
   color?: string;
+}
+
+export interface KanbanColumnData {
+  order?: number; // Order of the column in the board
+  color?: string; // Column header color
 }

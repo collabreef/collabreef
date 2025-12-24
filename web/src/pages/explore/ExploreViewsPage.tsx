@@ -61,23 +61,34 @@ const ExploreViewsPage = () => {
                 <div className="flex flex-col gap-2 sm:gap-5">
                     <div className="w-full">
                         {isLoading ? <ViewsGridSkeleton /> :
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {views.map((view: View) => (
-                                    <Link
-                                        key={view.id}
-                                        to={`/explore/views/${view.id}`}
-                                        className="p-4 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800 hover:shadow-md transition-shadow"
-                                    >
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <div className="font-semibold text-lg truncate">{view.name}</div>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                                            <span>{t(`views.${view.type}`)}</span>
-                                            <span>•</span>
-                                            <span>{view.created_by}</span>
-                                        </div>
-                                    </Link>
-                                ))}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                                {views.map((view: View) => {
+                                    // Determine the URL based on view type
+                                    const viewUrl = view.type === 'calendar'
+                                        ? `/explore/calendar/${view.id}`
+                                        : view.type === 'map'
+                                        ? `/explore/map/${view.id}`
+                                        : view.type === 'kanban'
+                                        ? `/explore/kanban/${view.id}`
+                                        : `/explore/views/${view.id}`
+
+                                    return (
+                                        <Link
+                                            key={view.id}
+                                            to={viewUrl}
+                                            className="p-4 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800 hover:shadow-md transition-shadow"
+                                        >
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <div className="font-semibold text-lg truncate">{view.name}</div>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                                <span>{t(`views.${view.type}`)}</span>
+                                                <span>•</span>
+                                                <span>{view.created_by}</span>
+                                            </div>
+                                        </Link>
+                                    )
+                                })}
                             </div>
                         }
 

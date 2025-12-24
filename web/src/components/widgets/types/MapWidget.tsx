@@ -226,7 +226,7 @@ const MapWidget: FC<MapWidgetProps> = ({ config }) => {
                   <div className="absolute bottom-4 left-4 right-4 z-[1000] p-3 bg-white dark:bg-neutral-800 rounded-lg shadow-lg border dark:border-neutral-700">
                     <div className="flex items-center justify-between mb-1">
                       <Link
-                        to={`/workspaces/${workspaceId}/views/${config.viewId}/objects/${selectedMarker.viewObject?.id}`}
+                        to={`/workspaces/${workspaceId}/map/${config.viewId}/marker/${selectedMarker.viewObject?.id}`}
                         className="font-semibold text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                         onClick={(e) => e.stopPropagation()}
                       >

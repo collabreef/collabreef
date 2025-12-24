@@ -27,7 +27,7 @@ const PublicViewObjectNotesManager = ({
         <div className=" dark:border-neutral-700">
             {/* Linked Notes List */}
             {linkedNotes.length > 0 ? (
-                <div className="space-y-2">
+                <div className="p-4 space-y-2">
                     {linkedNotes.map((note: any) => (
                         <Link
                             key={note.id}
