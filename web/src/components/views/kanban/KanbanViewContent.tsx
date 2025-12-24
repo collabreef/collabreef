@@ -1,4 +1,4 @@
-import { Settings, Plus } from "lucide-react"
+import { Settings, PlusCircle } from "lucide-react"
 import { useState } from "react"
 import KanbanViewComponent from "./KanbanViewComponent"
 import CreateViewObjectModal from "../CreateViewObjectModal"
@@ -46,13 +46,13 @@ const KanbanViewContent = ({
                 viewName={view.name}
                 onBack={() => navigate(`/workspaces/${currentWorkspaceId}/views`)}
                 rightActions={
-                    <>
+                    <div className="flex gap-4 px-4">
                         <button
                             onClick={() => setIsCreating(true)}
-                            className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                            className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                            title="create column"
                         >
-                            <Plus size={18} />
-                            <span className="hidden sm:inline">New Column</span>
+                            <PlusCircle size={18} />
                         </button>
                         <button
                             onClick={() => setIsSettingsOpen(true)}
@@ -61,7 +61,7 @@ const KanbanViewContent = ({
                         >
                             <Settings size={18} />
                         </button>
-                    </>
+                    </div>
                 }
             />
 

@@ -68,7 +68,6 @@ const KanbanViewComponent = ({
             await addNoteToViewObject(currentWorkspaceId!, currentViewId!, toColumnId, noteId)
         },
         onSuccess: (_, variables) => {
-            addToast({ title: t('views.noteMovedSuccess'), type: 'success' })
             // Invalidate both columns' note queries
             queryClient.invalidateQueries({ queryKey: ['column-notes', currentWorkspaceId, currentViewId, variables.fromColumnId] })
             queryClient.invalidateQueries({ queryKey: ['column-notes', currentWorkspaceId, currentViewId, variables.toColumnId] })
@@ -86,7 +85,6 @@ const KanbanViewComponent = ({
     const deleteColumnMutation = useMutation({
         mutationFn: (columnId: string) => deleteViewObject(currentWorkspaceId!, currentViewId!, columnId),
         onSuccess: () => {
-            addToast({ title: t('views.objectDeletedSuccess'), type: 'success' })
             queryClient.invalidateQueries({ queryKey: ['view-objects', currentWorkspaceId, currentViewId] })
         },
         onError: () => {
@@ -98,7 +96,6 @@ const KanbanViewComponent = ({
         mutationFn: ({ columnId, name, data }: { columnId: string, name: string, data: string }) =>
             updateViewObject(currentWorkspaceId!, currentViewId!, columnId, { name, data }),
         onSuccess: () => {
-            addToast({ title: t('views.objectUpdatedSuccess'), type: 'success' })
             queryClient.invalidateQueries({ queryKey: ['view-objects', currentWorkspaceId, currentViewId] })
             setEditingColumnId(null)
             setEditingName('')
@@ -298,8 +295,7 @@ const KanbanColumn = ({ column, isFocused, isPublic, workspaceId, viewId, onNote
 
     return (
         <div
-            className={`flex-shrink-0 w-80 bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4 transition-all ${isFocused ? 'ring-2 ring-blue-500' : ''
-                } ${isDragOver ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-900/20' : ''}`}
+            className={`flex-shrink-0 w-80 bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4 transition-all`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
