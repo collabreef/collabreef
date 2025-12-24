@@ -30,11 +30,14 @@ import KanbanPage from './pages/workspace/kanban/KanbanPage';
 import WorkspaceHomePage from './pages/workspace/home/WorkspaceHomePage';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import useScrollToTop from '@/hooks/use-scrolltotop';
 
 function App() {
   const location = useLocation();
   const toasts = useToastStore((s) => s.toasts);
   const { i18n } = useTranslation();
+
+  useScrollToTop();
 
   useEffect(() => {
     const rtlLanguages = ['ar'];
