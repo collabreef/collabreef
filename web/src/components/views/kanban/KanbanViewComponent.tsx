@@ -265,7 +265,7 @@ const KanbanColumn = ({ column, isPublic, workspaceId, viewId, onNoteClick, onMo
         queryFn: () => isPublic
             ? import('../../../api/view').then(m => m.getPublicNotesForViewObject(viewId!, column.id))
             : getNotesForViewObject(workspaceId!, viewId!, column.id),
-        enabled: !!workspaceId && !!viewId
+        enabled: isPublic ? !!viewId : (!!workspaceId && !!viewId)
     })
 
     const linkedNoteIds = Array.isArray(notes) ? notes.map((note: any) => note.id) : []
