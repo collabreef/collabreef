@@ -5,11 +5,11 @@ import CalendarViewComponent from "./CalendarViewComponent"
 import CreateViewObjectModal from "../CreateViewObjectModal"
 import CalendarViewSettingsModal from "./CalendarViewSettingsModal"
 import ViewHeader from "../common/ViewHeader"
+import ViewMenu from "@/components/viewmenu/ViewMenu"
 
 interface CalendarViewContentProps {
     view: any
     viewObjects: any[]
-    navigate: any
     currentWorkspaceId: string
     isCreating: boolean
     setIsCreating: (value: boolean) => void
@@ -26,7 +26,6 @@ interface CalendarViewContentProps {
 const CalendarViewContent = ({
     view,
     viewObjects,
-    navigate,
     currentWorkspaceId,
     isCreating,
     setIsCreating,
@@ -45,8 +44,7 @@ const CalendarViewContent = ({
     return (
         <div className="w-full">
             <ViewHeader
-                viewName={view.name}
-                onBack={() => navigate(`/workspaces/${currentWorkspaceId}/views`)}
+                menu={<ViewMenu viewType="calendar" currentViewId={view.id} />}
                 rightActions={
                     <>
                         <button

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate, useParams, Outlet } from "react-router-dom"
+import { useParams, Outlet } from "react-router-dom"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { getView, getViewObjects, createViewObject, deleteViewObject } from "@/api/view"
@@ -11,7 +11,6 @@ import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 
 const CalendarPage = () => {
     const { t } = useTranslation()
-    const navigate = useNavigate()
     const { calendarId, slotId } = useParams<{ calendarId: string; slotId?: string }>()
     const currentWorkspaceId = useCurrentWorkspaceId()
     const { addToast } = useToastStore()
@@ -91,7 +90,6 @@ const CalendarPage = () => {
                 <CalendarViewContent
                     view={view}
                     viewObjects={viewObjects || []}
-                    navigate={navigate}
                     currentWorkspaceId={currentWorkspaceId}
                     isCreating={isCreating}
                     setIsCreating={setIsCreating}

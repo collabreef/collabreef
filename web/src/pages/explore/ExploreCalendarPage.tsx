@@ -8,6 +8,7 @@ import ExploreCalendarSlotsList from "@/components/views/calendar/ExploreCalenda
 import ViewHeader from "@/components/views/common/ViewHeader"
 import { Calendar } from "lucide-react"
 import { useTwoColumn } from "@/components/twocolumn"
+import PublicViewMenu from "@/components/viewmenu/PublicViewMenu"
 
 const ExploreCalendarPage = () => {
     const { t } = useTranslation()
@@ -59,14 +60,13 @@ const ExploreCalendarPage = () => {
     )
 }
 
-const PublicCalendarContent = ({ view, viewObjects, navigate, focusedObjectId }: any) => {
+const PublicCalendarContent = ({ view, viewObjects, focusedObjectId }: any) => {
     const { isSidebarCollapsed, toggleSidebar } = useTwoColumn()
 
     return (
         <div className="w-full">
             <ViewHeader
-                viewName={view.name}
-                onBack={() => navigate('/explore/views')}
+                menu={<PublicViewMenu viewType="calendar" currentViewId={view.id} />}
                 rightActions={
                     <button
                         onClick={toggleSidebar}

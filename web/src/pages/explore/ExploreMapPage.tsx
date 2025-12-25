@@ -8,6 +8,7 @@ import ExploreMapMarkersList from "@/components/views/map/ExploreMapMarkersList"
 import ViewHeader from "@/components/views/common/ViewHeader"
 import { MapPin } from "lucide-react"
 import { useTwoColumn } from "@/components/twocolumn"
+import PublicViewMenu from "@/components/viewmenu/PublicViewMenu"
 
 const ExploreMapPage = () => {
     const { t } = useTranslation()
@@ -59,15 +60,14 @@ const ExploreMapPage = () => {
     )
 }
 
-const PublicMapContent = ({ view, viewObjects, navigate, focusedObjectId }: any) => {
+const PublicMapContent = ({ view, viewObjects, focusedObjectId }: any) => {
     const { isSidebarCollapsed, toggleSidebar } = useTwoColumn()
 
     return (
         <div className="w-full h-full flex flex-col">
             <div className="flex-shrink-0">
                 <ViewHeader
-                    viewName={view.name}
-                    onBack={() => navigate('/explore/views')}
+                    menu={<PublicViewMenu viewType="map" currentViewId={view.id} />}
                     rightActions={
                         <button
                             onClick={toggleSidebar}

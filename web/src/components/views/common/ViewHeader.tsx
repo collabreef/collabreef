@@ -1,27 +1,21 @@
-import { ArrowLeft } from "lucide-react"
+import SidebarButton from "@/components/sidebar/SidebarButton"
 import { ReactNode } from "react"
 
 interface ViewHeaderProps {
-    viewName: string
-    onBack: () => void
+    viewName?: string
+    menu?: ReactNode
     rightActions?: ReactNode
     icon?: ReactNode
 }
 
-const ViewHeader = ({ viewName, onBack, rightActions, icon }: ViewHeaderProps) => {
+const ViewHeader = ({ viewName, menu, rightActions, icon }: ViewHeaderProps) => {
     return (
-        <div className="flex items-center justify-between p-2 xl:py-4  bg-neutral-100 dark:bg-neutral-900">
-            <div className="flex items-center gap-3">
-                <button
-                    onClick={onBack}
-                    className="block xl:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-                    aria-label="back"
-                >
-                    <ArrowLeft size={20} />
-                </button>
+        <div className="flex items-center justify-between xl:py-4 bg-neutral-100 dark:bg-neutral-900">
+            <div className="flex items-center gap-3 p-4 xl:p-0">
+                <SidebarButton />
                 <div className="flex items-center gap-2">
                     {icon}
-                    <span className="sm:text-xl font-semibold">{viewName}</span>
+                    {menu ? menu : <span className="sm:text-xl font-semibold">{viewName}</span>}
                 </div>
             </div>
             {rightActions && <div className="flex gap-2">{rightActions}</div>}

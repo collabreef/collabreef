@@ -5,11 +5,11 @@ import MapViewComponent from "./MapViewComponent"
 import CreateViewObjectModal from "../CreateViewObjectModal"
 import MapViewSettingsModal from "./MapViewSettingsModal"
 import ViewHeader from "../common/ViewHeader"
+import ViewMenu from "@/components/viewmenu/ViewMenu"
 
 interface MapViewContentProps {
     view: any
     viewObjects: any[]
-    navigate: any
     currentWorkspaceId: string
     isCreating: boolean
     setIsCreating: (value: boolean) => void
@@ -26,7 +26,6 @@ interface MapViewContentProps {
 const MapViewContent = ({
     view,
     viewObjects,
-    navigate,
     currentWorkspaceId,
     isCreating,
     setIsCreating,
@@ -46,8 +45,7 @@ const MapViewContent = ({
         <div className="w-full h-full flex flex-col">
             <div className="flex-shrink-0">
                 <ViewHeader
-                    viewName={view.name}
-                    onBack={() => navigate(`/workspaces/${currentWorkspaceId}/views`)}
+                    menu={<ViewMenu viewType="map" currentViewId={view.id} />}
                     rightActions={
                         <>
                             <button

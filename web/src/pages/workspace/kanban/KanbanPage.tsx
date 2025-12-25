@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { getView, getViewObjects, createViewObject } from "@/api/view"
@@ -9,7 +9,6 @@ import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 
 const KanbanPage = () => {
     const { t } = useTranslation()
-    const navigate = useNavigate()
     const { kanbanId } = useParams<{ kanbanId: string }>()
     const currentWorkspaceId = useCurrentWorkspaceId()
     const { addToast } = useToastStore()
@@ -70,7 +69,6 @@ const KanbanPage = () => {
         <KanbanViewContent
             view={view}
             viewObjects={viewObjects || []}
-            navigate={navigate}
             currentWorkspaceId={currentWorkspaceId}
             isCreating={isCreating}
             setIsCreating={setIsCreating}

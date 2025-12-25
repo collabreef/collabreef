@@ -1,7 +1,7 @@
 import { twMerge } from "tailwind-merge"
 import { useSidebar } from "../sidebar/SidebarProvider"
 import { Link } from "react-router-dom"
-import { LogIn, Monitor, FileText, LayoutGrid } from 'lucide-react'
+import { LogIn, Monitor, FileText, Calendar, MapPin, KanbanSquare } from 'lucide-react'
 import { useTranslation } from "react-i18next"
 import logo from '@/assets/app.png'
 import { useCurrentUserStore } from "@/stores/current-user"
@@ -26,9 +26,19 @@ const PublicLayout = () => {
                     {!isCollapse && <>{t("menu.notes")}</>}
                 </Link>
 
-                <Link to="/explore/views" className="p-2 flex items-center gap-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-lg">
-                    <LayoutGrid size={20} />
-                    {!isCollapse && <>{t("menu.views")}</>}
+                <Link to="/explore/calendar" className="p-2 flex items-center gap-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-lg">
+                    <Calendar size={20} />
+                    {!isCollapse && <>{t("views.calendar")}</>}
+                </Link>
+
+                <Link to="/explore/map" className="p-2 flex items-center gap-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-lg">
+                    <MapPin size={20} />
+                    {!isCollapse && <>{t("views.map")}</>}
+                </Link>
+
+                <Link to="/explore/kanban" className="p-2 flex items-center gap-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-lg">
+                    <KanbanSquare size={20} />
+                    {!isCollapse && <>{t("views.kanban") || "Kanban"}</>}
                 </Link>
 
                 <div className="my-2 border-t dark:border-neutral-700"></div>

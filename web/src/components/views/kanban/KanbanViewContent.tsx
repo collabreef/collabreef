@@ -4,11 +4,11 @@ import KanbanViewComponent from "./KanbanViewComponent"
 import CreateViewObjectModal from "../CreateViewObjectModal"
 import KanbanViewSettingsModal from "./KanbanViewSettingsModal"
 import ViewHeader from "../common/ViewHeader"
+import ViewMenu from "@/components/viewmenu/ViewMenu"
 
 interface KanbanViewContentProps {
     view: any
     viewObjects: any[]
-    navigate: any
     currentWorkspaceId: string
     isCreating: boolean
     setIsCreating: (value: boolean) => void
@@ -25,7 +25,6 @@ interface KanbanViewContentProps {
 const KanbanViewContent = ({
     view,
     viewObjects,
-    navigate,
     currentWorkspaceId,
     isCreating,
     setIsCreating,
@@ -43,8 +42,7 @@ const KanbanViewContent = ({
     return (
         <div className="flex flex-col h-screen">
             <ViewHeader
-                viewName={view.name}
-                onBack={() => navigate(`/workspaces/${currentWorkspaceId}/views`)}
+                menu={<ViewMenu viewType="kanban" currentViewId={view.id} />}
                 rightActions={
                     <div className="flex gap-4 px-4">
                         <button
