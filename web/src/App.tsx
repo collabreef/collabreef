@@ -31,11 +31,16 @@ import WorkspaceHomePage from './pages/workspace/home/WorkspaceHomePage';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import useScrollToTop from '@/hooks/use-scrolltotop';
+import { useAuth } from '@/hooks/use-auth';
+import { LoaderCircle } from 'lucide-react';
 
 function App() {
   const location = useLocation();
   const toasts = useToastStore((s) => s.toasts);
   const { i18n } = useTranslation();
+
+  // Load user information and preferences globally
+  const { isLoading } = useAuth();
 
   useScrollToTop();
 
@@ -47,6 +52,15 @@ function App() {
     document.documentElement.setAttribute('dir', direction);
     document.documentElement.setAttribute('lang', currentLang);
   }, [i18n.language]);
+
+  // Show loading screen while user information is being loaded
+  if (isLoading) {
+    return (
+      <div className='w-screen h-dvh flex justify-center items-center'>
+        <LoaderCircle className='animate-spin' />
+      </div>
+    );
+  }
 
   return (
     <>

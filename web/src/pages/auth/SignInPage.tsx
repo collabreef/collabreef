@@ -8,18 +8,22 @@ import { toast } from '@/stores/toast';
 import TextInput from '@/components/textinput/TextInput';
 import SubmitButton from '@/components/submitbutton/SubmitButton';
 import { Telescope } from 'lucide-react';
+import { useCurrentUserStore } from '@/stores/current-user';
 
 const SignIn: React.FC = () => {
     const {t} = useTranslation();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const { fetchUser } = useCurrentUserStore();
 
     const signInMutation = useMutation({
         mutationFn: signIn,
         onSuccess: async (data) => {
             console.log('Sign in successful:', data);
-            navigate('/')
+            // Reload user information after successful sign in
+            await fetchUser();
+            navigate('/');
         },
         onError: (error: any) => {
             console.log(error)
