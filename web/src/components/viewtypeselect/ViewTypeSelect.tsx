@@ -1,5 +1,5 @@
 import * as Select from "@radix-ui/react-select";
-import { Check, ChevronDown, Map, Calendar, LayoutGrid } from "lucide-react";
+import { Check, Map, Calendar, LayoutGrid } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { ViewType } from "@/types/view";
 

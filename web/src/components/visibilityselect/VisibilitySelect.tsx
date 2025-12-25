@@ -1,5 +1,5 @@
 import * as Select from "@radix-ui/react-select";
-import { Check, ChevronDown, Globe, Building, Lock } from "lucide-react";
+import { Check, Globe, Building, Lock } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function VisibilitySelect({ value, onChange }: any) {
