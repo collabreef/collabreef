@@ -13,6 +13,7 @@ import ViewsGridSkeleton from "@/components/skeletons/ViewsGridSkeleton"
 import { DropdownMenu } from "radix-ui"
 import { twMerge } from "tailwind-merge"
 import VisibilitySelect from "@/components/visibilityselect/VisibilitySelect"
+import ViewTypeSelect from "@/components/viewtypeselect/ViewTypeSelect"
 
 const ViewsPage = () => {
     const { t } = useTranslation()
@@ -166,38 +167,10 @@ const ViewsPage = () => {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium mb-2">{t('views.viewType')}</label>
-                                        <div className="flex flex-col gap-2">
-                                            <label className="flex items-center gap-2 cursor-pointer">
-                                                <input
-                                                    type="radio"
-                                                    name="viewType"
-                                                    value="map"
-                                                    checked={newViewType === "map"}
-                                                    onChange={(e) => setNewViewType(e.target.value as ViewType)}
-                                                />
-                                                <span>{t('views.map')}</span>
-                                            </label>
-                                            <label className="flex items-center gap-2 cursor-pointer">
-                                                <input
-                                                    type="radio"
-                                                    name="viewType"
-                                                    value="calendar"
-                                                    checked={newViewType === "calendar"}
-                                                    onChange={(e) => setNewViewType(e.target.value as ViewType)}
-                                                />
-                                                <span>{t('views.calendar')}</span>
-                                            </label>
-                                            <label className="flex items-center gap-2 cursor-pointer">
-                                                <input
-                                                    type="radio"
-                                                    name="viewType"
-                                                    value="kanban"
-                                                    checked={newViewType === "kanban"}
-                                                    onChange={(e) => setNewViewType(e.target.value as ViewType)}
-                                                />
-                                                <span>{t('views.kanban') || 'Kanban'}</span>
-                                            </label>
-                                        </div>
+                                        <ViewTypeSelect
+                                            value={newViewType}
+                                            onChange={setNewViewType}
+                                        />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium mb-2">{t('common.visibility')}</label>
