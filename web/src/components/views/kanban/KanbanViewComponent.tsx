@@ -348,14 +348,14 @@ const KanbanColumn = ({ column, isPublic, workspaceId, viewId, onNoteClick, onMo
                                             onSelect={() => onEditColumn?.(column.id)}
                                         >
                                             <Edit2 size={14} />
-                                            {t('common.edit')}
+                                            {t('actions.edit')}
                                         </DropdownMenu.Item>
                                         <DropdownMenu.Item
                                             className="flex items-center gap-2 px-3 py-2 text-sm rounded cursor-pointer outline-none text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
                                             onSelect={() => onDeleteColumn?.(column.id)}
                                         >
                                             <Trash2 size={14} />
-                                            {t('common.delete')}
+                                            {t('actions.delete')}
                                         </DropdownMenu.Item>
                                     </DropdownMenu.Content>
                                 </DropdownMenu.Portal>

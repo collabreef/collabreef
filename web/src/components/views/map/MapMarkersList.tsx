@@ -126,7 +126,7 @@ const MapMarkersList = ({
                                                         disabled={isDeleting}
                                                     >
                                                         <Trash2 size={14} />
-                                                        {t('common.delete')}
+                                                        {t('actions.delete')}
                                                     </DropdownMenu.Item>
                                                 </DropdownMenu.Content>
                                             </DropdownMenu.Portal>
