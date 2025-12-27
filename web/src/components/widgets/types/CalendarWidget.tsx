@@ -178,7 +178,7 @@ const CalendarWidget: FC<CalendarWidgetProps> = ({ config }) => {
               {monthNames[month]} {year}
             </div>
             <Link
-              to={`/workspaces/${workspaceId}/views/${config.viewId}`}
+              to={`/workspaces/${workspaceId}/calendar/${config.viewId}`}
               onClick={(e) => e.stopPropagation()}
               className="p-1.5 bg-white dark:bg-neutral-800 rounded shadow-sm hover:shadow-md transition-shadow border dark:border-neutral-600 flex items-center"
               title="Go to View"

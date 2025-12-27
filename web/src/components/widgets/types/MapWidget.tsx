@@ -213,7 +213,7 @@ const MapWidget: FC<MapWidgetProps> = ({ config }) => {
 
                 {/* View Link Button */}
                 <Link
-                  to={`/workspaces/${workspaceId}/views/${config.viewId}`}
+                  to={`/workspaces/${workspaceId}/map/${config.viewId}`}
                   onClick={(e) => e.stopPropagation()}
                   className="absolute top-2 right-2 z-[1000] p-2 bg-white text-neutral-800 rounded shadow-md hover:shadow-lg transition-shadow border flex items-center gap-1.5"
                   title="Go to View"
