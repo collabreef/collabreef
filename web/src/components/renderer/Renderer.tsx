@@ -30,7 +30,7 @@ const Renderer: React.FC<RendererProps> = ({ content }) => {
 
         switch (node.type) {
             case 'paragraph':
-                return node.content ? <p className='leading-6' key={key}>{renderContent()}</p> : <div className='h-4' key={key}></div>
+                return node.content ? <p className='leading-6' key={key}>{renderContent()}</p> : <div className='h-6' key={key}></div>
             case 'heading':
                 const level = node.attrs?.level || 1
                 const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements
