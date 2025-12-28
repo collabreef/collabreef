@@ -35,6 +35,7 @@ const NoteWidget: FC<NoteWidgetProps> = ({ config }) => {
       return updateNote(workspaceId, {
         id: config.noteId,
         content: data.content,
+        title: note?.title, // Preserve the original title
       });
     },
     onSuccess: () => {
