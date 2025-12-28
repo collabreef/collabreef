@@ -42,8 +42,23 @@ export const TwoColumnSidebar = ({ children, className = "" }: TwoColumnSidebarP
                 document.body.style.overflow = originalOverflow
                 document.body.style.position = originalPosition
             }
+        } else {
+            // Ensure body overflow is cleared when sidebar is collapsed or on desktop
+            // This prevents the overflow: hidden from persisting after navigation
+            if (window.innerWidth < 1024 && document.body.style.overflow === 'hidden') {
+                document.body.style.overflow = ''
+            }
         }
     }, [isSidebarCollapsed])
+
+    // Cleanup on unmount - ensure overflow is cleared
+    useEffect(() => {
+        return () => {
+            if (window.innerWidth < 1024 && document.body.style.overflow === 'hidden') {
+                document.body.style.overflow = ''
+            }
+        }
+    }, [])
 
     // Handle drag to close on mobile
     const handleDragStart = (clientY: number) => {
