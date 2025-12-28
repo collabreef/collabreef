@@ -17,18 +17,19 @@ const EditableDiv: FC<EditableDivProps> = ({
   ...props
 }) => {
   const divRef = useRef<HTMLDivElement>(null);
-  const initialized = useRef(false); 
+  const isUserEditing = useRef(false);
 
   useEffect(() => {
-    if (!initialized.current && divRef.current) {
+    // Update the content when value changes, but only if user is not currently editing
+    if (divRef.current && !isUserEditing.current && divRef.current.innerText !== value) {
       divRef.current.innerText = value;
-      initialized.current = true;
     }
   }, [value]);
 
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
+    isUserEditing.current = true;
     const text = e.currentTarget.innerText;
-    
+
     if (text === "<br>" || text === "<br/>" || text.trim() === "") {
       e.currentTarget.innerText = "";
       onChange?.("");
@@ -38,11 +39,24 @@ const EditableDiv: FC<EditableDivProps> = ({
     onChange(text);
   };
 
+  const handleFocus = () => {
+    isUserEditing.current = true;
+  };
+
+  const handleBlur = () => {
+    // Reset editing flag after a short delay to allow onChange to complete
+    setTimeout(() => {
+      isUserEditing.current = false;
+    }, 100);
+  };
+
   return (
     <div
       ref={divRef}
       contentEditable={editable}
       onInput={handleInput}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
       suppressContentEditableWarning
       data-placeholder={placeholder}
       className={className}
