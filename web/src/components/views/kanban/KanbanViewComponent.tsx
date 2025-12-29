@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
-import { KanbanColumnData } from '../../../types/view'
-import { getNotesForViewObject, removeNoteFromViewObject, addNoteToViewObject, deleteViewObject, updateViewObject } from '../../../api/view'
+import { KanbanColumnData, KanbanViewData, View } from '../../../types/view'
+import { getNotesForViewObject, removeNoteFromViewObject, addNoteToViewObject, deleteViewObject, updateViewObject, updateView } from '../../../api/view'
 import { PlusCircle, MoreVertical, Edit2, Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { Dialog } from 'radix-ui'
@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next'
 import Renderer from '../../renderer/Renderer'
 
 interface KanbanViewComponentProps {
+    view?: View
     viewObjects?: any[] // columns
     focusedObjectId?: string
     isPublic?: boolean
@@ -20,6 +21,7 @@ interface KanbanViewComponentProps {
 }
 
 const KanbanViewComponent = ({
+    view,
     viewObjects = [],
     focusedObjectId,
     isPublic = false,
@@ -38,12 +40,33 @@ const KanbanViewComponent = ({
     const currentWorkspaceId = workspaceId || params.workspaceId
     const currentViewId = viewId || params.viewId
 
-    // Sort columns by order
+    // Sort columns by order from view data
     const sortedColumns = useMemo(() => {
+        // Try to get column order from view.data
+        let viewData: KanbanViewData | null = null
+        if (view?.data) {
+            try {
+                viewData = JSON.parse(view.data)
+            } catch (e) {
+                console.error('Failed to parse view data:', e)
+            }
+        }
+
+        // If view has columns order, use it
+        if (viewData?.columns && viewData.columns.length > 0) {
+            const orderMap = new Map(viewData.columns.map((id, index) => [id, index]))
+            return [...viewObjects].sort((a, b) => {
+                const orderA = orderMap.get(a.id) ?? 999
+                const orderB = orderMap.get(b.id) ?? 999
+                return orderA - orderB
+            })
+        }
+
+        // Fallback to old sorting by viewObject.data.order for backward compatibility
         return [...viewObjects].sort((a, b) => {
             try {
-                const dataA: KanbanColumnData = a.data ? JSON.parse(a.data) : {}
-                const dataB: KanbanColumnData = b.data ? JSON.parse(b.data) : {}
+                const dataA: any = a.data ? JSON.parse(a.data) : {}
+                const dataB: any = b.data ? JSON.parse(b.data) : {}
                 const orderA = dataA.order ?? 999
                 const orderB = dataB.order ?? 999
                 return orderA - orderB
@@ -51,7 +74,7 @@ const KanbanViewComponent = ({
                 return 0
             }
         })
-    }, [viewObjects])
+    }, [viewObjects, view])
 
     const handleNoteClick = (noteId: string) => {
         const path = isPublic
@@ -83,9 +106,32 @@ const KanbanViewComponent = ({
     }
 
     const deleteColumnMutation = useMutation({
-        mutationFn: (columnId: string) => deleteViewObject(currentWorkspaceId!, currentViewId!, columnId),
+        mutationFn: async (columnId: string) => {
+            // Delete the view object
+            await deleteViewObject(currentWorkspaceId!, currentViewId!, columnId)
+
+            // Also remove from view.data.columns if it exists
+            if (view?.data) {
+                try {
+                    const viewData: KanbanViewData = JSON.parse(view.data)
+                    if (viewData.columns) {
+                        const newColumns = viewData.columns.filter(id => id !== columnId)
+                        const newViewData: KanbanViewData = {
+                            ...viewData,
+                            columns: newColumns
+                        }
+                        await updateView(currentWorkspaceId!, currentViewId!, {
+                            data: JSON.stringify(newViewData)
+                        })
+                    }
+                } catch (e) {
+                    console.error('Failed to update view data after deleting column:', e)
+                }
+            }
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['view-objects', currentWorkspaceId, currentViewId] })
+            queryClient.invalidateQueries({ queryKey: ['view', currentWorkspaceId, currentViewId] })
         },
         onError: () => {
             addToast({ title: t('views.objectDeletedError'), type: 'error' })
@@ -150,36 +196,44 @@ const KanbanViewComponent = ({
     }
 
     const handleMoveColumn = async (columnId: string, direction: 'forward' | 'backward') => {
+        if (!view || !currentWorkspaceId || !currentViewId) return
+
         const currentIndex = sortedColumns.findIndex(col => col.id === columnId)
         if (currentIndex === -1) return
 
         const targetIndex = direction === 'forward' ? currentIndex - 1 : currentIndex + 1
         if (targetIndex < 0 || targetIndex >= sortedColumns.length) return
 
-        // Swap orders
-        const currentColumn = sortedColumns[currentIndex]
-        const targetColumn = sortedColumns[targetIndex]
-
         try {
-            const currentData: KanbanColumnData = currentColumn.data ? JSON.parse(currentColumn.data) : {}
-            const targetData: KanbanColumnData = targetColumn.data ? JSON.parse(targetColumn.data) : {}
+            // Get current view data
+            let viewData: KanbanViewData = {}
+            if (view.data) {
+                try {
+                    viewData = JSON.parse(view.data)
+                } catch (e) {
+                    console.error('Failed to parse view data:', e)
+                }
+            }
 
-            const currentOrder = currentData.order ?? currentIndex
-            const targetOrder = targetData.order ?? targetIndex
+            // Get current columns order (from view data or sorted columns)
+            let columns = viewData.columns || sortedColumns.map(col => col.id)
 
-            // Update both columns sequentially
-            await updateViewObject(currentWorkspaceId!, currentViewId!, currentColumn.id, {
-                name: currentColumn.name,
-                data: JSON.stringify({ ...currentData, order: targetOrder })
+            // Swap the columns
+            const newColumns = [...columns]
+            ;[newColumns[currentIndex], newColumns[targetIndex]] = [newColumns[targetIndex], newColumns[currentIndex]]
+
+            // Update view data
+            const newViewData: KanbanViewData = {
+                ...viewData,
+                columns: newColumns
+            }
+
+            await updateView(currentWorkspaceId, currentViewId, {
+                data: JSON.stringify(newViewData)
             })
 
-            await updateViewObject(currentWorkspaceId!, currentViewId!, targetColumn.id, {
-                name: targetColumn.name,
-                data: JSON.stringify({ ...targetData, order: currentOrder })
-            })
-
-            // Refresh the query after both updates
-            queryClient.invalidateQueries({ queryKey: ['view-objects', currentWorkspaceId, currentViewId] })
+            // Refresh the view query
+            queryClient.invalidateQueries({ queryKey: ['view', currentWorkspaceId, currentViewId] })
         } catch (e) {
             addToast({ title: t('views.objectUpdatedError'), type: 'error' })
         }

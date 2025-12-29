@@ -37,6 +37,7 @@ const ExploreKanbanPage = () => {
             />
             <div className="flex-1 overflow-hidden">
                 <KanbanViewComponent
+                    view={view}
                     viewObjects={viewObjects}
                     isPublic={true}
                     viewId={kanbanId}

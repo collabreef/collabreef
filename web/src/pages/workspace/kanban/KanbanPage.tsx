@@ -2,11 +2,12 @@ import { useState } from "react"
 import { useParams } from "react-router-dom"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { getView, getViewObjects, createViewObject } from "@/api/view"
+import { getView, getViewObjects, createViewObject, updateView } from "@/api/view"
 import { useToastStore } from "@/stores/toast"
 import KanbanViewContent from "@/components/views/kanban/KanbanViewContent"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import OneColumn from "@/components/onecolumn/OneColumn"
+import { KanbanViewData } from "@/types/view"
 
 const KanbanPage = () => {
     const { t } = useTranslation()
@@ -30,12 +31,40 @@ const KanbanPage = () => {
     })
 
     const createMutation = useMutation({
-        mutationFn: (data: { name: string; data: string }) =>
-            createViewObject(currentWorkspaceId, kanbanId!, {
+        mutationFn: async (data: { name: string; data: string }) => {
+            // Create the view object
+            const newViewObject = await createViewObject(currentWorkspaceId, kanbanId!, {
                 name: data.name,
                 type: 'kanban_column',
                 data: data.data
-            }),
+            })
+
+            // Update view.data to include the new column ID
+            if (view) {
+                try {
+                    let viewData: KanbanViewData = {}
+                    if (view.data) {
+                        viewData = JSON.parse(view.data)
+                    }
+
+                    const currentColumns = viewData.columns || (viewObjects || []).map((obj: any) => obj.id)
+                    const newColumns = [...currentColumns, newViewObject.id]
+
+                    const newViewData: KanbanViewData = {
+                        ...viewData,
+                        columns: newColumns
+                    }
+
+                    await updateView(currentWorkspaceId, kanbanId!, {
+                        data: JSON.stringify(newViewData)
+                    })
+                } catch (e) {
+                    console.error('Failed to update view data after creating column:', e)
+                }
+            }
+
+            return newViewObject
+        },
         onSuccess: () => {
             addToast({ title: t('views.objectCreatedSuccess'), type: 'success' })
             refetchViewObjects()
@@ -54,23 +83,7 @@ const KanbanPage = () => {
 
     const handleCreate = () => {
         if (newObjectName.trim()) {
-            // Calculate the next order value
-            let maxOrder = -1
-            if (viewObjects && viewObjects.length > 0) {
-                viewObjects.forEach((obj: any) => {
-                    try {
-                        const data = obj.data ? JSON.parse(obj.data) : {}
-                        const order = data.order ?? 0
-                        if (order > maxOrder) {
-                            maxOrder = order
-                        }
-                    } catch (e) {
-                        // ignore parse errors
-                    }
-                })
-            }
-
-            // Parse existing data and add order
+            // Parse data (no longer need to add order here)
             let dataObject: any = {}
             try {
                 if (newObjectData) {
@@ -79,8 +92,6 @@ const KanbanPage = () => {
             } catch (e) {
                 // ignore parse errors
             }
-
-            dataObject.order = maxOrder + 1
 
             createMutation.mutate({
                 name: newObjectName.trim(),

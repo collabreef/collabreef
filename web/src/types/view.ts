@@ -16,7 +16,8 @@ export interface CalendarViewData {
 }
 
 export interface KanbanViewData {
-  // Kanban view settings (columns are view objects)
+  // Array of column IDs in order
+  columns?: string[];
 }
 
 export interface View {
@@ -87,6 +88,5 @@ export interface MapMarkerData {
 }
 
 export interface KanbanColumnData {
-  order?: number; // Order of the column in the board
   color?: string; // Column header color
 }

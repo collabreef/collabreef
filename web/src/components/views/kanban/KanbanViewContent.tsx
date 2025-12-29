@@ -88,6 +88,7 @@ const KanbanViewContent = ({
             <div className="flex-1 overflow-hidden">
                 <KanbanViewComponent
                     key={focusedObjectId || 'default'}
+                    view={view}
                     viewObjects={viewObjects}
                     focusedObjectId={focusedObjectId}
                     workspaceId={currentWorkspaceId}
