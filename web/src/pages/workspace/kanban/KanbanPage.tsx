@@ -54,7 +54,38 @@ const KanbanPage = () => {
 
     const handleCreate = () => {
         if (newObjectName.trim()) {
-            createMutation.mutate({ name: newObjectName.trim(), data: newObjectData })
+            // Calculate the next order value
+            let maxOrder = -1
+            if (viewObjects && viewObjects.length > 0) {
+                viewObjects.forEach((obj: any) => {
+                    try {
+                        const data = obj.data ? JSON.parse(obj.data) : {}
+                        const order = data.order ?? 0
+                        if (order > maxOrder) {
+                            maxOrder = order
+                        }
+                    } catch (e) {
+                        // ignore parse errors
+                    }
+                })
+            }
+
+            // Parse existing data and add order
+            let dataObject: any = {}
+            try {
+                if (newObjectData) {
+                    dataObject = JSON.parse(newObjectData)
+                }
+            } catch (e) {
+                // ignore parse errors
+            }
+
+            dataObject.order = maxOrder + 1
+
+            createMutation.mutate({
+                name: newObjectName.trim(),
+                data: JSON.stringify(dataObject)
+            })
         }
     }
 

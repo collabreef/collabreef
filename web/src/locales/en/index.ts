@@ -154,6 +154,8 @@ export default {
     showLess: "Show less",
     download: "Download",
     back: "Back",
+    moveForward: "Move Forward",
+    moveBackward: "Move Backward",
   },
   messages: {
     signInFailed: "Sign in failed, please check your username and password",
@@ -207,6 +209,7 @@ export default {
     addTag: "Add Tag"
   },
   common: {
+    name: "Name",
     visibility: "Visibility",
     created: "Created",
     lastUpdated: "Last Updated",

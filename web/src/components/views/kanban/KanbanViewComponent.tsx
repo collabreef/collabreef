@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { KanbanColumnData } from '../../../types/view'
 import { getNotesForViewObject, removeNoteFromViewObject, addNoteToViewObject, deleteViewObject, updateViewObject } from '../../../api/view'
-import { PlusCircle, MoreVertical, Edit2, Trash2 } from 'lucide-react'
+import { PlusCircle, MoreVertical, Edit2, Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { Dialog } from 'radix-ui'
 import AddNoteDialog from '../AddNoteDialog'
@@ -149,11 +149,47 @@ const KanbanViewComponent = ({
         }
     }
 
+    const handleMoveColumn = async (columnId: string, direction: 'forward' | 'backward') => {
+        const currentIndex = sortedColumns.findIndex(col => col.id === columnId)
+        if (currentIndex === -1) return
+
+        const targetIndex = direction === 'forward' ? currentIndex - 1 : currentIndex + 1
+        if (targetIndex < 0 || targetIndex >= sortedColumns.length) return
+
+        // Swap orders
+        const currentColumn = sortedColumns[currentIndex]
+        const targetColumn = sortedColumns[targetIndex]
+
+        try {
+            const currentData: KanbanColumnData = currentColumn.data ? JSON.parse(currentColumn.data) : {}
+            const targetData: KanbanColumnData = targetColumn.data ? JSON.parse(targetColumn.data) : {}
+
+            const currentOrder = currentData.order ?? currentIndex
+            const targetOrder = targetData.order ?? targetIndex
+
+            // Update both columns sequentially
+            await updateViewObject(currentWorkspaceId!, currentViewId!, currentColumn.id, {
+                name: currentColumn.name,
+                data: JSON.stringify({ ...currentData, order: targetOrder })
+            })
+
+            await updateViewObject(currentWorkspaceId!, currentViewId!, targetColumn.id, {
+                name: targetColumn.name,
+                data: JSON.stringify({ ...targetData, order: currentOrder })
+            })
+
+            // Refresh the query after both updates
+            queryClient.invalidateQueries({ queryKey: ['view-objects', currentWorkspaceId, currentViewId] })
+        } catch (e) {
+            addToast({ title: t('views.objectUpdatedError'), type: 'error' })
+        }
+    }
+
     return (
         <>
             <div className="h-full overflow-x-auto">
                 <div className="flex gap-4 h-full min-w-max">
-                    {sortedColumns.map((column) => (
+                    {sortedColumns.map((column, index) => (
                         <KanbanColumn
                             key={column.id}
                             column={column}
@@ -165,6 +201,9 @@ const KanbanViewComponent = ({
                             onMoveNote={handleMoveNote}
                             onEditColumn={handleEditColumn}
                             onDeleteColumn={handleDeleteColumn}
+                            onMoveColumn={handleMoveColumn}
+                            isFirstColumn={index === 0}
+                            isLastColumn={index === sortedColumns.length - 1}
                         />
                     ))}
 
@@ -243,9 +282,12 @@ interface KanbanColumnProps {
     onMoveNote: (noteId: string, fromColumnId: string, toColumnId: string) => Promise<void>
     onEditColumn?: (columnId: string) => void
     onDeleteColumn?: (columnId: string) => void
+    onMoveColumn?: (columnId: string, direction: 'forward' | 'backward') => void
+    isFirstColumn?: boolean
+    isLastColumn?: boolean
 }
 
-const KanbanColumn = ({ column, isPublic, workspaceId, viewId, onNoteClick, onMoveNote, onEditColumn, onDeleteColumn }: KanbanColumnProps) => {
+const KanbanColumn = ({ column, isPublic, workspaceId, viewId, onNoteClick, onMoveNote, onEditColumn, onDeleteColumn, onMoveColumn, isFirstColumn, isLastColumn }: KanbanColumnProps) => {
     const [isAddingNote, setIsAddingNote] = useState(false)
     const [_, setIsDragOver] = useState(false)
     const { t } = useTranslation()
@@ -343,6 +385,27 @@ const KanbanColumn = ({ column, isPublic, workspaceId, viewId, onNoteClick, onMo
                                         className="min-w-[160px] bg-white dark:bg-neutral-800 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-700 p-1 z-50"
                                         sideOffset={5}
                                     >
+                                        {!isFirstColumn && (
+                                            <DropdownMenu.Item
+                                                className="flex items-center gap-2 px-3 py-2 text-sm rounded cursor-pointer outline-none hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                                                onSelect={() => onMoveColumn?.(column.id, 'forward')}
+                                            >
+                                                <ChevronLeft size={14} />
+                                                {t('actions.moveForward')}
+                                            </DropdownMenu.Item>
+                                        )}
+                                        {!isLastColumn && (
+                                            <DropdownMenu.Item
+                                                className="flex items-center gap-2 px-3 py-2 text-sm rounded cursor-pointer outline-none hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                                                onSelect={() => onMoveColumn?.(column.id, 'backward')}
+                                            >
+                                                <ChevronRight size={14} />
+                                                {t('actions.moveBackward')}
+                                            </DropdownMenu.Item>
+                                        )}
+                                        {(!isFirstColumn || !isLastColumn) && (
+                                            <DropdownMenu.Separator className="h-px bg-neutral-200 dark:bg-neutral-700 my-1" />
+                                        )}
                                         <DropdownMenu.Item
                                             className="flex items-center gap-2 px-3 py-2 text-sm rounded cursor-pointer outline-none hover:bg-neutral-100 dark:hover:bg-neutral-700"
                                             onSelect={() => onEditColumn?.(column.id)}
