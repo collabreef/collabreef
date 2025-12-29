@@ -1,4 +1,4 @@
-import { ChevronsUpDown, Plus, Trash2 } from "lucide-react"
+import { ChevronsUpDown, Plus, Trash2, Settings } from "lucide-react"
 import { WorkspaceDropdown } from "../workspacedropdown/WorkspaceDropdown"
 import { useMemo, useState } from "react"
 import { useNavigate } from 'react-router-dom'
@@ -8,6 +8,7 @@ import { createView, getViews, deleteView } from "@/api/view"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { useToastStore } from "@/stores/toast"
+import ViewSettingsModal from "./ViewSettingsModal"
 
 interface ViewMenuProps {
     viewType: ViewType
@@ -21,6 +22,8 @@ const ViewMenu = ({ viewType, currentViewId }: ViewMenuProps) => {
     const queryClient = useQueryClient()
     const { addToast } = useToastStore()
     const [keyword, setKeyword] = useState("")
+    const [settingsModalOpen, setSettingsModalOpen] = useState(false)
+    const [selectedView, setSelectedView] = useState<any>(null)
 
     const { data: views } = useQuery({
         queryKey: ['views', currentWorkspaceId, viewType],
@@ -90,6 +93,12 @@ const ViewMenu = ({ viewType, currentViewId }: ViewMenuProps) => {
         }
     }
 
+    const handleOpenSettings = (e: React.MouseEvent, view: any) => {
+        e.stopPropagation()
+        setSelectedView(view)
+        setSettingsModalOpen(true)
+    }
+
     const getViewTypeLabel = () => {
         switch (viewType) {
             case 'calendar':
@@ -124,21 +133,22 @@ const ViewMenu = ({ viewType, currentViewId }: ViewMenuProps) => {
     }
 
     return (
-        <WorkspaceDropdown
-            className="w-full"
-            buttonClassName="bg-white dark:bg-neutral-700 shadow border dark:border-none w-full px-3 py-1.5 rounded-md text-sm flex justify-center items-center truncate"
-            buttonTooltip={currentView?.name ?? getViewTypeLabel()}
-            buttonContent={
-                <>
-                    <span className="grow text-left truncate">
-                        {currentView?.name ?? getViewTypeLabel()}
-                    </span>
-                    <span className="w-5">
-                        <ChevronsUpDown size={16} />
-                    </span>
-                </>
-            }
-        >
+        <>
+            <WorkspaceDropdown
+                className="w-full"
+                buttonClassName="bg-white dark:bg-neutral-700 shadow border dark:border-none w-full px-3 py-1.5 rounded-md text-sm flex justify-center items-center truncate"
+                buttonTooltip={currentView?.name ?? getViewTypeLabel()}
+                buttonContent={
+                    <>
+                        <span className="grow text-left truncate">
+                            {currentView?.name ?? getViewTypeLabel()}
+                        </span>
+                        <span className="w-5">
+                            <ChevronsUpDown size={16} />
+                        </span>
+                    </>
+                }
+            >
             <div className="px-2 pb-2">
                 <input
                     value={keyword}
@@ -156,6 +166,13 @@ const ViewMenu = ({ viewType, currentViewId }: ViewMenuProps) => {
                                 onClick={() => handleViewClick(v.id)}
                             >
                                 {v.name}
+                            </button>
+                            <button
+                                onClick={(e) => handleOpenSettings(e, v)}
+                                className="p-2 opacity-0 group-hover:opacity-100 hover:text-blue-600 dark:hover:text-blue-400 transition-opacity"
+                                title={t('views.settings') || 'Settings'}
+                            >
+                                <Settings size={14} />
                             </button>
                             <button
                                 onClick={(e) => handleDeleteView(e, v.id)}
@@ -181,7 +198,17 @@ const ViewMenu = ({ viewType, currentViewId }: ViewMenuProps) => {
                     </div>
                 )}
             </div>
-        </WorkspaceDropdown>
+            </WorkspaceDropdown>
+
+            {selectedView && (
+                <ViewSettingsModal
+                    open={settingsModalOpen}
+                    onOpenChange={setSettingsModalOpen}
+                    view={selectedView}
+                    workspaceId={currentWorkspaceId}
+                />
+            )}
+        </>
     )
 }
 
