@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Tooltip } from 'react-leaflet'
-import { Icon, DivIcon } from 'leaflet'
+import { DivIcon } from 'leaflet'
 import { ViewObject, View, MapViewData } from '@/types/view'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTwoColumn } from '@/components/twocolumn/TwoColumn'
