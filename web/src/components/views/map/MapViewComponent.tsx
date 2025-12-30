@@ -182,11 +182,16 @@ const MapViewComponent = ({ viewObjects = [], view, focusedObjectId, isPublic = 
 
     // Get zoom level from view settings or use default
     const mapZoom = useMemo(() => {
+        // When viewing a specific marker detail, zoom to maximum
+        if (focusedObjectId) {
+            return 18
+        }
+
         if (viewSettings?.zoom !== undefined) {
             return viewSettings.zoom
         }
         return markers.length === 0 ? 10 : 12
-    }, [markers.length, viewSettings])
+    }, [markers.length, viewSettings, focusedObjectId])
 
     // Create custom marker icon based on marker data
     const createMarkerIcon = (markerData: MarkerWithNotes) => {
