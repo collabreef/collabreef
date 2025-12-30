@@ -171,7 +171,7 @@ const NoteFormWidget: FC<NoteFormWidgetProps> = ({ config }) => {
 
   return (
     <Widget withPadding={false}>
-      <div className='h-full flex flex-col'>
+      <div className='h-full flex flex-col rounded-lg overflow-hidden'>
         {/* Toolbar */}
         {Object.values(toolbar).some(v => v) && (
           <div className="flex flex-wrap gap-1 p-2 border-b dark:border-neutral-700 bg-white dark:bg-neutral-800">
