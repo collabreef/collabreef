@@ -70,7 +70,7 @@ const PublicCalendarContent = ({ view, viewObjects, focusedObjectId }: any) => {
                 rightActions={
                     <button
                         onClick={toggleSidebar}
-                        className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                        className="lg:hidden px-4 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
                         title={isSidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}
                     >
                         <Calendar size={18} />

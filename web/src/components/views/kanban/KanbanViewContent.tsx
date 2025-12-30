@@ -44,7 +44,7 @@ const KanbanViewContent = ({
             <ViewHeader
                 menu={<ViewMenu viewType="kanban" currentViewId={view.id} />}
                 rightActions={
-                    <div className="flex gap-4 px-4">
+                    <div className="flex gap-2 px-4">
                         <button
                             onClick={() => setIsCreating(true)}
                             className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"

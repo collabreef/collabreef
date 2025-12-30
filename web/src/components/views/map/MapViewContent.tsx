@@ -48,20 +48,22 @@ const MapViewContent = ({
                     menu={<ViewMenu viewType="map" currentViewId={view.id} />}
                     rightActions={
                         <>
-                            <button
-                                onClick={toggleSidebar}
-                                className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-                                title={isSidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}
-                            >
-                                <MapPin size={18} />
-                            </button>
-                            <button
-                                onClick={() => setIsSettingsOpen(true)}
-                                className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-                                title="Settings"
-                            >
-                                <Settings size={18} />
-                            </button>
+                            <div className="px-4 flex gap-2">
+                                <button
+                                    onClick={toggleSidebar}
+                                    className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                                    title={isSidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}
+                                >
+                                    <MapPin size={18} />
+                                </button>
+                                <button
+                                    onClick={() => setIsSettingsOpen(true)}
+                                    className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                                    title="Settings"
+                                >
+                                    <Settings size={18} />
+                                </button>
+                            </div>
                         </>
                     }
                 />
