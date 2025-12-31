@@ -128,7 +128,7 @@ const AddNoteDialog = ({
             </div>
 
             {/* Notes List */}
-            <div className="space-y-2 max-h-96 overflow-y-auto">
+            <div className="space-y-2 overflow-y-auto">
                 {availableNotes.length > 0 ? (
                     availableNotes.map((note: any) => (
                         <button

@@ -322,7 +322,7 @@ const CreateViewObjectModal = ({
 
                         {/* Search Results */}
                         {searchResults.length > 0 && (
-                            <div className="mt-2 border dark:border-neutral-600 rounded-lg max-h-48 overflow-y-auto">
+                            <div className="mt-2 border dark:border-neutral-600 rounded-lg overflow-y-auto">
                                 {searchResults.map((result, index) => (
                                     <button
                                         key={index}
