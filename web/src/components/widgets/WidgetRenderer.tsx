@@ -56,9 +56,8 @@ const WidgetRenderer: FC<WidgetRendererProps> = ({
       </div>
 
       {isEditMode && (
-        <>
-          {/* Action Buttons */}
-          <div className='absolute z-10 bottom-full right-0 p-1 bg-neutral-200 dark:bg-neutral-800 shadow-lg border border-neutral-500 space-x-0.5'>
+        <div className='absolute w-full h-full pointer-events-none'>
+          <div className='absolute z-10 bottom-full right-0 p-1 bg-neutral-200 dark:bg-neutral-800 shadow-lg border border-neutral-500 space-x-0.5 pointer-events-auto'>
             <button
               onClick={onEdit}
               className="p-1.5 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
@@ -74,11 +73,10 @@ const WidgetRenderer: FC<WidgetRendererProps> = ({
               <Trash2 size={14} />
             </button>
           </div>
-          {/* Drag Handle - lower z-index to allow resize handles to work */}
-          <div className='absolute inset-0 widget-drag-handle cursor-move' style={{ zIndex: 1 }}>
+          <div className='absolute top-0 right-0 w-full h-full widget-drag-handle pointer-events-auto cursor-move'>
 
           </div>
-        </>
+        </div>
       )}
     </div>
   );
