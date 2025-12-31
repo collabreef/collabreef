@@ -3,8 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Loader2, X, ExternalLink } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
-import { Icon } from 'leaflet';
-import { getView, getViewObjects, getViews } from '@/api/view';
+import { DivIcon } from 'leaflet';
+import { getView, getViewObjects, getViews, getNotesForViewObject } from '@/api/view';
+import { NoteData } from '@/api/note';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import { MapWidgetConfig } from '@/types/widget';
 import { MapMarkerData, ViewObject } from '@/types/view';
@@ -15,6 +16,46 @@ import { registerWidget, WidgetProps, WidgetConfigFormProps } from '../widgetReg
 interface MapWidgetProps extends WidgetProps {
   config: MapWidgetConfig;
 }
+
+interface MarkerWithNotes {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  firstImageUrl?: string;
+  noteCount: number;
+}
+
+// Helper function to extract first image URL from note content
+const extractFirstImageFromNote = (note: NoteData): string | null => {
+  try {
+    const content = JSON.parse(note.content);
+
+    const findImageNode = (node: any): string | null => {
+      if (!node) return null;
+
+      // Check if this node is an image
+      if (node.type === 'image' && node.attrs?.src) {
+        return node.attrs.src;
+      }
+
+      // Recursively search in content
+      if (node.content && Array.isArray(node.content)) {
+        for (const child of node.content) {
+          const imageUrl = findImageNode(child);
+          if (imageUrl) return imageUrl;
+        }
+      }
+
+      return null;
+    };
+
+    return findImageNode(content);
+  } catch (e) {
+    console.error('Failed to parse note content:', e);
+    return null;
+  }
+};
 
 // Component to force map to recalculate size
 const MapResizer: FC = () => {
@@ -57,6 +98,7 @@ const MapWidget: FC<MapWidgetProps> = ({ config }) => {
   const workspaceId = useCurrentWorkspaceId();
   const [selectedMarkerIndex, setSelectedMarkerIndex] = useState<number | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const [markersWithNotes, setMarkersWithNotes] = useState<Map<string, MarkerWithNotes>>(new Map());
 
   const { data: view, isLoading: isLoadingView } = useQuery({
     queryKey: ['view', workspaceId, config.viewId],
@@ -76,13 +118,62 @@ const MapWidget: FC<MapWidgetProps> = ({ config }) => {
       .filter((obj: ViewObject) => obj.type === 'map_marker')
       .map((obj: ViewObject) => {
         try {
-          return JSON.parse(obj.data) as MapMarkerData;
+          const data = JSON.parse(obj.data) as MapMarkerData;
+          return {
+            id: obj.id,
+            name: obj.name,
+            lat: data.lat,
+            lng: data.lng
+          };
         } catch {
           return null;
         }
       })
-      .filter((m): m is MapMarkerData => m !== null);
+      .filter((m): m is { id: string; name: string; lat: number; lng: number } => m !== null);
   }, [objects]);
+
+  // Load notes for each marker
+  useEffect(() => {
+    const loadNotesForMarkers = async () => {
+      const newMarkersWithNotes = new Map<string, MarkerWithNotes>();
+
+      for (const marker of markers) {
+        try {
+          // Fetch notes for this marker
+          const notes = await getNotesForViewObject(workspaceId, config.viewId, marker.id);
+
+          // Extract first image from notes
+          let firstImageUrl: string | undefined = undefined;
+          for (const note of notes) {
+            const imageUrl = extractFirstImageFromNote(note);
+            if (imageUrl) {
+              firstImageUrl = imageUrl;
+              break;
+            }
+          }
+
+          newMarkersWithNotes.set(marker.id, {
+            ...marker,
+            firstImageUrl,
+            noteCount: notes.length
+          });
+        } catch (error) {
+          console.error('Failed to load notes for marker:', marker.id, error);
+          // Still add marker but without notes info
+          newMarkersWithNotes.set(marker.id, {
+            ...marker,
+            noteCount: 0
+          });
+        }
+      }
+
+      setMarkersWithNotes(newMarkersWithNotes);
+    };
+
+    if (markers.length > 0 && workspaceId && config.viewId) {
+      loadNotesForMarkers();
+    }
+  }, [markers, workspaceId, config.viewId]);
 
   // Delay map rendering to ensure container is fully sized
   useEffect(() => {
@@ -119,17 +210,68 @@ const MapWidget: FC<MapWidgetProps> = ({ config }) => {
     return 13;
   }, [markers]);
 
-  const markerIcon = useMemo(() => {
-    return new Icon({
-      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-      iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41]
-    });
-  }, []);
+  // Create custom marker icon based on marker data
+  const createMarkerIcon = (markerData: MarkerWithNotes) => {
+    const { firstImageUrl, noteCount } = markerData;
+
+    if (firstImageUrl) {
+      // Use image as marker
+      const html = `
+        <div style="
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          overflow: hidden;
+          border: 1px solid white;
+          background: white;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        ">
+          <img
+            src="${firstImageUrl}"
+            style="
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            "
+            alt="marker"
+          />
+        </div>
+      `;
+      return new DivIcon({
+        html,
+        className: 'custom-marker-icon',
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+        popupAnchor: [0, -20]
+      });
+    } else {
+      // Use note count as marker
+      const html = `
+        <div style="
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: white;
+          border: 1px solid #aaa;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+          font-size: 12px;
+        ">
+          ${noteCount}
+        </div>
+      `;
+      return new DivIcon({
+        html,
+        className: 'custom-marker-icon',
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+        popupAnchor: [0, -20]
+      });
+    }
+  };
 
   const handleMarkerClick = (index: number) => {
     setSelectedMarkerIndex(index);
@@ -199,16 +341,27 @@ const MapWidget: FC<MapWidgetProps> = ({ config }) => {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
-                  {markers.map((marker, index) => (
-                    <Marker
-                      key={index}
-                      position={[marker.lat, marker.lng]}
-                      icon={markerIcon}
-                      eventHandlers={{
-                        click: () => handleMarkerClick(index)
-                      }}
-                    />
-                  ))}
+                  {markers.map((marker, index) => {
+                    const markerData = markersWithNotes.get(marker.id);
+                    const icon = markerData ? createMarkerIcon(markerData) : new DivIcon({
+                      html: "<div></div>",
+                      className: 'custom-marker-icon',
+                      iconSize: [40, 40],
+                      iconAnchor: [20, 20],
+                      popupAnchor: [0, -20]
+                    });
+
+                    return (
+                      <Marker
+                        key={marker.id}
+                        position={[marker.lat, marker.lng]}
+                        icon={icon}
+                        eventHandlers={{
+                          click: () => handleMarkerClick(index)
+                        }}
+                      />
+                    );
+                  })}
                 </MapContainer>
 
                 {/* View Link Button */}
