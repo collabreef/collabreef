@@ -59,8 +59,8 @@ const NoteFormWidget: FC<NoteFormWidgetProps> = ({ config }) => {
         placeholder: config.placeholder || t('notes.contentPlaceholder')
       }),
       Attachment.configure({
-        upload: async (f: File) => {
-          const res = await uploadFile(workspaceId, f)
+        upload: async (f: File, onProgress?: (percent: number) => void) => {
+          const res = await uploadFile(workspaceId, f, onProgress)
           return {
             src: `/api/v1/workspaces/${workspaceId}/files/${res.filename}`,
             name: res.original_name
@@ -70,8 +70,8 @@ const NoteFormWidget: FC<NoteFormWidgetProps> = ({ config }) => {
         listFiles: listFiles
       }),
       ImageNode.configure({
-        upload: async (f: File) => {
-          const res = await uploadFile(workspaceId, f)
+        upload: async (f: File, onProgress?: (percent: number) => void) => {
+          const res = await uploadFile(workspaceId, f, onProgress)
           return {
             src: `/api/v1/workspaces/${workspaceId}/files/${res.filename}`,
             name: res.original_name

@@ -7,6 +7,7 @@ import { FileInfo } from "@/api/file"
 
 const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttributes, selected, editor, deleteNode }) => {
     const [isUploading, setIsUploading] = useState(false)
+    const [uploadProgress, setUploadProgress] = useState(0)
     const [isPickerOpen, setIsPickerOpen] = useState(false)
     const [showActions, setShowActions] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
@@ -38,10 +39,14 @@ const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttrib
         if (!file) return
 
         setIsUploading(true)
+        setUploadProgress(0)
 
-        const result = await extension.options?.upload(file)
+        const result = await extension.options?.upload(file, (progress: any) => {
+            setUploadProgress(progress)
+        })
 
         setIsUploading(false)
+        setUploadProgress(0)
 
         if (result?.src) {
             updateAttributes({
@@ -81,7 +86,13 @@ const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttrib
                         {isUploading ? (
                             <>
                                 <Loader2 className="animate-spin" size={20} />
-                                <span className="text-sm">Uploading</span>
+                                <span className="text-sm">Uploading {uploadProgress}%</span>
+                                <div className="w-full bg-gray-300 dark:bg-neutral-700 rounded-full h-2 mt-1">
+                                    <div
+                                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                        style={{ width: `${uploadProgress}%` }}
+                                    ></div>
+                                </div>
                             </>
                         ) : (
                             <>

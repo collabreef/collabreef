@@ -49,8 +49,8 @@ const Editor: FC<Props> = ({ note, onChange, canDrag = true }) => {
       }),
       TaskItem,
       Attachment.configure({
-        upload: async (f: File) => {
-          const res = await uploadFile(currentWorkspaceId, f)
+        upload: async (f: File, onProgress?: (percent: number) => void) => {
+          const res = await uploadFile(currentWorkspaceId, f, onProgress)
 
           return {
             src: `/api/v1/workspaces/${currentWorkspaceId}/files/${res.filename}`,
@@ -61,8 +61,8 @@ const Editor: FC<Props> = ({ note, onChange, canDrag = true }) => {
         listFiles: listFiles
       }),
       ImageNode.configure({
-        upload: async (f: File) => {
-          const res = await uploadFile(currentWorkspaceId, f)
+        upload: async (f: File, onProgress?: (percent: number) => void) => {
+          const res = await uploadFile(currentWorkspaceId, f, onProgress)
 
           return {
             src: `/api/v1/workspaces/${currentWorkspaceId}/files/${res.filename}`,

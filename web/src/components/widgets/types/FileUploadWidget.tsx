@@ -2,9 +2,8 @@ import { FC, useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { Upload, X, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
-import axios from 'axios';
 import { FileUploadWidgetConfig } from '@/types/widget';
-import { FileInfo } from '@/api/file';
+import { FileInfo, uploadFile as uploadFileApi } from '@/api/file';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import Widget from '@/components/widgets/Widget';
 import { registerWidget, WidgetProps, WidgetConfigFormProps } from '../widgetRegistry';
@@ -66,28 +65,15 @@ const FileUploadWidget: FC<FileUploadWidgetProps> = ({ config }) => {
     setUploadingFiles(prev => [...prev, uploadingFile]);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await axios.post(
-        `/api/v1/workspaces/${workspaceId}/files`,
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          onUploadProgress: (progressEvent) => {
-            const progress = progressEvent.total
-              ? Math.round((progressEvent.loaded * 100) / progressEvent.total)
-              : 0;
-
-            setUploadingFiles(prev =>
-              prev.map(f =>
-                f.file === file ? { ...f, progress } : f
-              )
-            );
-          },
+      const response = await uploadFileApi(
+        workspaceId,
+        file,
+        (progress) => {
+          setUploadingFiles(prev =>
+            prev.map(f =>
+              f.file === file ? { ...f, progress } : f
+            )
+          );
         }
       );
 
@@ -95,7 +81,7 @@ const FileUploadWidget: FC<FileUploadWidgetProps> = ({ config }) => {
       setUploadingFiles(prev =>
         prev.map(f =>
           f.file === file
-            ? { ...f, status: 'success', progress: 100, result: response.data }
+            ? { ...f, status: 'success', progress: 100, result: response }
             : f
         )
       );

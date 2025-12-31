@@ -10,13 +10,23 @@ export interface FileInfo {
     updated_at: string;
 }
 
-export const uploadFile = async (workspaceId: string, file: File) => {
+export const uploadFile = async (
+    workspaceId: string,
+    file: File,
+    onUploadProgress?: (progressPercent: number) => void
+) => {
     const formData = new FormData();
     formData.append("file", file)
     const response = await axios.post(`/api/v1/workspaces/${workspaceId}/files`, formData, {
         withCredentials: true,
         headers: {
             'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: (progressEvent) => {
+            if (onUploadProgress && progressEvent.total) {
+                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                onUploadProgress(percentCompleted);
+            }
         },
     });
     return response.data;
