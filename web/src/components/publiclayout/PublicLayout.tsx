@@ -20,7 +20,7 @@ const PublicLayout = () => {
                     {!isCollapse && <div className='text-xl font-extrabold text-gray-600 dark:text-gray-400 font-mono'>Notepia</div>}
                 </div>
             </div>
-            <div className=" flex flex-col gap-1 overflow-y-auto">
+            <div className=" flex flex-col gap-1 overflow-y-auto h-[calc(100dvh-110px)]">
                 <Link to="/explore/notes" className="p-2.5 flex items-center gap-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-lg">
                     <FileText size={20} />
                     {!isCollapse && <>{t("menu.notes")}</>}

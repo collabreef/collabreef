@@ -27,7 +27,7 @@ const WorkspaceLayout = () => {
             <div className="pt-4">
                 <WorkspaceMenu />
             </div>
-            <div className=" flex flex-col gap-1 overflow-y-auto">
+            <div className=" flex flex-col gap-1 overflow-y-auto h-[calc(100dvh-110px)]">
                 <div className="">
                     <Tooltip
                         text={t("widgets.home")}
