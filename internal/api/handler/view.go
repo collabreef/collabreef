@@ -138,9 +138,9 @@ func (h Handler) CreateView(c echo.Context) error {
 
 	// Validate view type
 	switch req.Type {
-	case "map", "calendar", "kanban":
+	case "map", "calendar", "kanban", "flow":
 	default:
-		return echo.NewHTTPError(http.StatusBadRequest, "View type must be 'map', 'calendar', or 'kanban'")
+		return echo.NewHTTPError(http.StatusBadRequest, "View type must be 'map', 'calendar', 'kanban', or 'flow'")
 	}
 
 	user := c.Get("user").(model.User)
@@ -211,9 +211,9 @@ func (h Handler) UpdateView(c echo.Context) error {
 	// Validate view type if provided
 	if req.Type != "" {
 		switch req.Type {
-		case "map", "calendar", "kanban":
+		case "map", "calendar", "kanban", "flow":
 		default:
-			return echo.NewHTTPError(http.StatusBadRequest, "View type must be 'map', 'calendar', or 'kanban'")
+			return echo.NewHTTPError(http.StatusBadRequest, "View type must be 'map', 'calendar', 'kanban', or 'flow'")
 		}
 	}
 

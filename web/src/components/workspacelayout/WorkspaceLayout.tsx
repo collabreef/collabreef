@@ -4,7 +4,7 @@ import { useSidebar } from "../sidebar/SidebarProvider"
 import { useWorkspaceStore } from "@/stores/workspace"
 import WorkspaceMenu from "../workspacemenu/WorkspaceMenu"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
-import { BookText, Paperclip, Home, Calendar, MapPin, KanbanSquare } from 'lucide-react'
+import { BookText, Paperclip, Home, Calendar, MapPin, KanbanSquare, Workflow } from 'lucide-react'
 import { useTranslation } from "react-i18next"
 import Tooltip from "../tooltip/Tooltip"
 import BaseLayout from "../baselayout/BaseLayout"
@@ -97,6 +97,18 @@ const WorkspaceLayout = () => {
                         <Link to={`/workspaces/${currentWorkspaceId}/kanban`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
                             <KanbanSquare size={20} />
                             {!isCollapse && (t("views.kanban") || "Kanban")}
+                        </Link>
+                    </Tooltip>
+                </div>
+                <div className="">
+                    <Tooltip
+                        text={t("views.flow") || "Flow"}
+                        side="right"
+                        enabled={isCollapse}
+                        >
+                        <Link to={`/workspaces/${currentWorkspaceId}/flow`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
+                            <Workflow size={20} />
+                            {!isCollapse && (t("views.flow") || "Flow")}
                         </Link>
                     </Tooltip>
                 </div>

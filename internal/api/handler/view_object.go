@@ -174,6 +174,9 @@ func (h Handler) CreateViewObject(c echo.Context) error {
 	if view.Type == "kanban" && req.Type != "kanban_column" {
 		return echo.NewHTTPError(http.StatusBadRequest, "Object type must be 'kanban_column' for kanban views")
 	}
+	if view.Type == "flow" && req.Type != "flow_node" && req.Type != "flow_edge" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Object type must be 'flow_node' or 'flow_edge' for flow views")
+	}
 
 	user := c.Get("user").(model.User)
 
@@ -247,6 +250,9 @@ func (h Handler) UpdateViewObject(c echo.Context) error {
 	}
 	if req.Type != "" && view.Type == "kanban" && req.Type != "kanban_column" {
 		return echo.NewHTTPError(http.StatusBadRequest, "Object type must be 'kanban_column' for kanban views")
+	}
+	if req.Type != "" && view.Type == "flow" && req.Type != "flow_node" && req.Type != "flow_edge" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Object type must be 'flow_node' or 'flow_edge' for flow views")
 	}
 
 	user := c.Get("user").(model.User)

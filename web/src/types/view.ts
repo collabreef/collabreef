@@ -1,5 +1,5 @@
-export type ViewType = 'map' | 'calendar' | 'kanban';
-export type ViewObjectType = 'calendar_slot' | 'map_marker' | 'kanban_column';
+export type ViewType = 'map' | 'calendar' | 'kanban' | 'flow';
+export type ViewObjectType = 'calendar_slot' | 'map_marker' | 'kanban_column' | 'flow_node' | 'flow_edge';
 
 // View data structures
 export interface MapViewData {
@@ -89,4 +89,42 @@ export interface MapMarkerData {
 
 export interface KanbanColumnData {
   color?: string; // Column header color
+}
+
+export interface FlowViewData {
+  // Array of node and edge IDs in order
+  nodes?: string[];
+  edges?: string[];
+  viewport?: {
+    x: number;
+    y: number;
+    zoom: number;
+  };
+}
+
+export interface FlowNodeData {
+  position: {
+    x: number;
+    y: number;
+  };
+  color?: string;
+  width?: number;
+  height?: number;
+}
+
+export type EdgeType = 'smoothstep' | 'step' | 'straight' | 'bezier';
+
+export interface FlowEdgeData {
+  source: string; // source node id
+  target: string; // target node id
+  sourceHandle?: string;
+  targetHandle?: string;
+  label?: string;
+  animated?: boolean;
+  style?: Record<string, any>;
+  markerStart?: string; // arrow at start: 'arrow' | 'none'
+  markerEnd?: string; // arrow at end: 'arrow' | 'none'
+  strokeDasharray?: string; // dashed line: '5,5' for dashed, undefined for solid
+  stroke?: string; // edge color
+  edgeType?: EdgeType; // edge curve type
 }

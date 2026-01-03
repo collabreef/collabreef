@@ -22,15 +22,19 @@ import ExploreCalendarSlotDetailPage from './pages/explore/ExploreCalendarSlotDe
 import ExploreMapPage from './pages/explore/ExploreMapPage';
 import ExploreMapMarkerDetailPage from './pages/explore/ExploreMapMarkerDetailPage';
 import ExploreKanbanPage from './pages/explore/ExploreKanbanPage';
+import ExploreFlowListPage from './pages/explore/ExploreFlowListPage';
+import ExploreFlowPage from './pages/explore/ExploreFlowPage';
 import FilesPage from './pages/workspace/files/FilesPage';
 import CalendarListPage from './pages/workspace/views/CalendarListPage';
 import MapListPage from './pages/workspace/views/MapListPage';
 import KanbanListPage from './pages/workspace/views/KanbanListPage';
+import FlowListPage from './pages/workspace/views/FlowListPage';
 import CalendarPage from './pages/workspace/calendar/CalendarPage';
 import CalendarSlotDetailPage from './pages/workspace/calendar/CalendarSlotDetailPage';
 import MapPage from './pages/workspace/map/MapPage';
 import MapMarkerDetailPage from './pages/workspace/map/MapMarkerDetailPage';
 import KanbanPage from './pages/workspace/kanban/KanbanPage';
+import FlowPage from './pages/workspace/flow/FlowPage';
 import WorkspaceHomePage from './pages/workspace/home/WorkspaceHomePage';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -82,6 +86,8 @@ function App() {
           </Route>
           <Route path='kanban' element={<ExploreKanbanListPage />} />
           <Route path='kanban/:kanbanId' element={<ExploreKanbanPage />} />
+          <Route path='flow' element={<ExploreFlowListPage />} />
+          <Route path='flow/:flowId' element={<ExploreFlowPage />} />
         </Route>
         <Route path='signin' element={<SignIn />}></Route>
         <Route path='signup' element={<SignUp />}></Route>
@@ -103,6 +109,8 @@ function App() {
             </Route>
             <Route path='kanban' element={<KanbanListPage />}></Route>
             <Route path='kanban/:kanbanId' element={<KanbanPage />} />
+            <Route path='flow' element={<FlowListPage />}></Route>
+            <Route path='flow/:flowId' element={<FlowPage />} />
             <Route path='settings' element={<Settings />}></Route>
             <Route path='home' element={<WorkspaceHomePage />}></Route>
             <Route path='' element={<WorkspaceHomePage />}></Route>
