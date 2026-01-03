@@ -42,7 +42,16 @@ const Renderer: React.FC<RendererProps> = ({ content }) => {
             case 'taskList':
                 return <div key={key} className="list-none">{renderContent()}</div>
             case 'taskItem':
-                return <div key={key} className='flex'><input disabled={true} type='checkbox' checked={node.attrs?.checked} aria-label='checkbox' />{renderContent()}</div>
+                return <div key={key} className='flex gap-1 items-start'>
+                     <input
+                            type='checkbox'
+                            className="size-4 rounded bg-white mt-1 shrink-0"
+                            checked={node.attrs?.checked}
+                            disabled={true}
+                            aria-label='checkbox'
+                        />
+                    {renderContent()}
+                </div>
             case 'listItem':
                 return <li key={key} className="">{renderContent()}</li>
             case 'codeBlock':
