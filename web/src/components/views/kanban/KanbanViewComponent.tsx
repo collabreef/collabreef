@@ -391,7 +391,7 @@ const KanbanColumn = ({ column, isPublic, workspaceId, viewId, onNoteClick, onMo
 
     return (
         <div
-            className={`flex-shrink-0 w-80 bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4 transition-all`}
+            className={`flex-shrink-0 w-80 h-[calc(100dvh-80px)] bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4 transition-all`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -483,7 +483,7 @@ const KanbanColumn = ({ column, isPublic, workspaceId, viewId, onNoteClick, onMo
             </div>
 
             {/* Notes (Cards) */}
-            <div className="space-y-3">
+            <div className="space-y-3 h-[calc(100dvh-150px)] overflow-x-hidden overflow-y-auto">
                 {notes.map((note: any) => (
                     <div
                         key={note.id}
