@@ -338,6 +338,7 @@ export default {
     noViews: "No views yet. Create your first view!",
     viewName: "View Name",
     viewType: "View Type",
+    settings: "View Settings",
     calendar: "Calendar",
     map: "Map",
     kanban: "Kanban",

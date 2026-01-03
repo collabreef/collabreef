@@ -338,6 +338,7 @@ export default {
     noViews: "还没有视图。创建你的第一个视图！",
     viewName: "视图名称",
     viewType: "视图类型",
+    settings: "视图设置",
     calendar: "日历",
     map: "地图",
     kanban: "看板",

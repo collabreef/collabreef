@@ -338,6 +338,7 @@ export default {
     noViews: "尚無視圖。建立你的第一個視圖!",
     viewName: "視圖名稱",
     viewType: "視圖類型",
+    settings: "視圖設定",
     calendar: "行事曆",
     map: "地圖",
     kanban: "看板",
