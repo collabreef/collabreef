@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { KanbanColumnData, KanbanViewData, View } from '../../../types/view'
 import { getNotesForViewObject, removeNoteFromViewObject, addNoteToViewObject, deleteViewObject, updateViewObject, updateView } from '../../../api/view'
-import { PlusCircle, MoreVertical, Edit2, Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { PlusCircle, MoreVertical, Edit2, Trash2, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { Dialog } from 'radix-ui'
 import AddNoteDialog from '../AddNoteDialog'
@@ -345,6 +345,8 @@ const KanbanColumn = ({ column, isPublic, workspaceId, viewId, onNoteClick, onMo
     const [isAddingNote, setIsAddingNote] = useState(false)
     const [_, setIsDragOver] = useState(false)
     const { t } = useTranslation()
+    const { addToast } = useToastStore()
+    const queryClient = useQueryClient()
 
     let columnData: KanbanColumnData = {}
     try {
@@ -365,6 +367,26 @@ const KanbanColumn = ({ column, isPublic, workspaceId, viewId, onNoteClick, onMo
     })
 
     const linkedNoteIds = Array.isArray(notes) ? notes.map((note: any) => note.id) : []
+
+    // Remove note mutation
+    const removeNoteMutation = useMutation({
+        mutationFn: async (noteId: string) => {
+            await removeNoteFromViewObject(workspaceId!, viewId!, column.id, noteId)
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['column-notes', workspaceId, viewId, column.id] })
+        },
+        onError: () => {
+            addToast({ title: t('views.noteRemovedError'), type: 'error' })
+        }
+    })
+
+    const handleRemoveNote = (e: React.MouseEvent, noteId: string) => {
+        e.stopPropagation()
+        if (window.confirm(t('views.removeNoteConfirm'))) {
+            removeNoteMutation.mutate(noteId)
+        }
+    }
 
     // Drag and drop handlers
     const handleDragOver = (e: React.DragEvent) => {
@@ -493,8 +515,17 @@ const KanbanColumn = ({ column, isPublic, workspaceId, viewId, onNoteClick, onMo
                             e.dataTransfer.setData('fromColumnId', column.id)
                         }}
                         onClick={() => onNoteClick(note.id)}
-                        className="w-full text-left p-4 rounded-lg bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-700 transition-all hover:shadow-md hover:scale-[1.02] cursor-pointer"
+                        className="w-full text-left p-4 pr-8 rounded-lg bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-700 cursor-pointer relative"
                     >
+                        {!isPublic && (
+                            <button
+                                onClick={(e) => handleRemoveNote(e, note.id)}
+                                className="absolute top-2 right-2 p-1 text-neutral-400 dark:text-neutral-500 hover:text-red-600 dark:hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                                title={t('views.removeNote')}
+                            >
+                                <X size={14} />
+                            </button>
+                        )}
                         <div className="text-sm line-clamp-3 overflow-hidden [&_.prose]:text-sm [&_.prose]:leading-normal">
                             <Renderer content={note.content} />
                         </div>

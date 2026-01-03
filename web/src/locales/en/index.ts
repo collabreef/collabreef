@@ -417,6 +417,8 @@ export default {
     allNotesLinked: "All notes are already linked",
     noteAddedSuccess: "Note added successfully",
     noteAddedError: "Failed to add note",
+    removeNote: "Remove Note",
+    removeNoteConfirm: "Are you sure you want to remove this note from the column?",
     noteRemovedSuccess: "Note removed successfully",
     noteRemovedError: "Failed to remove note",
     noteMovedSuccess: "Note moved successfully",

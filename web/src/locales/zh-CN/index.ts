@@ -417,6 +417,8 @@ export default {
     allNotesLinked: "所有笔记都已关联",
     noteAddedSuccess: "笔记添加成功",
     noteAddedError: "笔记添加失败",
+    removeNote: "移除笔记",
+    removeNoteConfirm: "您确定要从列中移除此笔记吗？",
     noteRemovedSuccess: "笔记移除成功",
     noteRemovedError: "笔记移除失败",
     noteMovedSuccess: "笔记移动成功",

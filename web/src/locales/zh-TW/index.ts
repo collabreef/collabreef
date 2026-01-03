@@ -417,6 +417,8 @@ export default {
     allNotesLinked: "所有筆記都已關聯",
     noteAddedSuccess: "筆記添加成功",
     noteAddedError: "筆記添加失敗",
+    removeNote: "移除筆記",
+    removeNoteConfirm: "您確定要從欄位中移除此筆記嗎？",
     noteRemovedSuccess: "筆記移除成功",
     noteRemovedError: "筆記移除失敗",
     noteMovedSuccess: "筆記移動成功",
