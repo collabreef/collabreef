@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTwoColumn } from '@/components/twocolumn/TwoColumn'
 import { useTranslation } from 'react-i18next'
+import { CalendarSlotData } from '@/types/view'
 
 interface CalendarViewComponentProps {
     viewObjects?: any[]
@@ -21,9 +22,18 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
         if (!focusedObjectId || !viewObjects) return null
         const focusedObj = viewObjects.find(obj => obj.id === focusedObjectId)
         if (focusedObj && focusedObj.data) {
-            const date = new Date(focusedObj.data)
-            if (!isNaN(date.getTime())) {
-                return date
+            try {
+                const slotData: CalendarSlotData = JSON.parse(focusedObj.data)
+                const date = new Date(slotData.date)
+                if (!isNaN(date.getTime())) {
+                    return date
+                }
+            } catch {
+                // Fallback for old format
+                const date = new Date(focusedObj.data)
+                if (!isNaN(date.getTime())) {
+                    return date
+                }
             }
         }
         return null
@@ -112,6 +122,16 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
         )
     }
 
+    // Parse slot data
+    const parseSlotData = (dataStr: string): CalendarSlotData | null => {
+        try {
+            return JSON.parse(dataStr)
+        } catch {
+            // Fallback for old format (just a date string)
+            return { date: dataStr, is_all_day: true }
+        }
+    }
+
     // Parse date string (YYYY-MM-DD) to avoid timezone issues
     const parseDate = (dateStr: string) => {
         const parts = dateStr.split('-')
@@ -134,7 +154,10 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
         return viewObjects.filter(obj => {
             if (!obj.data) return false
 
-            const parsed = parseDate(obj.data)
+            const slotData = parseSlotData(obj.data)
+            if (!slotData) return false
+
+            const parsed = parseDate(slotData.date)
             if (!parsed) return false
 
             return (
@@ -215,23 +238,32 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
                                     </div>
                                     {slotCount > 0 && (
                                         <div className="flex flex-wrap gap-1 mt-1">
-                                            {daySlots.slice(0, 3).map((slot, i) => (
-                                                <button
-                                                    key={i}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        openBottomSheet()
-                                                        const path = isPublic
-                                                            ? `/explore/calendar/${calendarId}/slot/${slot.id}`
-                                                            : `/workspaces/${workspaceId}/calendar/${calendarId}/slot/${slot.id}`
-                                                        navigate(path)
-                                                    }}
-                                                    className="text-xs px-1.5 py-0.5 bg-blue-500 text-white rounded truncate max-w-full hover:bg-blue-600 transition-colors"
-                                                    title={slot.name}
-                                                >
-                                                    {slot.name}
-                                                </button>
-                                            ))}
+                                            {daySlots.slice(0, 3).map((slot, i) => {
+                                                const slotData = parseSlotData(slot.data)
+                                                const timeLabel = slotData && !slotData.is_all_day && slotData.start_time
+                                                    ? ` ${slotData.start_time}`
+                                                    : ''
+
+                                                return (
+                                                    <button
+                                                        key={i}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            openBottomSheet()
+                                                            const path = isPublic
+                                                                ? `/explore/calendar/${calendarId}/slot/${slot.id}`
+                                                                : `/workspaces/${workspaceId}/calendar/${calendarId}/slot/${slot.id}`
+                                                            navigate(path)
+                                                        }}
+                                                        className="text-xs px-1.5 py-0.5 bg-blue-500 text-white rounded truncate max-w-full hover:bg-blue-600 transition-colors"
+                                                        title={`${slot.name}${timeLabel}`}
+                                                    >
+                                                        {timeLabel && <span className="opacity-75">{timeLabel}</span>}
+                                                        {timeLabel && ' '}
+                                                        {slot.name}
+                                                    </button>
+                                                )
+                                            })}
                                             {slotCount > 3 && (
                                                 <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
                                                     +{slotCount - 3}

@@ -70,6 +70,12 @@ const CreateViewObjectModal = ({
     const [nodeX, setNodeX] = useState('')
     const [nodeY, setNodeY] = useState('')
 
+    // Calendar-specific state (for creating slots)
+    const [calendarDate, setCalendarDate] = useState('')
+    const [startTime, setStartTime] = useState('')
+    const [endTime, setEndTime] = useState('')
+    const [isAllDay, setIsAllDay] = useState(true)
+
     // Parse existing data when modal opens for map type
     useEffect(() => {
         if (viewType === 'map' && data) {
@@ -79,6 +85,23 @@ const CreateViewObjectModal = ({
                 if (coords.lng) setLongitude(coords.lng.toString())
             } catch (e) {
                 // Ignore parse errors
+            }
+        }
+    }, [viewType, data])
+
+    // Parse existing data when modal opens for calendar type
+    useEffect(() => {
+        if (viewType === 'calendar' && data) {
+            try {
+                const slotData = JSON.parse(data)
+                if (slotData.date) setCalendarDate(slotData.date)
+                if (slotData.start_time) setStartTime(slotData.start_time)
+                if (slotData.end_time) setEndTime(slotData.end_time)
+                if (slotData.is_all_day !== undefined) setIsAllDay(slotData.is_all_day)
+            } catch (e) {
+                // Fallback for old format (just a date string)
+                setCalendarDate(data)
+                setIsAllDay(true)
             }
         }
     }, [viewType, data])
@@ -95,6 +118,10 @@ const CreateViewObjectModal = ({
             setNodeColor('')
             setNodeX('')
             setNodeY('')
+            setCalendarDate('')
+            setStartTime('')
+            setEndTime('')
+            setIsAllDay(true)
         }
     }, [open])
 
@@ -141,6 +168,23 @@ const CreateViewObjectModal = ({
             setData(JSON.stringify(flowData))
         }
     }, [nodeColor, nodeX, nodeY, viewType, setData])
+
+    // Update data for calendar type (slot creation)
+    useEffect(() => {
+        if (viewType === 'calendar' && calendarDate) {
+            const calendarData: any = {
+                date: calendarDate,
+                is_all_day: isAllDay
+            }
+            if (!isAllDay && startTime) {
+                calendarData.start_time = startTime
+            }
+            if (!isAllDay && endTime) {
+                calendarData.end_time = endTime
+            }
+            setData(JSON.stringify(calendarData))
+        }
+    }, [calendarDate, startTime, endTime, isAllDay, viewType, setData])
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -290,17 +334,60 @@ const CreateViewObjectModal = ({
     const renderDataInput = () => {
         if (viewType === 'calendar') {
             return (
-                <div>
-                    <label className="block text-sm font-medium mb-2">
-                        {t('views.date')}
-                    </label>
-                    <input
-                        type="date"
-                        value={data}
-                        onChange={(e) => setData(e.target.value)}
-                        className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
-                    />
-                </div>
+                <>
+                    <div>
+                        <label className="block text-sm font-medium mb-2">
+                            {t('views.date')}
+                        </label>
+                        <input
+                            type="date"
+                            value={calendarDate}
+                            onChange={(e) => setCalendarDate(e.target.value)}
+                            className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={isAllDay}
+                                onChange={(e) => setIsAllDay(e.target.checked)}
+                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            <span className="text-sm font-medium">
+                                {t('views.allDay') || 'All day'}
+                            </span>
+                        </label>
+                    </div>
+
+                    {!isAllDay && (
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-2">
+                                    {t('views.startTime') || 'Start time'}
+                                </label>
+                                <input
+                                    type="time"
+                                    value={startTime}
+                                    onChange={(e) => setStartTime(e.target.value)}
+                                    className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-2">
+                                    {t('views.endTime') || 'End time'}
+                                </label>
+                                <input
+                                    type="time"
+                                    value={endTime}
+                                    onChange={(e) => setEndTime(e.target.value)}
+                                    className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
+                                />
+                            </div>
+                        </div>
+                    )}
+                </>
             )
         }
 

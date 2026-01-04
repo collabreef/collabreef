@@ -1,10 +1,11 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useNavigate, useParams, useOutletContext } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { CirclePlus, ArrowLeft } from "lucide-react"
+import { CirclePlus, ArrowLeft, Clock } from "lucide-react"
 import { getViewObject } from "@/api/view"
 import ViewObjectNotesManager from "../ViewObjectNotesManager"
+import { CalendarSlotData } from "@/types/view"
 
 interface CalendarSlotDetailContext {
     view: any
@@ -25,6 +26,17 @@ const CalendarSlotDetail = () => {
         queryFn: () => getViewObject(workspaceId, viewId!, slotId!),
         enabled: !!workspaceId && !!viewId && !!slotId,
     })
+
+    // Parse slot data
+    const slotData = useMemo<CalendarSlotData | null>(() => {
+        if (!slot || !slot.data) return null
+        try {
+            return JSON.parse(slot.data)
+        } catch {
+            // Fallback for old format (just a date string)
+            return { date: slot.data, is_all_day: true }
+        }
+    }, [slot])
 
     const handleBack = () => {
         navigate(`/workspaces/${workspaceId}/calendar/${viewId}`)
@@ -70,9 +82,25 @@ const CalendarSlotDetail = () => {
                             <div className="text-sm text-gray-500 mt-1">
                                 {t('views.calendarSlot')}
                             </div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                                {new Date(slot.data).toLocaleDateString()}
-                            </div>
+                            {slotData && (
+                                <div className="mt-3 space-y-2">
+                                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                        <Clock size={14} />
+                                        <span>{new Date(slotData.date).toLocaleDateString()}</span>
+                                    </div>
+                                    {slotData.is_all_day && (
+                                        <div className="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded">
+                                            {t('views.allDay') || 'All day'}
+                                        </div>
+                                    )}
+                                    {!slotData.is_all_day && slotData.start_time && (
+                                        <div className="text-sm text-gray-700 dark:text-gray-300">
+                                            {slotData.start_time}
+                                            {slotData.end_time && ` - ${slotData.end_time}`}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                         <button
                             onClick={() => setIsAddingNote(true)}

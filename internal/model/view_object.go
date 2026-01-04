@@ -19,3 +19,11 @@ type ViewObject struct {
 	UpdatedAt string `json:"updated_at"`
 	UpdatedBy string `json:"updated_by"`
 }
+
+// CalendarSlotData represents the data structure for calendar slots stored in the Data field
+type CalendarSlotData struct {
+	Date      string  `json:"date"`       // YYYY-MM-DD format
+	StartTime *string `json:"start_time"` // HH:MM format (optional)
+	EndTime   *string `json:"end_time"`   // HH:MM format (optional)
+	IsAllDay  bool    `json:"is_all_day"` // true for all-day events
+}

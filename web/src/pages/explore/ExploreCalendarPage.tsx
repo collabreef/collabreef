@@ -1,18 +1,13 @@
-import { useNavigate, useParams, Outlet } from "react-router-dom"
+import { useParams, Outlet } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { getPublicView, getPublicViewObjects } from "@/api/view"
 import { TwoColumn, TwoColumnMain, TwoColumnSidebar } from "@/components/twocolumn"
-import CalendarViewComponent from "@/components/views/calendar/CalendarViewComponent"
+import ExploreCalendarViewContent from "@/components/views/calendar/ExploreCalendarViewContent"
 import ExploreCalendarSlotsList from "@/components/views/calendar/ExploreCalendarSlotsList"
-import ViewHeader from "@/components/views/common/ViewHeader"
-import { Calendar } from "lucide-react"
-import { useTwoColumn } from "@/components/twocolumn"
-import PublicViewMenu from "@/components/viewmenu/PublicViewMenu"
 
 const ExploreCalendarPage = () => {
     const { t } = useTranslation()
-    const navigate = useNavigate()
     const { calendarId, slotId } = useParams<{ calendarId: string; slotId?: string }>()
 
     const { data: view, isLoading: isViewLoading } = useQuery({
@@ -38,7 +33,11 @@ const ExploreCalendarPage = () => {
     return (
         <TwoColumn>
             <TwoColumnMain>
-                <PublicCalendarContent view={view} viewObjects={viewObjects} navigate={navigate} focusedObjectId={slotId} />
+                <ExploreCalendarViewContent
+                    view={view}
+                    viewObjects={viewObjects || []}
+                    focusedObjectId={slotId}
+                />
             </TwoColumnMain>
 
             <TwoColumnSidebar className="bg-white">
@@ -57,34 +56,6 @@ const ExploreCalendarPage = () => {
                 )}
             </TwoColumnSidebar>
         </TwoColumn>
-    )
-}
-
-const PublicCalendarContent = ({ view, viewObjects, focusedObjectId }: any) => {
-    const { isSidebarCollapsed, toggleSidebar } = useTwoColumn()
-
-    return (
-        <div className="w-full">
-            <ViewHeader
-                menu={<PublicViewMenu viewType="calendar" currentViewId={view.id} />}
-                rightActions={
-                    <button
-                        onClick={toggleSidebar}
-                        className="lg:hidden px-4 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-                        title={isSidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}
-                    >
-                        <Calendar size={18} />
-                    </button>
-                }
-            />
-
-            <CalendarViewComponent
-                key={focusedObjectId || 'default'}
-                viewObjects={viewObjects}
-                focusedObjectId={focusedObjectId}
-                isPublic={true}
-            />
-        </div>
     )
 }
 

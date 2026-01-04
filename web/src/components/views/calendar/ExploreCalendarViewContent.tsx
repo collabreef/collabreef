@@ -1,47 +1,34 @@
-import { Calendar, Settings } from "lucide-react"
+import { Calendar } from "lucide-react"
 import { useState } from "react"
-import { useTranslation } from "react-i18next"
 import { useTwoColumn } from "@/components/twocolumn"
+import { useTranslation } from "react-i18next"
 import CalendarViewComponent from "./CalendarViewComponent"
 import CalendarWeekView from "./CalendarWeekView"
 import CalendarDayView from "./CalendarDayView"
-import CalendarViewSettingsModal from "./CalendarViewSettingsModal"
 import ViewHeader from "../common/ViewHeader"
-import ViewMenu from "@/components/viewmenu/ViewMenu"
+import PublicViewMenu from "@/components/viewmenu/PublicViewMenu"
 
 type CalendarViewMode = 'month' | 'week' | 'day'
 
-interface CalendarViewContentProps {
+interface ExploreCalendarViewContentProps {
     view: any
     viewObjects: any[]
-    currentWorkspaceId: string
-    isCreating: boolean
-    setIsCreating: (value: boolean) => void
-    handleCloseModal: () => void
-    newObjectName: string
-    setNewObjectName: (value: string) => void
-    newObjectData: string
-    setNewObjectData: (value: string) => void
-    handleCreate: () => void
-    createMutation: any
     focusedObjectId?: string
 }
 
-const CalendarViewContent = ({
+const ExploreCalendarViewContent = ({
     view,
     viewObjects,
-    currentWorkspaceId,
     focusedObjectId
-}: CalendarViewContentProps) => {
+}: ExploreCalendarViewContentProps) => {
     const { t } = useTranslation()
     const { isSidebarCollapsed, toggleSidebar } = useTwoColumn()
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false)
     const [viewMode, setViewMode] = useState<CalendarViewMode>('month')
 
     return (
         <div className="w-full">
             <ViewHeader
-                menu={<ViewMenu viewType="calendar" currentViewId={view.id} />}
+                menu={<PublicViewMenu viewType="calendar" currentViewId={view.id} />}
                 rightActions={
                     <>
                         <div className="px-4 flex gap-2 items-center">
@@ -86,23 +73,9 @@ const CalendarViewContent = ({
                             >
                                 <Calendar size={18} />
                             </button>
-                            <button
-                                onClick={() => setIsSettingsOpen(true)}
-                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-                                title="Settings"
-                            >
-                                <Settings size={18} />
-                            </button>
                         </div>
                     </>
                 }
-            />
-
-            <CalendarViewSettingsModal
-                open={isSettingsOpen}
-                onOpenChange={setIsSettingsOpen}
-                view={view}
-                workspaceId={currentWorkspaceId}
             />
 
             {viewMode === 'month' && (
@@ -110,6 +83,7 @@ const CalendarViewContent = ({
                     key={focusedObjectId || 'default'}
                     viewObjects={viewObjects}
                     focusedObjectId={focusedObjectId}
+                    isPublic={true}
                 />
             )}
             {viewMode === 'week' && (
@@ -117,6 +91,7 @@ const CalendarViewContent = ({
                     key={focusedObjectId || 'default'}
                     viewObjects={viewObjects}
                     focusedObjectId={focusedObjectId}
+                    isPublic={true}
                 />
             )}
             {viewMode === 'day' && (
@@ -124,10 +99,11 @@ const CalendarViewContent = ({
                     key={focusedObjectId || 'default'}
                     viewObjects={viewObjects}
                     focusedObjectId={focusedObjectId}
+                    isPublic={true}
                 />
             )}
         </div>
     )
 }
 
-export default CalendarViewContent
+export default ExploreCalendarViewContent
