@@ -128,34 +128,35 @@ const MapMarkersList = ({
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <DropdownMenu.Root>
-                                                    <DropdownMenu.Trigger asChild>
-                                                        <button
-                                                            onClick={(e) => e.stopPropagation()}
-                                                            className="p-1 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700"
-                                                        >
-                                                            <MoreVertical size={16} />
-                                                        </button>
-                                                    </DropdownMenu.Trigger>
-                                                    <DropdownMenu.Portal>
-                                                        <DropdownMenu.Content
-                                                            className="min-w-[160px] bg-white dark:bg-neutral-800 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-700 p-1 z-50"
-                                                            sideOffset={5}
-                                                        >
-                                                            <DropdownMenu.Item
-                                                                className="flex items-center gap-2 px-3 py-2 text-sm rounded cursor-pointer outline-none text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                                                                onSelect={(e) => {
-                                                                    e.preventDefault()
-                                                                    onDelete(marker.id)
-                                                                }}
-                                                                disabled={isDeleting}
+                                                <div onClick={(e) => e.stopPropagation()}>
+                                                    <DropdownMenu.Root>
+                                                        <DropdownMenu.Trigger asChild>
+                                                            <button
+                                                                className="p-1 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700"
                                                             >
-                                                                <Trash2 size={14} />
-                                                                {t('actions.delete')}
-                                                            </DropdownMenu.Item>
-                                                        </DropdownMenu.Content>
-                                                    </DropdownMenu.Portal>
-                                                </DropdownMenu.Root>
+                                                                <MoreVertical size={16} />
+                                                            </button>
+                                                        </DropdownMenu.Trigger>
+                                                        <DropdownMenu.Portal>
+                                                            <DropdownMenu.Content
+                                                                className="min-w-[160px] bg-white dark:bg-neutral-800 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-700 p-1 z-50"
+                                                                sideOffset={5}
+                                                            >
+                                                                <DropdownMenu.Item
+                                                                    className="flex items-center gap-2 px-3 py-2 text-sm rounded cursor-pointer outline-none text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                                    onSelect={(e) => {
+                                                                        e.preventDefault()
+                                                                        onDelete(marker.id)
+                                                                    }}
+                                                                    disabled={isDeleting}
+                                                                >
+                                                                    <Trash2 size={14} />
+                                                                    {t('actions.delete')}
+                                                                </DropdownMenu.Item>
+                                                            </DropdownMenu.Content>
+                                                        </DropdownMenu.Portal>
+                                                    </DropdownMenu.Root>
+                                                </div>
                                             </div>
                                         </div>
                                     )
