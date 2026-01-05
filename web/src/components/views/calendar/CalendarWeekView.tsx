@@ -94,31 +94,40 @@ const CalendarWeekView = ({ viewObjects = [], focusedObjectId, isPublic = false 
         }
     }
 
-    // Get slots for a specific day and time
-    const getSlotsForDayAndTime = (day: Date, hour: number) => {
+    // Get timed events for a specific day
+    const getTimedEventsForDay = (day: Date) => {
         const dateStr = day.toISOString().split('T')[0]
 
-        return viewObjects.filter(obj => {
-            if (!obj.data) return false
+        return viewObjects
+            .filter(obj => {
+                if (!obj.data) return false
 
-            const slotData = parseSlotData(obj.data)
-            if (!slotData || slotData.date !== dateStr) return false
+                const slotData = parseSlotData(obj.data)
+                if (!slotData || slotData.date !== dateStr) return false
 
-            // All-day events don't appear in hourly slots
-            if (slotData.is_all_day) return false
+                // Only timed events (not all-day)
+                return !slotData.is_all_day && slotData.start_time
+            })
+            .map(obj => {
+                const slotData = parseSlotData(obj.data)!
+                const [startHour, startMinute] = slotData.start_time!.split(':').map(Number)
+                const startTotalMinutes = startHour * 60 + startMinute
 
-            // Check if event overlaps with this hour
-            if (slotData.start_time) {
-                const startHour = parseInt(slotData.start_time.split(':')[0], 10)
-                const endHour = slotData.end_time
-                    ? parseInt(slotData.end_time.split(':')[0], 10)
-                    : startHour + 1
+                let endTotalMinutes = startTotalMinutes + 60 // Default 1 hour duration
+                if (slotData.end_time) {
+                    const [endHour, endMinute] = slotData.end_time.split(':').map(Number)
+                    endTotalMinutes = endHour * 60 + endMinute
+                }
 
-                return hour >= startHour && hour < endHour
-            }
+                const durationMinutes = endTotalMinutes - startTotalMinutes
 
-            return false
-        })
+                return {
+                    ...obj,
+                    startMinutes: startTotalMinutes,
+                    durationMinutes,
+                    slotData
+                }
+            })
     }
 
     // Get all-day events for a specific day
@@ -235,38 +244,72 @@ const CalendarWeekView = ({ viewObjects = [], focusedObjectId, isPublic = false 
                     </div>
 
                     {/* Time grid */}
-                    <div className="overflow-y-auto flex-1">
-                        {timeSlots.map((hour) => (
-                            <div key={hour} className="flex border-b dark:border-neutral-700">
-                                <div className="w-16 p-2 text-xs font-medium text-gray-600 dark:text-gray-400 border-r dark:border-neutral-700">
-                                    {hour.toString().padStart(2, '0')}:00
-                                </div>
-                                {weekDays.map((day, i) => {
-                                    const slots = getSlotsForDayAndTime(day, hour)
-                                    return (
+                    <div className="overflow-y-auto flex-1 relative">
+                        <div className="flex">
+                            {/* Time column */}
+                            <div className="w-16 shrink-0">
+                                {timeSlots.map((hour) => (
+                                    <div
+                                        key={hour}
+                                        className="border-b dark:border-neutral-700 border-r dark:border-neutral-700 h-[80px] flex items-start justify-center pt-2"
+                                    >
+                                        <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                            {hour.toString().padStart(2, '0')}:00
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Day columns */}
+                            {weekDays.map((day, dayIndex) => (
+                                <div key={dayIndex} className="flex-1 relative border-l dark:border-neutral-700">
+                                    {/* Time slot backgrounds */}
+                                    {timeSlots.map((hour) => (
                                         <div
-                                            key={i}
-                                            className={`flex-1 p-1 border-l dark:border-neutral-700 min-h-[60px] ${
+                                            key={hour}
+                                            className={`border-b dark:border-neutral-700 h-[80px] relative ${
                                                 isToday(day) ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''
                                             }`}
                                         >
-                                            <div className="flex flex-col gap-1">
-                                                {slots.map((slot) => (
-                                                    <button
-                                                        key={slot.id}
-                                                        onClick={() => handleSlotClick(slot)}
-                                                        className="text-xs px-2 py-1 bg-blue-500 text-white rounded truncate hover:bg-blue-600 transition-colors"
-                                                        title={slot.name}
-                                                    >
-                                                        {slot.name}
-                                                    </button>
-                                                ))}
-                                            </div>
+                                            {/* Half-hour divider line */}
+                                            <div className="absolute left-0 right-0 top-1/2 border-t border-dashed border-neutral-200 dark:border-neutral-700/50" />
                                         </div>
-                                    )
-                                })}
-                            </div>
-                        ))}
+                                    ))}
+
+                                    {/* Absolutely positioned events */}
+                                    {getTimedEventsForDay(day).map((event) => {
+                                        // Each hour slot is 80px tall (min-h-[80px]), so 30 minutes = 40px
+                                        const pixelsPerMinute = 80 / 60 // 80px per hour
+                                        const topPosition = event.startMinutes * pixelsPerMinute
+                                        const height = event.durationMinutes * pixelsPerMinute
+
+                                        return (
+                                            <button
+                                                key={event.id}
+                                                onClick={() => handleSlotClick(event)}
+                                                className="absolute text-xs px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-left overflow-hidden"
+                                                style={{
+                                                    top: `${topPosition + 2}px`,
+                                                    left: '4px',
+                                                    right: '4px',
+                                                    height: `${Math.max(height - 4, 20)}px`,
+                                                    zIndex: 10
+                                                }}
+                                                title={event.name}
+                                            >
+                                                <div className="font-medium truncate">{event.name}</div>
+                                                {event.slotData.start_time && height > 30 && (
+                                                    <div className="text-[10px] opacity-90 truncate">
+                                                        {event.slotData.start_time}
+                                                        {event.slotData.end_time && ` - ${event.slotData.end_time}`}
+                                                    </div>
+                                                )}
+                                            </button>
+                                        )
+                                    })}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
