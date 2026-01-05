@@ -8,6 +8,7 @@ import OneColumn from "@/components/onecolumn/OneColumn"
 import { getView, updateView, deleteView } from "@/api/view"
 import { useToastStore } from "@/stores/toast"
 import VisibilitySelect from "@/components/visibilityselect/VisibilitySelect"
+import { UpdateViewRequest } from "@/types/view"
 
 const ViewSettingsPage = () => {
     const navigate = useNavigate()
@@ -51,7 +52,7 @@ const ViewSettingsPage = () => {
 
     const visibilityMutation = useMutation({
         mutationFn: (newVisibility: string) =>
-            updateView(workspaceId!, viewId!, { visibility: newVisibility }),
+            updateView(workspaceId!, viewId!, { visibility: newVisibility } as UpdateViewRequest),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['view', workspaceId, viewId] })
             queryClient.invalidateQueries({ queryKey: ['views', workspaceId] })

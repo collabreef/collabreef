@@ -23,7 +23,6 @@ interface MapViewContentProps {
 const MapViewContent = ({
     view,
     viewObjects,
-    currentWorkspaceId,
     focusedObjectId
 }: MapViewContentProps) => {
     const { isSidebarCollapsed, toggleSidebar } = useTwoColumn()

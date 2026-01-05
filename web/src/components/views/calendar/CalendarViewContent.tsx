@@ -29,7 +29,6 @@ interface CalendarViewContentProps {
 const CalendarViewContent = ({
     view,
     viewObjects,
-    currentWorkspaceId,
     focusedObjectId
 }: CalendarViewContentProps) => {
     const { t } = useTranslation()
