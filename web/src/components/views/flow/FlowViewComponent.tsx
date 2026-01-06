@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
-import { FlowViewData, FlowNodeData, FlowEdgeData, View, EdgeType } from '../../../types/view'
+import { FlowViewData, FlowNodeData, FlowEdgeData, View, EdgeType, MarkerType } from '../../../types/view'
 import { getNotesForViewObject, removeNoteFromViewObject, deleteViewObject, updateViewObject, updateView, createViewObject } from '../../../api/view'
 import { PlusCircle, MoreVertical, Edit2, Trash2, X } from 'lucide-react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
@@ -69,6 +69,8 @@ const FlowViewComponent = ({
     const [editingEdgeStyle, setEditingEdgeStyle] = useState<'solid' | 'dashed'>('solid')
     const [editingEdgeMarkerStart, setEditingEdgeMarkerStart] = useState<boolean>(false)
     const [editingEdgeMarkerEnd, setEditingEdgeMarkerEnd] = useState<boolean>(true)
+    const [editingEdgeMarkerStartType, setEditingEdgeMarkerStartType] = useState<MarkerType>('arrow')
+    const [editingEdgeMarkerEndType, setEditingEdgeMarkerEndType] = useState<MarkerType>('arrow')
     const [editingEdgeType, setEditingEdgeType] = useState<EdgeType>('smoothstep')
 
     // Track selected nodes for handle visibility
@@ -92,6 +94,8 @@ const FlowViewComponent = ({
                 stroke: '#64748b', // Default gray color
                 markerEnd: 'arrow', // Default arrow at end
                 markerStart: 'none', // No arrow at start by default
+                markerStartType: 'arrow', // Default marker type
+                markerEndType: 'arrow', // Default marker type
                 edgeType: 'smoothstep', // Default curve type
             }
 
@@ -180,6 +184,8 @@ const FlowViewComponent = ({
             setEditingEdgeStyle('solid')
             setEditingEdgeMarkerStart(false)
             setEditingEdgeMarkerEnd(true)
+            setEditingEdgeMarkerStartType('arrow')
+            setEditingEdgeMarkerEndType('arrow')
             setEditingEdgeType('smoothstep')
         },
         onError: () => {
@@ -230,8 +236,10 @@ const FlowViewComponent = ({
                 setEditingEdgeLabel(edgeData.label || '')
                 setEditingEdgeColor(edgeData.stroke || '#64748b')
                 setEditingEdgeStyle(edgeData.strokeDasharray ? 'dashed' : 'solid')
-                setEditingEdgeMarkerStart(edgeData.markerStart === 'arrow')
+                setEditingEdgeMarkerStart(edgeData.markerStart === 'arrow' || edgeData.markerStart === 'arrowclosed')
                 setEditingEdgeMarkerEnd(edgeData.markerEnd !== 'none')
+                setEditingEdgeMarkerStartType(edgeData.markerStartType || 'arrow')
+                setEditingEdgeMarkerEndType(edgeData.markerEndType || 'arrow')
                 setEditingEdgeType(edgeData.edgeType || 'smoothstep')
             } catch (e) {
                 setEditingEdgeLabel('')
@@ -239,6 +247,8 @@ const FlowViewComponent = ({
                 setEditingEdgeStyle('solid')
                 setEditingEdgeMarkerStart(false)
                 setEditingEdgeMarkerEnd(true)
+                setEditingEdgeMarkerStartType('arrow')
+                setEditingEdgeMarkerEndType('arrow')
                 setEditingEdgeType('smoothstep')
             }
         }
@@ -257,8 +267,10 @@ const FlowViewComponent = ({
                 label: editingEdgeLabel || undefined,
                 stroke: editingEdgeColor,
                 strokeDasharray: editingEdgeStyle === 'dashed' ? '5,5' : undefined,
-                markerStart: editingEdgeMarkerStart ? 'arrow' : 'none',
-                markerEnd: editingEdgeMarkerEnd ? 'arrow' : 'none',
+                markerStart: editingEdgeMarkerStart ? editingEdgeMarkerStartType : 'none',
+                markerEnd: editingEdgeMarkerEnd ? editingEdgeMarkerEndType : 'none',
+                markerStartType: editingEdgeMarkerStartType,
+                markerEndType: editingEdgeMarkerEndType,
                 edgeType: editingEdgeType,
             }
 
@@ -270,7 +282,7 @@ const FlowViewComponent = ({
         } catch (e) {
             addToast({ title: t('views.objectUpdatedError'), type: 'error' })
         }
-    }, [editingEdgeId, edges, editingEdgeLabel, editingEdgeColor, editingEdgeStyle, editingEdgeMarkerStart, editingEdgeMarkerEnd, editingEdgeType, updateEdgeMutation, addToast, t])
+    }, [editingEdgeId, edges, editingEdgeLabel, editingEdgeColor, editingEdgeStyle, editingEdgeMarkerStart, editingEdgeMarkerEnd, editingEdgeMarkerStartType, editingEdgeMarkerEndType, editingEdgeType, updateEdgeMutation, addToast, t])
 
     const handleSaveEdit = useCallback(() => {
         if (!editingNodeId || !editingName.trim()) return
@@ -364,8 +376,12 @@ const FlowViewComponent = ({
 
             // Determine markers - use the correct React Flow marker format with color
             const arrowColor = edgeData.stroke || '#64748b'
-            const markerStart = edgeData.markerStart === 'arrow' ? { type: 'arrow' as const, color: arrowColor } : undefined
-            const markerEnd = edgeData.markerEnd === 'arrow' ? { type: 'arrow' as const, color: arrowColor } : undefined
+            const markerStart = (edgeData.markerStart === 'arrow' || edgeData.markerStart === 'arrowclosed')
+                ? { type: edgeData.markerStart as const, color: arrowColor }
+                : undefined
+            const markerEnd = (edgeData.markerEnd === 'arrow' || edgeData.markerEnd === 'arrowclosed')
+                ? { type: edgeData.markerEnd as const, color: arrowColor }
+                : undefined
 
             const edgeType = edgeData.edgeType || 'smoothstep'
 
@@ -756,25 +772,78 @@ const FlowViewComponent = ({
                                 <label className="block text-sm font-medium mb-2">
                                     {t('views.arrows')}
                                 </label>
-                                <div className="space-y-2">
-                                    <label className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            checked={editingEdgeMarkerStart}
-                                            onChange={(e) => setEditingEdgeMarkerStart(e.target.checked)}
-                                            className="w-4 h-4"
-                                        />
-                                        <span className="text-sm">{t('views.arrowAtStart')}</span>
-                                    </label>
-                                    <label className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            checked={editingEdgeMarkerEnd}
-                                            onChange={(e) => setEditingEdgeMarkerEnd(e.target.checked)}
-                                            className="w-4 h-4"
-                                        />
-                                        <span className="text-sm">{t('views.arrowAtEnd')}</span>
-                                    </label>
+                                <div className="space-y-3">
+                                    <div className="space-y-2">
+                                        <label className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={editingEdgeMarkerStart}
+                                                onChange={(e) => setEditingEdgeMarkerStart(e.target.checked)}
+                                                className="w-4 h-4"
+                                            />
+                                            <span className="text-sm">{t('views.arrowAtStart')}</span>
+                                        </label>
+                                        {editingEdgeMarkerStart && (
+                                            <div className="ml-6 flex gap-2">
+                                                <button
+                                                    onClick={() => setEditingEdgeMarkerStartType('arrow')}
+                                                    className={`px-3 py-1 border dark:border-neutral-600 rounded text-xs ${
+                                                        editingEdgeMarkerStartType === 'arrow'
+                                                            ? 'bg-primary text-white'
+                                                            : 'bg-white dark:bg-neutral-800'
+                                                    }`}
+                                                >
+                                                    Chevron
+                                                </button>
+                                                <button
+                                                    onClick={() => setEditingEdgeMarkerStartType('arrowclosed')}
+                                                    className={`px-3 py-1 border dark:border-neutral-600 rounded text-xs ${
+                                                        editingEdgeMarkerStartType === 'arrowclosed'
+                                                            ? 'bg-primary text-white'
+                                                            : 'bg-white dark:bg-neutral-800'
+                                                    }`}
+                                                >
+                                                    Triangle
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={editingEdgeMarkerEnd}
+                                                onChange={(e) => setEditingEdgeMarkerEnd(e.target.checked)}
+                                                className="w-4 h-4"
+                                            />
+                                            <span className="text-sm">{t('views.arrowAtEnd')}</span>
+                                        </label>
+                                        {editingEdgeMarkerEnd && (
+                                            <div className="ml-6 flex gap-2">
+                                                <button
+                                                    onClick={() => setEditingEdgeMarkerEndType('arrow')}
+                                                    className={`px-3 py-1 border dark:border-neutral-600 rounded text-xs ${
+                                                        editingEdgeMarkerEndType === 'arrow'
+                                                            ? 'bg-primary text-white'
+                                                            : 'bg-white dark:bg-neutral-800'
+                                                    }`}
+                                                >
+                                                    Chevron
+                                                </button>
+                                                <button
+                                                    onClick={() => setEditingEdgeMarkerEndType('arrowclosed')}
+                                                    className={`px-3 py-1 border dark:border-neutral-600 rounded text-xs ${
+                                                        editingEdgeMarkerEndType === 'arrowclosed'
+                                                            ? 'bg-primary text-white'
+                                                            : 'bg-white dark:bg-neutral-800'
+                                                    }`}
+                                                >
+                                                    Triangle
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1089,6 +1158,7 @@ const CustomEdge = ({
     markerStart,
     style,
     selected,
+    label,
 }: CustomEdgeProps) => {
     const edgeType = data?.edgeType || 'smoothstep'
 
@@ -1143,7 +1213,7 @@ const CustomEdge = ({
     return (
         <>
             <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} markerStart={markerStart} style={style} />
-            {selected && (
+            {(label || selected) && (
                 <EdgeLabelRenderer>
                     <div
                         style={{
@@ -1153,21 +1223,33 @@ const CustomEdge = ({
                         }}
                         className="nodrag nopan"
                     >
-                        <div className="flex gap-1">
-                            <button
-                                className="w-5 h-5 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center text-xs border-2 border-white dark:border-neutral-800 shadow-md transition-all hover:w-6 hover:h-6"
-                                onClick={onEditClick}
-                                title="Edit edge"
-                            >
-                                <Edit2 size={10} />
-                            </button>
-                            <button
-                                className="w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-xs border-2 border-white dark:border-neutral-800 shadow-md transition-all hover:w-6 hover:h-6"
-                                onClick={onDeleteClick}
-                                title="Delete edge"
-                            >
-                                ×
-                            </button>
+                        <div className="flex items-center gap-2">
+                            {/* Label text - always show if exists */}
+                            {label && (
+                                <div className="px-2 py-1 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 rounded text-xs shadow-sm">
+                                    {label}
+                                </div>
+                            )}
+
+                            {/* Edit/Delete buttons - only show when selected */}
+                            {selected && (
+                                <div className="flex gap-1">
+                                    <button
+                                        className="w-5 h-5 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center text-xs border-2 border-white dark:border-neutral-800 shadow-md transition-all hover:w-6 hover:h-6"
+                                        onClick={onEditClick}
+                                        title="Edit edge"
+                                    >
+                                        <Edit2 size={10} />
+                                    </button>
+                                    <button
+                                        className="w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-xs border-2 border-white dark:border-neutral-800 shadow-md transition-all hover:w-6 hover:h-6"
+                                        onClick={onDeleteClick}
+                                        title="Delete edge"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </EdgeLabelRenderer>

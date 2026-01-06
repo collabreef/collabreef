@@ -117,6 +117,7 @@ export interface FlowNodeData {
 }
 
 export type EdgeType = 'smoothstep' | 'step' | 'straight' | 'bezier';
+export type MarkerType = 'arrow' | 'arrowclosed';
 
 export interface FlowEdgeData {
   source: string; // source node id
@@ -126,8 +127,10 @@ export interface FlowEdgeData {
   label?: string;
   animated?: boolean;
   style?: Record<string, any>;
-  markerStart?: string; // arrow at start: 'arrow' | 'none'
-  markerEnd?: string; // arrow at end: 'arrow' | 'none'
+  markerStart?: string; // arrow at start: 'arrow' | 'arrowclosed' | 'none'
+  markerEnd?: string; // arrow at end: 'arrow' | 'arrowclosed' | 'none'
+  markerStartType?: MarkerType; // arrow type at start
+  markerEndType?: MarkerType; // arrow type at end
   strokeDasharray?: string; // dashed line: '5,5' for dashed, undefined for solid
   stroke?: string; // edge color
   edgeType?: EdgeType; // edge curve type
