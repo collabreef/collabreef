@@ -160,22 +160,34 @@ const CalendarSlotDetail = () => {
                             </div>
                             {slotData && (
                                 <div className="mt-3 space-y-2">
-                                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                        <Clock size={14} />
-                                        <span>
-                                            {new Date(slotData.date).toLocaleDateString()}
-                                            {slotData.end_date && ` - ${new Date(slotData.end_date).toLocaleDateString()}`}
-                                        </span>
+                                    <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                        <Clock size={14} className="mt-0.5" />
+                                        <div>
+                                            {slotData.end_date ? (
+                                                // Multi-day: show start and end on separate lines
+                                                <>
+                                                    <div>
+                                                        {new Date(slotData.date).toLocaleDateString()}
+                                                        {!slotData.is_all_day && slotData.start_time && ` ${slotData.start_time}`}
+                                                    </div>
+                                                    <div>
+                                                        {new Date(slotData.end_date).toLocaleDateString()}
+                                                        {!slotData.is_all_day && slotData.end_time && ` ${slotData.end_time}`}
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                // Single day: show date with time range
+                                                <div>
+                                                    {new Date(slotData.date).toLocaleDateString()}
+                                                    {!slotData.is_all_day && slotData.start_time && ` ${slotData.start_time}`}
+                                                    {!slotData.is_all_day && slotData.end_time && ` - ${slotData.end_time}`}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                     {slotData.is_all_day && (
                                         <div className="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded">
                                             {t('views.allDay') || 'All day'}
-                                        </div>
-                                    )}
-                                    {!slotData.is_all_day && slotData.start_time && (
-                                        <div className="text-sm text-gray-700 dark:text-gray-300">
-                                            {slotData.start_time}
-                                            {slotData.end_time && ` - ${slotData.end_time}`}
                                         </div>
                                     )}
                                     {slotData.color && (
