@@ -10,7 +10,7 @@ interface ViewHeaderProps {
 
 const ViewHeader = ({ viewName, menu, rightActions, icon }: ViewHeaderProps) => {
     return (
-        <div className="flex items-center justify-between xl:py-4 bg-neutral-100 dark:bg-neutral-900">
+        <div className="flex items-center justify-between xl:py-4 bg-neutral-100 dark:bg-neutral-900 overflow-hidden">
             <div className="flex items-center gap-3 p-4 xl:p-0">
                 <SidebarButton />
                 <div className="flex items-center gap-2">

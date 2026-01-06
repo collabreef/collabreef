@@ -292,7 +292,7 @@ const CalendarWeekView = ({ viewObjects = [], focusedObjectId, isPublic = false 
                     <div className="text-2xl font-semibold">
                         {weekDays[0].toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-0.5">
                         <button
                             onClick={previousWeek}
                             className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
@@ -350,7 +350,7 @@ const CalendarWeekView = ({ viewObjects = [], focusedObjectId, isPublic = false 
                             return (
                                 <div
                                     key={i}
-                                    className="flex-1 p-1 border-l dark:border-neutral-700 "
+                                    className="flex-1 p-1 border-l dark:border-neutral-700 overflow-hidden"
                                 >
                                     <div className="flex flex-col gap-1">
                                         {allDayEvents.map((slot) => {

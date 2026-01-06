@@ -275,10 +275,10 @@ const CalendarDayView = ({ viewObjects = [], focusedObjectId, isPublic = false }
         <div className="">
             <div className="mb-4">
                 <div className="flex items-center justify-between px-2 mb-4">
-                    <div className="text-2xl font-semibold">
+                    <div className="text-2xl font-semibold whitespace-nowrap overflow-auto">
                         {weekDayNames[currentDate.getDay()]}, {currentDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-0.5">
                         <button
                             onClick={previousDay}
                             className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"

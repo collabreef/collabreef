@@ -41,7 +41,7 @@ const CalendarViewContent = ({
                 menu={<ViewMenu viewType="calendar" currentViewId={view.id} />}
                 rightActions={
                     <>
-                        <div className="px-4 flex gap-2 items-center">
+                        <div className="pr-4 flex gap-2 items-center">
                             {/* View mode switcher */}
                             <div className="flex bg-neutral-100 dark:bg-neutral-800 rounded-lg p-1">
                                 <button

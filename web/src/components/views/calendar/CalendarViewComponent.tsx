@@ -200,7 +200,7 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
                     <div className="text-2xl font-semibold">
                         {monthNames[month]} {year}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-0.5">
                         <button
                             onClick={previousMonth}
                             className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
@@ -252,7 +252,7 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
                                             <div
                                                 key={dayIndex}
                                                 className={`
-                                                    aspect-square p-2 border-r dark:border-neutral-700 last:border-r-0 overflow-y-auto
+                                                    aspect-square p-0.5 border-r dark:border-neutral-700 last:border-r-0 overflow-y-auto
                                                     ${isTodayCell ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-white dark:bg-neutral-900'}
                                                     ${dayObj.isCurrentMonth ? 'hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer' : ''}
                                                     transition-colors
