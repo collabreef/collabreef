@@ -28,6 +28,23 @@ const UserSettingsModal = ({ open, onOpenChange }: UserSettingsModalProps) => {
     // Preferences state
     const themes: Theme[] = ["light", "dark"]
     const supportedLanguages = i18n.options.supportedLngs && i18n.options.supportedLngs?.filter(l => l !== "cimode") || []
+
+    // Language native names mapping
+    const languageNativeNames: Record<string, string> = {
+        'en': 'English',
+        'zh-TW': '繁體中文',
+        'zh-CN': '简体中文',
+        'es': 'Español',
+        'fr': 'Français',
+        'ar': 'العربية',
+        'pt-BR': 'Português (Brasil)',
+        'de': 'Deutsch',
+        'ja': '日本語',
+        'ko': '한국어',
+        'ru': 'Русский',
+        'it': 'Italiano'
+    }
+
     const PRESET_COLORS = [
         { name: 'Orange', value: '#f97316' },
         { name: 'Blue', value: '#3b82f6' },
@@ -359,7 +376,7 @@ const UserSettingsModal = ({ open, onOpenChange }: UserSettingsModalProps) => {
                                                 <Select value={i18n.language} onChange={handleSelectedLangChange}>
                                                     {supportedLanguages.map((lng) => (
                                                         <option key={lng} value={lng}>
-                                                            {lng}
+                                                            {languageNativeNames[lng] || lng}
                                                         </option>
                                                     ))}
                                                 </Select>
