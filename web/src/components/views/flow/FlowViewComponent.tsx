@@ -377,10 +377,10 @@ const FlowViewComponent = ({
             // Determine markers - use the correct React Flow marker format with color
             const arrowColor = edgeData.stroke || '#64748b'
             const markerStart = (edgeData.markerStart === 'arrow' || edgeData.markerStart === 'arrowclosed')
-                ? { type: edgeData.markerStart as const, color: arrowColor }
+                ? { type: edgeData.markerStart as 'arrow' | 'arrowclosed', color: arrowColor }
                 : undefined
             const markerEnd = (edgeData.markerEnd === 'arrow' || edgeData.markerEnd === 'arrowclosed')
-                ? { type: edgeData.markerEnd as const, color: arrowColor }
+                ? { type: edgeData.markerEnd as 'arrow' | 'arrowclosed', color: arrowColor }
                 : undefined
 
             const edgeType = edgeData.edgeType || 'smoothstep'
