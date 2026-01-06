@@ -30,7 +30,16 @@ const ExploreCalendarSlotsList = ({
     // Group slots by date
     const groupedSlots = filteredSlots.reduce((acc, slot) => {
         try {
-            const date = new Date(slot.data).toLocaleDateString()
+            // Parse slot data - could be JSON or plain date string
+            let slotDate: string
+            try {
+                const parsed = JSON.parse(slot.data)
+                slotDate = parsed.date
+            } catch {
+                // Fallback for old format (just a date string)
+                slotDate = slot.data
+            }
+            const date = new Date(slotDate).toLocaleDateString()
             if (!acc[date]) {
                 acc[date] = []
             }

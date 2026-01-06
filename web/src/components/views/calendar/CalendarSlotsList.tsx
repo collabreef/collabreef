@@ -59,7 +59,16 @@ const CalendarSlotsList = ({
     // Group slots by date
     const groupedSlots = filteredSlots.reduce((acc, slot) => {
         try {
-            const date = new Date(slot.data).toLocaleDateString()
+            // Parse slot data - could be JSON or plain date string
+            let slotDate: string
+            try {
+                const parsed = JSON.parse(slot.data)
+                slotDate = parsed.date
+            } catch {
+                // Fallback for old format (just a date string)
+                slotDate = slot.data
+            }
+            const date = new Date(slotDate).toLocaleDateString()
             if (!acc[date]) {
                 acc[date] = []
             }
@@ -115,6 +124,7 @@ const CalendarSlotsList = ({
                             <div className="space-y-4">
                                 {sortedDates.map((date) => (
                                     <div key={date}>
+                                        <div className="text-sm font-medium text-gray-500 mb-2">{date}</div>
                                         <div className="space-y-2">
                                             {groupedSlots[date].map((slot: any) => {
                                                 const isFocused = slot.id === focusedSlotId
@@ -122,11 +132,10 @@ const CalendarSlotsList = ({
                                                 return (
                                                     <div
                                                         key={slot.id}
-                                                        className={`p-3 rounded-lg border transition-colors cursor-pointer ${
-                                                            isFocused
-                                                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                                                                : 'border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-                                                        }`}
+                                                        className={`p-3 rounded-lg border transition-colors cursor-pointer ${isFocused
+                                                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                                            : 'border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                                                            }`}
                                                         onClick={() => handleSlotClick(slot.id)}
                                                     >
                                                         <div className="flex items-start justify-between">
@@ -203,10 +212,10 @@ const CalendarSlotsList = ({
                             }}
                             viewType="calendar"
                             name={newObjectName}
-                            setName={setNewObjectName || (() => {})}
+                            setName={setNewObjectName || (() => { })}
                             data={newObjectData}
-                            setData={setNewObjectData || (() => {})}
-                            onSubmit={handleCreate || (() => {})}
+                            setData={setNewObjectData || (() => { })}
+                            onSubmit={handleCreate || (() => { })}
                             isSubmitting={createMutation?.isPending || false}
                             inline={true}
                         />

@@ -193,52 +193,6 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
         calendarWeeks.push(calendarDays.slice(i, i + 7))
     }
 
-    // Get all slots that span across days in a week
-    const getWeekSlots = (weekDays: Array<{ day: number; isCurrentMonth: boolean; year: number; month: number }>) => {
-        if (!viewObjects) return []
-
-        const weekSlots: Array<{
-            slot: any
-            slotData: CalendarSlotData
-            startDayIndex: number
-            endDayIndex: number
-        }> = []
-
-        // Get unique slots that appear in this week
-        const slotSet = new Set<string>()
-
-        viewObjects.forEach(obj => {
-            if (!obj.data) return
-
-            const slotData = parseSlotData(obj.data)
-            if (!slotData) return
-
-            // Check if slot intersects with this week
-            let startDayIndex = -1
-            let endDayIndex = -1
-
-            weekDays.forEach((dayObj, dayIndex) => {
-                if (isDateInSlotRange(dayObj, slotData)) {
-                    if (startDayIndex === -1) startDayIndex = dayIndex
-                    endDayIndex = dayIndex
-                }
-            })
-
-            // If slot appears in this week and not already added
-            if (startDayIndex !== -1 && !slotSet.has(obj.id)) {
-                slotSet.add(obj.id)
-                weekSlots.push({
-                    slot: obj,
-                    slotData,
-                    startDayIndex,
-                    endDayIndex
-                })
-            }
-        })
-
-        return weekSlots
-    }
-
     return (
         <div className="">
             <div className="mb-6">
