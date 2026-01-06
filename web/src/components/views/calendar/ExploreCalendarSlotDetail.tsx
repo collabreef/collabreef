@@ -1,9 +1,11 @@
+import { useMemo } from "react"
 import { useNavigate, useParams, useOutletContext } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Clock } from "lucide-react"
 import { getPublicViewObject } from "@/api/view"
 import PublicViewObjectNotesManager from "../PublicViewObjectNotesManager"
+import { CalendarSlotData } from "@/types/view"
 
 interface ExploreCalendarSlotDetailContext {
     view: any
@@ -22,6 +24,17 @@ const ExploreCalendarSlotDetail = () => {
         queryFn: () => getPublicViewObject(viewId!, slotId!),
         enabled: !!viewId && !!slotId,
     })
+
+    // Parse slot data
+    const slotData = useMemo<CalendarSlotData | null>(() => {
+        if (!slot || !slot.data) return null
+        try {
+            return JSON.parse(slot.data)
+        } catch {
+            // Fallback for old format (just a date string)
+            return { date: slot.data, is_all_day: true }
+        }
+    }, [slot])
 
     const handleBack = () => {
         navigate(`/explore/calendar/${viewId}`)
@@ -66,9 +79,37 @@ const ExploreCalendarSlotDetail = () => {
                         <div className="text-sm text-gray-500 mt-1">
                             {t('views.calendarSlot')}
                         </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                            {new Date(slot.data).toLocaleDateString()}
-                        </div>
+                        {slotData && (
+                            <div className="mt-3 space-y-2">
+                                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                    <Clock size={14} />
+                                    <span>
+                                        {new Date(slotData.date).toLocaleDateString()}
+                                        {slotData.end_date && ` - ${new Date(slotData.end_date).toLocaleDateString()}`}
+                                    </span>
+                                </div>
+                                {slotData.is_all_day && (
+                                    <div className="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded">
+                                        {t('views.allDay') || 'All day'}
+                                    </div>
+                                )}
+                                {!slotData.is_all_day && slotData.start_time && (
+                                    <div className="text-sm text-gray-700 dark:text-gray-300">
+                                        {slotData.start_time}
+                                        {slotData.end_time && ` - ${slotData.end_time}`}
+                                    </div>
+                                )}
+                                {slotData.color && (
+                                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                        <div
+                                            className="w-4 h-4 rounded border border-gray-300"
+                                            style={{ backgroundColor: slotData.color }}
+                                        />
+                                        <span>{slotData.color}</span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
