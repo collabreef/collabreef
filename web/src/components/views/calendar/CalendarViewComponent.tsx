@@ -146,6 +146,32 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
         return { year, month, day }
     }
 
+    // Check if a date falls within a slot's date range
+    const isDateInSlotRange = (dayObj: { day: number; month: number; year: number }, slotData: CalendarSlotData) => {
+        const startParsed = parseDate(slotData.date)
+        if (!startParsed) return false
+
+        const startDate = new Date(startParsed.year, startParsed.month, startParsed.day)
+        const checkDate = new Date(dayObj.year, dayObj.month, dayObj.day)
+
+        // If no end_date, only match the exact start date
+        if (!slotData.end_date) {
+            return (
+                startParsed.day === dayObj.day &&
+                startParsed.month === dayObj.month &&
+                startParsed.year === dayObj.year
+            )
+        }
+
+        // If there's an end_date, check if checkDate is within the range
+        const endParsed = parseDate(slotData.end_date)
+        if (!endParsed) return false
+
+        const endDate = new Date(endParsed.year, endParsed.month, endParsed.day)
+
+        return checkDate >= startDate && checkDate <= endDate
+    }
+
     // Get slots for a specific day (only for current month)
     const getSlotsForDay = (dayObj: { day: number; isCurrentMonth: boolean; year: number; month: number }) => {
         // Don't show slots for previous/next month days
@@ -157,14 +183,7 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
             const slotData = parseSlotData(obj.data)
             if (!slotData) return false
 
-            const parsed = parseDate(slotData.date)
-            if (!parsed) return false
-
-            return (
-                parsed.day === dayObj.day &&
-                parsed.month === dayObj.month &&
-                parsed.year === dayObj.year
-            )
+            return isDateInSlotRange(dayObj, slotData)
         })
     }
 

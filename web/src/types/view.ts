@@ -77,7 +77,8 @@ export interface ViewObjectWithView {
 
 // View object data structures
 export interface CalendarSlotData {
-  date: string; // YYYY-MM-DD format
+  date: string; // YYYY-MM-DD format (start date)
+  end_date?: string; // YYYY-MM-DD format (optional, for multi-day events)
   start_time?: string; // HH:MM format (optional, for timed events)
   end_time?: string; // HH:MM format (optional, for timed events)
   is_all_day?: boolean; // true for all-day events, false or undefined for timed events

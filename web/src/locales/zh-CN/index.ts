@@ -373,6 +373,8 @@ export default {
     markerName: "标记名称",
     columnName: "列名称",
     date: "日期",
+    startDate: "开始日期",
+    endDate: "结束日期",
     details: "详细信息（可选）",
     locationDetails: "位置详情",
     createNewSlot: "创建新日历槽位",

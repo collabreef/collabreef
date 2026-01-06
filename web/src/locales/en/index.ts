@@ -373,6 +373,8 @@ export default {
     markerName: "Marker Name",
     columnName: "Column Name",
     date: "Date",
+    startDate: "Start date",
+    endDate: "End date",
     details: "Details (optional)",
     locationDetails: "Location Details",
     createNewSlot: "Create New Calendar Slot",

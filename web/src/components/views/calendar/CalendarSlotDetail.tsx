@@ -26,6 +26,7 @@ const CalendarSlotDetail = () => {
     // Edit form state
     const [editName, setEditName] = useState('')
     const [editDate, setEditDate] = useState('')
+    const [editEndDate, setEditEndDate] = useState('')
     const [editStartTime, setEditStartTime] = useState('')
     const [editEndTime, setEditEndTime] = useState('')
     const [editIsAllDay, setEditIsAllDay] = useState(true)
@@ -63,6 +64,7 @@ const CalendarSlotDetail = () => {
         if (slot && slotData) {
             setEditName(slot.name)
             setEditDate(slotData.date)
+            setEditEndDate(slotData.end_date || '')
             setEditStartTime(slotData.start_time || '')
             setEditEndTime(slotData.end_time || '')
             setEditIsAllDay(slotData.is_all_day !== false)
@@ -84,6 +86,7 @@ const CalendarSlotDetail = () => {
         if (slot && slotData) {
             setEditName(slot.name)
             setEditDate(slotData.date)
+            setEditEndDate(slotData.end_date || '')
             setEditStartTime(slotData.start_time || '')
             setEditEndTime(slotData.end_time || '')
             setEditIsAllDay(slotData.is_all_day !== false)
@@ -95,6 +98,9 @@ const CalendarSlotDetail = () => {
         const updatedData: CalendarSlotData = {
             date: editDate,
             is_all_day: editIsAllDay
+        }
+        if (editEndDate) {
+            updatedData.end_date = editEndDate
         }
         if (!editIsAllDay && editStartTime) {
             updatedData.start_time = editStartTime
@@ -156,7 +162,10 @@ const CalendarSlotDetail = () => {
                                 <div className="mt-3 space-y-2">
                                     <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                                         <Clock size={14} />
-                                        <span>{new Date(slotData.date).toLocaleDateString()}</span>
+                                        <span>
+                                            {new Date(slotData.date).toLocaleDateString()}
+                                            {slotData.end_date && ` - ${new Date(slotData.end_date).toLocaleDateString()}`}
+                                        </span>
                                     </div>
                                     {slotData.is_all_day && (
                                         <div className="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded">
@@ -246,16 +255,30 @@ const CalendarSlotDetail = () => {
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium mb-2">
-                                {t('views.date')}
-                            </label>
-                            <input
-                                type="date"
-                                value={editDate}
-                                onChange={(e) => setEditDate(e.target.value)}
-                                className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
-                            />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-2">
+                                    {t('views.startDate') || 'Start date'}
+                                </label>
+                                <input
+                                    type="date"
+                                    value={editDate}
+                                    onChange={(e) => setEditDate(e.target.value)}
+                                    className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-2">
+                                    {t('views.endDate') || 'End date'} ({t('common.optional') || 'Optional'})
+                                </label>
+                                <input
+                                    type="date"
+                                    value={editEndDate}
+                                    onChange={(e) => setEditEndDate(e.target.value)}
+                                    className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
+                                    min={editDate}
+                                />
+                            </div>
                         </div>
 
                         <div>
@@ -279,10 +302,13 @@ const CalendarSlotDetail = () => {
                                         {t('views.startTime') || 'Start time'}
                                     </label>
                                     <input
-                                        type="time"
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-2][0-9]:[0-5][0-9]"
+                                        placeholder="HH:mm"
                                         value={editStartTime}
                                         onChange={(e) => setEditStartTime(e.target.value)}
-                                        className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
+                                        className="w-full px-4 py-2 rounded-lg border"
                                     />
                                 </div>
                                 <div>
@@ -290,10 +316,13 @@ const CalendarSlotDetail = () => {
                                         {t('views.endTime') || 'End time'}
                                     </label>
                                     <input
-                                        type="time"
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-2][0-9]:[0-5][0-9]"
+                                        placeholder="HH:mm"
                                         value={editEndTime}
                                         onChange={(e) => setEditEndTime(e.target.value)}
-                                        className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
+                                        className="w-full px-4 py-2 rounded-lg border"
                                     />
                                 </div>
                             </div>

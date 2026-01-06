@@ -94,6 +94,23 @@ const CalendarWeekView = ({ viewObjects = [], focusedObjectId, isPublic = false 
         }
     }
 
+    // Check if a date falls within a slot's date range
+    const isDateInSlotRange = (checkDate: Date, slotData: CalendarSlotData) => {
+        const dateStr = checkDate.toISOString().split('T')[0]
+
+        // If no end_date, only match the exact start date
+        if (!slotData.end_date) {
+            return slotData.date === dateStr
+        }
+
+        // If there's an end_date, check if checkDate is within the range
+        const startDate = new Date(slotData.date + 'T00:00:00')
+        const endDate = new Date(slotData.end_date + 'T00:00:00')
+        const check = new Date(dateStr + 'T00:00:00')
+
+        return check >= startDate && check <= endDate
+    }
+
     // Get timed events for a specific day
     const getTimedEventsForDay = (day: Date) => {
         const dateStr = day.toISOString().split('T')[0]
@@ -103,20 +120,56 @@ const CalendarWeekView = ({ viewObjects = [], focusedObjectId, isPublic = false 
                 if (!obj.data) return false
 
                 const slotData = parseSlotData(obj.data)
-                if (!slotData || slotData.date !== dateStr) return false
+                if (!slotData) return false
 
-                // Only timed events (not all-day)
-                return !slotData.is_all_day && slotData.start_time
+                // Check if day is within slot's date range
+                if (!isDateInSlotRange(day, slotData)) return false
+
+                // For all-day events, don't show in timed section
+                if (slotData.is_all_day || !slotData.start_time) return false
+
+                // For multi-day events, only show as timed on first or last day
+                if (slotData.end_date) {
+                    const isFirstDay = slotData.date === dateStr
+                    const isLastDay = slotData.end_date === dateStr
+
+                    // Middle days should not appear in timed events
+                    if (!isFirstDay && !isLastDay) return false
+                }
+
+                return true
             })
             .map(obj => {
                 const slotData = parseSlotData(obj.data)!
-                const [startHour, startMinute] = slotData.start_time!.split(':').map(Number)
-                const startTotalMinutes = startHour * 60 + startMinute
+                const dateStr = day.toISOString().split('T')[0]
+                const isFirstDay = slotData.date === dateStr
+                const isLastDay = slotData.end_date === dateStr
 
-                let endTotalMinutes = startTotalMinutes + 60 // Default 1 hour duration
-                if (slotData.end_time) {
-                    const [endHour, endMinute] = slotData.end_time.split(':').map(Number)
-                    endTotalMinutes = endHour * 60 + endMinute
+                let startTotalMinutes = 0
+                let endTotalMinutes = 24 * 60 // End of day
+
+                if (slotData.end_date) {
+                    // Multi-day event
+                    if (isFirstDay && slotData.start_time) {
+                        const [startHour, startMinute] = slotData.start_time.split(':').map(Number)
+                        startTotalMinutes = startHour * 60 + startMinute
+                    }
+                    if (isLastDay && slotData.end_time) {
+                        const [endHour, endMinute] = slotData.end_time.split(':').map(Number)
+                        endTotalMinutes = endHour * 60 + endMinute
+                    }
+                } else {
+                    // Single-day event
+                    if (slotData.start_time) {
+                        const [startHour, startMinute] = slotData.start_time.split(':').map(Number)
+                        startTotalMinutes = startHour * 60 + startMinute
+                    }
+                    if (slotData.end_time) {
+                        const [endHour, endMinute] = slotData.end_time.split(':').map(Number)
+                        endTotalMinutes = endHour * 60 + endMinute
+                    } else {
+                        endTotalMinutes = startTotalMinutes + 60 // Default 1 hour
+                    }
                 }
 
                 const durationMinutes = endTotalMinutes - startTotalMinutes
@@ -138,9 +191,24 @@ const CalendarWeekView = ({ viewObjects = [], focusedObjectId, isPublic = false 
             if (!obj.data) return false
 
             const slotData = parseSlotData(obj.data)
-            if (!slotData || slotData.date !== dateStr) return false
+            if (!slotData) return false
 
-            return slotData.is_all_day || !slotData.start_time
+            // Check if day is within slot's date range
+            if (!isDateInSlotRange(day, slotData)) return false
+
+            // Always all-day if marked as such or no start_time
+            if (slotData.is_all_day || !slotData.start_time) return true
+
+            // For multi-day timed events, middle days should show as all-day
+            if (slotData.end_date) {
+                const isFirstDay = slotData.date === dateStr
+                const isLastDay = slotData.end_date === dateStr
+
+                // Middle days appear as all-day
+                if (!isFirstDay && !isLastDay) return true
+            }
+
+            return false
         })
     }
 

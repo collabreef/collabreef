@@ -373,6 +373,8 @@ export default {
     markerName: "標記名稱",
     columnName: "欄位名稱",
     date: "日期",
+    startDate: "開始日期",
+    endDate: "結束日期",
     details: "詳細資訊（選填）",
     locationDetails: "位置詳情",
     createNewSlot: "建立新的行事曆時段",

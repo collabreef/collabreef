@@ -72,6 +72,7 @@ const CreateViewObjectModal = ({
 
     // Calendar-specific state (for creating slots)
     const [calendarDate, setCalendarDate] = useState('')
+    const [endDate, setEndDate] = useState('')
     const [startTime, setStartTime] = useState('')
     const [endTime, setEndTime] = useState('')
     const [isAllDay, setIsAllDay] = useState(true)
@@ -96,6 +97,7 @@ const CreateViewObjectModal = ({
             try {
                 const slotData = JSON.parse(data)
                 if (slotData.date) setCalendarDate(slotData.date)
+                if (slotData.end_date) setEndDate(slotData.end_date)
                 if (slotData.start_time) setStartTime(slotData.start_time)
                 if (slotData.end_time) setEndTime(slotData.end_time)
                 if (slotData.is_all_day !== undefined) setIsAllDay(slotData.is_all_day)
@@ -121,6 +123,7 @@ const CreateViewObjectModal = ({
             setNodeX('')
             setNodeY('')
             setCalendarDate('')
+            setEndDate('')
             setStartTime('')
             setEndTime('')
             setIsAllDay(true)
@@ -179,6 +182,9 @@ const CreateViewObjectModal = ({
                 date: calendarDate,
                 is_all_day: isAllDay
             }
+            if (endDate) {
+                calendarData.end_date = endDate
+            }
             if (!isAllDay && startTime) {
                 calendarData.start_time = startTime
             }
@@ -190,7 +196,7 @@ const CreateViewObjectModal = ({
             }
             setData(JSON.stringify(calendarData))
         }
-    }, [calendarDate, startTime, endTime, isAllDay, slotColor, viewType, setData])
+    }, [calendarDate, endDate, startTime, endTime, isAllDay, slotColor, viewType, setData])
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -341,16 +347,30 @@ const CreateViewObjectModal = ({
         if (viewType === 'calendar') {
             return (
                 <>
-                    <div>
-                        <label className="block text-sm font-medium mb-2">
-                            {t('views.date')}
-                        </label>
-                        <input
-                            type="date"
-                            value={calendarDate}
-                            onChange={(e) => setCalendarDate(e.target.value)}
-                            className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
-                        />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                {t('views.startDate') || 'Start date'}
+                            </label>
+                            <input
+                                type="date"
+                                value={calendarDate}
+                                onChange={(e) => setCalendarDate(e.target.value)}
+                                className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                {t('views.endDate') || 'End date'} ({t('common.optional') || 'Optional'})
+                            </label>
+                            <input
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
+                                min={calendarDate}
+                            />
+                        </div>
                     </div>
 
                     <div>
@@ -374,7 +394,9 @@ const CreateViewObjectModal = ({
                                     {t('views.startTime') || 'Start time'}
                                 </label>
                                 <input
-                                    type="time"
+                                    type="text"
+                                    pattern="[0-2][0-9]:[0-5][0-9]"
+                                    placeholder="HH:mm"
                                     value={startTime}
                                     onChange={(e) => setStartTime(e.target.value)}
                                     className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
@@ -385,7 +407,9 @@ const CreateViewObjectModal = ({
                                     {t('views.endTime') || 'End time'}
                                 </label>
                                 <input
-                                    type="time"
+                                    type="text"
+                                    pattern="[0-2][0-9]:[0-5][0-9]"
+                                    placeholder="HH:mm"
                                     value={endTime}
                                     onChange={(e) => setEndTime(e.target.value)}
                                     className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
