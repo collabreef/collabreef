@@ -811,7 +811,7 @@ const FlowNodeComponent = ({ data }: FlowNodeComponentProps) => {
                     isVisible={data.isSelected}
                     lineClassName="!border-primary !border-2"
                     handleClassName="!w-3 !h-3 !bg-primary !border-2 !border-white dark:!border-neutral-800"
-                    onResizeEnd={(event, params) => {
+                    onResizeEnd={(_, params) => {
                         // Save new dimensions to backend
                         if (data.workspaceId && data.viewId && data.id) {
                             try {
