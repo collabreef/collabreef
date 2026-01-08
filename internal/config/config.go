@@ -28,10 +28,17 @@ type ServerConfig struct {
 	Timeout     int
 }
 
+type RedisConfig struct {
+	Addr     string
+	Password string
+	DB       int
+}
+
 type AppConfig struct {
 	DB      DatabaseConfig
 	Storage StorageConfig
 	Server  ServerConfig
+	Redis   RedisConfig
 }
 
 var C *viper.Viper
@@ -49,6 +56,9 @@ const (
 	SERVER_API_ROOT_PATH    = "server_api_root_path"
 	APP_DISABLE_SIGNUP      = "app_disable_signup"
 	APP_SECRET              = "app_secret"
+	REDIS_ADDR              = "redis_addr"
+	REDIS_PASSWORD          = "redis_password"
+	REDIS_DB                = "redis_db"
 )
 
 func Init() {
@@ -66,6 +76,9 @@ func Init() {
 	C.SetDefault(SERVER_API_ROOT_PATH, "/api/v1")
 	C.SetDefault(APP_DISABLE_SIGNUP, false)
 	C.SetDefault(APP_SECRET, "default_secret")
+	C.SetDefault(REDIS_ADDR, "localhost:6379")
+	C.SetDefault(REDIS_PASSWORD, "")
+	C.SetDefault(REDIS_DB, 0)
 
 	C.AutomaticEnv()
 }

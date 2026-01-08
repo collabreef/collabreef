@@ -14,6 +14,7 @@ type ViewObject struct {
 	Name      string `json:"name"`
 	Type      string `json:"type"`
 	Data      string `json:"data"`
+	YjsState  []byte `json:"yjs_state,omitempty"`
 	CreatedAt string `json:"created_at"`
 	CreatedBy string `json:"created_by"`
 	UpdatedAt string `json:"updated_at"`

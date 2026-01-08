@@ -15,12 +15,13 @@ import (
 	"github.com/notepia/notepia/internal/config"
 	"github.com/notepia/notepia/internal/db"
 	"github.com/notepia/notepia/internal/storage"
+	"github.com/notepia/notepia/internal/websocket"
 )
 
 //go:embed dist/*
 var webAssets embed.FS
 
-func New(db db.DB, storage storage.Storage) (*echo.Echo, error) {
+func New(db db.DB, storage storage.Storage, hub *websocket.Hub) (*echo.Echo, error) {
 	e := echo.New()
 
 	subFS, err := fs.Sub(webAssets, "dist")
@@ -41,10 +42,11 @@ func New(db db.DB, storage storage.Storage) (*echo.Echo, error) {
 
 	apiRoot := config.C.GetString(config.SERVER_API_ROOT_PATH)
 
-	handler := handler.NewHandler(db, storage)
+	handler := handler.NewHandler(db, storage, hub)
 	auth := middlewares.NewAuthMiddleware(db)
 	workspace := middlewares.NewWorkspaceMiddleware(db)
 
+	// Register REST API routes under /api/v1
 	api := e.Group(apiRoot)
 	route.RegisterAuth(api, *handler)
 	route.RegisterAdmin(api, *handler, *auth)
@@ -52,6 +54,9 @@ func New(db db.DB, storage storage.Storage) (*echo.Echo, error) {
 	route.RegisterWorkspace(api, *handler, *auth, *workspace)
 	route.RegisterTool(api, *handler, *auth)
 	route.RegisterPublic(api, *handler, *auth)
+
+	// Register WebSocket routes directly under /ws (not under /api/v1)
+	route.RegisterWebSocket(e, *handler, *auth)
 
 	return e, nil
 }
