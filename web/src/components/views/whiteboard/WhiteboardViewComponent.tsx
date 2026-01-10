@@ -12,6 +12,7 @@ interface WhiteboardViewComponentProps {
     viewId?: string;
     initialCanvasObjects?: Record<string, any>;
     initialViewObjects?: Record<string, any>;
+    disableWebSocket?: boolean;
 }
 
 interface CanvasObject {
@@ -32,11 +33,12 @@ const WhiteboardViewComponent = ({
     workspaceId,
     viewId,
     initialCanvasObjects,
-    initialViewObjects
+    initialViewObjects,
+    disableWebSocket = false
 }: WhiteboardViewComponentProps) => {
     const { t } = useTranslation();
 
-    // WebSocket integration for real-time sync
+    // WebSocket integration for real-time sync (disabled for public explore mode)
     const {
         sendUpdate,
         isConnected,
@@ -46,7 +48,7 @@ const WhiteboardViewComponent = ({
     } = useWhiteboardWebSocket({
         viewId: viewId || '',
         workspaceId: workspaceId || '',
-        enabled: !!viewId && (isPublic || !!workspaceId),
+        enabled: !disableWebSocket && !!viewId && (isPublic || !!workspaceId),
         isPublic: isPublic,
         skipInitialFetch: isPublic && !!(initialCanvasObjects && initialViewObjects),
     });
