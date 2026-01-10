@@ -5,13 +5,29 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Package",
+            "name": "Launch Web",
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "program": "${workspaceFolder}\\cmd\\notepia",
+            "program": "${workspaceFolder}\\cmd\\web",
             "cwd": "${workspaceFolder}",
             "envFile": "${workspaceFolder}\\.env"
+        },
+        {
+            "name": "Launch Worker",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}\\cmd\\worker",
+            "cwd": "${workspaceFolder}",
+            "envFile": "${workspaceFolder}\\.env"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Launch Web + Worker",
+            "configurations": ["Launch Web", "Launch Worker"],
+            "stopAll": true
         }
     ]
 }

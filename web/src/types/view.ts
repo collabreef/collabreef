@@ -1,5 +1,5 @@
-export type ViewType = 'map' | 'calendar' | 'kanban' | 'flow';
-export type ViewObjectType = 'calendar_slot' | 'map_marker' | 'kanban_column' | 'flow_node' | 'flow_edge';
+export type ViewType = 'map' | 'calendar' | 'kanban' | 'flow' | 'whiteboard';
+export type ViewObjectType = 'calendar_slot' | 'map_marker' | 'kanban_column' | 'flow_node' | 'flow_edge' | 'whiteboard_stroke' | 'whiteboard_shape' | 'whiteboard_text' | 'whiteboard_note' | 'whiteboard_view';
 
 // View data structures
 export interface MapViewData {
@@ -134,4 +134,50 @@ export interface FlowEdgeData {
   strokeDasharray?: string; // dashed line: '5,5' for dashed, undefined for solid
   stroke?: string; // edge color
   edgeType?: EdgeType; // edge curve type
+}
+
+// Whiteboard view data
+export interface WhiteboardViewData {
+  viewport?: {
+    x: number;
+    y: number;
+    zoom: number;
+  };
+}
+
+// Whiteboard object data structures
+export interface WhiteboardStrokeData {
+  points: { x: number; y: number }[];  // 路徑點
+  color: string;
+  width: number;                        // 線條粗細
+}
+
+export interface WhiteboardShapeData {
+  type: 'rectangle' | 'circle' | 'line';
+  position: { x: number; y: number };
+  dimensions: { width: number; height: number };  // 對於 line，表示終點
+  color: string;
+  strokeWidth: number;
+  filled?: boolean;  // 是否填充
+}
+
+export interface WhiteboardTextData {
+  position: { x: number; y: number };
+  text: string;
+  color: string;
+  fontSize: number;
+}
+
+export interface WhiteboardNoteData {
+  position: { x: number; y: number };
+  noteId: string;                       // 連結的 note ID
+  width?: number;
+  height?: number;
+}
+
+export interface WhiteboardViewRefData {
+  position: { x: number; y: number };
+  viewId: string;                       // 連結的 view ID
+  width?: number;
+  height?: number;
 }

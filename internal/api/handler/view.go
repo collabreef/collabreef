@@ -19,9 +19,10 @@ type CreateViewRequest struct {
 }
 
 type UpdateViewRequest struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
-	Data string `json:"data"`
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+	Data       string `json:"data"`
+	Visibility string `json:"visibility"`
 }
 
 type GetViewResponse struct {
@@ -138,9 +139,9 @@ func (h Handler) CreateView(c echo.Context) error {
 
 	// Validate view type
 	switch req.Type {
-	case "map", "calendar", "kanban", "flow":
+	case "map", "calendar", "kanban", "flow", "whiteboard":
 	default:
-		return echo.NewHTTPError(http.StatusBadRequest, "View type must be 'map', 'calendar', 'kanban', or 'flow'")
+		return echo.NewHTTPError(http.StatusBadRequest, "View type must be 'map', 'calendar', 'kanban', 'flow', or 'whiteboard'")
 	}
 
 	user := c.Get("user").(model.User)
@@ -211,9 +212,18 @@ func (h Handler) UpdateView(c echo.Context) error {
 	// Validate view type if provided
 	if req.Type != "" {
 		switch req.Type {
-		case "map", "calendar", "kanban", "flow":
+		case "map", "calendar", "kanban", "flow", "whiteboard":
 		default:
-			return echo.NewHTTPError(http.StatusBadRequest, "View type must be 'map', 'calendar', 'kanban', or 'flow'")
+			return echo.NewHTTPError(http.StatusBadRequest, "View type must be 'map', 'calendar', 'kanban', 'flow', or 'whiteboard'")
+		}
+	}
+
+	// Validate visibility if provided
+	if req.Visibility != "" {
+		switch req.Visibility {
+		case "public", "workspace", "private":
+		default:
+			return echo.NewHTTPError(http.StatusBadRequest, "View visibility must be 'public', 'workspace', or 'private'")
 		}
 	}
 
@@ -225,6 +235,7 @@ func (h Handler) UpdateView(c echo.Context) error {
 		Name:        req.Name,
 		Type:        req.Type,
 		Data:        req.Data,
+		Visibility:  req.Visibility,
 		CreatedAt:   existingView.CreatedAt,
 		CreatedBy:   existingView.CreatedBy,
 		UpdatedAt:   time.Now().UTC().String(),
@@ -237,6 +248,9 @@ func (h Handler) UpdateView(c echo.Context) error {
 	}
 	if v.Type == "" {
 		v.Type = existingView.Type
+	}
+	if v.Visibility == "" {
+		v.Visibility = existingView.Visibility
 	}
 	// Note: Data can be explicitly set to empty string to clear it
 	// So we don't check if it's empty here

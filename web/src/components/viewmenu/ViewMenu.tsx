@@ -106,6 +106,8 @@ const ViewMenu = ({ viewType, currentViewId }: ViewMenuProps) => {
                 return t('views.kanban') || 'Kanban'
             case 'flow':
                 return t('views.flow')
+            case 'whiteboard':
+                return t('views.whiteboard') || 'Whiteboard'
             default:
                 return viewType
         }
@@ -121,6 +123,8 @@ const ViewMenu = ({ viewType, currentViewId }: ViewMenuProps) => {
                 return t('views.searchKanban')
             case 'flow':
                 return t('views.searchFlow')
+            case 'whiteboard':
+                return t('views.searchWhiteboard') || 'Search Whiteboard'
             default:
                 return t('placeholder.searchWorkspace')
         }

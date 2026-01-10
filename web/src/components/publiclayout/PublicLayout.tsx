@@ -1,7 +1,7 @@
 import { twMerge } from "tailwind-merge"
 import { useSidebar } from "../sidebar/SidebarProvider"
 import { Link } from "react-router-dom"
-import { LogIn, Monitor, FileText, Calendar, MapPin, KanbanSquare, Workflow } from 'lucide-react'
+import { LogIn, Monitor, FileText, Calendar, MapPin, KanbanSquare, Workflow, PenTool } from 'lucide-react'
 import { useTranslation } from "react-i18next"
 import logo from '@/assets/app.png'
 import { useCurrentUserStore } from "@/stores/current-user"
@@ -44,6 +44,11 @@ const PublicLayout = () => {
                 <Link to="/explore/flow" className="p-2.5 flex items-center gap-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-lg">
                     <Workflow size={20} />
                     {!isCollapse && <>{t("views.flow") || "Flow"}</>}
+                </Link>
+
+                <Link to="/explore/whiteboard" className="p-2.5 flex items-center gap-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-lg">
+                    <PenTool size={20} />
+                    {!isCollapse && <>{t("views.whiteboard") || "Whiteboard"}</>}
                 </Link>
 
                 <div className="my-2 border-t dark:border-neutral-700"></div>
