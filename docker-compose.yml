@@ -14,11 +14,11 @@ services:
       timeout: 5s
       retries: 5
 
-  notepia:
+  notepia-web:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: notepia
+      dockerfile: Dockerfile.web
+    container_name: notepia-web
     ports:
       - "8080:8080"
     volumes:
@@ -26,6 +26,21 @@ services:
     environment:
       - PORT=8080
       - APP_DISABLE_SIGNUP=${APP_DISABLE_SIGNUP}
+      - APP_SECRET=${APP_SECRET}
+      - REDIS_ADDR=redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  notepia-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: notepia-worker
+    volumes:
+      - "./bin:/usr/local/app/bin"
+    environment:
       - APP_SECRET=${APP_SECRET}
       - REDIS_ADDR=redis:6379
     depends_on:
