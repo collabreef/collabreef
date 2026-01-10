@@ -135,6 +135,13 @@ func (r *Room) Run() {
 
 // sendInitialState sends the current Y.js state to a newly connected client
 func (r *Room) sendInitialState(client *Client) {
+	// Recover from panic if client disconnects while sending
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("Recovered from panic in sendInitialState for client %s: %v", client.UserID, r)
+		}
+	}()
+
 	// Try to get cached Y.js state
 	state, err := r.cache.GetViewYjsState(r.ctx, r.viewID)
 	if err == nil && len(state) > 0 {

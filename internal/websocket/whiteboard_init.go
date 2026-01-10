@@ -11,6 +11,13 @@ import (
 // This method ONLY sends what's already in Redis cache, it does NOT initialize from DB
 // Initialization from DB is handled by the frontend client using Y.js
 func (r *WhiteboardRoom) sendInitialStateToClient(client *Client) {
+	// Recover from panic if client disconnects while sending
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("Recovered from panic in sendInitialStateToClient for client %s: %v", client.UserID, r)
+		}
+	}()
+
 	// Check if already initialized in Redis
 	initialized, err := r.cache.IsWhiteboardInitialized(r.ctx, r.viewID)
 	if err != nil {

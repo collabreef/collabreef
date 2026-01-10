@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -180,9 +181,11 @@ func (wc *WhiteboardCache) GetAllActiveWhiteboardIDs(ctx context.Context) ([]str
 	for iter.Next(ctx) {
 		key := iter.Val()
 		// Extract view ID from key (e.g., "whiteboard:123:canvas" -> "123")
-		var viewID string
-		_, err := fmt.Sscanf(key, "whiteboard:%s:canvas", &viewID)
-		if err == nil && viewID != "" {
+		// Remove prefix and suffix
+		viewID := strings.TrimPrefix(key, "whiteboard:")
+		viewID = strings.TrimSuffix(viewID, ":canvas")
+
+		if viewID != "" && viewID != key {
 			viewIDs = append(viewIDs, viewID)
 		}
 	}
