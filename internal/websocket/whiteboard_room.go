@@ -134,6 +134,19 @@ func (r *WhiteboardRoom) handleMessage(msg *Message) {
 		return
 	}
 
+	// Ignore write operations from read-only clients
+	// Only allow them to receive messages (handled by broadcast)
+	if msg.Sender.IsReadOnly {
+		switch whiteboardMsg.Type {
+		case WhiteboardMessageTypeAcquireLock:
+			// Allow read-only clients to try acquiring lock (will be denied if needed)
+		default:
+			// Ignore all write operations from read-only clients
+			log.Printf("Ignoring write operation from read-only client %s: %s", msg.Sender.UserID, whiteboardMsg.Type)
+			return
+		}
+	}
+
 	switch whiteboardMsg.Type {
 	case WhiteboardMessageTypeAcquireLock:
 		// Client wants to acquire initialization lock

@@ -42,7 +42,8 @@ const WhiteboardViewComponent = ({
     } = useWhiteboardWebSocket({
         viewId: viewId || '',
         workspaceId: workspaceId || '',
-        enabled: !isPublic && !!viewId && !!workspaceId,
+        enabled: !!viewId && (isPublic || !!workspaceId),
+        isPublic: isPublic,
     });
 
     // Canvas ref

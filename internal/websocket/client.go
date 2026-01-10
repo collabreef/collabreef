@@ -40,6 +40,9 @@ type Client struct {
 
 	// The room this client belongs to
 	room RoomInterface
+
+	// IsReadOnly marks this client as read-only (for public access)
+	IsReadOnly bool
 }
 
 // NewClient creates a new WebSocket client
@@ -75,6 +78,12 @@ func (c *Client) readPump() {
 				log.Printf("websocket error: %v", err)
 			}
 			break
+		}
+
+		// Ignore messages from read-only clients
+		if c.IsReadOnly {
+			log.Printf("Ignoring message from read-only client: %s", c.UserID)
+			continue
 		}
 
 		// Broadcast message to all clients in the room

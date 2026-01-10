@@ -20,4 +20,10 @@ func RegisterWebSocket(e *echo.Echo, h handler.Handler, auth middlewares.AuthMid
 
 	// Hub statistics endpoint (for monitoring)
 	ws.GET("/stats", h.HandleHubStats)
+
+	// Public WebSocket endpoint for read-only access to public views
+	// Uses ParseJWT middleware which allows unauthenticated access (optional auth)
+	wsPublic := e.Group("/ws/public")
+	wsPublic.Use(auth.ParseJWT())
+	wsPublic.GET("/views/:viewId", h.HandlePublicViewWebSocket)
 }

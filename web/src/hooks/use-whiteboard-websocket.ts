@@ -4,6 +4,7 @@ interface UseWhiteboardWebSocketOptions {
     viewId: string;
     workspaceId: string;
     enabled: boolean;
+    isPublic?: boolean;
 }
 
 interface CanvasObject {
@@ -31,7 +32,7 @@ interface WhiteboardMessage {
 }
 
 export function useWhiteboardWebSocket(options: UseWhiteboardWebSocketOptions) {
-    const { viewId, workspaceId, enabled } = options;
+    const { viewId, workspaceId, enabled, isPublic = false } = options;
 
     const wsRef = useRef<WebSocket | null>(null);
     const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
@@ -43,11 +44,14 @@ export function useWhiteboardWebSocket(options: UseWhiteboardWebSocketOptions) {
     const initializingRef = useRef(false);
 
     const connect = useCallback(() => {
-        if (!enabled || !viewId || !workspaceId) return;
+        if (!enabled || !viewId) return;
+        // For non-public mode, require workspaceId
+        if (!isPublic && !workspaceId) return;
 
-        // Build WebSocket URL - cookie authentication will be handled automatically
+        // Build WebSocket URL - use public endpoint for public mode
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsUrl = `${protocol}//${window.location.host}/ws/views/${viewId}`;
+        const path = isPublic ? `/ws/public/views/${viewId}` : `/ws/views/${viewId}`;
+        const wsUrl = `${protocol}//${window.location.host}${path}`;
 
         try {
             const ws = new WebSocket(wsUrl);
@@ -106,8 +110,9 @@ export function useWhiteboardWebSocket(options: UseWhiteboardWebSocketOptions) {
                             break;
 
                         case 'lock_acquired':
-                            if (message.lock_acquired && !isInitialized) {
+                            if (message.lock_acquired && !isInitialized && !isPublic) {
                                 // We got the lock, fetch data from API and initialize
+                                // (Public mode should never initialize, only receive)
                                 try {
                                     // Fetch view data
                                     const viewResponse = await fetch(`/api/v1/workspaces/${workspaceId}/views/${viewId}`, {
@@ -280,13 +285,19 @@ export function useWhiteboardWebSocket(options: UseWhiteboardWebSocketOptions) {
         } catch (error) {
             console.error('Failed to create WebSocket:', error);
         }
-    }, [enabled, viewId, workspaceId]);
+    }, [enabled, viewId, workspaceId, isPublic]);
 
     const sendUpdate = useCallback((message: Partial<WhiteboardMessage>) => {
+        // Don't send updates in public/read-only mode
+        if (isPublic) {
+            console.log('Ignoring update in public mode:', message.type);
+            return;
+        }
+
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
             wsRef.current.send(JSON.stringify(message));
         }
-    }, []);
+    }, [isPublic]);
 
     useEffect(() => {
         if (enabled) {
