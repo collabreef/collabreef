@@ -131,7 +131,27 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
                         data = event.data;
                     }
 
-                    const message: NoteMessage = JSON.parse(data);
+                    // Validate JSON string before parsing
+                    if (!data || typeof data !== 'string' || data.trim().length === 0) {
+                        console.warn('[WebSocket] Received empty or invalid message data');
+                        return;
+                    }
+
+                    let message: NoteMessage;
+                    try {
+                        message = JSON.parse(data);
+                    } catch (parseError) {
+                        console.error('[WebSocket] JSON parse error. Data length:', data.length);
+                        console.error('[WebSocket] First 200 chars:', data.substring(0, 200));
+                        console.error('[WebSocket] Last 200 chars:', data.substring(Math.max(0, data.length - 200)));
+                        throw parseError;
+                    }
+
+                    // Validate message type
+                    if (!message.type) {
+                        console.warn('[WebSocket] Message missing type field:', message);
+                        return;
+                    }
 
                     switch (message.type) {
                         case 'init':
@@ -248,23 +268,84 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
                         case 'snapshot':
                             // Received Y.js snapshot from server (for existing notes)
                             if (message.snapshot && yDocRef.current) {
-                                const snapshot = new Uint8Array(message.snapshot);
-                                Y.applyUpdate(yDocRef.current, snapshot, 'server');
-                                console.log('[WebSocket] Applied Y.js snapshot:', snapshot.length, 'bytes');
+                                try {
+                                    // Validate snapshot data
+                                    if (!Array.isArray(message.snapshot)) {
+                                        console.error('[WebSocket] Invalid snapshot: not an array, type:', typeof message.snapshot);
+                                        break;
+                                    }
+                                    if (message.snapshot.length === 0) {
+                                        console.warn('[WebSocket] Empty snapshot received');
+                                        break;
+                                    }
+
+                                    // Validate array elements are numbers in valid byte range
+                                    const hasInvalidBytes = message.snapshot.some(b => typeof b !== 'number' || b < 0 || b > 255);
+                                    if (hasInvalidBytes) {
+                                        console.error('[WebSocket] Snapshot contains invalid byte values');
+                                        console.error('[WebSocket] First 10 values:', message.snapshot.slice(0, 10));
+                                        break;
+                                    }
+
+                                    const snapshot = new Uint8Array(message.snapshot);
+                                    Y.applyUpdate(yDocRef.current, snapshot, 'server');
+                                    console.log('[WebSocket] ✓ Applied Y.js snapshot:', snapshot.length, 'bytes');
+                                } catch (error) {
+                                    console.error('[WebSocket] ✗ Error applying Y.js snapshot:', error);
+                                    console.error('[WebSocket] Snapshot data length:', message.snapshot?.length);
+                                    console.error('[WebSocket] Error details:', error instanceof Error ? error.message : String(error));
+                                }
                             }
                             break;
 
                         case 'yjs_update':
                             // Received Y.js CRDT update from another client
                             if (message.yjs_update && yDocRef.current) {
-                                const update = new Uint8Array(message.yjs_update);
-                                Y.applyUpdate(yDocRef.current, update, 'server');
-                                console.log('[WebSocket] Applied Y.js update from JSON:', update.length, 'bytes');
+                                try {
+                                    // Validate update data
+                                    if (!Array.isArray(message.yjs_update)) {
+                                        console.error('[WebSocket] Invalid yjs_update: not an array, type:', typeof message.yjs_update);
+                                        break;
+                                    }
+                                    if (message.yjs_update.length === 0) {
+                                        console.warn('[WebSocket] Empty yjs_update received');
+                                        break;
+                                    }
+
+                                    // Validate array elements are numbers in valid byte range
+                                    const hasInvalidBytes = message.yjs_update.some(b => typeof b !== 'number' || b < 0 || b > 255);
+                                    if (hasInvalidBytes) {
+                                        console.error('[WebSocket] Update contains invalid byte values');
+                                        console.error('[WebSocket] First 10 values:', message.yjs_update.slice(0, 10));
+                                        break;
+                                    }
+
+                                    const update = new Uint8Array(message.yjs_update);
+                                    Y.applyUpdate(yDocRef.current, update, 'server');
+                                    console.log('[WebSocket] ✓ Applied Y.js update:', update.length, 'bytes');
+                                } catch (error) {
+                                    console.error('[WebSocket] ✗ Error applying Y.js update:', error);
+                                    console.error('[WebSocket] Update data length:', message.yjs_update?.length);
+                                    console.error('[WebSocket] Error details:', error instanceof Error ? error.message : String(error));
+                                    // Don't crash, just log and continue
+                                }
                             }
                             break;
                     }
                 } catch (error) {
-                    console.error('Error handling WebSocket message:', error);
+                    console.error('[WebSocket] Error handling WebSocket message:', error);
+                    // Log event data type for debugging
+                    if (event.data) {
+                        console.error('[WebSocket] Event data type:', typeof event.data);
+                        if (event.data instanceof Blob) {
+                            console.error('[WebSocket] Blob size:', event.data.size);
+                        } else if (event.data instanceof ArrayBuffer) {
+                            console.error('[WebSocket] ArrayBuffer byteLength:', event.data.byteLength);
+                        } else if (typeof event.data === 'string') {
+                            console.error('[WebSocket] String length:', event.data.length);
+                        }
+                    }
+                    // Don't throw - continue processing other messages
                 }
             };
 
