@@ -96,7 +96,6 @@ services:
     volumes:
       - notepia_data:/usr/local/app/bin
     environment:
-      APP_SECRET: change-me-to-a-secure-random-string
       REDIS_ADDR: redis:6379
     depends_on:
       redis:
