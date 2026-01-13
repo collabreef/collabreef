@@ -72,7 +72,7 @@ services:
       timeout: 5s
       retries: 5
 
-  notepia-web:
+  web:
     image: notepia/notepia
     container_name: notepia-web
     command: ["./web"]
@@ -87,7 +87,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  notepia-worker:
+  worker:
     image: notepia/notepia
     container_name: notepia-worker
     command: ["./worker"]
