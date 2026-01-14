@@ -35,7 +35,7 @@ const ExploreNotesPage = () => {
         hasNextPage,
         isFetchingNextPage
     } = useInfiniteQuery({
-        queryKey: ['publicnotes'],
+        queryKey: ['publicnotes', debouncedQuery],
         queryFn: async ({ pageParam = 1 }: { pageParam?: unknown }) => {
             const result = await getPublicNotes(Number(pageParam), PAGE_SIZE, debouncedQuery)
             return result || []
