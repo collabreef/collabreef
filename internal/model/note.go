@@ -5,6 +5,7 @@ type NoteFilter struct {
 	NoteIDs     string
 	PageSize    int
 	PageNumber  int
+	UserID      string
 	Query       string
 }
 

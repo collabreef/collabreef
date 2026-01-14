@@ -52,6 +52,17 @@ func (s SqliteDB) FindNotes(f model.NoteFilter) ([]model.Note, error) {
 		args = append(args, query, query)
 	}
 
+	if f.UserID != "" {
+		permissionCond := `(
+            visibility IN ('public', 'workspace') 
+            OR (visibility = 'private' AND created_by = ?)
+        )`
+		conds = append(conds, permissionCond)
+		args = append(args, f.UserID)
+	} else {
+		conds = append(conds, "visibility = 'public'")
+	}
+
 	query := s.getDB().Model(&model.Note{})
 
 	if len(conds) > 0 {

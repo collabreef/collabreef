@@ -95,57 +95,19 @@ func (h Handler) GetPublicNotes(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-
-	var user *model.User
-	if u := c.Get("user"); u != nil {
-		if uu, ok := u.(model.User); ok {
-			user = &uu
-		}
-	}
-
 	res := make([]GetNoteResponse, 0)
 
 	for _, b := range notes {
-		switch b.Visibility {
-		case "public":
-			res = append(res, GetNoteResponse{
-				ID:         b.ID,
-				Visibility: b.Visibility,
-				Title:      b.Title,
-				Content:    b.Content,
-				CreatedAt:  b.CreatedAt,
-				CreatedBy:  h.getUserNameByID(b.CreatedBy),
-				UpdatedAt:  b.UpdatedAt,
-				UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
-			})
-		case "workspace":
-			// For workspace visibility, check if user is a member of that workspace
-			if user != nil && h.isUserWorkspaceMember(user.ID, b.WorkspaceID) {
-				res = append(res, GetNoteResponse{
-					ID:         b.ID,
-					Visibility: b.Visibility,
-					Title:      b.Title,
-					Content:    b.Content,
-					CreatedAt:  b.CreatedAt,
-					CreatedBy:  h.getUserNameByID(b.CreatedBy),
-					UpdatedAt:  b.UpdatedAt,
-					UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
-				})
-			}
-		case "private":
-			if user != nil && b.CreatedBy == user.ID {
-				res = append(res, GetNoteResponse{
-					ID:         b.ID,
-					Visibility: b.Visibility,
-					Title:      b.Title,
-					Content:    b.Content,
-					CreatedAt:  b.CreatedAt,
-					CreatedBy:  h.getUserNameByID(b.CreatedBy),
-					UpdatedAt:  b.UpdatedAt,
-					UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
-				})
-			}
-		}
+		res = append(res, GetNoteResponse{
+			ID:         b.ID,
+			Visibility: b.Visibility,
+			Title:      b.Title,
+			Content:    b.Content,
+			CreatedAt:  b.CreatedAt,
+			CreatedBy:  h.getUserNameByID(b.CreatedBy),
+			UpdatedAt:  b.UpdatedAt,
+			UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
+		})
 	}
 
 	return c.JSON(http.StatusOK, res)
@@ -217,10 +179,13 @@ func (h Handler) GetNotes(c echo.Context) error {
 
 	query := c.QueryParam("query")
 
+	user := c.Get("user").(model.User)
+
 	filter := model.NoteFilter{
 		WorkspaceID: workspaceId,
 		PageSize:    pageSize,
 		PageNumber:  pageNumber,
+		UserID:      user.ID,
 		Query:       query,
 	}
 
@@ -229,37 +194,19 @@ func (h Handler) GetNotes(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	user := c.Get("user").(model.User)
-
 	res := make([]GetNoteResponse, 0)
 
 	for _, b := range notes {
-		switch b.Visibility {
-		case "public", "workspace":
-			res = append(res, GetNoteResponse{
-				ID:         b.ID,
-				Visibility: b.Visibility,
-				Title:      b.Title,
-				Content:    b.Content,
-				CreatedAt:  b.CreatedAt,
-				CreatedBy:  h.getUserNameByID(b.CreatedBy),
-				UpdatedAt:  b.UpdatedAt,
-				UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
-			})
-		case "private":
-			if b.CreatedBy == user.ID {
-				res = append(res, GetNoteResponse{
-					ID:         b.ID,
-					Visibility: b.Visibility,
-					Title:      b.Title,
-					Content:    b.Content,
-					CreatedAt:  b.CreatedAt,
-					CreatedBy:  h.getUserNameByID(b.CreatedBy),
-					UpdatedAt:  b.UpdatedAt,
-					UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
-				})
-			}
-		}
+		res = append(res, GetNoteResponse{
+			ID:         b.ID,
+			Visibility: b.Visibility,
+			Title:      b.Title,
+			Content:    b.Content,
+			CreatedAt:  b.CreatedAt,
+			CreatedBy:  h.getUserNameByID(b.CreatedBy),
+			UpdatedAt:  b.UpdatedAt,
+			UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
+		})
 	}
 
 	return c.JSON(http.StatusOK, res)
