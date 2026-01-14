@@ -91,7 +91,20 @@ func (wc *WhiteboardCache) DeleteCanvasObject(ctx context.Context, viewID, objec
 // ClearCanvasObjects clears all canvas objects
 func (wc *WhiteboardCache) ClearCanvasObjects(ctx context.Context, viewID string) error {
 	key := fmt.Sprintf(whiteboardCanvasKey, viewID)
-	return wc.client.rdb.Del(ctx, key).Err()
+
+	// Get all field names in the hash
+	fields, err := wc.client.rdb.HKeys(ctx, key).Result()
+	if err != nil {
+		return err
+	}
+
+	// If there are no fields, nothing to clear
+	if len(fields) == 0 {
+		return nil
+	}
+
+	// Delete all fields from the hash, but keep the key itself
+	return wc.client.rdb.HDel(ctx, key, fields...).Err()
 }
 
 // GetViewObjects retrieves all view objects for a view
@@ -142,7 +155,20 @@ func (wc *WhiteboardCache) DeleteViewObject(ctx context.Context, viewID, objectI
 // ClearViewObjects clears all view objects
 func (wc *WhiteboardCache) ClearViewObjects(ctx context.Context, viewID string) error {
 	key := fmt.Sprintf(whiteboardViewObjectsKey, viewID)
-	return wc.client.rdb.Del(ctx, key).Err()
+
+	// Get all field names in the hash
+	fields, err := wc.client.rdb.HKeys(ctx, key).Result()
+	if err != nil {
+		return err
+	}
+
+	// If there are no fields, nothing to clear
+	if len(fields) == 0 {
+		return nil
+	}
+
+	// Delete all fields from the hash, but keep the key itself
+	return wc.client.rdb.HDel(ctx, key, fields...).Err()
 }
 
 // GetYjsState retrieves the Y.js CRDT state for a whiteboard
