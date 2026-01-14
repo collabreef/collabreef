@@ -43,7 +43,6 @@ const ViewSettingsPage = () => {
             setTimeout(() => {
                 setIsRenaming(false)
             }, 200)
-            addToast({ type: 'success', title: t('views.nameUpdated') || 'Name updated' })
         },
         onError: () => {
             addToast({ type: 'error', title: t('views.nameUpdateError') || 'Failed to update name' })
@@ -57,7 +56,6 @@ const ViewSettingsPage = () => {
             queryClient.invalidateQueries({ queryKey: ['view', workspaceId, viewId] })
             queryClient.invalidateQueries({ queryKey: ['views', workspaceId] })
             queryClient.invalidateQueries({ queryKey: ['views', workspaceId, viewType] })
-            addToast({ type: 'success', title: t('views.visibilityUpdated') || 'Visibility updated' })
         },
         onError: () => {
             addToast({ type: 'error', title: t('views.visibilityUpdateError') || 'Failed to update visibility' })
@@ -69,7 +67,6 @@ const ViewSettingsPage = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['views', workspaceId] })
             queryClient.invalidateQueries({ queryKey: ['views', workspaceId, viewType] })
-            addToast({ type: 'success', title: t('views.viewDeleted') || 'View deleted' })
             navigate(`/workspaces/${workspaceId}/${viewType}`)
         },
         onError: () => {
