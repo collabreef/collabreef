@@ -33,7 +33,7 @@ RUN go mod download
 COPY . .
 COPY --from=frontend /app/web/dist /app/internal/server/dist
 
-# Build both web and worker binaries
+# Build web, worker, and cli binaries
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
     GOOS=linux GOARCH=amd64 go build \
@@ -46,6 +46,12 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     -ldflags "-X main.Version=${APP_VERSION}" \
     -o /out/worker ./cmd/worker/main.go
 
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
+    GOOS=linux GOARCH=amd64 go build \
+    -ldflags "-X main.Version=${APP_VERSION}" \
+    -o /out/cli ./cmd/cli/main.go
+
 # ---------- Stage 3: final runtime ----------
 FROM alpine:latest
 WORKDIR /usr/local/app
@@ -56,9 +62,10 @@ ENV TZ="UTC"
 
 COPY ./migrations /usr/local/app/migrations
 
-# Copy both binaries
+# Copy all binaries
 COPY --from=backend /out/web ./web
 COPY --from=backend /out/worker ./worker
+COPY --from=backend /out/cli ./cli
 
 RUN mkdir -p ./bin
 VOLUME /usr/local/app/bin
