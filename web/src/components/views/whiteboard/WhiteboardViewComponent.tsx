@@ -264,8 +264,6 @@ const WhiteboardViewComponent = ({
 
     // Event handlers (unified for mouse and touch)
     const handlePointerDown = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-        if (isPublic) return;
-
         const pos = getPointerPosition(e);
         if (!pos) return;
 
@@ -279,15 +277,22 @@ const WhiteboardViewComponent = ({
             clientY = e.clientY;
         }
 
-        // Middle mouse button = pan
+        // Middle mouse button = pan (allowed in public mode)
         if (e.type === 'mousedown' && (e as React.MouseEvent).button === 1) {
             setIsPanning(true);
             setLastPanPoint({ x: clientX, y: clientY });
             return;
         }
 
-        // Space key pressed = pan mode
+        // Space key pressed = pan mode (allowed in public mode)
         if (isSpacePressed) {
+            setIsPanning(true);
+            setLastPanPoint({ x: clientX, y: clientY });
+            return;
+        }
+
+        // In public mode, only allow panning by clicking on empty space
+        if (isPublic) {
             setIsPanning(true);
             setLastPanPoint({ x: clientX, y: clientY });
             return;
@@ -395,11 +400,7 @@ const WhiteboardViewComponent = ({
     };
 
     const handlePointerMove = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-        if (isPublic) return;
-
-        const pos = getPointerPosition(e);
-        if (!pos) return;
-
+        // Allow panning in public mode
         if (isPanning && lastPanPoint) {
             let clientX: number, clientY: number;
             if ('touches' in e) {
@@ -415,7 +416,15 @@ const WhiteboardViewComponent = ({
             const dy = clientY - lastPanPoint.y;
             setViewport(prev => ({ ...prev, x: prev.x + dx, y: prev.y + dy }));
             setLastPanPoint({ x: clientX, y: clientY });
-        } else if (isDraggingObject && selectedObjectId && dragOffset) {
+            return;
+        }
+
+        if (isPublic) return;
+
+        const pos = getPointerPosition(e);
+        if (!pos) return;
+
+        if (isDraggingObject && selectedObjectId && dragOffset) {
             // Handle object dragging
             const newPos = {
                 x: pos.x - dragOffset.x,
@@ -528,12 +537,16 @@ const WhiteboardViewComponent = ({
     };
 
     const handlePointerUp = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-        if (isPublic) return;
-
+        // Allow ending panning in public mode
         if (isPanning) {
             setIsPanning(false);
             setLastPanPoint(null);
-        } else if (isDraggingObject && selectedObjectId) {
+            return;
+        }
+
+        if (isPublic) return;
+
+        if (isDraggingObject && selectedObjectId) {
             // Finish dragging - send update to server
             const canvasObj = canvasObjects.get(selectedObjectId);
             const viewObj = viewObjects.get(selectedObjectId);
@@ -975,9 +988,8 @@ const WhiteboardViewComponent = ({
                     return null;
                 })}
 
-                {/* Zoom controls */}
-                {!isPublic && (
-                    <div className="absolute bottom-4 right-4 z-10 bg-white dark:bg-neutral-800 rounded-lg shadow-md p-2 flex flex-col gap-2">
+                {/* Zoom controls - always visible */}
+                <div className="absolute bottom-4 right-4 z-10 bg-white dark:bg-neutral-800 rounded-lg shadow-md p-2 flex flex-col gap-2">
                         <button
                             onClick={handleZoomIn}
                             className="px-3 py-2 bg-neutral-100 dark:bg-neutral-700 rounded hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-sm font-medium"
@@ -999,8 +1011,7 @@ const WhiteboardViewComponent = ({
                         >
                             −
                         </button>
-                    </div>
-                )}
+                </div>
 
                 <canvas
                     ref={canvasRef}
