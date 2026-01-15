@@ -2,7 +2,7 @@ import { FC, useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, ExternalLink, User, FileText, Plus, Search, Loader } from 'lucide-react';
+import { Loader2, ExternalLink, FileText, Plus, Search, Loader } from 'lucide-react';
 import { getNote, getNotes, createNote, NoteData } from '@/api/note';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import { NoteWidgetConfig } from '@/types/widget';
