@@ -87,7 +87,7 @@ const ExploreNotesPage = () => {
                         <div className="flex gap-4">
                             <SidebarButton />
                             <div className="flex gap-2 items-center max-w-[calc(100vw-165px)] overflow-x-auto whitespace-nowrap sm:text-xl font-semibold hide-scrollbar">
-                                {t("menu.notes")}
+                                {t("menu.explore")}
                             </div>
                         </div>
                         <div className="flex">
@@ -118,7 +118,7 @@ const ExploreNotesPage = () => {
                             {isLoading ? (
                                 <NoteListSkeleton count={3} />
                             ) : (
-                                <NoteList notes={notes} getLinkTo={(note) => `${note.id}`} />
+                                <NoteList notes={notes} maxNodes={10} getLinkTo={(note) => `${note.id}`} />
                             )}
 
                             <div ref={loadMoreRef} className="h-8"></div>
