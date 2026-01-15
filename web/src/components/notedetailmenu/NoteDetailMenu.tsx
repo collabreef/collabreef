@@ -2,11 +2,10 @@ import { FC, useRef, useState, useEffect } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { deleteNote, NoteData, updateNoteVisibility } from "@/api/note"
 import { useTranslation } from "react-i18next"
-import { Trash2, Ellipsis } from "lucide-react"
+import { Trash2, Ellipsis, Globe2, Lock, Building } from "lucide-react"
 import { useParams, useNavigate } from "react-router-dom"
 import { useToastStore } from "@/stores/toast"
 import { Visibility } from "@/types/visibility"
-import VisibilitySelect from "@/components/visibilityselect/VisibilitySelect"
 
 interface NoteDetailMenuProps {
     note: NoteData
@@ -47,6 +46,7 @@ const NoteDetailMenu: FC<NoteDetailMenuProps> = ({ note }) => {
         onSuccess: async () => {
             try {
                 await queryClient.invalidateQueries({ queryKey: ['note', workspaceId, note.id] })
+                setIsMenuOpened(false);
             } catch (error) {
                 addToast({ title: t('messages.updateVisibilityFailed'), type: 'error' })
             }
@@ -106,15 +106,30 @@ const NoteDetailMenu: FC<NoteDetailMenuProps> = ({ note }) => {
                         <div className="flex flex-col p-2">
                             {workspaceId && (
                                 <>
-                                    <div className="px-3 py-2" onMouseDown={(e) => e.stopPropagation()}>
-                                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                                            {t('common.visibility')}
-                                        </div>
-                                        <VisibilitySelect
-                                            value={note.visibility}
-                                            onChange={handleUpdateVisibility}
-                                        />
-                                    </div>
+                                    {
+                                        note.visibility != "private" && <button
+                                            className="px-3 py-2 flex items-center gap-3"
+                                            onClick={() => handleUpdateVisibility("private")}>
+                                            <Lock size={16} />
+                                            {t("actions.makePrivate")}
+                                        </button>
+                                    }
+                                    {
+                                        note.visibility != "workspace" && <button
+                                            className="px-3 py-2 flex items-center gap-3"
+                                            onClick={() => handleUpdateVisibility("workspace")}>
+                                            <Building size={16} />
+                                            {t("actions.makeWorkspace")}
+                                        </button>
+                                    }
+                                    {
+                                        note.visibility != "public" && <button
+                                            className="px-3 py-2 flex items-center gap-3"
+                                            onClick={() => handleUpdateVisibility("public")}>
+                                            <Globe2 size={16} />
+                                            {t("actions.makePublic")}
+                                        </button>
+                                    }
                                     <button
                                         onClick={handleDelete}
                                         className="px-3 py-2 flex items-center gap-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors text-left"
