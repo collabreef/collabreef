@@ -968,6 +968,7 @@ const WhiteboardViewComponent = ({
                                 viewport={viewport}
                                 workspaceId={workspaceId!}
                                 viewId={viewId!}
+                                isSelected={selectedObjectId === objId}
                             />
                         );
                     }

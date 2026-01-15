@@ -15,9 +15,10 @@ interface NoteOverlayProps {
     viewport: { x: number; y: number; zoom: number };
     workspaceId: string;
     viewId: string;
+    isSelected?: boolean;
 }
 
-const NoteOverlay: React.FC<NoteOverlayProps> = ({ viewObjectId, position, width, viewport, workspaceId, viewId }) => {
+const NoteOverlay: React.FC<NoteOverlayProps> = ({ viewObjectId, position, width, viewport, workspaceId, viewId, isSelected = false }) => {
     // Fetch linked notes via view_object_notes
     const { data: linkedNotes = [] } = useQuery({
         queryKey: ['view-object-notes', workspaceId, viewId, viewObjectId],
@@ -89,7 +90,11 @@ const NoteOverlay: React.FC<NoteOverlayProps> = ({ viewObjectId, position, width
             }}
         >
             <div
-                className="bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-400 dark:border-yellow-600 rounded-lg shadow-md p-4 select-text"
+                className={`bg-yellow-50 dark:bg-yellow-900/20 rounded-lg shadow-md p-4 select-text ${
+                    isSelected
+                        ? 'border-3 border-blue-500 border-dashed'
+                        : 'border-2 border-yellow-400 dark:border-yellow-600'
+                }`}
                 style={{
                     width: `${width}px`,
                 }}
