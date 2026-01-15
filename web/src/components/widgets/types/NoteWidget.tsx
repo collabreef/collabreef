@@ -1,9 +1,9 @@
-import { FC, useState, useCallback, useRef, useEffect } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, ExternalLink, User, Check, Loader, FileText, Plus, Search } from 'lucide-react';
-import { getNote, getNotes, updateNote, createNote, NoteData } from '@/api/note';
+import { Loader2, ExternalLink, User, FileText, Plus, Search, Loader } from 'lucide-react';
+import { getNote, getNotes, createNote, NoteData } from '@/api/note';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import { NoteWidgetConfig } from '@/types/widget';
 import Widget from '@/components/widgets/Widget';
@@ -11,6 +11,7 @@ import Editor from '@/components/editor/Editor';
 import { registerWidget, WidgetProps, WidgetConfigFormProps } from '../widgetRegistry';
 import { useToastStore } from '@/stores/toast';
 import { extractTextFromTipTapJSON } from '@/utils/tiptap';
+import { useNoteWebSocket } from '@/hooks/use-note-websocket';
 
 interface NoteWidgetProps extends WidgetProps {
   config: NoteWidgetConfig;
@@ -20,56 +21,41 @@ const NoteWidget: FC<NoteWidgetProps> = ({ config }) => {
   const { t } = useTranslation();
   const workspaceId = useCurrentWorkspaceId();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [note, setNote] = useState<NoteData | null>(null);
 
-  const { data: note, isLoading, error } = useQuery({
+  // Connect to WebSocket for real-time collaboration
+  const {
+    noteData,
+    hasYjsSnapshot,
+    title: wsTitle,
+    content: wsContent,
+    yDoc,
+    yText
+  } = useNoteWebSocket({
+    noteId: config.noteId || '',
+    workspaceId: workspaceId || '',
+    enabled: !!config.noteId && !!workspaceId
+  });
+
+  // Only fetch from REST API if note is NOT initialized (no Y.js snapshot)
+  const { data: fetchedNote, isLoading, error } = useQuery({
     queryKey: ['note', workspaceId, config.noteId],
     queryFn: () => getNote(workspaceId, config.noteId),
-    enabled: !!workspaceId && !!config.noteId,
+    enabled: !!workspaceId && !!config.noteId && hasYjsSnapshot === false,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
   });
 
-  const updateNoteMutation = useMutation({
-    mutationFn: (data: { content: string }) => {
-      return updateNote(workspaceId, {
-        id: config.noteId,
-        content: data.content,
-        title: note?.title, // Preserve the original title
-      });
-    },
-    onSuccess: () => {
-      setSaveStatus('saved');
-      queryClient.invalidateQueries({ queryKey: ['note', workspaceId, config.noteId] });
-      setTimeout(() => setSaveStatus('idle'), 2000);
-    },
-    onError: () => {
-      setSaveStatus('idle');
-    },
-  });
-
-  // Cleanup timer on unmount
   useEffect(() => {
-    return () => {
-      if (saveTimerRef.current) {
-        clearTimeout(saveTimerRef.current);
-      }
-    };
-  }, []);
-
-  const handleNoteChange = useCallback((data: { content: string }) => {
-    // Clear existing timer
-    if (saveTimerRef.current) {
-      clearTimeout(saveTimerRef.current);
+    if (hasYjsSnapshot && noteData) {
+      // Note is initialized - use WebSocket data
+      setNote(noteData as NoteData | null);
+    } else if (!hasYjsSnapshot && fetchedNote) {
+      // Note is not initialized - use REST API data
+      setNote(fetchedNote);
     }
-
-    setSaveStatus('saving');
-
-    // Set new debounced save timer (1 second delay)
-    saveTimerRef.current = setTimeout(() => {
-      updateNoteMutation.mutate(data);
-    }, 1000);
-  }, [updateNoteMutation]);
+  }, [hasYjsSnapshot, noteData, fetchedNote]);
 
   if (!config.noteId) {
     return (
@@ -104,6 +90,10 @@ const NoteWidget: FC<NoteWidgetProps> = ({ config }) => {
     return date.toLocaleDateString();
   };
 
+  // Use WebSocket data if available, fallback to note data
+  const displayTitle = wsTitle || note.title;
+  const displayContent = wsContent || note.content;
+
   return (
     <Widget withPadding={false}>
       <div className="h-full flex flex-col overflow-auto p-4">
@@ -116,29 +106,9 @@ const NoteWidget: FC<NoteWidgetProps> = ({ config }) => {
                   <span>{formatDate(note.created_at)}</span>
                 </div>
               )}
-              {note.created_by && (
-                <div className="flex items-center gap-1">
-                  <User size={12} />
-                  <span>{note.created_by}</span>
-                </div>
-              )}
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Save Status Indicator */}
-              {saveStatus === 'saving' && (
-                <div className="flex items-center gap-1 text-xs text-gray-500">
-                  <Loader className="animate-spin" size={12} />
-                  <span>{t('widgets.saving')}</span>
-                </div>
-              )}
-              {saveStatus === 'saved' && (
-                <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
-                  <Check size={12} />
-                  <span>{t('widgets.saved')}</span>
-                </div>
-              )}
-
               <button
                 onClick={handleOpenNote}
                 className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-neutral-700 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 flex-shrink-0"
@@ -153,22 +123,26 @@ const NoteWidget: FC<NoteWidgetProps> = ({ config }) => {
         {/* Note Header */}
         <div className=" flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            {note.title && (
+            {displayTitle && (
               <div className="text-xl font-semibold text-gray-900 dark:text-gray-100 truncate">
-                {note.title}
+                {displayTitle}
               </div>
             )}
           </div>
         </div>
 
-        {/* Note Content - Editable Editor */}
-        {note.content && (
+        {/* Note Content - Editable Editor with WebSocket */}
+        {displayContent && (
           <div className="flex-1 overflow-auto">
-            <Editor note={note} onChange={handleNoteChange} />
+            <Editor
+              note={{ ...note, content: displayContent }}
+              yDoc={yDoc}
+              yText={yText}
+            />
           </div>
         )}
 
-        {!note.content && (
+        {!displayContent && (
           <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
             {t('widgets.emptyNote')}
           </div>
