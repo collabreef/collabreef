@@ -81,9 +81,14 @@ const NoteOverlay: React.FC<NoteOverlayProps> = ({ viewObjectId, position, width
 
     if (!note || !note.content || !editor) return null;
 
+    // Null/undefined checks for position and viewport
+    if (!position || typeof position.x !== 'number' || typeof position.y !== 'number') return null;
+    if (!viewport || typeof viewport.x !== 'number' || typeof viewport.y !== 'number') return null;
+
     // Calculate transformed position based on viewport
-    const transformedX = position.x * viewport.zoom + viewport.x;
-    const transformedY = position.y * viewport.zoom + viewport.y;
+    const zoom = viewport.zoom || 1;
+    const transformedX = position.x * zoom + viewport.x;
+    const transformedY = position.y * zoom + viewport.y;
 
     return (
         <div
@@ -91,7 +96,7 @@ const NoteOverlay: React.FC<NoteOverlayProps> = ({ viewObjectId, position, width
             style={{
                 left: `${transformedX}px`,
                 top: `${transformedY}px`,
-                transform: `scale(${viewport.zoom})`,
+                transform: `scale(${zoom})`,
             }}
         >
             <div
