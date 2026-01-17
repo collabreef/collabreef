@@ -11,6 +11,7 @@ interface NoteDetailViewProps {
     menu?: ReactNode
     wsTitle: string
     wsContent: string
+    wsReady?: boolean
     onTitleChange: (title: string) => void
     yDoc?: any
     yText?: any
@@ -21,6 +22,7 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({
     menu,
     wsTitle,
     wsContent,
+    wsReady,
     onTitleChange,
     yDoc,
     yText
@@ -96,6 +98,7 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({
                                                 note={{ ...note, content: displayContent }}
                                                 yDoc={yDoc}
                                                 yText={yText}
+                                                yjsReady={wsReady}
                                             />
                                         </div>
                                     </div>

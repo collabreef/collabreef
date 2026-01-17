@@ -624,6 +624,7 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
 
     return {
         isConnected,
+        isReady,
         noteData,
         hasYjsSnapshot,
         title,

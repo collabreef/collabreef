@@ -27,6 +27,7 @@ const NoteWidget: FC<NoteWidgetProps> = ({ config }) => {
   const {
     noteData,
     hasYjsSnapshot,
+    isReady: wsReady,
     title: wsTitle,
     content: wsContent,
     yDoc,
@@ -138,6 +139,7 @@ const NoteWidget: FC<NoteWidgetProps> = ({ config }) => {
               note={{ ...note, content: displayContent }}
               yDoc={yDoc}
               yText={yText}
+              yjsReady={wsReady}
             />
           </div>
         )}

@@ -16,6 +16,7 @@ const NoteDetailPage = () => {
     const {
         noteData,
         hasYjsSnapshot,
+        isReady: wsReady,
         title: wsTitle,
         content: wsContent,
         sendUpdateTitle,
@@ -57,6 +58,7 @@ const NoteDetailPage = () => {
                 menu={note ? <NoteDetailMenu note={note} /> : undefined}
                 wsTitle={wsTitle}
                 wsContent={wsContent}
+                wsReady={wsReady}
                 onTitleChange={sendUpdateTitle}
                 yDoc={yDoc}
                 yText={yText}

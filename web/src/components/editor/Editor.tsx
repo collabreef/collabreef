@@ -22,6 +22,7 @@ interface Props {
   onChange?: (data: any) => void
   yDoc?: Y.Doc | null
   yText?: Y.Text | null
+  yjsReady?: boolean
 }
 
 const Editor: FC<Props> = ({
@@ -29,7 +30,8 @@ const Editor: FC<Props> = ({
   onChange,
   canDrag = true,
   yDoc,
-  yText
+  yText,
+  yjsReady
 }) => {
   const currentWorkspaceId = useCurrentWorkspaceId()
   const { t } = useTranslation()
@@ -228,6 +230,43 @@ const Editor: FC<Props> = ({
   useEffect(() => {
     lastContentRef.current = note.content
   }, [note.content])
+
+  // Sync Y.js content to editor when yjsReady becomes true
+  // This ensures the editor shows the latest state after Y.js snapshot + updates are applied
+  useEffect(() => {
+    if (!editor || !yText || !yjsReady) return;
+
+    const yjsContent = yText.toString();
+
+    // Skip if Y.Text is empty (new note or not initialized)
+    if (!yjsContent || yjsContent.length === 0) {
+      console.log('[Editor] Y.js ready but yText is empty, using note.content');
+      return;
+    }
+
+    // Skip if content is the same
+    if (yjsContent === lastContentRef.current) {
+      console.log('[Editor] Y.js ready, content already in sync');
+      return;
+    }
+
+    try {
+      const contentJson = JSON.parse(yjsContent);
+
+      // Set flag to prevent infinite loop
+      isApplyingYjsUpdate.current = true;
+
+      // Update editor with Y.js content
+      editor.commands.setContent(contentJson);
+      lastContentRef.current = yjsContent;
+
+      isApplyingYjsUpdate.current = false;
+
+      console.log('[Editor] Applied Y.js content on ready, length:', yjsContent.length);
+    } catch (error) {
+      console.error('[Editor] Error parsing Y.js content on ready:', error);
+    }
+  }, [editor, yText, yjsReady])
 
   // Listen for Y.Text changes from other clients and update editor
   useEffect(() => {
