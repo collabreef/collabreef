@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { WhiteboardStrokeData, WhiteboardShapeData, WhiteboardTextData, WhiteboardNoteData, ViewObjectType } from '../../../types/view';
 import { useTranslation } from 'react-i18next';
 import WhiteboardToolbar, { Tool } from './WhiteboardToolbar';
@@ -91,8 +91,8 @@ const WhiteboardViewComponent = ({
     // Dialog state
     const [isAddingNote, setIsAddingNote] = useState(false);
 
-    // Canvas size
-    const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 });
+    // Canvas size - start with 0 to let useEffect set correct container size
+    const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
 
     // Initialize with API data for public mode
     useEffect(() => {
@@ -130,19 +130,31 @@ const WhiteboardViewComponent = ({
         }
     }, [remoteViewObjects]);
 
-    // Resize canvas to fit container
-    useEffect(() => {
-        const updateCanvasSize = () => {
-            if (containerRef.current) {
-                const { width, height } = containerRef.current.getBoundingClientRect();
-                setCanvasSize({ width, height });
-            }
-        };
+    // Resize canvas to fit container using ResizeObserver
+    // Re-run when isInitialized changes because container is not rendered during loading
+    useLayoutEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
 
-        updateCanvasSize();
-        window.addEventListener('resize', updateCanvasSize);
-        return () => window.removeEventListener('resize', updateCanvasSize);
-    }, []);
+        const resizeObserver = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+                const { width, height } = entry.contentRect;
+                if (width > 0 && height > 0) {
+                    setCanvasSize({ width, height });
+                }
+            }
+        });
+
+        resizeObserver.observe(container);
+
+        // Initial size check
+        const { width, height } = container.getBoundingClientRect();
+        if (width > 0 && height > 0) {
+            setCanvasSize({ width, height });
+        }
+
+        return () => resizeObserver.disconnect();
+    }, [isInitialized]);
 
     // Convert screen coordinates to canvas coordinates
     const screenToCanvas = useCallback((screenX: number, screenY: number) => {
@@ -1009,24 +1021,24 @@ const WhiteboardViewComponent = ({
                 })}
 
                 {/* Zoom controls - always visible */}
-                <div className="absolute bottom-4 right-4 z-10 bg-white dark:bg-neutral-800 rounded-lg shadow-md p-2 flex flex-col gap-2">
+                <div className="absolute bottom-24 right-4 z-10 bg-white dark:bg-neutral-800 rounded-lg shadow-md p-2 flex flex-col gap-2">
                         <button
                             onClick={handleZoomIn}
-                            className="px-3 py-2 bg-neutral-100 dark:bg-neutral-700 rounded hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-sm font-medium"
+                            className="p-2 bg-neutral-100 dark:bg-neutral-700 rounded hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-sm font-medium"
                             title={t('whiteboard.zoomIn') || 'Zoom In'}
                         >
                             +
                         </button>
                         <button
                             onClick={handleResetZoom}
-                            className="px-3 py-2 bg-neutral-100 dark:bg-neutral-700 rounded hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-xs font-medium"
+                            className="p-1 bg-neutral-100 dark:bg-neutral-700 rounded hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-xs font-medium"
                             title={t('whiteboard.resetZoom') || 'Reset Zoom'}
                         >
                             {Math.round(viewport.zoom * 100)}%
                         </button>
                         <button
                             onClick={handleZoomOut}
-                            className="px-3 py-2 bg-neutral-100 dark:bg-neutral-700 rounded hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-sm font-medium"
+                            className="p-2 bg-neutral-100 dark:bg-neutral-700 rounded hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-sm font-medium"
                             title={t('whiteboard.zoomOut') || 'Zoom Out'}
                         >
                             −
