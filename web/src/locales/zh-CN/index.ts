@@ -493,6 +493,7 @@ export default {
     whiteboardSettings: "白板设置"
   },
   whiteboard: {
+    loading: "加载中...",
     select: "选择",
     pen: "画笔",
     rectangle: "矩形",

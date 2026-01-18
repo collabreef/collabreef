@@ -522,6 +522,7 @@ export default {
     whiteboardSettings: "Whiteboard Settings"
   },
   whiteboard: {
+    loading: "Loading...",
     select: "Select",
     pen: "Pen",
     rectangle: "Rectangle",
