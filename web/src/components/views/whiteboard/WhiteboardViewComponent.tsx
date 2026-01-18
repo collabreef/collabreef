@@ -646,12 +646,27 @@ const WhiteboardViewComponent = ({
         }
     };
 
-    // Handle wheel for zoom
+    // Handle wheel for zoom - zoom centered on mouse position
     const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
         e.preventDefault();
+        if (!canvasRef.current) return;
+
+        const rect = canvasRef.current.getBoundingClientRect();
+        // Mouse position relative to canvas
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
         const delta = e.deltaY * -0.001;
         const newZoom = Math.max(0.1, Math.min(5, viewport.zoom + delta));
-        setViewport(prev => ({ ...prev, zoom: newZoom }));
+        const scale = newZoom / viewport.zoom;
+
+        // Adjust viewport so the point under the mouse stays fixed
+        setViewport(prev => ({
+            ...prev,
+            zoom: newZoom,
+            x: mouseX - (mouseX - prev.x) * scale,
+            y: mouseY - (mouseY - prev.y) * scale
+        }));
     };
 
     // Handle pinch to zoom and two-finger pan on touch devices
@@ -668,12 +683,20 @@ const WhiteboardViewComponent = ({
                 Math.pow(touch2.clientY - touch1.clientY, 2)
             );
 
-            // Calculate midpoint for pan
+            // Calculate midpoint for pan tracking
             const midX = (touch1.clientX + touch2.clientX) / 2;
             const midY = (touch1.clientY + touch2.clientY) / 2;
 
+            // Store first touch point as zoom center (relative to canvas)
+            const rect = canvasRef.current?.getBoundingClientRect();
+            if (rect) {
+                (e.currentTarget as any).pinchZoomCenter = {
+                    x: touch1.clientX - rect.left,
+                    y: touch1.clientY - rect.top
+                };
+            }
+
             setLastPanPoint({ x: distance, y: midY });
-            // Store midpoint in a separate state or use existing mechanism
             (e.currentTarget as any).twoFingerMidpoint = { x: midX, y: midY };
         } else {
             // Single finger touch - prevent default to avoid scrolling when drawing
@@ -703,21 +726,35 @@ const WhiteboardViewComponent = ({
             const midY = (touch1.clientY + touch2.clientY) / 2;
 
             if (lastPanPoint) {
-                // Handle pinch zoom
+                // Handle pinch zoom centered on first touch point
                 const scale = distance / lastPanPoint.x;
                 const newZoom = Math.max(0.1, Math.min(5, viewport.zoom * scale));
+
+                // Get the zoom center (first touch point stored at pinch start)
+                const zoomCenter = (e.currentTarget as any).pinchZoomCenter;
 
                 // Handle two-finger pan
                 const prevMidpoint = (e.currentTarget as any).twoFingerMidpoint || { x: midX, y: midY };
                 const dx = midX - prevMidpoint.x;
                 const dy = midY - prevMidpoint.y;
 
-                setViewport(prev => ({
-                    ...prev,
-                    zoom: newZoom,
-                    x: prev.x + dx,
-                    y: prev.y + dy
-                }));
+                setViewport(prev => {
+                    // Apply zoom centered on first touch point
+                    let newX = prev.x;
+                    let newY = prev.y;
+                    if (zoomCenter) {
+                        const zoomScale = newZoom / prev.zoom;
+                        newX = zoomCenter.x - (zoomCenter.x - prev.x) * zoomScale;
+                        newY = zoomCenter.y - (zoomCenter.y - prev.y) * zoomScale;
+                    }
+                    // Then apply pan
+                    return {
+                        ...prev,
+                        zoom: newZoom,
+                        x: newX + dx,
+                        y: newY + dy
+                    };
+                });
 
                 setLastPanPoint({ x: distance, y: midY });
                 (e.currentTarget as any).twoFingerMidpoint = { x: midX, y: midY };
@@ -735,6 +772,7 @@ const WhiteboardViewComponent = ({
         if (e.touches.length < 2) {
             setLastPanPoint(null);
             delete (e.currentTarget as any).twoFingerMidpoint;
+            delete (e.currentTarget as any).pinchZoomCenter;
         }
         if (e.touches.length === 0) {
             // Prevent default when finishing drawing or dragging
