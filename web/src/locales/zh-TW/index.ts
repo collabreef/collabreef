@@ -555,6 +555,8 @@ export default {
     zoomIn: "放大",
     zoomOut: "縮小",
     resetZoom: "重設縮放",
+    lock: "鎖定",
+    unlock: "解鎖",
     syncStatus: {
       connecting: "連線中...",
       connected: "已連線",

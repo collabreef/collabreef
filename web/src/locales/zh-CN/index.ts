@@ -525,6 +525,8 @@ export default {
     zoomIn: "放大",
     zoomOut: "缩小",
     resetZoom: "重置缩放",
+    lock: "锁定",
+    unlock: "解锁",
     syncStatus: {
       connecting: "连接中...",
       connected: "已连接",

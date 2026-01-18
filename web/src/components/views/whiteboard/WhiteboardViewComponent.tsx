@@ -7,6 +7,7 @@ import AddElementDialog from './AddElementDialog';
 import { useWhiteboardWebSocket } from '../../../hooks/use-whiteboard-websocket';
 import NoteOverlay from './NoteOverlay';
 import { renderStroke, renderShape, renderText, renderNoteOrView, renderGrid } from './renderUtils';
+import { Lock, Unlock } from 'lucide-react';
 
 interface WhiteboardViewComponentProps {
     view?: any;
@@ -87,6 +88,9 @@ const WhiteboardViewComponent = ({
     const [isPanning, setIsPanning] = useState(false);
     const [lastPanPoint, setLastPanPoint] = useState<{ x: number; y: number } | null>(null);
     const [isSpacePressed, setIsSpacePressed] = useState(false);
+
+    // Lock state - when locked, only pan and zoom are allowed
+    const [isLocked, setIsLocked] = useState(false);
 
     // Dialog state
     const [isAddingNote, setIsAddingNote] = useState(false);
@@ -311,6 +315,13 @@ const WhiteboardViewComponent = ({
             return;
         }
 
+        // In locked mode, only allow panning (no tool operations)
+        if (isLocked) {
+            setIsPanning(true);
+            setLastPanPoint({ x: clientX, y: clientY });
+            return;
+        }
+
         if (currentTool === 'select') {
             const clickedObject = findObjectAtPosition(pos.x, pos.y);
             if (clickedObject) {
@@ -433,6 +444,9 @@ const WhiteboardViewComponent = ({
         }
 
         if (isPublic) return;
+
+        // In locked mode, only allow panning (already handled above)
+        if (isLocked) return;
 
         const pos = getPointerPosition(e);
         if (!pos) return;
@@ -558,6 +572,9 @@ const WhiteboardViewComponent = ({
         }
 
         if (isPublic) return;
+
+        // In locked mode, only allow panning (already handled above)
+        if (isLocked) return;
 
         if (isDraggingObject && selectedObjectId) {
             // Finish dragging - send update to server
@@ -1058,8 +1075,25 @@ const WhiteboardViewComponent = ({
                     return null;
                 })}
 
-                {/* Zoom controls - always visible */}
+                {/* Zoom controls and lock button - always visible */}
                 <div className="absolute bottom-24 sm:bottom-4 right-4 z-10 bg-white dark:bg-neutral-800 rounded-lg shadow-md p-2 flex flex-col gap-2">
+                        {/* Lock/Unlock button - only show in non-public mode */}
+                        {!isPublic && (
+                            <>
+                                <button
+                                    onClick={() => setIsLocked(!isLocked)}
+                                    className={`p-2 rounded transition-colors flex justify-center ${
+                                        isLocked
+                                            ? 'bg-primary text-white'
+                                            : 'bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600'
+                                    }`}
+                                    title={isLocked ? (t('whiteboard.unlock') || 'Unlock') : (t('whiteboard.lock') || 'Lock')}
+                                >
+                                    {isLocked ? <Lock size={16} /> : <Unlock size={16} />}
+                                </button>
+                                <div className="border-t border-neutral-200 dark:border-neutral-600 my-1" />
+                            </>
+                        )}
                         <button
                             onClick={handleZoomIn}
                             className="p-2 bg-neutral-100 dark:bg-neutral-700 rounded hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-sm font-medium"
@@ -1097,21 +1131,26 @@ const WhiteboardViewComponent = ({
                     style={{ touchAction: 'none', cursor: getCursor() }}
                 />
 
-                <WhiteboardToolbar
-                    currentTool={currentTool}
-                    setCurrentTool={setCurrentTool}
-                    isPublic={isPublic}
-                />
+                {/* Hide toolbar and tool properties when locked */}
+                {!isLocked && (
+                    <>
+                        <WhiteboardToolbar
+                            currentTool={currentTool}
+                            setCurrentTool={setCurrentTool}
+                            isPublic={isPublic}
+                        />
 
-                <WhiteboardToolProperties
-                    currentTool={currentTool}
-                    currentColor={currentColor}
-                    setCurrentColor={setCurrentColor}
-                    currentStrokeWidth={currentStrokeWidth}
-                    setCurrentStrokeWidth={setCurrentStrokeWidth}
-                    onClear={handleClear}
-                    isPublic={isPublic}
-                />
+                        <WhiteboardToolProperties
+                            currentTool={currentTool}
+                            currentColor={currentColor}
+                            setCurrentColor={setCurrentColor}
+                            currentStrokeWidth={currentStrokeWidth}
+                            setCurrentStrokeWidth={setCurrentStrokeWidth}
+                            onClear={handleClear}
+                            isPublic={isPublic}
+                        />
+                    </>
+                )}
 
                 {canvasObjects.size === 0 && viewObjects.size === 0 && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">

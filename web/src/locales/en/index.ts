@@ -554,6 +554,8 @@ export default {
     zoomIn: "Zoom In",
     zoomOut: "Zoom Out",
     resetZoom: "Reset Zoom",
+    lock: "Lock",
+    unlock: "Unlock",
     syncStatus: {
       connecting: "Connecting...",
       connected: "Connected",
