@@ -1059,7 +1059,7 @@ const WhiteboardViewComponent = ({
                 })}
 
                 {/* Zoom controls - always visible */}
-                <div className="absolute bottom-24 right-4 z-10 bg-white dark:bg-neutral-800 rounded-lg shadow-md p-2 flex flex-col gap-2">
+                <div className="absolute bottom-24 sm:bottom-4 right-4 z-10 bg-white dark:bg-neutral-800 rounded-lg shadow-md p-2 flex flex-col gap-2">
                         <button
                             onClick={handleZoomIn}
                             className="p-2 bg-neutral-100 dark:bg-neutral-700 rounded hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors text-sm font-medium"
