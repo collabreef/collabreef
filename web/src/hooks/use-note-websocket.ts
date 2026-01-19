@@ -107,6 +107,8 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
     const wsRef = useRef<WebSocket | null>(null);
     const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
     const debounceTimeoutRef = useRef<NodeJS.Timeout>();
+    const yjsDebounceTimeoutRef = useRef<NodeJS.Timeout>();
+    const pendingYjsUpdatesRef = useRef<Uint8Array[]>([]);
 
     // Y.js document for CRDT collaboration
     const yDocRef = useRef<Y.Doc | null>(null);
@@ -135,8 +137,6 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
         yDocRef.current = yDoc;
         yTextRef.current = yText;
 
-        console.log('Y.js document initialized');
-
         return () => {
             if (yDoc) {
                 yDoc.destroy();
@@ -158,7 +158,6 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
             ws.binaryType = 'arraybuffer';
 
             ws.onopen = () => {
-                console.log('Note WebSocket connected');
                 setIsConnected(true);
                 setIsReady(false);
                 needInitializeRef.current = false;
@@ -186,7 +185,6 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
 
                     // Validate JSON string before parsing
                     if (!data || typeof data !== 'string' || data.trim().length === 0) {
-                        console.warn('[WebSocket] Received empty or invalid message data');
                         return;
                     }
 
@@ -197,15 +195,10 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
                         messages = [singleMessage];
                     } catch (parseError) {
                         // If parsing fails, try splitting concatenated JSON messages
-                        console.warn('[WebSocket] Failed to parse as single JSON, attempting to split concatenated messages');
                         const jsonStrings = splitConcatenatedJSON(data);
                         if (jsonStrings.length === 0) {
-                            console.error('[WebSocket] JSON parse error. Data length:', data.length);
-                            console.error('[WebSocket] First 200 chars:', data.substring(0, 200));
-                            console.error('[WebSocket] Last 200 chars:', data.substring(Math.max(0, data.length - 200)));
                             throw parseError;
                         }
-                        console.log('[WebSocket] Split into', jsonStrings.length, 'messages');
                         messages = jsonStrings.map(str => JSON.parse(str));
                     }
 
@@ -213,25 +206,12 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
                     for (const message of messages) {
                         // Validate message type
                         if (!message.type) {
-                            console.warn('[WebSocket] Message missing type field:', message);
                             continue;
                         }
 
                         processMessage(message);
                     }
                 } catch (error) {
-                    console.error('[WebSocket] Error handling WebSocket message:', error);
-                    // Log event data type for debugging
-                    if (event.data) {
-                        console.error('[WebSocket] Event data type:', typeof event.data);
-                        if (event.data instanceof Blob) {
-                            console.error('[WebSocket] Blob size:', event.data.size);
-                        } else if (event.data instanceof ArrayBuffer) {
-                            console.error('[WebSocket] ArrayBuffer byteLength:', event.data.byteLength);
-                        } else if (typeof event.data === 'string') {
-                            console.error('[WebSocket] String length:', event.data.length);
-                        }
-                    }
                     // Don't throw - continue processing other messages
                 }
             };
@@ -245,7 +225,6 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
                             // Determine if Y.js snapshot exists
                             const hasSnapshot = !message.need_initialize;
                             setHasYjsSnapshot(hasSnapshot);
-                            console.log('[WebSocket] Y.js snapshot exists:', hasSnapshot);
 
                             // Initial state with full note metadata from server
                             if (hasSnapshot && message.id && message.visibility && message.created_at && message.created_by) {
@@ -261,10 +240,6 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
                                     updated_by: message.updated_by || message.created_by
                                 };
                                 setNoteData(fullNoteData);
-                                console.log('[WebSocket] Received full note metadata (initialized):', fullNoteData);
-                            } else {
-                                // Note is not initialized - will use REST API data
-                                console.log('[WebSocket] Note not initialized, will use REST API');
                             }
 
                             if (message.title !== undefined) {
@@ -279,7 +254,6 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
 
                             // Check if we need to initialize snapshot
                             if (message.need_initialize) {
-                                console.log('Need to initialize Y.js snapshot from database content');
                                 needInitializeRef.current = true;
 
                                 // Initialize Y.Doc from database content
@@ -298,20 +272,13 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
                                     ws.send(JSON.stringify(snapshotMsg)); // Send as TEXT message
                                     hasInitializedSnapshotRef.current = true;
                                     setIsReady(true);
-                                    console.log('Initialized and sent Y.js snapshot to server');
                                 }
-                            } else {
-                                // Will receive snapshot + updates from server
-                                console.log('Will receive Y.js snapshot and updates from server');
                             }
-
-                            console.log('Received initial note state');
                             break;
 
                         case 'snapshot_ready':
                             // Server has sent all snapshot + updates
                             setIsReady(true);
-                            console.log('Snapshot and updates fully loaded, ready for editing');
                             break;
 
                         case 'update_title':
@@ -335,14 +302,12 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
                                     }
                                     return [...prev, message.user!];
                                 });
-                                console.log('User joined:', message.user.name);
                             }
                             break;
 
                         case 'user_leave':
                             if (message.user) {
                                 setActiveUsers(prev => prev.filter(u => u.id !== message.user!.id));
-                                console.log('User left:', message.user.name);
                             }
                             break;
 
@@ -362,37 +327,27 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
                                     if (typeof message.snapshot === 'string') {
                                         // Base64 encoded string
                                         if (message.snapshot.length === 0) {
-                                            console.warn('[WebSocket] Empty snapshot string received');
                                             break;
                                         }
                                         snapshot = base64ToUint8Array(message.snapshot);
-                                        console.log('[WebSocket] Decoded base64 snapshot:', snapshot.length, 'bytes');
                                     } else if (Array.isArray(message.snapshot)) {
                                         // Byte array (legacy format)
                                         if (message.snapshot.length === 0) {
-                                            console.warn('[WebSocket] Empty snapshot array received');
                                             break;
                                         }
                                         // Validate array elements are numbers in valid byte range
                                         const hasInvalidBytes = message.snapshot.some(b => typeof b !== 'number' || b < 0 || b > 255);
                                         if (hasInvalidBytes) {
-                                            console.error('[WebSocket] Snapshot contains invalid byte values');
-                                            console.error('[WebSocket] First 10 values:', message.snapshot.slice(0, 10));
                                             break;
                                         }
                                         snapshot = new Uint8Array(message.snapshot);
-                                        console.log('[WebSocket] Using byte array snapshot:', snapshot.length, 'bytes');
                                     } else {
-                                        console.error('[WebSocket] Invalid snapshot type:', typeof message.snapshot);
                                         break;
                                     }
 
                                     Y.applyUpdate(yDocRef.current, snapshot, 'server');
-                                    console.log('[WebSocket] ✓ Applied Y.js snapshot:', snapshot.length, 'bytes');
                                 } catch (error) {
-                                    console.error('[WebSocket] ✗ Error applying Y.js snapshot:', error);
-                                    console.error('[WebSocket] Snapshot type:', typeof message.snapshot);
-                                    console.error('[WebSocket] Error details:', error instanceof Error ? error.message : String(error));
+                                    // Error applying Y.js snapshot
                                 }
                             }
                             break;
@@ -407,68 +362,53 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
                                     if (typeof message.yjs_update === 'string') {
                                         // Base64 encoded string
                                         if (message.yjs_update.length === 0) {
-                                            console.warn('[WebSocket] Empty yjs_update string received');
                                             break;
                                         }
                                         update = base64ToUint8Array(message.yjs_update);
-                                        console.log('[WebSocket] Decoded base64 update:', update.length, 'bytes');
                                     } else if (Array.isArray(message.yjs_update)) {
                                         // Byte array (legacy format)
                                         if (message.yjs_update.length === 0) {
-                                            console.warn('[WebSocket] Empty yjs_update array received');
                                             break;
                                         }
                                         // Validate array elements are numbers in valid byte range
                                         const hasInvalidBytes = message.yjs_update.some(b => typeof b !== 'number' || b < 0 || b > 255);
                                         if (hasInvalidBytes) {
-                                            console.error('[WebSocket] Update contains invalid byte values');
-                                            console.error('[WebSocket] First 10 values:', message.yjs_update.slice(0, 10));
                                             break;
                                         }
                                         update = new Uint8Array(message.yjs_update);
-                                        console.log('[WebSocket] Using byte array update:', update.length, 'bytes');
                                     } else {
-                                        console.error('[WebSocket] Invalid yjs_update type:', typeof message.yjs_update);
                                         break;
                                     }
 
                                     Y.applyUpdate(yDocRef.current, update, 'server');
-                                    console.log('[WebSocket] ✓ Applied Y.js update:', update.length, 'bytes');
                                 } catch (error) {
-                                    console.error('[WebSocket] ✗ Error applying Y.js update:', error);
-                                    console.error('[WebSocket] Update type:', typeof message.yjs_update);
-                                    console.error('[WebSocket] Error details:', error instanceof Error ? error.message : String(error));
-                                    // Don't crash, just log and continue
+                                    // Don't crash, just continue
                                 }
                             }
                             break;
                     }
                 } catch (error) {
-                    console.error('[WebSocket] Error processing message:', error);
-                    console.error('[WebSocket] Message type:', message.type);
                     // Don't throw - continue processing other messages
                 }
             };
 
-            ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
+            ws.onerror = () => {
+                // WebSocket error
             };
 
             ws.onclose = () => {
-                console.log('WebSocket disconnected');
                 setIsConnected(false);
 
                 // Only attempt to reconnect if this is still the active connection
                 // (wsRef.current hasn't been cleared by a path change)
                 if (enabled && wsRef.current === ws) {
                     reconnectTimeoutRef.current = setTimeout(() => {
-                        console.log('Attempting to reconnect...');
                         connect();
                     }, 3000);
                 }
             };
         } catch (error) {
-            console.error('Error creating WebSocket:', error);
+            // Error creating WebSocket
         }
     }, [enabled, noteId, workspaceId]);
 
@@ -485,7 +425,6 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
             };
             const data = JSON.stringify(message);
             wsRef.current.send(data); // Send as TEXT message
-            console.log('Sent title update:', pendingTitleRef.current.substring(0, 50));
             pendingTitleRef.current = null;
         }
     }, []);
@@ -511,10 +450,7 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
 
     // Setup Y.js update handler only when ready
     useEffect(() => {
-        console.log('[WebSocket] Update handler effect - isConnected:', isConnected, 'isReady:', isReady, 'hasYDoc:', !!yDocRef.current, 'hasWS:', !!wsRef.current);
-
         if (!isConnected || !isReady || !yDocRef.current || !wsRef.current) {
-            console.log('[WebSocket] Update handler NOT attached - conditions not met');
             return;
         }
 
@@ -522,37 +458,51 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
         const ws = wsRef.current;
 
         const updateHandler = (update: Uint8Array, origin: any) => {
-            console.log('[WebSocket] Y.js update event fired! origin:', origin, 'size:', update.length, 'bytes');
-
             // Don't send updates that came from the server or during initialization
             if (origin === 'server' || origin === 'init') {
-                console.log('[WebSocket] Skipping update with origin:', origin);
                 return;
             }
 
-            if (ws.readyState === WebSocket.OPEN) {
-                // Get full content from Y.Text for worker to persist to database
-                const fullContent = yTextRef.current ? yTextRef.current.toString() : '';
+            // Accumulate updates for debouncing
+            pendingYjsUpdatesRef.current.push(update);
 
-                // Wrap Y.js update in JSON message with full content
-                const message: NoteMessage = {
-                    type: 'yjs_update',
-                    yjs_update: Array.from(update),
-                    content: fullContent  // Full content for database persistence
-                };
-                ws.send(JSON.stringify(message));
-                console.log('[WebSocket] Sent Y.js update + content to server:', update.length, 'bytes, content length:', fullContent.length);
-            } else {
-                console.log('[WebSocket] WARNING: WebSocket not open, readyState:', ws.readyState);
+            // Clear existing timeout
+            if (yjsDebounceTimeoutRef.current) {
+                clearTimeout(yjsDebounceTimeoutRef.current);
             }
+
+            // Set new debounce timeout (300ms)
+            yjsDebounceTimeoutRef.current = setTimeout(() => {
+                if (ws.readyState === WebSocket.OPEN && pendingYjsUpdatesRef.current.length > 0) {
+                    // Merge all accumulated updates
+                    const mergedUpdate = Y.mergeUpdates(pendingYjsUpdatesRef.current);
+
+                    // Get full content from Y.Text for worker to persist to database
+                    const fullContent = yTextRef.current ? yTextRef.current.toString() : '';
+
+                    // Wrap Y.js update in JSON message with full content
+                    const message: NoteMessage = {
+                        type: 'yjs_update',
+                        yjs_update: Array.from(mergedUpdate),
+                        content: fullContent  // Full content for database persistence
+                    };
+                    ws.send(JSON.stringify(message));
+
+                    // Clear accumulated updates
+                    pendingYjsUpdatesRef.current = [];
+                }
+            }, 300);
         };
 
         yDoc.on('update', updateHandler);
-        console.log('[WebSocket] ✓ Y.js update handler ATTACHED to WebSocket (ready state)');
 
         return () => {
             yDoc.off('update', updateHandler);
-            console.log('[WebSocket] Y.js update handler detached');
+            if (yjsDebounceTimeoutRef.current) {
+                clearTimeout(yjsDebounceTimeoutRef.current);
+                yjsDebounceTimeoutRef.current = undefined;
+            }
+            pendingYjsUpdatesRef.current = [];
         };
     }, [isConnected, isReady, noteId]);
 
@@ -561,8 +511,6 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
         // This effect runs whenever noteId changes
         // Return cleanup function to run before the next effect or unmount
         return () => {
-            console.log('Path changed, disconnecting from note:', noteId);
-
             // Clear all timeouts
             if (reconnectTimeoutRef.current) {
                 clearTimeout(reconnectTimeoutRef.current);
@@ -572,6 +520,11 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
                 clearTimeout(debounceTimeoutRef.current);
                 debounceTimeoutRef.current = undefined;
             }
+            if (yjsDebounceTimeoutRef.current) {
+                clearTimeout(yjsDebounceTimeoutRef.current);
+                yjsDebounceTimeoutRef.current = undefined;
+            }
+            pendingYjsUpdatesRef.current = [];
 
             // Close WebSocket connection
             if (wsRef.current) {
@@ -580,13 +533,10 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
                 wsRef.current = null;
 
                 // Set a no-op onclose handler to prevent reconnection attempts
-                ws.onclose = () => {
-                    console.log('WebSocket closed (path change)');
-                };
+                ws.onclose = () => {};
 
                 // Close the connection
                 ws.close();
-                console.log('WebSocket connection closed due to path change');
             }
 
             // Reset state
@@ -615,6 +565,10 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current);
             }
+            if (yjsDebounceTimeoutRef.current) {
+                clearTimeout(yjsDebounceTimeoutRef.current);
+            }
+            pendingYjsUpdatesRef.current = [];
             if (wsRef.current) {
                 wsRef.current.close();
                 wsRef.current = null;
