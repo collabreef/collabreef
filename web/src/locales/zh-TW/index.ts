@@ -562,7 +562,19 @@ export default {
       connected: "已連線",
       disconnected: "已斷線",
       synced: "已同步"
-    }
+    },
+    textProperties: "文字屬性",
+    textContent: "內容",
+    defaultText: "文字",
+    fontFamily: "字型",
+    fontSize: "字體大小",
+    textStyle: "樣式",
+    bold: "粗體",
+    italic: "斜體",
+    underline: "底線",
+    sansSerif: "無襯線體",
+    serif: "襯線體",
+    monospace: "等寬字體"
   },
   widgets: {
     home: "首頁",

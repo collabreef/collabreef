@@ -95,6 +95,7 @@ const WhiteboardViewComponent = ({
     // Dialog state
     const [isAddingNote, setIsAddingNote] = useState(false);
 
+
     // Canvas size - start with 0 to let useEffect set correct container size
     const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
 
@@ -399,25 +400,28 @@ const WhiteboardViewComponent = ({
             setStartPoint(pos);
             setCurrentPoints([pos]);
         } else if (currentTool === 'text') {
-            const text = prompt(t('whiteboard.enterText') || 'Enter text:');
-            if (text) {
-                const textData: WhiteboardTextData = {
-                    position: pos,
-                    text,
-                    color: currentColor,
-                    fontSize: 24
-                };
-                const id = generateId();
-                const newObject: WhiteboardObject = {
-                    id,
-                    type: 'whiteboard_text',
-                    name: `Text: ${text.substring(0, 20)}`,
-                    data: textData
-                };
+            // Create a new text object immediately with default text
+            const textData: WhiteboardTextData = {
+                position: pos,
+                text: t('whiteboard.defaultText') || 'Text',
+                color: currentColor,
+                fontSize: 24,
+                fontFamily: 'sans-serif',
+                fontWeight: 'normal',
+                fontStyle: 'normal',
+                textDecoration: 'none'
+            };
+            const id = generateId();
+            const newObject: WhiteboardObject = {
+                id,
+                type: 'whiteboard_text',
+                name: `Text`,
+                data: textData
+            };
 
-                setViewObjects(prev => new Map(prev).set(id, newObject));
-                sendUpdate({ type: 'add_view_object', object: newObject });
-            }
+            setViewObjects(prev => new Map(prev).set(id, newObject));
+            sendUpdate({ type: 'add_view_object', object: newObject });
+            setSelectedObjectId(id);
         } else if (currentTool === 'note') {
             setIsAddingNote(true);
         }
@@ -845,10 +849,16 @@ const WhiteboardViewComponent = ({
                     const canvas = canvasRef.current;
                     const ctx = canvas?.getContext('2d');
                     if (ctx) {
-                        ctx.font = `${textData.fontSize}px sans-serif`;
-                        const metrics = ctx.measureText(textData.text);
+                        const fontStyle = textData.fontStyle || 'normal';
+                        const fontWeight = textData.fontWeight || 'normal';
+                        const fontFamily = textData.fontFamily || 'sans-serif';
+                        const fontSize = textData.fontSize || 16;
+                        // Use placeholder text for hit detection when text is empty
+                        const displayText = textData.text?.trim() || 'Text';
+                        ctx.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}`;
+                        const metrics = ctx.measureText(displayText);
                         if (x >= textData.position.x - 5 && x <= textData.position.x + metrics.width + 5 &&
-                            y >= textData.position.y - textData.fontSize - 5 && y <= textData.position.y + 5) {
+                            y >= textData.position.y - fontSize - 5 && y <= textData.position.y + 5) {
                             return { id, type: 'view' };
                         }
                     }
@@ -930,6 +940,33 @@ const WhiteboardViewComponent = ({
         handleEraseObject(selectedObjectId);
         setSelectedObjectId(null);
     };
+
+    // Handle text property updates
+    const handleTextPropertyUpdate = useCallback((updates: Partial<WhiteboardTextData>) => {
+        if (!selectedObjectId) return;
+
+        const viewObj = viewObjects.get(selectedObjectId);
+        if (!viewObj || viewObj.type !== 'whiteboard_text') return;
+
+        const updatedObj = {
+            ...viewObj,
+            data: {
+                ...viewObj.data,
+                ...updates
+            }
+        };
+
+        setViewObjects(prev => new Map(prev).set(selectedObjectId, updatedObj));
+        sendUpdate({ type: 'update_view_object', object: updatedObj });
+    }, [selectedObjectId, viewObjects, sendUpdate]);
+
+    // Get selected text data for properties panel
+    const getSelectedTextData = useCallback((): WhiteboardTextData | null => {
+        if (!selectedObjectId) return null;
+        const viewObj = viewObjects.get(selectedObjectId);
+        if (!viewObj || viewObj.type !== 'whiteboard_text') return null;
+        return viewObj.data as WhiteboardTextData;
+    }, [selectedObjectId, viewObjects]);
 
     // Zoom controls
     const handleZoomIn = () => {
@@ -1138,6 +1175,7 @@ const WhiteboardViewComponent = ({
                             currentTool={currentTool}
                             setCurrentTool={setCurrentTool}
                             isPublic={isPublic}
+                            onClear={handleClear}
                         />
 
                         <WhiteboardToolProperties
@@ -1146,8 +1184,9 @@ const WhiteboardViewComponent = ({
                             setCurrentColor={setCurrentColor}
                             currentStrokeWidth={currentStrokeWidth}
                             setCurrentStrokeWidth={setCurrentStrokeWidth}
-                            onClear={handleClear}
                             isPublic={isPublic}
+                            selectedTextData={getSelectedTextData()}
+                            onTextUpdate={handleTextPropertyUpdate}
                         />
                     </>
                 )}

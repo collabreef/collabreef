@@ -114,18 +114,36 @@ export const renderText = (
     if (!data || !data.position) return;
     if (!viewport) return;
     if (typeof data.position.x !== 'number' || typeof data.position.y !== 'number') return;
-    if (!data.text) return;
 
-    const color = data.color || '#000000';
     const fontSize = data.fontSize || 16;
+    const fontFamily = data.fontFamily || 'sans-serif';
+    const fontWeight = data.fontWeight || 'normal';
+    const fontStyle = data.fontStyle || 'normal';
+    const textDecoration = data.textDecoration || 'none';
     const zoom = viewport.zoom || 1;
 
+    // Use placeholder if text is empty
+    const displayText = data.text?.trim() || 'Text';
+    const isPlaceholder = !data.text?.trim();
+    const color = isPlaceholder ? '#9ca3af' : (data.color || '#000000');
+
     ctx.fillStyle = color;
-    ctx.font = `${fontSize}px sans-serif`;
-    ctx.fillText(data.text, data.position.x, data.position.y);
+    ctx.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}`;
+    ctx.fillText(displayText, data.position.x, data.position.y);
+
+    // Draw underline if enabled (only for actual text, not placeholder)
+    if (textDecoration === 'underline' && !isPlaceholder) {
+        const metrics = ctx.measureText(displayText);
+        ctx.beginPath();
+        ctx.moveTo(data.position.x, data.position.y + 2);
+        ctx.lineTo(data.position.x + metrics.width, data.position.y + 2);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = Math.max(1, fontSize / 12);
+        ctx.stroke();
+    }
 
     if (isSelected) {
-        const metrics = ctx.measureText(data.text);
+        const metrics = ctx.measureText(displayText);
         ctx.strokeStyle = '#3b82f6';
         ctx.lineWidth = 2 / zoom;
         ctx.setLineDash([5 / zoom, 5 / zoom]);

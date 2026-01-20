@@ -166,6 +166,10 @@ export interface WhiteboardTextData {
   text: string;
   color: string;
   fontSize: number;
+  fontFamily?: 'sans-serif' | 'serif' | 'monospace';
+  fontWeight?: 'normal' | 'bold';
+  fontStyle?: 'normal' | 'italic';
+  textDecoration?: 'none' | 'underline';
 }
 
 export interface WhiteboardNoteData {

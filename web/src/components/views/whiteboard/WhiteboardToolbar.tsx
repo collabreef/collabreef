@@ -1,4 +1,4 @@
-import { Pen, Square, Circle, Minus, Type, FileText, Hand, Eraser } from 'lucide-react';
+import { Pen, Square, Circle, Minus, Type, FileText, Hand, Eraser, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export type Tool = 'select' | 'pen' | 'eraser' | 'rectangle' | 'circle' | 'line' | 'text' | 'note';
@@ -7,12 +7,14 @@ interface WhiteboardToolbarProps {
     currentTool: Tool;
     setCurrentTool: (tool: Tool) => void;
     isPublic?: boolean;
+    onClear?: () => void;
 }
 
 const WhiteboardToolbar = ({
     currentTool,
     setCurrentTool,
-    isPublic = false
+    isPublic = false,
+    onClear
 }: WhiteboardToolbarProps) => {
     const { t } = useTranslation();
 
@@ -48,6 +50,19 @@ const WhiteboardToolbar = ({
                         {tool.icon}
                     </button>
                 ))}
+
+                {/* Separator */}
+                {onClear && (
+                    <>
+                        <button
+                            onClick={onClear}
+                            className="p-2 rounded transition-colors bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50"
+                            title={t('whiteboard.clear') || 'Clear All'}
+                        >
+                            <Trash2 size={18} />
+                        </button>
+                    </>
+                )}
             </div>
         </div>
     );

@@ -561,7 +561,19 @@ export default {
       connected: "Connected",
       disconnected: "Disconnected",
       synced: "Synced"
-    }
+    },
+    textProperties: "Text Properties",
+    textContent: "Content",
+    defaultText: "Text",
+    fontFamily: "Font",
+    fontSize: "Font Size",
+    textStyle: "Style",
+    bold: "Bold",
+    italic: "Italic",
+    underline: "Underline",
+    sansSerif: "Sans-serif",
+    serif: "Serif",
+    monospace: "Monospace"
   },
   widgets: {
     home: "Home",
