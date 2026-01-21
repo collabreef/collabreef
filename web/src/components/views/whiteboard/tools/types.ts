@@ -1,6 +1,6 @@
 import { WhiteboardStrokeData, WhiteboardShapeData, WhiteboardTextData, WhiteboardEdgeData, WhiteboardNoteData, ViewObjectType } from '../../../../types/view';
 
-export type Tool = 'select' | 'pen' | 'eraser' | 'rectangle' | 'circle' | 'line' | 'text' | 'note' | 'edge';
+export type Tool = 'select' | 'marquee' | 'pen' | 'eraser' | 'rectangle' | 'circle' | 'line' | 'text' | 'note' | 'edge';
 
 export interface CanvasObject {
     id: string;

@@ -6,7 +6,7 @@ interface UseEdgeToolOptions {
     currentColor: string;
     currentStrokeWidth: number;
     setViewObjects: React.Dispatch<React.SetStateAction<Map<string, WhiteboardObject>>>;
-    setSelectedObjectId: React.Dispatch<React.SetStateAction<string | null>>;
+    setSelectedObjectId: (id: string | null) => void;
     sendUpdate: (update: any) => void;
 }
 

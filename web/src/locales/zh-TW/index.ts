@@ -525,6 +525,7 @@ export default {
   whiteboard: {
     loading: "載入中...",
     select: "選取",
+    marquee: "框選",
     pen: "畫筆",
     rectangle: "矩形",
     circle: "圓形",

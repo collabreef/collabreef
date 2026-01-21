@@ -118,7 +118,6 @@ export const renderShape = (
 
     const color = data.color || '#000000';
     const strokeWidth = data.strokeWidth || 2;
-    const zoom = viewport.zoom || 1;
 
     ctx.strokeStyle = color;
     ctx.lineWidth = strokeWidth;
@@ -193,7 +192,6 @@ export const renderText = (
     const fontWeight = data.fontWeight || 'normal';
     const fontStyle = data.fontStyle || 'normal';
     const textDecoration = data.textDecoration || 'none';
-    const zoom = viewport.zoom || 1;
 
     // Use placeholder if text is empty
     const displayText = data.text?.trim() || 'Text';
@@ -241,7 +239,6 @@ export const renderNoteOrView = (
 
     const width = data.width || 768;
     const height = data.height || 200;
-    const zoom = viewport.zoom || 1;
 
     // Skip rendering background for whiteboard_note (NoteOverlay handles it)
     if (obj.type !== 'whiteboard_note') {
@@ -324,6 +321,32 @@ const drawArrowHead = (
 // Helper function to calculate angle between two points
 const getAngle = (x1: number, y1: number, x2: number, y2: number): number => {
     return Math.atan2(y2 - y1, x2 - x1);
+};
+
+// Render selection box (marquee selection)
+export const renderSelectionBox = (
+    ctx: CanvasRenderingContext2D,
+    selectionBox: { startX: number; startY: number; currentX: number; currentY: number },
+    viewport: { x: number; y: number; zoom: number }
+) => {
+    if (!selectionBox || !viewport) return;
+
+    const zoom = viewport.zoom || 1;
+    const x = Math.min(selectionBox.startX, selectionBox.currentX);
+    const y = Math.min(selectionBox.startY, selectionBox.currentY);
+    const width = Math.abs(selectionBox.currentX - selectionBox.startX);
+    const height = Math.abs(selectionBox.currentY - selectionBox.startY);
+
+    // Fill with semi-transparent blue
+    ctx.fillStyle = 'rgba(59, 130, 246, 0.1)';
+    ctx.fillRect(x, y, width, height);
+
+    // Dashed border
+    ctx.strokeStyle = '#3b82f6';
+    ctx.lineWidth = 1 / zoom;
+    ctx.setLineDash([5 / zoom, 5 / zoom]);
+    ctx.strokeRect(x, y, width, height);
+    ctx.setLineDash([]);
 };
 
 export const renderEdge = (

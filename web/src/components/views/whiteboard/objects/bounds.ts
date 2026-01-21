@@ -162,6 +162,63 @@ export const getConnectionPointPosition = (
 };
 
 /**
+ * Check if an object's bounds intersects with a selection rectangle
+ */
+export const isObjectInSelectionBox = (
+    objId: string,
+    selectionBox: { x: number; y: number; width: number; height: number },
+    canvasObjects: Map<string, CanvasObject>,
+    viewObjects: Map<string, WhiteboardObject>,
+    ctx?: CanvasRenderingContext2D | null
+): boolean => {
+    const bounds = getObjectBounds(objId, canvasObjects, viewObjects, ctx);
+    if (!bounds) return false;
+
+    // Normalize selection box (handle negative width/height)
+    const selX = selectionBox.width < 0 ? selectionBox.x + selectionBox.width : selectionBox.x;
+    const selY = selectionBox.height < 0 ? selectionBox.y + selectionBox.height : selectionBox.y;
+    const selW = Math.abs(selectionBox.width);
+    const selH = Math.abs(selectionBox.height);
+
+    // Check if bounds intersects with selection box
+    return !(
+        bounds.x + bounds.width < selX ||
+        bounds.x > selX + selW ||
+        bounds.y + bounds.height < selY ||
+        bounds.y > selY + selH
+    );
+};
+
+/**
+ * Find all objects within a selection box
+ */
+export const findObjectsInSelectionBox = (
+    selectionBox: { x: number; y: number; width: number; height: number },
+    canvasObjects: Map<string, CanvasObject>,
+    viewObjects: Map<string, WhiteboardObject>,
+    ctx?: CanvasRenderingContext2D | null
+): string[] => {
+    const selectedIds: string[] = [];
+
+    // Check canvas objects
+    canvasObjects.forEach((_, objId) => {
+        if (isObjectInSelectionBox(objId, selectionBox, canvasObjects, viewObjects, ctx)) {
+            selectedIds.push(objId);
+        }
+    });
+
+    // Check view objects (excluding edges)
+    viewObjects.forEach((obj, objId) => {
+        if (obj.type === 'whiteboard_edge') return;
+        if (isObjectInSelectionBox(objId, selectionBox, canvasObjects, viewObjects, ctx)) {
+            selectedIds.push(objId);
+        }
+    });
+
+    return selectedIds;
+};
+
+/**
  * Find the nearest connection point to a given position across all objects
  */
 export const findNearestConnectionPoint = (
@@ -178,7 +235,7 @@ export const findNearestConnectionPoint = (
     const connectionPointTypes: ConnectionPointType[] = ['top', 'bottom', 'left', 'right'];
 
     // Check canvas objects
-    canvasObjects.forEach((obj, objId) => {
+    canvasObjects.forEach((_, objId) => {
         if (objId === excludeObjectId) return;
 
         const bounds = getObjectBounds(objId, canvasObjects, viewObjects, ctx);
@@ -214,8 +271,10 @@ export const findNearestConnectionPoint = (
         });
     });
 
-    if (nearest) {
-        return { objectId: nearest.objectId, connectionPoint: nearest.connectionPoint, position: nearest.position };
+    if (nearest !== null) {
+        // Type assertion needed because TypeScript can't track assignments inside forEach callbacks
+        const result = nearest as { objectId: string; connectionPoint: ConnectionPointType; position: Point; distance: number };
+        return { objectId: result.objectId, connectionPoint: result.connectionPoint, position: result.position };
     }
     return null;
 };
@@ -232,7 +291,7 @@ export const updateConnectedEdges = (
 ): WhiteboardObject[] => {
     const updatedEdges: WhiteboardObject[] = [];
 
-    viewObjects.forEach((obj, edgeId) => {
+    viewObjects.forEach((obj) => {
         if (obj.type !== 'whiteboard_edge') return;
 
         const edgeData = obj.data as WhiteboardEdgeData;

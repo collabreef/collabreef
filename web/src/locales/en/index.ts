@@ -524,6 +524,7 @@ export default {
   whiteboard: {
     loading: "Loading...",
     select: "Select",
+    marquee: "Marquee Select",
     pen: "Pen",
     rectangle: "Rectangle",
     circle: "Circle",

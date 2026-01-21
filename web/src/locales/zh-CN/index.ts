@@ -495,6 +495,7 @@ export default {
   whiteboard: {
     loading: "加载中...",
     select: "选择",
+    marquee: "框选",
     pen: "画笔",
     rectangle: "矩形",
     circle: "圆形",

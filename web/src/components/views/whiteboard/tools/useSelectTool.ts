@@ -1,30 +1,41 @@
 import { useState, useCallback } from 'react';
 import { WhiteboardStrokeData, WhiteboardShapeData, WhiteboardTextData } from '../../../../types/view';
 import { CanvasObject, WhiteboardObject, Point, Bounds, ResizeHandle } from './types';
-import { getObjectBounds } from '../objects/bounds';
 
 interface UseSelectToolOptions {
     canvasObjects: Map<string, CanvasObject>;
     setCanvasObjects: React.Dispatch<React.SetStateAction<Map<string, CanvasObject>>>;
     viewObjects: Map<string, WhiteboardObject>;
     setViewObjects: React.Dispatch<React.SetStateAction<Map<string, WhiteboardObject>>>;
-    selectedObjectId: string | null;
-    setSelectedObjectId: React.Dispatch<React.SetStateAction<string | null>>;
+    selectedObjectIds: string[];
+    setSelectedObjectIds: React.Dispatch<React.SetStateAction<string[]>>;
     sendUpdate: (update: any) => void;
-    ctx?: CanvasRenderingContext2D | null;
+}
+
+interface SelectionBox {
+    startX: number;
+    startY: number;
+    currentX: number;
+    currentY: number;
 }
 
 interface UseSelectToolReturn {
     isDragging: boolean;
     isResizing: boolean;
+    isSelecting: boolean;
+    selectionBox: SelectionBox | null;
     resizeHandle: ResizeHandle | null;
     dragOffset: Point | null;
-    startDragging: (objectId: string, pos: Point) => void;
+    startDragging: (pos: Point) => void;
     startResizing: (objectId: string, handle: ResizeHandle, pos: Point, bounds: Bounds) => void;
+    startSelectionBox: (pos: Point) => void;
     updateDrag: (pos: Point) => void;
     updateResize: (pos: Point) => void;
+    updateSelectionBox: (pos: Point) => void;
     finishDragOrResize: () => void;
-    selectObject: (objectId: string | null) => void;
+    finishSelectionBox: (selectedIds: string[]) => void;
+    selectObject: (objectId: string, addToSelection?: boolean) => void;
+    clearSelection: () => void;
 }
 
 export const useSelectTool = ({
@@ -32,58 +43,121 @@ export const useSelectTool = ({
     setCanvasObjects,
     viewObjects,
     setViewObjects,
-    selectedObjectId,
-    setSelectedObjectId,
-    sendUpdate,
-    ctx
+    selectedObjectIds,
+    setSelectedObjectIds,
+    sendUpdate
 }: UseSelectToolOptions): UseSelectToolReturn => {
     const [isDragging, setIsDragging] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
+    const [isSelecting, setIsSelecting] = useState(false);
+    const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null);
     const [resizeHandle, setResizeHandle] = useState<ResizeHandle | null>(null);
     const [dragOffset, setDragOffset] = useState<Point | null>(null);
     const [resizeStartBounds, setResizeStartBounds] = useState<Bounds | null>(null);
     const [resizeStartData, setResizeStartData] = useState<any>(null);
+    const [resizeObjectId, setResizeObjectId] = useState<string | null>(null);
+    // Store original positions for all selected objects when dragging starts
+    const [dragStartPositions, setDragStartPositions] = useState<Map<string, Point>>(new Map());
 
-    const selectObject = useCallback((objectId: string | null) => {
-        setSelectedObjectId(objectId);
-    }, [setSelectedObjectId]);
+    const selectObject = useCallback((objectId: string, addToSelection: boolean = false) => {
+        if (addToSelection) {
+            setSelectedObjectIds(prev => {
+                if (prev.includes(objectId)) {
+                    // Remove if already selected
+                    return prev.filter(id => id !== objectId);
+                }
+                return [...prev, objectId];
+            });
+        } else {
+            setSelectedObjectIds([objectId]);
+        }
+    }, [setSelectedObjectIds]);
 
-    const startDragging = useCallback((objectId: string, pos: Point) => {
-        setSelectedObjectId(objectId);
-        setIsDragging(true);
+    const clearSelection = useCallback(() => {
+        setSelectedObjectIds([]);
+    }, [setSelectedObjectIds]);
 
-        // Calculate drag offset based on object type
-        let objPos: Point = { x: 0, y: 0 };
+    const startSelectionBox = useCallback((pos: Point) => {
+        setIsSelecting(true);
+        setSelectionBox({
+            startX: pos.x,
+            startY: pos.y,
+            currentX: pos.x,
+            currentY: pos.y
+        });
+    }, []);
 
+    const updateSelectionBox = useCallback((pos: Point) => {
+        if (isSelecting && selectionBox) {
+            setSelectionBox({
+                ...selectionBox,
+                currentX: pos.x,
+                currentY: pos.y
+            });
+        }
+    }, [isSelecting, selectionBox]);
+
+    const finishSelectionBox = useCallback((selectedIds: string[]) => {
+        if (selectedIds.length > 0) {
+            setSelectedObjectIds(selectedIds);
+        }
+        setIsSelecting(false);
+        setSelectionBox(null);
+    }, [setSelectedObjectIds]);
+
+    const getObjectPosition = useCallback((objectId: string): Point | null => {
         const canvasObj = canvasObjects.get(objectId);
         if (canvasObj) {
             if (canvasObj.type === 'stroke') {
                 const data = canvasObj.data as WhiteboardStrokeData;
                 const minX = Math.min(...data.points.map(p => p.x));
                 const minY = Math.min(...data.points.map(p => p.y));
-                objPos = { x: minX, y: minY };
+                return { x: minX, y: minY };
             } else if (canvasObj.type === 'shape') {
                 const data = canvasObj.data as WhiteboardShapeData;
-                objPos = data.position;
-            }
-        } else {
-            const viewObj = viewObjects.get(objectId);
-            if (viewObj && viewObj.data) {
-                objPos = viewObj.data.position || { x: 0, y: 0 };
+                return { ...data.position };
             }
         }
 
-        setDragOffset({
-            x: pos.x - objPos.x,
-            y: pos.y - objPos.y
+        const viewObj = viewObjects.get(objectId);
+        if (viewObj && viewObj.data?.position) {
+            return { ...viewObj.data.position };
+        }
+
+        return null;
+    }, [canvasObjects, viewObjects]);
+
+    const startDragging = useCallback((pos: Point) => {
+        if (selectedObjectIds.length === 0) return;
+
+        setIsDragging(true);
+
+        // Store original positions for all selected objects
+        const positions = new Map<string, Point>();
+        selectedObjectIds.forEach(id => {
+            const objPos = getObjectPosition(id);
+            if (objPos) {
+                positions.set(id, objPos);
+            }
         });
-    }, [canvasObjects, viewObjects, setSelectedObjectId]);
+        setDragStartPositions(positions);
+
+        // Calculate drag offset from the first selected object
+        const firstObjPos = positions.get(selectedObjectIds[0]);
+        if (firstObjPos) {
+            setDragOffset({
+                x: pos.x - firstObjPos.x,
+                y: pos.y - firstObjPos.y
+            });
+        }
+    }, [selectedObjectIds, getObjectPosition]);
 
     const startResizing = useCallback((objectId: string, handle: ResizeHandle, pos: Point, bounds: Bounds) => {
-        setSelectedObjectId(objectId);
+        setSelectedObjectIds([objectId]);
         setIsResizing(true);
         setResizeHandle(handle);
         setResizeStartBounds({ ...bounds });
+        setResizeObjectId(objectId);
         setDragOffset({ x: pos.x, y: pos.y });
 
         // Store original object data for accurate resizing
@@ -94,54 +168,63 @@ export const useSelectTool = ({
         } else if (viewObj) {
             setResizeStartData(JSON.parse(JSON.stringify(viewObj.data)));
         }
-    }, [setSelectedObjectId, canvasObjects, viewObjects]);
+    }, [setSelectedObjectIds, canvasObjects, viewObjects]);
 
     const updateDrag = useCallback((pos: Point) => {
-        if (!isDragging || !selectedObjectId || !dragOffset) return;
+        if (!isDragging || selectedObjectIds.length === 0 || !dragOffset) return;
 
-        const newPos: Point = {
-            x: pos.x - dragOffset.x,
-            y: pos.y - dragOffset.y
-        };
+        const dx = pos.x - dragOffset.x - (dragStartPositions.get(selectedObjectIds[0])?.x || 0);
+        const dy = pos.y - dragOffset.y - (dragStartPositions.get(selectedObjectIds[0])?.y || 0);
 
-        const canvasObj = canvasObjects.get(selectedObjectId);
-        const viewObj = viewObjects.get(selectedObjectId);
+        // Update all selected objects
+        selectedObjectIds.forEach(objectId => {
+            const startPos = dragStartPositions.get(objectId);
+            if (!startPos) return;
 
-        if (canvasObj) {
-            const updatedObj = { ...canvasObj };
+            const newPos: Point = {
+                x: startPos.x + dx,
+                y: startPos.y + dy
+            };
 
-            if (updatedObj.type === 'stroke') {
-                const data = updatedObj.data as WhiteboardStrokeData;
-                const minX = Math.min(...data.points.map(p => p.x));
-                const minY = Math.min(...data.points.map(p => p.y));
-                const dx = newPos.x - minX;
-                const dy = newPos.y - minY;
+            const canvasObj = canvasObjects.get(objectId);
+            const viewObj = viewObjects.get(objectId);
 
+            if (canvasObj) {
+                const updatedObj = { ...canvasObj };
+
+                if (updatedObj.type === 'stroke') {
+                    const data = updatedObj.data as WhiteboardStrokeData;
+                    const origMinX = Math.min(...data.points.map(p => p.x));
+                    const origMinY = Math.min(...data.points.map(p => p.y));
+                    const offsetX = newPos.x - origMinX;
+                    const offsetY = newPos.y - origMinY;
+
+                    updatedObj.data = {
+                        ...data,
+                        points: data.points.map(p => ({ x: p.x + offsetX, y: p.y + offsetY }))
+                    };
+                } else if (updatedObj.type === 'shape') {
+                    const data = updatedObj.data as WhiteboardShapeData;
+                    updatedObj.data = {
+                        ...data,
+                        position: newPos
+                    };
+                }
+
+                setCanvasObjects(prev => new Map(prev).set(objectId, updatedObj));
+            } else if (viewObj) {
+                const updatedObj = { ...viewObj };
                 updatedObj.data = {
-                    ...data,
-                    points: data.points.map(p => ({ x: p.x + dx, y: p.y + dy }))
-                };
-            } else if (updatedObj.type === 'shape') {
-                const data = updatedObj.data as WhiteboardShapeData;
-                updatedObj.data = {
-                    ...data,
+                    ...updatedObj.data,
                     position: newPos
                 };
+                setViewObjects(prev => new Map(prev).set(objectId, updatedObj));
             }
-
-            setCanvasObjects(prev => new Map(prev).set(selectedObjectId, updatedObj));
-        } else if (viewObj) {
-            const updatedObj = { ...viewObj };
-            updatedObj.data = {
-                ...updatedObj.data,
-                position: newPos
-            };
-            setViewObjects(prev => new Map(prev).set(selectedObjectId, updatedObj));
-        }
-    }, [isDragging, selectedObjectId, dragOffset, canvasObjects, viewObjects, setCanvasObjects, setViewObjects]);
+        });
+    }, [isDragging, selectedObjectIds, dragOffset, dragStartPositions, canvasObjects, viewObjects, setCanvasObjects, setViewObjects]);
 
     const updateResize = useCallback((pos: Point) => {
-        if (!isResizing || !selectedObjectId || !resizeHandle || !resizeStartBounds || !resizeStartData) return;
+        if (!isResizing || !resizeObjectId || !resizeHandle || !resizeStartBounds || !resizeStartData) return;
 
         const minSize = 20;
 
@@ -181,11 +264,10 @@ export const useSelectTool = ({
 
         const origWidth = Math.max(1, resizeStartBounds.width);
         const origHeight = Math.max(1, resizeStartBounds.height);
-        const scaleX = newWidth / origWidth;
         const scaleY = newHeight / origHeight;
 
         // Check canvas objects
-        const canvasObj = canvasObjects.get(selectedObjectId);
+        const canvasObj = canvasObjects.get(resizeObjectId);
         if (canvasObj) {
             const updatedObj = { ...canvasObj };
             const origData = resizeStartData;
@@ -209,11 +291,8 @@ export const useSelectTool = ({
                         dimensions: { width: newWidth, height: newHeight }
                     };
                 } else if (shapeData.type === 'circle') {
-                    // Circle: position is center, dimensions determine radius
-                    // New center should be at the center of the new bounds
                     const newCenterX = newX + newWidth / 2;
                     const newCenterY = newY + newHeight / 2;
-                    // New radius is half of the smaller dimension to fit in bounds
                     const newRadius = Math.min(newWidth, newHeight) / 2;
 
                     updatedObj.data = {
@@ -225,14 +304,11 @@ export const useSelectTool = ({
                         }
                     };
                 } else if (shapeData.type === 'line') {
-                    // Line: position is start point, dimensions is offset to end point
-                    // Use original data for accurate calculation
                     const origStartX = shapeData.position.x;
                     const origStartY = shapeData.position.y;
                     const origEndX = shapeData.position.x + shapeData.dimensions.width;
                     const origEndY = shapeData.position.y + shapeData.dimensions.height;
 
-                    // Map both points from original bounds to new bounds
                     const relStartX = (origStartX - resizeStartBounds.x) / origWidth;
                     const relStartY = (origStartY - resizeStartBounds.y) / origHeight;
                     const relEndX = (origEndX - resizeStartBounds.x) / origWidth;
@@ -254,11 +330,11 @@ export const useSelectTool = ({
                 }
             }
 
-            setCanvasObjects(prev => new Map(prev).set(selectedObjectId, updatedObj));
+            setCanvasObjects(prev => new Map(prev).set(resizeObjectId, updatedObj));
         }
 
         // Check view objects
-        const viewObj = viewObjects.get(selectedObjectId);
+        const viewObj = viewObjects.get(resizeObjectId);
         if (viewObj) {
             const updatedObj = { ...viewObj };
             const origData = resizeStartData;
@@ -281,14 +357,28 @@ export const useSelectTool = ({
                     position: { x: newX, y: newY }
                 };
             }
-            setViewObjects(prev => new Map(prev).set(selectedObjectId, updatedObj));
+            setViewObjects(prev => new Map(prev).set(resizeObjectId, updatedObj));
         }
-    }, [isResizing, selectedObjectId, resizeHandle, resizeStartBounds, resizeStartData, canvasObjects, viewObjects, setCanvasObjects, setViewObjects]);
+    }, [isResizing, resizeObjectId, resizeHandle, resizeStartBounds, resizeStartData, canvasObjects, viewObjects, setCanvasObjects, setViewObjects]);
 
     const finishDragOrResize = useCallback(() => {
-        if ((isDragging || isResizing) && selectedObjectId) {
-            const canvasObj = canvasObjects.get(selectedObjectId);
-            const viewObj = viewObjects.get(selectedObjectId);
+        if (isDragging && selectedObjectIds.length > 0) {
+            // Send updates for all moved objects
+            selectedObjectIds.forEach(objectId => {
+                const canvasObj = canvasObjects.get(objectId);
+                const viewObj = viewObjects.get(objectId);
+
+                if (canvasObj) {
+                    sendUpdate({ type: 'update_canvas_object', object: canvasObj });
+                } else if (viewObj) {
+                    sendUpdate({ type: 'update_view_object', object: viewObj });
+                }
+            });
+        }
+
+        if (isResizing && resizeObjectId) {
+            const canvasObj = canvasObjects.get(resizeObjectId);
+            const viewObj = viewObjects.get(resizeObjectId);
 
             if (canvasObj) {
                 sendUpdate({ type: 'update_canvas_object', object: canvasObj });
@@ -302,19 +392,27 @@ export const useSelectTool = ({
         setResizeHandle(null);
         setResizeStartBounds(null);
         setResizeStartData(null);
+        setResizeObjectId(null);
         setDragOffset(null);
-    }, [isDragging, isResizing, selectedObjectId, canvasObjects, viewObjects, sendUpdate]);
+        setDragStartPositions(new Map());
+    }, [isDragging, isResizing, selectedObjectIds, resizeObjectId, canvasObjects, viewObjects, sendUpdate]);
 
     return {
         isDragging,
         isResizing,
+        isSelecting,
+        selectionBox,
         resizeHandle,
         dragOffset,
         startDragging,
         startResizing,
+        startSelectionBox,
         updateDrag,
         updateResize,
+        updateSelectionBox,
         finishDragOrResize,
-        selectObject
+        finishSelectionBox,
+        selectObject,
+        clearSelection
     };
 };

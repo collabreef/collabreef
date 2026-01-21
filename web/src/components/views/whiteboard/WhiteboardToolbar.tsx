@@ -1,4 +1,4 @@
-import { Pen, Square, Circle, Minus, Type, FileText, Hand, Eraser, Trash2, Spline } from 'lucide-react';
+import { Pen, Square, Circle, Minus, Type, FileText, Hand, Eraser, Trash2, SquareDashedMousePointer } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Tool } from './tools/types';
 
@@ -21,6 +21,7 @@ const WhiteboardToolbar = ({
 
     const tools: { id: Tool; icon: React.ReactNode; label: string }[] = [
         { id: 'select', icon: <Hand size={18} />, label: t('whiteboard.select') || 'Select' },
+        { id: 'marquee', icon: <SquareDashedMousePointer size={18} />, label: t('whiteboard.marquee') || 'Marquee Select' },
         { id: 'pen', icon: <Pen size={18} />, label: t('whiteboard.pen') || 'Pen' },
         { id: 'eraser', icon: <Eraser size={18} />, label: t('whiteboard.eraser') || 'Eraser' },
         { id: 'rectangle', icon: <Square size={18} />, label: t('whiteboard.rectangle') || 'Rectangle' },

@@ -6,7 +6,7 @@ import WhiteboardToolProperties from './WhiteboardToolProperties';
 import AddElementDialog from './AddElementDialog';
 import { useWhiteboardWebSocket } from '../../../hooks/use-whiteboard-websocket';
 import NoteOverlay from './NoteOverlay';
-import { renderStroke, renderShape, renderText, renderNoteOrView, renderGrid, renderEdge } from './renderUtils';
+import { renderStroke, renderShape, renderText, renderNoteOrView, renderGrid, renderEdge, renderSelectionBox } from './renderUtils';
 import { Lock, Unlock } from 'lucide-react';
 
 // Import modular tools and utilities
@@ -14,8 +14,7 @@ import {
     Tool,
     CanvasObject,
     WhiteboardObject,
-    Point,
-    generateId
+    Point
 } from './tools/types';
 import { useViewport } from './hooks/useViewport';
 import { usePenTool } from './tools/usePenTool';
@@ -24,8 +23,8 @@ import { useEdgeTool } from './tools/useEdgeTool';
 import { useTextTool } from './tools/useTextTool';
 import { useEraserTool } from './tools/useEraserTool';
 import { useSelectTool } from './tools/useSelectTool';
-import { findObjectAtPosition, HitResult } from './objects/hitDetection';
-import { getObjectBounds, checkResizeHandle, checkConnectionPoint, getConnectionPointPosition, updateConnectedEdges, findNearestConnectionPoint } from './objects/bounds';
+import { findObjectAtPosition } from './objects/hitDetection';
+import { getObjectBounds, checkResizeHandle, checkConnectionPoint, getConnectionPointPosition, updateConnectedEdges, findNearestConnectionPoint, findObjectsInSelectionBox } from './objects/bounds';
 
 interface WhiteboardViewComponentProps {
     view?: any;
@@ -74,7 +73,7 @@ const WhiteboardViewComponent = ({
     const [currentTool, setCurrentTool] = useState<Tool>('select');
     const [currentColor, setCurrentColor] = useState('#000000');
     const [currentStrokeWidth, setCurrentStrokeWidth] = useState(2);
-    const [selectedObjectId, setSelectedObjectId] = useState<string | null>(null);
+    const [selectedObjectIds, setSelectedObjectIds] = useState<string[]>([]);
 
     // Lock state
     const [isLocked, setIsLocked] = useState(false);
@@ -136,7 +135,7 @@ const WhiteboardViewComponent = ({
         currentColor,
         currentStrokeWidth,
         setViewObjects,
-        setSelectedObjectId,
+        setSelectedObjectId: (id: string | null) => setSelectedObjectIds(id ? [id] : []),
         sendUpdate
     });
 
@@ -144,7 +143,7 @@ const WhiteboardViewComponent = ({
         currentColor,
         defaultText: t('whiteboard.defaultText') || 'Text',
         setViewObjects,
-        setSelectedObjectId,
+        setSelectedObjectId: (id: string | null) => setSelectedObjectIds(id ? [id] : []),
         sendUpdate
     });
 
@@ -161,10 +160,9 @@ const WhiteboardViewComponent = ({
         setCanvasObjects,
         viewObjects,
         setViewObjects,
-        selectedObjectId,
-        setSelectedObjectId,
-        sendUpdate,
-        ctx: getCtx()
+        selectedObjectIds,
+        setSelectedObjectIds,
+        sendUpdate
     });
 
     // Initialize with API data for public mode
@@ -243,7 +241,7 @@ const WhiteboardViewComponent = ({
 
         // Render canvas objects
         canvasObjects.forEach((obj, objId) => {
-            const isSelected = selectedObjectId === objId;
+            const isSelected = selectedObjectIds.includes(objId);
             if (obj.type === 'stroke') {
                 renderStroke(ctx, obj.data as WhiteboardStrokeData, isSelected, viewport);
             } else if (obj.type === 'shape') {
@@ -253,7 +251,7 @@ const WhiteboardViewComponent = ({
 
         // Render view objects
         viewObjects.forEach((obj, objId) => {
-            const isSelected = selectedObjectId === objId;
+            const isSelected = selectedObjectIds.includes(objId);
             if (obj.type === 'whiteboard_text') {
                 renderText(ctx, obj.data as WhiteboardTextData, isSelected, viewport);
             } else if (obj.type === 'whiteboard_note' || obj.type === 'whiteboard_view') {
@@ -263,13 +261,18 @@ const WhiteboardViewComponent = ({
             }
         });
 
+        // Render selection box if selecting
+        if (selectTool.isSelecting && selectTool.selectionBox) {
+            renderSelectionBox(ctx, selectTool.selectionBox, viewport);
+        }
+
         // Render tool previews
         penTool.renderPreview(ctx);
         shapeTool.renderPreview(ctx, currentTool);
         edgeTool.renderPreview(ctx);
 
         ctx.restore();
-    }, [viewport, canvasObjects, viewObjects, selectedObjectId, currentTool, penTool, shapeTool, edgeTool]);
+    }, [viewport, canvasObjects, viewObjects, selectedObjectIds, currentTool, penTool, shapeTool, edgeTool, selectTool.isSelecting, selectTool.selectionBox]);
 
     // Re-render when dependencies change
     useEffect(() => {
@@ -331,25 +334,30 @@ const WhiteboardViewComponent = ({
 
         const ctx = getCtx();
 
-        if (currentTool === 'select') {
+        if (currentTool === 'select' || currentTool === 'marquee') {
+            // Check if Shift key is held for multi-select
+            const isShiftKey = 'shiftKey' in e && e.shiftKey;
+
             // First, check if clicking on the currently selected object's resize handles
             // This is important for shapes like circles where handles are outside the shape
-            if (selectedObjectId) {
-                const handle = checkResizeHandle(pos.x, pos.y, selectedObjectId, canvasObjects, viewObjects, ctx);
+            // Only allow resize when a single object is selected
+            if (selectedObjectIds.length === 1) {
+                const selectedId = selectedObjectIds[0];
+                const handle = checkResizeHandle(pos.x, pos.y, selectedId, canvasObjects, viewObjects, ctx);
                 if (handle) {
-                    const bounds = getObjectBounds(selectedObjectId, canvasObjects, viewObjects, ctx);
+                    const bounds = getObjectBounds(selectedId, canvasObjects, viewObjects, ctx);
                     if (bounds) {
-                        selectTool.startResizing(selectedObjectId, handle, pos, bounds);
+                        selectTool.startResizing(selectedId, handle, pos, bounds);
                         return;
                     }
                 }
 
                 // Check for connection point on selected object
-                const connectionPoint = checkConnectionPoint(pos.x, pos.y, selectedObjectId, canvasObjects, viewObjects, ctx);
+                const connectionPoint = checkConnectionPoint(pos.x, pos.y, selectedId, canvasObjects, viewObjects, ctx);
                 if (connectionPoint) {
-                    const startPos = getConnectionPointPosition(selectedObjectId, connectionPoint, canvasObjects, viewObjects, ctx);
+                    const startPos = getConnectionPointPosition(selectedId, connectionPoint, canvasObjects, viewObjects, ctx);
                     if (startPos) {
-                        edgeTool.startDrawing(startPos, selectedObjectId, connectionPoint);
+                        edgeTool.startDrawing(startPos, selectedId, connectionPoint);
                         return;
                     }
                 }
@@ -363,27 +371,47 @@ const WhiteboardViewComponent = ({
                 if (connectionPoint) {
                     const startPos = getConnectionPointPosition(clickedObject.id, connectionPoint, canvasObjects, viewObjects, ctx);
                     if (startPos) {
-                        setSelectedObjectId(clickedObject.id);
+                        setSelectedObjectIds([clickedObject.id]);
                         edgeTool.startDrawing(startPos, clickedObject.id, connectionPoint);
                         return;
                     }
                 }
 
-                // Check for resize handle
-                const handle = checkResizeHandle(pos.x, pos.y, clickedObject.id, canvasObjects, viewObjects, ctx);
-                if (handle) {
-                    const bounds = getObjectBounds(clickedObject.id, canvasObjects, viewObjects, ctx);
-                    if (bounds) {
-                        selectTool.startResizing(clickedObject.id, handle, pos, bounds);
+                // Check for resize handle (only if clicking on the same selected object)
+                if (selectedObjectIds.includes(clickedObject.id)) {
+                    const handle = checkResizeHandle(pos.x, pos.y, clickedObject.id, canvasObjects, viewObjects, ctx);
+                    if (handle) {
+                        const bounds = getObjectBounds(clickedObject.id, canvasObjects, viewObjects, ctx);
+                        if (bounds) {
+                            // Only resize if single selection
+                            setSelectedObjectIds([clickedObject.id]);
+                            selectTool.startResizing(clickedObject.id, handle, pos, bounds);
+                            return;
+                        }
                     }
-                } else {
-                    selectTool.startDragging(clickedObject.id, pos);
+                }
+
+                // Select object (Shift+click toggles in selection)
+                selectTool.selectObject(clickedObject.id, isShiftKey);
+
+                // Start dragging if object is now selected (or was already selected)
+                if (selectedObjectIds.includes(clickedObject.id) || !isShiftKey) {
+                    selectTool.startDragging(pos);
                 }
             } else {
-                // Clicked on empty space = pan
-                setIsPanning(true);
-                setLastPanPoint({ x: clientX, y: clientY });
-                setSelectedObjectId(null);
+                // Clicked on empty space - behavior differs between select and marquee tools
+                if (currentTool === 'marquee') {
+                    // Marquee tool: always start selection box
+                    if (!isShiftKey) {
+                        selectTool.clearSelection();
+                    }
+                    selectTool.startSelectionBox(pos);
+                } else {
+                    // Select tool: pan the canvas
+                    setSelectedObjectIds([]);
+                    setIsPanning(true);
+                    setLastPanPoint({ x: clientX, y: clientY });
+                }
             }
         } else if (currentTool === 'pen') {
             penTool.startDrawing(pos);
@@ -427,15 +455,22 @@ const WhiteboardViewComponent = ({
 
         const ctx = getCtx();
 
-        if (selectTool.isDragging) {
+        if (selectTool.isSelecting) {
+            selectTool.updateSelectionBox(pos);
+            render();
+        } else if (selectTool.isDragging) {
             selectTool.updateDrag(pos);
-            // Update connected edges in real-time while dragging
-            if (selectedObjectId) {
-                const updatedEdges = updateConnectedEdges(selectedObjectId, canvasObjects, viewObjects, ctx);
-                if (updatedEdges.length > 0) {
+            // Update connected edges in real-time while dragging for all selected objects
+            if (selectedObjectIds.length > 0) {
+                const allUpdatedEdges: WhiteboardObject[] = [];
+                selectedObjectIds.forEach(objId => {
+                    const updatedEdges = updateConnectedEdges(objId, canvasObjects, viewObjects, ctx);
+                    allUpdatedEdges.push(...updatedEdges);
+                });
+                if (allUpdatedEdges.length > 0) {
                     setViewObjects(prev => {
                         const newMap = new Map(prev);
-                        updatedEdges.forEach(edge => {
+                        allUpdatedEdges.forEach(edge => {
                             newMap.set(edge.id, edge);
                         });
                         return newMap;
@@ -446,12 +481,16 @@ const WhiteboardViewComponent = ({
         } else if (selectTool.isResizing) {
             selectTool.updateResize(pos);
             // Update connected edges in real-time while resizing
-            if (selectedObjectId) {
-                const updatedEdges = updateConnectedEdges(selectedObjectId, canvasObjects, viewObjects, ctx);
-                if (updatedEdges.length > 0) {
+            if (selectedObjectIds.length > 0) {
+                const allUpdatedEdges: WhiteboardObject[] = [];
+                selectedObjectIds.forEach(objId => {
+                    const updatedEdges = updateConnectedEdges(objId, canvasObjects, viewObjects, ctx);
+                    allUpdatedEdges.push(...updatedEdges);
+                });
+                if (allUpdatedEdges.length > 0) {
                     setViewObjects(prev => {
                         const newMap = new Map(prev);
-                        updatedEdges.forEach(edge => {
+                        allUpdatedEdges.forEach(edge => {
                             newMap.set(edge.id, edge);
                         });
                         return newMap;
@@ -497,20 +536,41 @@ const WhiteboardViewComponent = ({
         const pos = getPointerPosition(e);
         const ctx = getCtx();
 
+        if (selectTool.isSelecting) {
+            // Finish selection box and select objects within
+            if (selectTool.selectionBox) {
+                const box = {
+                    x: Math.min(selectTool.selectionBox.startX, selectTool.selectionBox.currentX),
+                    y: Math.min(selectTool.selectionBox.startY, selectTool.selectionBox.currentY),
+                    width: Math.abs(selectTool.selectionBox.currentX - selectTool.selectionBox.startX),
+                    height: Math.abs(selectTool.selectionBox.currentY - selectTool.selectionBox.startY)
+                };
+                const objectsInBox = findObjectsInSelectionBox(box, canvasObjects, viewObjects, ctx);
+                selectTool.finishSelectionBox(objectsInBox);
+            } else {
+                selectTool.finishSelectionBox([]);
+            }
+            return;
+        }
+
         if (selectTool.isDragging || selectTool.isResizing) {
-            // Update connected edges before finishing
-            if (selectedObjectId) {
-                const updatedEdges = updateConnectedEdges(selectedObjectId, canvasObjects, viewObjects, ctx);
-                if (updatedEdges.length > 0) {
+            // Update connected edges before finishing for all selected objects
+            if (selectedObjectIds.length > 0) {
+                const allUpdatedEdges: WhiteboardObject[] = [];
+                selectedObjectIds.forEach(objId => {
+                    const updatedEdges = updateConnectedEdges(objId, canvasObjects, viewObjects, ctx);
+                    allUpdatedEdges.push(...updatedEdges);
+                });
+                if (allUpdatedEdges.length > 0) {
                     setViewObjects(prev => {
                         const newMap = new Map(prev);
-                        updatedEdges.forEach(edge => {
+                        allUpdatedEdges.forEach(edge => {
                             newMap.set(edge.id, edge);
                         });
                         return newMap;
                     });
                     // Send updates for all modified edges
-                    updatedEdges.forEach(edge => {
+                    allUpdatedEdges.forEach(edge => {
                         sendUpdate({ type: 'update_view_object', object: edge });
                     });
                 }
@@ -677,53 +737,72 @@ const WhiteboardViewComponent = ({
         }
     };
 
-    // Delete selected
+    // Delete selected (supports multi-selection)
     const handleDelete = () => {
-        if (!selectedObjectId) return;
-        eraserTool.eraseObject(selectedObjectId);
-        setSelectedObjectId(null);
+        if (selectedObjectIds.length === 0) return;
+        selectedObjectIds.forEach(id => {
+            eraserTool.eraseObject(id);
+        });
+        setSelectedObjectIds([]);
     };
 
-    // Handle text property updates
+    // Handle text property updates (applies to first selected text object)
     const handleTextPropertyUpdate = useCallback((updates: Partial<WhiteboardTextData>) => {
-        if (!selectedObjectId) return;
-        textTool.updateText(selectedObjectId, updates, viewObjects);
-    }, [selectedObjectId, viewObjects, textTool]);
-
-    // Get selected text data
-    const getSelectedTextData = useCallback((): WhiteboardTextData | null => {
-        if (!selectedObjectId) return null;
-        const viewObj = viewObjects.get(selectedObjectId);
-        if (!viewObj || viewObj.type !== 'whiteboard_text') return null;
-        return viewObj.data as WhiteboardTextData;
-    }, [selectedObjectId, viewObjects]);
-
-    // Handle edge property updates
-    const handleEdgePropertyUpdate = useCallback((updates: Partial<WhiteboardEdgeData>) => {
-        if (!selectedObjectId) return;
-
-        const viewObj = viewObjects.get(selectedObjectId);
-        if (!viewObj || viewObj.type !== 'whiteboard_edge') return;
-
-        const updatedObj = {
-            ...viewObj,
-            data: {
-                ...viewObj.data,
-                ...updates
+        if (selectedObjectIds.length === 0) return;
+        // Find first selected text object
+        for (const id of selectedObjectIds) {
+            const viewObj = viewObjects.get(id);
+            if (viewObj && viewObj.type === 'whiteboard_text') {
+                textTool.updateText(id, updates, viewObjects);
+                break;
             }
-        };
+        }
+    }, [selectedObjectIds, viewObjects, textTool]);
 
-        setViewObjects(prev => new Map(prev).set(selectedObjectId, updatedObj));
-        sendUpdate({ type: 'update_view_object', object: updatedObj });
-    }, [selectedObjectId, viewObjects, sendUpdate]);
+    // Get selected text data (returns first selected text object)
+    const getSelectedTextData = useCallback((): WhiteboardTextData | null => {
+        if (selectedObjectIds.length === 0) return null;
+        for (const id of selectedObjectIds) {
+            const viewObj = viewObjects.get(id);
+            if (viewObj && viewObj.type === 'whiteboard_text') {
+                return viewObj.data as WhiteboardTextData;
+            }
+        }
+        return null;
+    }, [selectedObjectIds, viewObjects]);
 
-    // Get selected edge data
+    // Handle edge property updates (applies to first selected edge object)
+    const handleEdgePropertyUpdate = useCallback((updates: Partial<WhiteboardEdgeData>) => {
+        if (selectedObjectIds.length === 0) return;
+
+        for (const id of selectedObjectIds) {
+            const viewObj = viewObjects.get(id);
+            if (viewObj && viewObj.type === 'whiteboard_edge') {
+                const updatedObj = {
+                    ...viewObj,
+                    data: {
+                        ...viewObj.data,
+                        ...updates
+                    }
+                };
+                setViewObjects(prev => new Map(prev).set(id, updatedObj));
+                sendUpdate({ type: 'update_view_object', object: updatedObj });
+                break;
+            }
+        }
+    }, [selectedObjectIds, viewObjects, sendUpdate]);
+
+    // Get selected edge data (returns first selected edge object)
     const getSelectedEdgeData = useCallback((): WhiteboardEdgeData | null => {
-        if (!selectedObjectId) return null;
-        const viewObj = viewObjects.get(selectedObjectId);
-        if (!viewObj || viewObj.type !== 'whiteboard_edge') return null;
-        return viewObj.data as WhiteboardEdgeData;
-    }, [selectedObjectId, viewObjects]);
+        if (selectedObjectIds.length === 0) return null;
+        for (const id of selectedObjectIds) {
+            const viewObj = viewObjects.get(id);
+            if (viewObj && viewObj.type === 'whiteboard_edge') {
+                return viewObj.data as WhiteboardEdgeData;
+            }
+        }
+        return null;
+    }, [selectedObjectIds, viewObjects]);
 
     // Get cursor style
     const getCursor = useCallback(() => {
@@ -765,10 +844,10 @@ const WhiteboardViewComponent = ({
     // Handle keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Delete' && selectedObjectId) {
+            if (e.key === 'Delete' && selectedObjectIds.length > 0) {
                 handleDelete();
             } else if (e.key === 'Escape') {
-                setSelectedObjectId(null);
+                setSelectedObjectIds([]);
             } else if (e.key === ' ' && !penTool.isDrawing && !selectTool.isDragging && !selectTool.isResizing) {
                 e.preventDefault();
                 setIsSpacePressed(true);
@@ -791,7 +870,7 @@ const WhiteboardViewComponent = ({
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
         };
-    }, [selectedObjectId, penTool.isDrawing, selectTool.isDragging, selectTool.isResizing, isPanning]);
+    }, [selectedObjectIds, penTool.isDrawing, selectTool.isDragging, selectTool.isResizing, isPanning]);
 
     // Determine loading state
     const shouldShowLoading = !disableWebSocket && !isInitialized && !(isPublic && initialCanvasObjects && initialViewObjects);
@@ -837,7 +916,7 @@ const WhiteboardViewComponent = ({
                                 viewport={viewport}
                                 workspaceId={workspaceId}
                                 viewId={viewId!}
-                                isSelected={selectedObjectId === objId}
+                                isSelected={selectedObjectIds.includes(objId)}
                                 isPublic={isPublic}
                             />
                         );
