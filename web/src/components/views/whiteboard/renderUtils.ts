@@ -1,5 +1,33 @@
 import { WhiteboardStrokeData, WhiteboardShapeData, WhiteboardTextData, WhiteboardEdgeData } from '../../../types/view';
 
+// Helper function to render only connection points (for whiteboard_note which has its own selection border)
+export const renderConnectionPoints = (
+    ctx: CanvasRenderingContext2D,
+    bounds: { x: number; y: number; width: number; height: number },
+    viewport: { x: number; y: number; zoom: number }
+) => {
+    const zoom = viewport.zoom || 1;
+    const handleSize = 12 / zoom; // Larger size for better visibility
+
+    const connectionPoints = [
+        { x: bounds.x + bounds.width / 2, y: bounds.y }, // Top
+        { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height }, // Bottom
+        { x: bounds.x, y: bounds.y + bounds.height / 2 }, // Left
+        { x: bounds.x + bounds.width, y: bounds.y + bounds.height / 2 }, // Right
+    ];
+
+    ctx.fillStyle = '#10b981'; // Green for connection points
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2 / zoom;
+
+    connectionPoints.forEach(point => {
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, handleSize / 2, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+    });
+};
+
 // Helper function to render selection handles (4 corner resize + 4 edge connection points)
 export const renderSelectionHandles = (
     ctx: CanvasRenderingContext2D,
@@ -240,19 +268,29 @@ export const renderNoteOrView = (
     const width = data.width || 768;
     const height = data.height || 200;
 
-    // Skip rendering background for whiteboard_note (NoteOverlay handles it)
-    if (obj.type !== 'whiteboard_note') {
-        // Background
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(data.position.x, data.position.y, width, height);
-
-        // Border
-        ctx.strokeStyle = '#e0e0e0';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(data.position.x, data.position.y, width, height);
+    // For whiteboard_note: only render connection points when selected (NoteOverlay handles the visual)
+    if (obj.type === 'whiteboard_note') {
+        if (isSelected) {
+            renderConnectionPoints(ctx, {
+                x: data.position.x,
+                y: data.position.y,
+                width: width,
+                height: height
+            }, viewport);
+        }
+        return;
     }
 
-    // Selection highlight for both whiteboard_note and whiteboard_view
+    // Background for whiteboard_view
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(data.position.x, data.position.y, width, height);
+
+    // Border
+    ctx.strokeStyle = '#e0e0e0';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(data.position.x, data.position.y, width, height);
+
+    // Selection highlight for whiteboard_view only
     if (isSelected) {
         renderSelectionHandles(ctx, {
             x: data.position.x,
