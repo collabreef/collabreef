@@ -268,16 +268,8 @@ export const renderNoteOrView = (
     const width = data.width || 768;
     const height = data.height || 200;
 
-    // For whiteboard_note: only render connection points when selected (NoteOverlay handles the visual)
+    // For whiteboard_note: NoteOverlay handles all rendering including connection points
     if (obj.type === 'whiteboard_note') {
-        if (isSelected) {
-            renderConnectionPoints(ctx, {
-                x: data.position.x,
-                y: data.position.y,
-                width: width,
-                height: height
-            }, viewport);
-        }
         return;
     }
 

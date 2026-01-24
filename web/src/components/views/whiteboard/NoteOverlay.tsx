@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getNotesForViewObject, getPublicNotesForViewObject } from '../../../api/view';
 import { useEditor, EditorContent } from '@tiptap/react';
@@ -24,6 +24,7 @@ const NoteOverlay: React.FC<NoteOverlayProps> = ({ viewObjectId, position, width
     const contentRef = useRef<HTMLDivElement>(null);
     const lastReportedHeightRef = useRef<number>(0);
     const onHeightChangeRef = useRef(onHeightChange);
+    const [measuredHeight, setMeasuredHeight] = useState<number>(200);
 
     // Keep the callback ref updated to avoid stale closures
     useEffect(() => {
@@ -98,16 +99,16 @@ const NoteOverlay: React.FC<NoteOverlayProps> = ({ viewObjectId, position, width
             // Only report if height changed significantly (more than 1px) to avoid excessive updates
             if (Math.abs(height - lastReportedHeightRef.current) > 1) {
                 lastReportedHeightRef.current = height;
+                setMeasuredHeight(height);
                 onHeightChangeRef.current?.(viewObjectId, height);
             }
         };
 
-        const resizeObserver = new ResizeObserver((entries) => {
-            for (const entry of entries) {
-                const height = entry.contentRect.height;
-                if (height > 0) {
-                    reportHeight(height);
-                }
+        const resizeObserver = new ResizeObserver(() => {
+            // Use offsetHeight to include padding and border
+            const height = element.offsetHeight;
+            if (height > 0) {
+                reportHeight(height);
             }
         });
 
@@ -138,6 +139,14 @@ const NoteOverlay: React.FC<NoteOverlayProps> = ({ viewObjectId, position, width
     const transformedX = position.x * zoom + viewport.x;
     const transformedY = position.y * zoom + viewport.y;
 
+    // Connection points positions (relative to the note)
+    const connectionPoints = isSelected ? [
+        { x: width / 2, y: 0, label: 'top' },      // Top
+        { x: width / 2, y: measuredHeight, label: 'bottom' }, // Bottom
+        { x: 0, y: measuredHeight / 2, label: 'left' },    // Left
+        { x: width, y: measuredHeight / 2, label: 'right' }, // Right
+    ] : [];
+
     return (
         <div
             className="absolute pointer-events-none origin-top-left"
@@ -160,6 +169,18 @@ const NoteOverlay: React.FC<NoteOverlayProps> = ({ viewObjectId, position, width
             >
                 <EditorContent editor={editor} />
             </div>
+            {/* Connection points rendered as DOM elements so they appear above the note */}
+            {connectionPoints.map((point) => (
+                <div
+                    key={point.label}
+                    className="absolute w-3 h-3 bg-emerald-500 rounded-full border-2 border-white shadow-sm"
+                    style={{
+                        left: `${point.x}px`,
+                        top: `${point.y}px`,
+                        transform: 'translate(-50%, -50%)',
+                    }}
+                />
+            ))}
         </div>
     );
 };
