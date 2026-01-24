@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getNotesForViewObject, getPublicNotesForViewObject } from '../../../api/view';
 import { useEditor, EditorContent } from '@tiptap/react';
@@ -17,9 +17,19 @@ interface NoteOverlayProps {
     viewId: string;
     isSelected?: boolean;
     isPublic?: boolean;
+    onHeightChange?: (viewObjectId: string, height: number) => void;
 }
 
-const NoteOverlay: React.FC<NoteOverlayProps> = ({ viewObjectId, position, width, viewport, workspaceId, viewId, isSelected = false, isPublic = false }) => {
+const NoteOverlay: React.FC<NoteOverlayProps> = ({ viewObjectId, position, width, viewport, workspaceId, viewId, isSelected = false, isPublic = false, onHeightChange }) => {
+    const contentRef = useRef<HTMLDivElement>(null);
+    const lastReportedHeightRef = useRef<number>(0);
+    const onHeightChangeRef = useRef(onHeightChange);
+
+    // Keep the callback ref updated to avoid stale closures
+    useEffect(() => {
+        onHeightChangeRef.current = onHeightChange;
+    }, [onHeightChange]);
+
     // Fetch linked notes via view_object_notes (use public API for explore mode)
     const { data: linkedNotes = [] } = useQuery({
         queryKey: isPublic
@@ -79,6 +89,44 @@ const NoteOverlay: React.FC<NoteOverlayProps> = ({ viewObjectId, position, width
         editable: false,
     }, [note?.id]);
 
+    // Observe content size changes - depends on note.id so it runs after content loads
+    useEffect(() => {
+        const element = contentRef.current;
+        if (!element) return;
+
+        const reportHeight = (height: number) => {
+            // Only report if height changed significantly (more than 1px) to avoid excessive updates
+            if (Math.abs(height - lastReportedHeightRef.current) > 1) {
+                lastReportedHeightRef.current = height;
+                onHeightChangeRef.current?.(viewObjectId, height);
+            }
+        };
+
+        const resizeObserver = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+                const height = entry.contentRect.height;
+                if (height > 0) {
+                    reportHeight(height);
+                }
+            }
+        });
+
+        resizeObserver.observe(element);
+
+        // Delay initial height report to ensure content has rendered
+        const rafId = requestAnimationFrame(() => {
+            const initialHeight = element.offsetHeight;
+            if (initialHeight > 0) {
+                reportHeight(initialHeight);
+            }
+        });
+
+        return () => {
+            resizeObserver.disconnect();
+            cancelAnimationFrame(rafId);
+        };
+    }, [viewObjectId, note?.id]);
+
     if (!note || !note.content || !editor) return null;
 
     // Null/undefined checks for position and viewport
@@ -100,6 +148,7 @@ const NoteOverlay: React.FC<NoteOverlayProps> = ({ viewObjectId, position, width
             }}
         >
             <div
+                ref={contentRef}
                 className={`bg-yellow-50 dark:bg-yellow-900/20 rounded-lg shadow-md p-4 select-text ${
                     isSelected
                         ? 'border-3 border-blue-500 border-dashed'
