@@ -65,11 +65,6 @@ const CreateViewObjectModal = ({
     const [columnColor, setColumnColor] = useState('')
     const [columnOrder, setColumnOrder] = useState('')
 
-    // Flow-specific state (for creating nodes)
-    const [nodeColor, setNodeColor] = useState('')
-    const [nodeX, setNodeX] = useState('')
-    const [nodeY, setNodeY] = useState('')
-
     // Calendar-specific state (for creating slots)
     const [calendarDate, setCalendarDate] = useState('')
     const [endDate, setEndDate] = useState('')
@@ -119,9 +114,6 @@ const CreateViewObjectModal = ({
             setLongitude("")
             setColumnColor('')
             setColumnOrder('')
-            setNodeColor('')
-            setNodeX('')
-            setNodeY('')
             setCalendarDate('')
             setEndDate('')
             setStartTime('')
@@ -158,22 +150,6 @@ const CreateViewObjectModal = ({
             setData(JSON.stringify(kanbanData))
         }
     }, [columnColor, columnOrder, viewType, setData])
-
-    // Update data for flow type (node creation)
-    useEffect(() => {
-        if (viewType === 'flow') {
-            const flowData: any = {
-                position: {
-                    x: nodeX ? parseFloat(nodeX) : 100,
-                    y: nodeY ? parseFloat(nodeY) : 100
-                }
-            }
-            if (nodeColor) {
-                flowData.color = nodeColor
-            }
-            setData(JSON.stringify(flowData))
-        }
-    }, [nodeColor, nodeX, nodeY, viewType, setData])
 
     // Update data for calendar type (slot creation)
     useEffect(() => {
@@ -331,7 +307,6 @@ const CreateViewObjectModal = ({
         if (viewType === 'calendar') return t('views.createCalendarSlot')
         if (viewType === 'map') return t('views.createMapMarker')
         if (viewType === 'kanban') return t('views.createKanbanColumn') || 'Create Kanban Column'
-        if (viewType === 'flow') return t('views.createFlowNode') || 'Create Flow Node'
         return 'Create Object'
     }
 
@@ -339,7 +314,6 @@ const CreateViewObjectModal = ({
         if (viewType === 'calendar') return t('views.slotName')
         if (viewType === 'map') return t('views.markerName')
         if (viewType === 'kanban') return t('views.columnName') || 'Column Name'
-        if (viewType === 'flow') return t('views.nodeName') || 'Node Name'
         return 'Name'
     }
 
@@ -649,76 +623,6 @@ const CreateViewObjectModal = ({
                                 <button
                                     type="button"
                                     onClick={() => setColumnColor('')}
-                                    className="px-4 py-2 border dark:border-neutral-600 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                                >
-                                    {t('common.clear') || 'Clear'}
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                </>
-            )
-        }
-
-        if (viewType === 'flow') {
-            return (
-                <>
-                    {/* Position */}
-                    <div>
-                        <label className="block text-sm font-medium mb-2">
-                            {t('views.position') || 'Position'} ({t('common.optional') || 'Optional'})
-                        </label>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-xs text-gray-500 mb-1">
-                                    X
-                                </label>
-                                <input
-                                    type="number"
-                                    value={nodeX}
-                                    onChange={(e) => setNodeX(e.target.value)}
-                                    placeholder="100"
-                                    className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs text-gray-500 mb-1">
-                                    Y
-                                </label>
-                                <input
-                                    type="number"
-                                    value={nodeY}
-                                    onChange={(e) => setNodeY(e.target.value)}
-                                    placeholder="100"
-                                    className="w-full px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Color Picker (Optional) */}
-                    <div>
-                        <label className="block text-sm font-medium mb-2">
-                            {t('views.color') || 'Color'} ({t('common.optional') || 'Optional'})
-                        </label>
-                        <div className="flex gap-2">
-                            <input
-                                type="color"
-                                value={nodeColor || '#FFFFFF'}
-                                onChange={(e) => setNodeColor(e.target.value)}
-                                className="w-20 h-10 rounded-lg border dark:border-neutral-600 cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={nodeColor}
-                                onChange={(e) => setNodeColor(e.target.value)}
-                                placeholder="#FFFFFF"
-                                className="flex-1 px-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800"
-                            />
-                            {nodeColor && (
-                                <button
-                                    type="button"
-                                    onClick={() => setNodeColor('')}
                                     className="px-4 py-2 border dark:border-neutral-600 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800"
                                 >
                                     {t('common.clear') || 'Clear'}
