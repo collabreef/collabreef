@@ -820,6 +820,28 @@ const WhiteboardViewComponent = ({
         return 'crosshair';
     }, [selectTool.isResizing, selectTool.resizeHandle, selectTool.isDragging, isPanning, isSpacePressed]);
 
+    // Handle note height change from NoteOverlay
+    const handleNoteHeightChange = useCallback((viewObjectId: string, height: number) => {
+        setViewObjects(prev => {
+            const obj = prev.get(viewObjectId);
+            if (!obj || obj.type !== 'whiteboard_note') return prev;
+
+            const currentHeight = obj.data?.height;
+            // Only update if height actually changed
+            if (currentHeight === height) return prev;
+
+            const newMap = new Map(prev);
+            newMap.set(viewObjectId, {
+                ...obj,
+                data: {
+                    ...obj.data,
+                    height: height
+                }
+            });
+            return newMap;
+        });
+    }, []);
+
     // Handle element added from dialog
     const handleElementAdded = useCallback((element: any) => {
         let parsedData = element.data;
@@ -927,6 +949,7 @@ const WhiteboardViewComponent = ({
                                 viewId={viewId!}
                                 isSelected={selectedObjectIds.includes(objId)}
                                 isPublic={isPublic}
+                                onHeightChange={handleNoteHeightChange}
                             />
                         );
                     }
