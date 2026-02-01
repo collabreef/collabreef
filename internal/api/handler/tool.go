@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/notepia/notepia/internal/rssfetcher"
-	"github.com/notepia/notepia/internal/urlfetcher"
+	"github.com/collabreef/collabreef/internal/rssfetcher"
+	"github.com/collabreef/collabreef/internal/urlfetcher"
 )
 
 type FetchFileRequest struct {

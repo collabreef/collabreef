@@ -52,7 +52,7 @@ export function useYjsView(config: UseYjsViewConfig): UseYjsViewReturn {
     yArrayRef.current = array
 
     // Setup IndexedDB persistence for offline support
-    const idbProvider = new IndexeddbPersistence(`notepia-view-${viewId}`, ydoc)
+    const idbProvider = new IndexeddbPersistence(`collabreef-view-${viewId}`, ydoc)
     indexeddbProvider.current = idbProvider
 
     idbProvider.on('synced', () => {

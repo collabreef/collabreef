@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/notepia/notepia/internal/redis"
+	"github.com/collabreef/collabreef/internal/redis"
 )
 
 // WhiteboardMessageType represents the type of whiteboard message

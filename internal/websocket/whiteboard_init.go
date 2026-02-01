@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/notepia/notepia/internal/redis"
+	"github.com/collabreef/collabreef/internal/redis"
 )
 
 // sendInitialStateToClient sends the current cached whiteboard state to a newly connected client

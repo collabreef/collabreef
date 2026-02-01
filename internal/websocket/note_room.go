@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/notepia/notepia/internal/model"
-	"github.com/notepia/notepia/internal/redis"
+	"github.com/collabreef/collabreef/internal/model"
+	"github.com/collabreef/collabreef/internal/redis"
 )
 
 // NoteMessageType represents the type of note message

@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/notepia/notepia/internal/config"
-	"github.com/notepia/notepia/internal/model"
+	"github.com/collabreef/collabreef/internal/config"
+	"github.com/collabreef/collabreef/internal/model"
 
 	"github.com/golang-jwt/jwt/v5"
 )

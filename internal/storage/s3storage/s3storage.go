@@ -7,7 +7,7 @@ import (
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/notepia/notepia/internal/storage"
+	"github.com/collabreef/collabreef/internal/storage"
 )
 
 type S3Storage struct {

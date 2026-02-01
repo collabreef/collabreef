@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 
-	"github.com/notepia/notepia/internal/model"
+	"github.com/collabreef/collabreef/internal/model"
 )
 
 type DB interface {

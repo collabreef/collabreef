@@ -6,10 +6,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/notepia/notepia/internal/bootstrap"
-	"github.com/notepia/notepia/internal/config"
-	"github.com/notepia/notepia/internal/redis"
-	"github.com/notepia/notepia/internal/worker"
+	"github.com/collabreef/collabreef/internal/bootstrap"
+	"github.com/collabreef/collabreef/internal/config"
+	"github.com/collabreef/collabreef/internal/redis"
+	"github.com/collabreef/collabreef/internal/worker"
 )
 
 // Version is set at build time via ldflags

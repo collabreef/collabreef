@@ -3,7 +3,7 @@ version: '3.8'
 services:
   minio:
     image: minio/minio:latest
-    container_name: notepia-minio
+    container_name: collabreef-minio
     restart: unless-stopped
     command: server /data --console-address ":9001"
     environment:
@@ -22,7 +22,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: notepia-redis
+    container_name: collabreef-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -38,24 +38,24 @@ services:
   # Create bucket on startup
   minio-init:
     image: minio/mc:latest
-    container_name: notepia-minio-init
+    container_name: collabreef-minio-init
     depends_on:
       minio:
         condition: service_healthy
     entrypoint: >
       /bin/sh -c "
       mc alias set myminio http://minio:9000 minioadmin minioadmin;
-      mc mb myminio/notepia --ignore-existing;
-      mc anonymous set download myminio/notepia;
+      mc mb myminio/collabreef --ignore-existing;
+      mc anonymous set download myminio/collabreef;
       exit 0;
       "
 
-  # Notepia Web Service with MinIO
-  notepia-web:
+  # CollabReef Web Service with MinIO
+  collabreef-web:
     build:
       context: ..
       dockerfile: Dockerfile.web
-    container_name: notepia-web
+    container_name: collabreef-web
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -64,7 +64,7 @@ services:
       STORAGE_S3_ENDPOINT: minio:9000
       STORAGE_S3_ACCESS_KEY: minioadmin
       STORAGE_S3_SECRET_KEY: minioadmin
-      STORAGE_S3_BUCKET: notepia
+      STORAGE_S3_BUCKET: collabreef
       STORAGE_S3_USE_SSL: "false"
       REDIS_ADDR: redis:6379
       PORT: 8080
@@ -78,19 +78,19 @@ services:
     volumes:
       - ../bin:/usr/local/app/bin
 
-  # Notepia Worker Service
-  notepia-worker:
+  # CollabReef Worker Service
+  collabreef-worker:
     build:
       context: ..
       dockerfile: Dockerfile.worker
-    container_name: notepia-worker
+    container_name: collabreef-worker
     restart: unless-stopped
     environment:
       STORAGE_TYPE: s3
       STORAGE_S3_ENDPOINT: minio:9000
       STORAGE_S3_ACCESS_KEY: minioadmin
       STORAGE_S3_SECRET_KEY: minioadmin
-      STORAGE_S3_BUCKET: notepia
+      STORAGE_S3_BUCKET: collabreef
       STORAGE_S3_USE_SSL: "false"
       REDIS_ADDR: redis:6379
       APP_SECRET: ${APP_SECRET}

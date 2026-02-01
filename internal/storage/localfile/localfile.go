@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/notepia/notepia/internal/storage"
+	"github.com/collabreef/collabreef/internal/storage"
 )
 
 type LocalFile struct {

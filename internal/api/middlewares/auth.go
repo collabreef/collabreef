@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/notepia/notepia/internal/api/auth"
-	"github.com/notepia/notepia/internal/db"
-	"github.com/notepia/notepia/internal/model"
-	"github.com/notepia/notepia/internal/util"
+	"github.com/collabreef/collabreef/internal/api/auth"
+	"github.com/collabreef/collabreef/internal/db"
+	"github.com/collabreef/collabreef/internal/model"
+	"github.com/collabreef/collabreef/internal/util"
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"

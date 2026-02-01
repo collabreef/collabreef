@@ -8,11 +8,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/notepia/notepia/internal/bootstrap"
-	"github.com/notepia/notepia/internal/config"
-	"github.com/notepia/notepia/internal/redis"
-	"github.com/notepia/notepia/internal/server"
-	"github.com/notepia/notepia/internal/websocket"
+	"github.com/collabreef/collabreef/internal/bootstrap"
+	"github.com/collabreef/collabreef/internal/config"
+	"github.com/collabreef/collabreef/internal/redis"
+	"github.com/collabreef/collabreef/internal/server"
+	"github.com/collabreef/collabreef/internal/websocket"
 )
 
 // Version is set at build time via ldflags

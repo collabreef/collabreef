@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/notepia/notepia/internal/db"
-	"github.com/notepia/notepia/internal/redis"
+	"github.com/collabreef/collabreef/internal/db"
+	"github.com/collabreef/collabreef/internal/redis"
 )
 
 // Hub maintains the set of active rooms and coordinates their lifecycle

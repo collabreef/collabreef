@@ -1,7 +1,7 @@
 package sqlitedb
 
 import (
-	"github.com/notepia/notepia/internal/model"
+	"github.com/collabreef/collabreef/internal/model"
 )
 
 func (s SqliteDB) AddNoteToViewObject(v model.ViewObjectNote) error {

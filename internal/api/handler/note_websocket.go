@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/notepia/notepia/internal/model"
-	ws "github.com/notepia/notepia/internal/websocket"
+	"github.com/collabreef/collabreef/internal/model"
+	ws "github.com/collabreef/collabreef/internal/websocket"
 )
 
 // HandleNoteWebSocket handles WebSocket connections for note collaboration

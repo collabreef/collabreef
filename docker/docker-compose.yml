@@ -3,7 +3,7 @@ version: '3.8'
 services:
   redis:
     image: redis:7-alpine
-    container_name: notepia-redis
+    container_name: collabreef-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -16,11 +16,11 @@ services:
       timeout: 5s
       retries: 5
 
-  notepia-web:
+  collabreef-web:
     build:
       context: ..
       dockerfile: Dockerfile.web
-    container_name: notepia-web
+    container_name: collabreef-web
     restart: unless-stopped
     ports:
       - "8080:8080"
@@ -35,11 +35,11 @@ services:
       redis:
         condition: service_healthy
 
-  notepia-worker:
+  collabreef-worker:
     build:
       context: ..
       dockerfile: Dockerfile.worker
-    container_name: notepia-worker
+    container_name: collabreef-worker
     restart: unless-stopped
     volumes:
       - ../bin:/usr/local/app/bin

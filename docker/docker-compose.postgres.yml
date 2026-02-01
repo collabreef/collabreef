@@ -3,26 +3,26 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: notepia-postgres
+    container_name: collabreef-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: notepia
-      POSTGRES_USER: notepia
-      POSTGRES_PASSWORD: notepia_password
+      POSTGRES_DB: collabreef
+      POSTGRES_USER: collabreef
+      POSTGRES_PASSWORD: collabreef_password
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U notepia"]
+      test: ["CMD-SHELL", "pg_isready -U collabreef"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:7-alpine
-    container_name: notepia-redis
+    container_name: collabreef-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -35,17 +35,17 @@ services:
       timeout: 5s
       retries: 5
 
-  notepia-web:
+  collabreef-web:
     build:
       context: ..
       dockerfile: Dockerfile.web
-    container_name: notepia-web
+    container_name: collabreef-web
     restart: unless-stopped
     ports:
       - "8080:8080"
     environment:
       DB_DRIVER: postgres
-      DB_DSN: "host=postgres port=5432 user=notepia password=notepia_password dbname=notepia sslmode=disable TimeZone=UTC"
+      DB_DSN: "host=postgres port=5432 user=collabreef password=collabreef_password dbname=collabreef sslmode=disable TimeZone=UTC"
       DB_MIGRATIONS_PATH: "file://migrations/postgres"
       REDIS_ADDR: redis:6379
       PORT: 8080
@@ -59,15 +59,15 @@ services:
     volumes:
       - ../bin:/usr/local/app/bin
 
-  notepia-worker:
+  collabreef-worker:
     build:
       context: ..
       dockerfile: Dockerfile.worker
-    container_name: notepia-worker
+    container_name: collabreef-worker
     restart: unless-stopped
     environment:
       DB_DRIVER: postgres
-      DB_DSN: "host=postgres port=5432 user=notepia password=notepia_password dbname=notepia sslmode=disable TimeZone=UTC"
+      DB_DSN: "host=postgres port=5432 user=collabreef password=collabreef_password dbname=collabreef sslmode=disable TimeZone=UTC"
       DB_MIGRATIONS_PATH: "file://migrations/postgres"
       REDIS_ADDR: redis:6379
       APP_SECRET: ${APP_SECRET}

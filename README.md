@@ -1,10 +1,10 @@
-# Notepia
+# CollabReef
 
-**Notepia** is an open-source, self-hosted pinboard service designed to help you organize links, notes, and resources in a flexible and visual way.
+**CollabReef** is an open-source, self-hosted pinboard service designed to help you organize links, notes, and resources in a flexible and visual way.
 
 Build your own workspace with widgets, keep everything in one place, and stay in full control of your data.
 
-![screenshot](https://github.com/notepia/notepia/blob/main/web/src/assets/app.png)
+![screenshot](https://github.com/collabreef/collabreef/blob/main/web/src/assets/app.png)
 
 ## ✨ Features
 
@@ -36,7 +36,7 @@ Build your own workspace with widgets, keep everything in one place, and stay in
   Clean, responsive UI optimized for both desktop and mobile devices.
 
 * 🏠 **Fully Self-Hosted**
-  Deploy Notepia on your own server and keep full ownership of your data.
+  Deploy CollabReef on your own server and keep full ownership of your data.
 
 * 🧾 **Open Source**
   Transparent, extensible, and community-driven.
@@ -50,7 +50,7 @@ Build your own workspace with widgets, keep everything in one place, and stay in
 
 ### Docker Compose (Recommended)
 
-Notepia is available on Docker Hub as a single image that can run both the web service and background worker.
+CollabReef is available on Docker Hub as a single image that can run both the web service and background worker.
 
 For production use with background job processing and real-time collaboration features:
 
@@ -58,7 +58,7 @@ For production use with background job processing and real-time collaboration fe
 services:
   redis:
     image: redis:7-alpine
-    container_name: notepia-redis
+    container_name: collabreef-redis
     restart: unless-stopped
     volumes:
       - redis_data:/data
@@ -70,13 +70,13 @@ services:
       retries: 5
 
   web:
-    image: notepia/notepia
-    container_name: notepia-web
+    image: collabreef/collabreef
+    container_name: collabreef-web
     command: ["./web"]
     ports:
       - "8080:8080"
     volumes:
-      - notepia_data:/usr/local/app/bin
+      - collabreef_data:/usr/local/app/bin
     environment:
       REDIS_ADDR: redis:6379
     depends_on:
@@ -85,11 +85,11 @@ services:
     restart: unless-stopped
 
   worker:
-    image: notepia/notepia
-    container_name: notepia-worker
+    image: collabreef/collabreef
+    container_name: collabreef-worker
     command: ["./worker"]
     volumes:
-      - notepia_data:/usr/local/app/bin
+      - collabreef_data:/usr/local/app/bin
     environment:
       REDIS_ADDR: redis:6379
     depends_on:
@@ -100,7 +100,7 @@ services:
 volumes:
   redis_data:
     driver: local
-  notepia_data:
+  collabreef_data:
     driver: local
 ```
 
@@ -123,6 +123,6 @@ Contributions are welcome!
 
 ## 📄 License
 
-Notepia is licensed under the **MIT License**.
+CollabReef is licensed under the **MIT License**.
 
 ---

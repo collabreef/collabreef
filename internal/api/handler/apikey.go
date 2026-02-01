@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/notepia/notepia/internal/api/auth"
-	"github.com/notepia/notepia/internal/model"
-	"github.com/notepia/notepia/internal/util"
+	"github.com/collabreef/collabreef/internal/api/auth"
+	"github.com/collabreef/collabreef/internal/model"
+	"github.com/collabreef/collabreef/internal/util"
 	"golang.org/x/crypto/bcrypt"
 )
 

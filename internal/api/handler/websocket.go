@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
-	"github.com/notepia/notepia/internal/model"
-	ws "github.com/notepia/notepia/internal/websocket"
+	"github.com/collabreef/collabreef/internal/model"
+	ws "github.com/collabreef/collabreef/internal/websocket"
 
 	"github.com/gorilla/websocket"
 )

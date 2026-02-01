@@ -3,10 +3,10 @@ package bootstrap
 import (
 	"fmt"
 
-	"github.com/notepia/notepia/internal/config"
-	"github.com/notepia/notepia/internal/db"
-	"github.com/notepia/notepia/internal/db/postgresdb"
-	"github.com/notepia/notepia/internal/db/sqlitedb"
+	"github.com/collabreef/collabreef/internal/config"
+	"github.com/collabreef/collabreef/internal/db"
+	"github.com/collabreef/collabreef/internal/db/postgresdb"
+	"github.com/collabreef/collabreef/internal/db/sqlitedb"
 )
 
 func NewDB() (db.DB, error) {

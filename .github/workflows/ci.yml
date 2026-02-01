@@ -77,7 +77,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: false
-          tags: notepia:test
+          tags: collabreef:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

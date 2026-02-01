@@ -9,9 +9,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/notepia/notepia/internal/bootstrap"
-	"github.com/notepia/notepia/internal/config"
-	"github.com/notepia/notepia/internal/model"
+	"github.com/collabreef/collabreef/internal/bootstrap"
+	"github.com/collabreef/collabreef/internal/config"
+	"github.com/collabreef/collabreef/internal/model"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/term"
 )

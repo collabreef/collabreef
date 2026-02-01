@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"github.com/notepia/notepia/internal/db"
-	"github.com/notepia/notepia/internal/redis"
-	"github.com/notepia/notepia/internal/storage"
-	"github.com/notepia/notepia/internal/websocket"
+	"github.com/collabreef/collabreef/internal/db"
+	"github.com/collabreef/collabreef/internal/redis"
+	"github.com/collabreef/collabreef/internal/storage"
+	"github.com/collabreef/collabreef/internal/websocket"
 )
 
 type Handler struct {

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/notepia/notepia/internal/model"
-	"github.com/notepia/notepia/internal/util"
+	"github.com/collabreef/collabreef/internal/model"
+	"github.com/collabreef/collabreef/internal/util"
 
 	"github.com/labstack/echo/v4"
 )

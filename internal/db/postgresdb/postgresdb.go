@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/notepia/notepia/internal/config"
-	"github.com/notepia/notepia/internal/db"
+	"github.com/collabreef/collabreef/internal/config"
+	"github.com/collabreef/collabreef/internal/db"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

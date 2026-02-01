@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/notepia/notepia/internal/redis"
+	"github.com/collabreef/collabreef/internal/redis"
 )
 
 // MessageType represents the type of WebSocket message

@@ -1,8 +1,8 @@
 package route
 
 import (
-	"github.com/notepia/notepia/internal/api/handler"
-	"github.com/notepia/notepia/internal/api/middlewares"
+	"github.com/collabreef/collabreef/internal/api/handler"
+	"github.com/collabreef/collabreef/internal/api/middlewares"
 
 	"github.com/labstack/echo/v4"
 )

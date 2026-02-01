@@ -3,9 +3,9 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/notepia/notepia/internal/config"
-	"github.com/notepia/notepia/internal/db"
-	"github.com/notepia/notepia/internal/model"
+	"github.com/collabreef/collabreef/internal/config"
+	"github.com/collabreef/collabreef/internal/db"
+	"github.com/collabreef/collabreef/internal/model"
 
 	"github.com/labstack/echo/v4"
 )

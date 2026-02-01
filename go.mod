@@ -1,4 +1,4 @@
-module github.com/notepia/notepia
+module github.com/collabreef/collabreef
 
 go 1.24.0
 

@@ -3,10 +3,10 @@ package bootstrap
 import (
 	"fmt"
 
-	"github.com/notepia/notepia/internal/config"
-	"github.com/notepia/notepia/internal/storage"
-	"github.com/notepia/notepia/internal/storage/localfile"
-	"github.com/notepia/notepia/internal/storage/s3storage"
+	"github.com/collabreef/collabreef/internal/config"
+	"github.com/collabreef/collabreef/internal/storage"
+	"github.com/collabreef/collabreef/internal/storage/localfile"
+	"github.com/collabreef/collabreef/internal/storage/s3storage"
 )
 
 func NewStorage() (storage.Storage, error) {

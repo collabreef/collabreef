@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/notepia/notepia/internal/model"
+	"github.com/collabreef/collabreef/internal/model"
 )
 
 // sendInitialStateToClient sends the current note state to a newly connected client

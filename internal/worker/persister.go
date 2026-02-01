@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/notepia/notepia/internal/db"
-	"github.com/notepia/notepia/internal/redis"
+	"github.com/collabreef/collabreef/internal/db"
+	"github.com/collabreef/collabreef/internal/redis"
 	"github.com/robfig/cron/v3"
 )
 

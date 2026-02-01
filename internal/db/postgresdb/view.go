@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/notepia/notepia/internal/model"
+	"github.com/collabreef/collabreef/internal/model"
 	"gorm.io/gorm"
 )
 
