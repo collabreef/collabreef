@@ -37,6 +37,8 @@ const Editor: FC<Props> = ({
   const { t } = useTranslation()
   const lastContentRef = useRef<string>(note.content)
   const isApplyingYjsUpdate = useRef(false)
+  const isComposing = useRef(false)
+  const pendingUpdate = useRef<{ content: string } | null>(null)
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -206,6 +208,12 @@ const Editor: FC<Props> = ({
       if (newContent !== lastContentRef.current) {
         lastContentRef.current = newContent
 
+        // If composing (IME input), store pending update and wait for composition end
+        if (isComposing.current) {
+          pendingUpdate.current = { content: newContent };
+          return;
+        }
+
         // Update Y.Text for CRDT collaboration
         if (yText && yDoc) {
           console.log('[Editor] Before Y.Text update, content length:', newContent.length);
@@ -305,6 +313,49 @@ const Editor: FC<Props> = ({
 
   // Note: Content sync is now handled by Y.js CRDT updates
   // No need for periodic full content sync anymore
+
+  // Handle composition events for IME input
+  useEffect(() => {
+    if (!editor) return;
+
+    const editorElement = editor.view.dom;
+
+    const handleCompositionStart = () => {
+      isComposing.current = true;
+    };
+
+    const handleCompositionEnd = () => {
+      isComposing.current = false;
+
+      // Process any pending update after composition ends
+      if (pendingUpdate.current) {
+        const { content: newContent } = pendingUpdate.current;
+        pendingUpdate.current = null;
+
+        // Update Y.Text for CRDT collaboration
+        if (yText && yDoc) {
+          console.log('[Editor] Composition ended, sending pending update, content length:', newContent.length);
+          yDoc.transact(() => {
+            yText.delete(0, yText.length);
+            yText.insert(0, newContent);
+          }, 'local');
+        }
+
+        // Trigger onChange callback if provided
+        if (onChange) {
+          onChange({ content: newContent });
+        }
+      }
+    };
+
+    editorElement.addEventListener('compositionstart', handleCompositionStart);
+    editorElement.addEventListener('compositionend', handleCompositionEnd);
+
+    return () => {
+      editorElement.removeEventListener('compositionstart', handleCompositionStart);
+      editorElement.removeEventListener('compositionend', handleCompositionEnd);
+    };
+  }, [editor, yDoc, yText, onChange]);
 
   // Cleanup editor on unmount
   useEffect(() => {

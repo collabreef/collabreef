@@ -19,7 +19,7 @@ import (
 var Version = "dev"
 
 func main() {
-	log.Printf("Starting Notepia Web Server version: %s", Version)
+	log.Printf("Starting Collabreef Web Server version: %s", Version)
 
 	config.Init()
 

@@ -16,7 +16,7 @@ import (
 var Version = "dev"
 
 func main() {
-	log.Printf("Starting Notepia Worker version: %s", Version)
+	log.Printf("Starting Collabreef Worker version: %s", Version)
 
 	config.Init()
 

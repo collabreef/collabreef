@@ -20,7 +20,7 @@ import (
 var Version = "dev"
 
 func main() {
-	log.Printf("Notepia CLI version: %s", Version)
+	log.Printf("Collabreef CLI version: %s", Version)
 
 	if len(os.Args) < 2 {
 		printUsage()
@@ -42,7 +42,7 @@ func main() {
 }
 
 func printUsage() {
-	fmt.Println("Notepia CLI - Command line tools for Notepia")
+	fmt.Println("Collabreef CLI - Command line tools for Collabreef")
 	fmt.Println()
 	fmt.Println("Usage:")
 	fmt.Println("  cli <command>")
@@ -54,7 +54,7 @@ func printUsage() {
 }
 
 func resetPassword() {
-	fmt.Println("=== Notepia Password Reset Tool ===")
+	fmt.Println("=== Collabreef Password Reset Tool ===")
 	fmt.Println()
 
 	// Initialize config

@@ -11,7 +11,7 @@ const AboutModal = ({ open, onOpenChange }: AboutModalProps) => {
     const { t } = useTranslation()
 
     const appVersion = import.meta.env.VITE_APP_VERSION || "0.0.0"
-    const appName = "Notepia"
+    const appName = "Collabreef"
 
     return (
         <Dialog.Root open={open} onOpenChange={onOpenChange}>

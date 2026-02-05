@@ -17,7 +17,7 @@ const PublicLayout = () => {
             <div className="pt-4">
                 <div className={twMerge("flex gap-2 items-center ", isCollapse ? "justify-center": "justify-start px-2")}>
                     <img src={logo} className="w-8 h-8" aria-label="logo" />
-                    {!isCollapse && <div className='text-xl font-extrabold text-gray-600 dark:text-gray-400 font-mono'>Notepia</div>}
+                    {!isCollapse && <div className='text-xl font-extrabold text-gray-600 dark:text-gray-400 font-mono'>Collabreef</div>}
                 </div>
             </div>
             <div className=" flex flex-col gap-1 overflow-y-auto h-[calc(100dvh-110px)]">
