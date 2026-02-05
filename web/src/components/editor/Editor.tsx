@@ -316,9 +316,10 @@ const Editor: FC<Props> = ({
 
   // Handle composition events for IME input
   useEffect(() => {
-    if (!editor) return;
+    if (!editor || editor.isDestroyed || !editor.view) return;
 
     const editorElement = editor.view.dom;
+    if (!editorElement) return;
 
     const handleCompositionStart = () => {
       isComposing.current = true;
