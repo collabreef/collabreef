@@ -286,9 +286,11 @@ func (r *SpreadsheetRoom) handleMessage(msg *Message) {
 
 		// Broadcast operations to all clients (including sender for session_id filtering)
 		// Include session_id so clients can filter out their own ops
+		// Include sheets data so clients can re-mount Workbook (avoids immer frozen object issues with applyOp)
 		broadcastMsg := SpreadsheetMessage{
 			Type:      SpreadsheetMessageTypeOp,
 			Ops:       spreadsheetMsg.Ops,
+			Sheets:    spreadsheetMsg.Sheets,
 			SessionID: spreadsheetMsg.SessionID,
 		}
 		broadcastData, err := json.Marshal(broadcastMsg)

@@ -33,6 +33,18 @@ export function useSpreadsheetWebSocket(options: UseSpreadsheetWebSocketOptions)
     const [pendingOps, setPendingOps] = useState<SpreadsheetOp[]>([]);
     const initializingRef = useRef(false);
 
+    // Check if any op is a structural change that requires full re-mount
+    const isStructuralChange = (ops: SpreadsheetOp[]): boolean => {
+        return ops.some(op => {
+            const opAny = op as any;
+            // Check for sheet-level operations that cause frozen object issues
+            return opAny.op === 'addSheet' ||
+                   opAny.op === 'deleteSheet' ||
+                   opAny.path?.includes('addSheet') ||
+                   opAny.path?.includes('deleteSheet');
+        });
+    };
+
     const connect = useCallback(() => {
         if (!enabled || !viewId) return;
         // For non-public mode, require workspaceId
@@ -163,7 +175,18 @@ export function useSpreadsheetWebSocket(options: UseSpreadsheetWebSocketOptions)
                                 break;
                             }
                             if (message.ops && message.ops.length > 0) {
-                                setPendingOps(prev => [...prev, ...message.ops!]);
+                                // Check if this is a structural change (addSheet, deleteSheet)
+                                // These require full re-mount due to immer frozen object issues
+                                if (isStructuralChange(message.ops)) {
+                                    console.log('Received structural change, triggering re-mount');
+                                    if (message.sheets && message.sheets.length > 0) {
+                                        setSheets(message.sheets);
+                                    }
+                                } else {
+                                    // For regular cell edits, use applyOp for smooth UX
+                                    console.log('Received cell ops, using applyOp');
+                                    setPendingOps(prev => [...prev, ...message.ops!]);
+                                }
                             }
                             break;
 
