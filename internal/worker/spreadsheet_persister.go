@@ -66,6 +66,8 @@ func (p *SpreadsheetPersister) PersistAll() error {
 		return err
 	}
 
+	log.Printf("Found %d active spreadsheet IDs: %v", len(viewIDs), viewIDs)
+
 	if len(viewIDs) == 0 {
 		log.Println("No active spreadsheets to persist")
 		return nil
@@ -95,31 +97,41 @@ func (p *SpreadsheetPersister) PersistSpreadsheet(ctx context.Context, viewID st
 	// Get sheets from Redis
 	sheets, err := p.cache.GetSheets(ctx, viewID)
 	if err != nil && err.Error() != "redis: nil" {
+		log.Printf("Error getting sheets from Redis for %s: %v", viewID, err)
 		return err
 	}
+
+	log.Printf("Got sheets from Redis for %s: %d bytes", viewID, len(sheets))
 
 	// Find the view in database
 	view, err := p.db.FindView(model.View{ID: viewID})
 	if err != nil {
+		log.Printf("Error finding view %s in database: %v", viewID, err)
 		return err
 	}
 
 	// Only persist if it's a spreadsheet view
 	if view.Type != "spreadsheet" {
+		log.Printf("View %s is not a spreadsheet (type=%s), skipping", viewID, view.Type)
 		return nil
 	}
 
 	// Store sheets in view.data
-	if sheets != nil {
+	if sheets != nil && len(sheets) > 0 {
 		view.Data = string(sheets)
+		log.Printf("Updating view %s with %d bytes of data", viewID, len(sheets))
+	} else {
+		log.Printf("No sheets data to persist for %s", viewID)
+		return nil
 	}
 
 	// Update view in database
 	if err := p.db.UpdateView(view); err != nil {
+		log.Printf("Error updating view %s in database: %v", viewID, err)
 		return err
 	}
 
-	log.Printf("Persisted spreadsheet %s", viewID)
+	log.Printf("Successfully persisted spreadsheet %s", viewID)
 
 	return nil
 }

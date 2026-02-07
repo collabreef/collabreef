@@ -40,14 +40,23 @@ func (sc *SpreadsheetCache) GetSheets(ctx context.Context, viewID string) (json.
 // SetSheets stores sheets data
 func (sc *SpreadsheetCache) SetSheets(ctx context.Context, viewID string, sheets json.RawMessage) error {
 	key := fmt.Sprintf(spreadsheetSheetsKey, viewID)
-	return sc.client.rdb.Set(ctx, key, sheets, spreadsheetCacheTTL).Err()
+	// Convert json.RawMessage to string for Redis storage
+	err := sc.client.rdb.Set(ctx, key, string(sheets), spreadsheetCacheTTL).Err()
+	if err != nil {
+		return err
+	}
+	// Verify the key was stored
+	exists, _ := sc.client.rdb.Exists(ctx, key).Result()
+	fmt.Printf("[SpreadsheetCache] SetSheets: key=%s, size=%d bytes, exists=%d\n", key, len(sheets), exists)
+	return nil
 }
 
 // AppendOps appends operations to the ops list
 func (sc *SpreadsheetCache) AppendOps(ctx context.Context, viewID string, ops json.RawMessage) error {
 	key := fmt.Sprintf(spreadsheetOpsKey, viewID)
 	pipe := sc.client.rdb.Pipeline()
-	pipe.RPush(ctx, key, ops)
+	// Convert json.RawMessage to string for Redis storage
+	pipe.RPush(ctx, key, string(ops))
 	pipe.Expire(ctx, key, spreadsheetCacheTTL)
 	_, err := pipe.Exec(ctx)
 	return err
@@ -127,9 +136,13 @@ func (sc *SpreadsheetCache) GetAllActiveSpreadsheetIDs(ctx context.Context) ([]s
 	pattern := "spreadsheet:*:sheets"
 	var viewIDs []string
 
-	iter := sc.client.rdb.Scan(ctx, 0, pattern, 0).Iterator()
-	for iter.Next(ctx) {
-		key := iter.Val()
+	// Use KEYS command for debugging (SCAN is more production-friendly but harder to debug)
+	keys, err := sc.client.rdb.Keys(ctx, pattern).Result()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, key := range keys {
 		// Extract view ID from key (e.g., "spreadsheet:123:sheets" -> "123")
 		viewID := strings.TrimPrefix(key, "spreadsheet:")
 		viewID = strings.TrimSuffix(viewID, ":sheets")
@@ -137,10 +150,6 @@ func (sc *SpreadsheetCache) GetAllActiveSpreadsheetIDs(ctx context.Context) ([]s
 		if viewID != "" && viewID != key {
 			viewIDs = append(viewIDs, viewID)
 		}
-	}
-
-	if err := iter.Err(); err != nil {
-		return nil, err
 	}
 
 	return viewIDs, nil

@@ -125,14 +125,16 @@ func (r *SpreadsheetRoom) sendInitialStateToClient(client *Client) {
 	if err != nil {
 		log.Printf("Error checking initialization status: %v", err)
 	}
+	log.Printf("Spreadsheet %s initialized in Redis: %v", r.viewID, initialized)
 
 	// Get sheets from cache (empty if not initialized)
 	var sheets json.RawMessage
 	if initialized {
 		sheets, err = r.cache.GetSheets(r.ctx, r.viewID)
 		if err != nil && err.Error() != "redis: nil" {
-			log.Printf("Error loading sheets: %v", err)
+			log.Printf("Error loading sheets from Redis: %v", err)
 		}
+		log.Printf("Loaded sheets from Redis for %s: %d bytes", r.viewID, len(sheets))
 	}
 
 	// Send initial state message with initialization status
@@ -148,9 +150,11 @@ func (r *SpreadsheetRoom) sendInitialStateToClient(client *Client) {
 		return
 	}
 
+	log.Printf("Sending init message to client %s: initialized=%v, sheetsSize=%d", client.UserID, initialized, len(sheets))
+
 	select {
 	case client.send <- data:
-		log.Printf("Sent initial state to client %s (initialized=%v)", client.UserID, initialized)
+		log.Printf("Sent initial state to client %s (initialized=%v, sheetsSize=%d)", client.UserID, initialized, len(sheets))
 	default:
 		log.Printf("Failed to send initial state to client %s", client.UserID)
 	}

@@ -78,16 +78,29 @@ export function useSpreadsheetWebSocket(options: UseSpreadsheetWebSocketOptions)
 
                     switch (message.type) {
                         case 'init':
+                            console.log('[WebSocket] Received init message:', {
+                                initialized: message.initialized,
+                                hasSheets: !!message.sheets,
+                                sheetsCount: message.sheets?.length || 0,
+                                skipInitialFetch
+                            });
+
                             // Skip initial data fetch if requested (e.g., public mode using API)
                             if (skipInitialFetch) {
-                                console.log('Skipping initial WebSocket data fetch (using API data)');
+                                console.log('[WebSocket] Skipping initial WebSocket data fetch (using API data)');
                                 setIsInitialized(true);
                                 break;
                             }
 
                             // If server has sheets data from Redis, use it directly (no DB fetch needed)
                             if (message.initialized && message.sheets) {
-                                console.log('Using spreadsheet data from Redis cache');
+                                console.log('[WebSocket] Using spreadsheet data from Redis cache:', {
+                                    sheetsCount: message.sheets.length,
+                                    firstSheetId: message.sheets[0]?.id,
+                                    firstSheetName: message.sheets[0]?.name,
+                                    firstSheetCelldataLength: message.sheets[0]?.celldata?.length || 0,
+                                    firstSheetDataLength: message.sheets[0]?.data?.length || 0
+                                });
                                 setSheets(message.sheets);
                                 setIsInitialized(true);
                                 initializingRef.current = false;
@@ -96,7 +109,7 @@ export function useSpreadsheetWebSocket(options: UseSpreadsheetWebSocketOptions)
 
                             // Room not initialized in Redis, try to acquire lock to fetch from DB
                             if (!message.initialized && !initializingRef.current) {
-                                console.log('Redis cache empty, acquiring lock to fetch from DB');
+                                console.log('[WebSocket] Redis cache empty, acquiring lock to fetch from DB');
                                 initializingRef.current = true;
                                 ws.send(JSON.stringify({ type: 'acquire_lock' }));
                             }
@@ -234,14 +247,22 @@ export function useSpreadsheetWebSocket(options: UseSpreadsheetWebSocketOptions)
         }
 
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-            // Include sheets data so server can update Redis for persistence
-            // Include session_id so we can filter out our own ops
-            wsRef.current.send(JSON.stringify({
+            const message = {
                 type: 'op',
                 ops,
                 sheets: currentSheets,
                 session_id: sessionIdRef.current
-            }));
+            };
+            console.log('[WebSocket] Sending op message:', {
+                type: 'op',
+                opsCount: ops?.length || 0,
+                sheetsCount: currentSheets?.length || 0,
+                hasSheetsData: !!currentSheets && currentSheets.length > 0,
+                messageSize: JSON.stringify(message).length
+            });
+            // Include sheets data so server can update Redis for persistence
+            // Include session_id so we can filter out our own ops
+            wsRef.current.send(JSON.stringify(message));
         }
     }, [isPublic]);
 
