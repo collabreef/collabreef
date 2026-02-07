@@ -15,13 +15,18 @@ interface SpreadsheetMessage {
     ops?: SpreadsheetOp[];
     initialized?: boolean;
     lock_acquired?: boolean;
+    session_id?: string;
 }
+
+// Generate a unique session ID for this browser tab (persists across reconnects)
+const generateSessionId = () => `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 export function useSpreadsheetWebSocket(options: UseSpreadsheetWebSocketOptions) {
     const { viewId, workspaceId, enabled, isPublic = false, skipInitialFetch = false } = options;
 
     const wsRef = useRef<WebSocket | null>(null);
     const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
+    const sessionIdRef = useRef<string>(generateSessionId());
     const [isConnected, setIsConnected] = useState(false);
     const [sheets, setSheets] = useState<SpreadsheetSheetData[] | null>(null);
     const [isInitialized, setIsInitialized] = useState(false);
@@ -152,6 +157,11 @@ export function useSpreadsheetWebSocket(options: UseSpreadsheetWebSocketOptions)
 
                         case 'op':
                             // Received operations from other clients
+                            // Skip if the op came from this same browser tab
+                            if (message.session_id === sessionIdRef.current) {
+                                console.log('Ignoring op from self (same session)');
+                                break;
+                            }
                             if (message.ops && message.ops.length > 0) {
                                 setPendingOps(prev => [...prev, ...message.ops!]);
                             }
@@ -202,7 +212,13 @@ export function useSpreadsheetWebSocket(options: UseSpreadsheetWebSocketOptions)
 
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
             // Include sheets data so server can update Redis for persistence
-            wsRef.current.send(JSON.stringify({ type: 'op', ops, sheets: currentSheets }));
+            // Include session_id so we can filter out our own ops
+            wsRef.current.send(JSON.stringify({
+                type: 'op',
+                ops,
+                sheets: currentSheets,
+                session_id: sessionIdRef.current
+            }));
         }
     }, [isPublic]);
 

@@ -9,6 +9,9 @@ import { useSpreadsheetWebSocket } from '../../../hooks/use-spreadsheet-websocke
 type Sheet = any;
 type Op = any;
 
+// Deep clone helper to ensure fortune-sheet gets mutable data
+const deepClone = <T,>(obj: T): T => JSON.parse(JSON.stringify(obj));
+
 interface SpreadsheetViewComponentProps {
     view?: {
         id: string;
@@ -75,7 +78,8 @@ const SpreadsheetViewComponent = ({
     });
 
     // Local sheets state - use Sheet[] for fortune-sheet compatibility
-    const [localSheets, setLocalSheets] = useState<Sheet[]>(parsedInitialSheets as unknown as Sheet[]);
+    // Deep clone initial data to ensure fortune-sheet gets mutable data
+    const [localSheets, setLocalSheets] = useState<Sheet[]>(() => deepClone(parsedInitialSheets) as unknown as Sheet[]);
     const localSheetsRef = useRef<Sheet[]>(localSheets);
     const [isReady, setIsReady] = useState(false);
 
@@ -85,10 +89,17 @@ const SpreadsheetViewComponent = ({
     // Flag to prevent sending ops back when applying remote ops
     const isApplyingRemoteOpsRef = useRef(false);
 
-    // Update both state and ref when sheets change
-    const updateLocalSheets = useCallback((data: Sheet[]) => {
-        localSheetsRef.current = data;  // Update ref immediately
+    // Update sheets from fortune-sheet's onChange - don't clone, let fortune-sheet manage its own state
+    const handleSheetsChange = useCallback((data: Sheet[]) => {
+        localSheetsRef.current = data;
         setLocalSheets(data);
+    }, []);
+
+    // Update sheets from external source (Redis/initial) - deep clone to ensure mutable data
+    const updateSheetsFromExternal = useCallback((data: Sheet[]) => {
+        const clonedData = deepClone(data);
+        localSheetsRef.current = clonedData;
+        setLocalSheets(clonedData);
     }, []);
 
     // Monitor container size
@@ -118,11 +129,11 @@ const SpreadsheetViewComponent = ({
     useEffect(() => {
         if (remoteSheets && remoteSheets.length > 0) {
             console.log('Received sheets from Redis, updating Workbook');
-            updateLocalSheets(remoteSheets as unknown as Sheet[]);
+            updateSheetsFromExternal(remoteSheets as unknown as Sheet[]);
             // Increment version to force Workbook re-mount with new data
             setDataVersion(v => v + 1);
         }
-    }, [remoteSheets, updateLocalSheets]);
+    }, [remoteSheets, updateSheetsFromExternal]);
 
     // Handle pending ops from other clients
     useEffect(() => {
@@ -159,9 +170,9 @@ const SpreadsheetViewComponent = ({
     // Update local sheets when parsedInitialSheets changes (for initial load)
     useEffect(() => {
         if (parsedInitialSheets && parsedInitialSheets.length > 0 && localSheets.length === 0) {
-            updateLocalSheets(parsedInitialSheets as unknown as Sheet[]);
+            updateSheetsFromExternal(parsedInitialSheets as unknown as Sheet[]);
         }
-    }, [parsedInitialSheets, updateLocalSheets]);
+    }, [parsedInitialSheets, updateSheetsFromExternal]);
 
     return (
         <div ref={containerRef} className="relative w-full h-full bg-white dark:bg-neutral-900">
@@ -198,7 +209,7 @@ const SpreadsheetViewComponent = ({
                         key={`workbook-${dataVersion}`}
                         ref={workbookRef}
                         data={localSheets}
-                        onChange={updateLocalSheets}
+                        onChange={handleSheetsChange}
                         onOp={handleOp}
                         showToolbar={!isPublic}
                         showFormulaBar={!isPublic}

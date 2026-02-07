@@ -27,6 +27,7 @@ type SpreadsheetMessage struct {
 	Ops          json.RawMessage        `json:"ops,omitempty"`
 	Initialized  bool                   `json:"initialized,omitempty"`
 	LockAcquired bool                   `json:"lock_acquired,omitempty"`
+	SessionID    string                 `json:"session_id,omitempty"`
 }
 
 // SpreadsheetRoom manages all clients for a specific spreadsheet view
@@ -283,10 +284,12 @@ func (r *SpreadsheetRoom) handleMessage(msg *Message) {
 			log.Printf("No sheets data in op message for spreadsheet %s", r.viewID)
 		}
 
-		// Broadcast operations to all other clients (without sheets to save bandwidth)
+		// Broadcast operations to all clients (including sender for session_id filtering)
+		// Include session_id so clients can filter out their own ops
 		broadcastMsg := SpreadsheetMessage{
-			Type: SpreadsheetMessageTypeOp,
-			Ops:  spreadsheetMsg.Ops,
+			Type:      SpreadsheetMessageTypeOp,
+			Ops:       spreadsheetMsg.Ops,
+			SessionID: spreadsheetMsg.SessionID,
 		}
 		broadcastData, err := json.Marshal(broadcastMsg)
 		if err != nil {
@@ -294,17 +297,17 @@ func (r *SpreadsheetRoom) handleMessage(msg *Message) {
 			return
 		}
 
+		// Broadcast to ALL clients - each client will filter by session_id
 		for client := range r.clients {
-			if client != msg.Sender {
-				select {
-				case client.send <- broadcastData:
-				default:
-					close(client.send)
-					delete(r.clients, client)
-					log.Printf("Client %s send buffer full, disconnecting", client.UserID)
-				}
+			select {
+			case client.send <- broadcastData:
+			default:
+				close(client.send)
+				delete(r.clients, client)
+				log.Printf("Client %s send buffer full, disconnecting", client.UserID)
 			}
 		}
+		log.Printf("Broadcasted op to %d clients (session: %s)", len(r.clients), spreadsheetMsg.SessionID)
 	}
 
 	// Refresh TTL since there's activity
