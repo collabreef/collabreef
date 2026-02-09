@@ -53,10 +53,11 @@ func main() {
 	// Initialize caches
 	viewCache := redis.NewViewCache(redisClient)
 	whiteboardCache := redis.NewWhiteboardCache(redisClient)
+	spreadsheetCache := redis.NewSpreadsheetCache(redisClient)
 	noteCache := redis.NewNoteCache(redisClient)
 
 	// Initialize WebSocket Hub
-	hub := websocket.NewHub(db, viewCache, whiteboardCache, noteCache)
+	hub := websocket.NewHub(db, viewCache, whiteboardCache, spreadsheetCache, noteCache)
 	log.Println("WebSocket Hub initialized")
 
 	// Setup server with WebSocket support

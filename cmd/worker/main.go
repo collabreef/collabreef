@@ -40,12 +40,19 @@ func main() {
 
 	// Initialize caches
 	whiteboardCache := redis.NewWhiteboardCache(redisClient)
+	spreadsheetCache := redis.NewSpreadsheetCache(redisClient)
 	noteCache := redis.NewNoteCache(redisClient)
 
 	// Initialize and start whiteboard persister
 	whiteboardPersister := worker.NewWhiteboardPersister(whiteboardCache, db)
 	if err := whiteboardPersister.Start(); err != nil {
 		log.Fatalf("Failed to start whiteboard persister: %v", err)
+	}
+
+	// Initialize and start spreadsheet persister
+	spreadsheetPersister := worker.NewSpreadsheetPersister(spreadsheetCache, db)
+	if err := spreadsheetPersister.Start(); err != nil {
+		log.Fatalf("Failed to start spreadsheet persister: %v", err)
 	}
 
 	// Initialize and start note persister
@@ -65,11 +72,16 @@ func main() {
 		log.Printf("Error during final whiteboard persist: %v", err)
 	}
 
+	if err := spreadsheetPersister.ForcePersist(); err != nil {
+		log.Printf("Error during final spreadsheet persist: %v", err)
+	}
+
 	if err := notePersister.ForcePersist(); err != nil {
 		log.Printf("Error during final note persist: %v", err)
 	}
 
 	whiteboardPersister.Stop()
+	spreadsheetPersister.Stop()
 	notePersister.Stop()
 	log.Println("Worker stopped")
 }

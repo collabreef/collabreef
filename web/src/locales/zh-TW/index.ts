@@ -492,7 +492,18 @@ export default {
     searchWhiteboardOnly: "搜尋白板",
     noWhiteboards: "尚無白板",
     createFirstWhiteboard: "建立你的第一個白板以開始使用",
-    whiteboardSettings: "白板設定"
+    whiteboardSettings: "白板設定",
+    spreadsheet: "試算表",
+    searchSpreadsheet: "搜尋 / 新增試算表",
+    searchSpreadsheetOnly: "搜尋試算表",
+    noSpreadsheets: "尚無試算表",
+    createFirstSpreadsheet: "建立你的第一個試算表以開始使用",
+    spreadsheetSettings: "試算表設定"
+  },
+  spreadsheet: {
+    loading: "載入試算表中...",
+    connected: "已連線",
+    disconnected: "已斷線"
   },
   whiteboard: {
     loading: "載入中...",

@@ -24,6 +24,8 @@ import ExploreMapMarkerDetailPage from './pages/explore/ExploreMapMarkerDetailPa
 import ExploreKanbanPage from './pages/explore/ExploreKanbanPage';
 import ExploreWhiteboardListPage from './pages/explore/ExploreWhiteboardListPage';
 import ExploreWhiteboardPage from './pages/explore/ExploreWhiteboardPage';
+import ExploreSpreadsheetListPage from './pages/explore/ExploreSpreadsheetListPage';
+import ExploreSpreadsheetPage from './pages/explore/ExploreSpreadsheetPage';
 import FilesPage from './pages/workspace/files/FilesPage';
 import CalendarListPage from './pages/workspace/views/CalendarListPage';
 import MapListPage from './pages/workspace/views/MapListPage';
@@ -36,6 +38,8 @@ import MapPage from './pages/workspace/map/MapPage';
 import MapMarkerDetailPage from './pages/workspace/map/MapMarkerDetailPage';
 import KanbanPage from './pages/workspace/kanban/KanbanPage';
 import WhiteboardPage from './pages/workspace/whiteboard/WhiteboardPage';
+import SpreadsheetListPage from './pages/workspace/views/SpreadsheetListPage';
+import SpreadsheetPage from './pages/workspace/spreadsheet/SpreadsheetPage';
 import WorkspaceHomePage from './pages/workspace/home/WorkspaceHomePage';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -90,6 +94,8 @@ function App() {
           <Route path='kanban/:kanbanId' element={<ExploreKanbanPage />} />
           <Route path='whiteboard' element={<ExploreWhiteboardListPage />} />
           <Route path='whiteboard/:whiteboardId' element={<ExploreWhiteboardPage />} />
+          <Route path='spreadsheet' element={<ExploreSpreadsheetListPage />} />
+          <Route path='spreadsheet/:spreadsheetId' element={<ExploreSpreadsheetPage />} />
         </Route>
         <Route path='signin' element={<SignIn />}></Route>
         <Route path='signup' element={<SignUp />}></Route>
@@ -118,6 +124,9 @@ function App() {
             <Route path='whiteboard' element={<WhiteboardListPage />}></Route>
             <Route path='whiteboard/:whiteboardId' element={<WhiteboardPage />} />
             <Route path='whiteboard/:viewId/settings' element={<ViewSettingsPage />} />
+            <Route path='spreadsheet' element={<SpreadsheetListPage />}></Route>
+            <Route path='spreadsheet/:spreadsheetId' element={<SpreadsheetPage />} />
+            <Route path='spreadsheet/:viewId/settings' element={<ViewSettingsPage />} />
             <Route path='settings' element={<Settings />}></Route>
             <Route path='home' element={<WorkspaceHomePage />}></Route>
             <Route path='' element={<WorkspaceHomePage />}></Route>

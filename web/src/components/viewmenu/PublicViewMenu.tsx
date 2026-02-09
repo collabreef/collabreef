@@ -51,6 +51,8 @@ const PublicViewMenu = ({ viewType, currentViewId }: PublicViewMenuProps) => {
                 return t('views.kanban') || 'Kanban'
             case 'whiteboard':
                 return t('views.whiteboard') || 'Whiteboard'
+            case 'spreadsheet':
+                return t('views.spreadsheet') || 'Spreadsheet'
             default:
                 return viewType
         }
@@ -66,6 +68,8 @@ const PublicViewMenu = ({ viewType, currentViewId }: PublicViewMenuProps) => {
                 return t('views.searchKanbanOnly')
             case 'whiteboard':
                 return t('views.searchWhiteboardOnly') || 'Search Whiteboard'
+            case 'spreadsheet':
+                return t('views.searchSpreadsheetOnly') || 'Search Spreadsheet'
             default:
                 return t('placeholder.searchWorkspace')
         }

@@ -1,4 +1,4 @@
-export type ViewType = 'map' | 'calendar' | 'kanban' | 'whiteboard';
+export type ViewType = 'map' | 'calendar' | 'kanban' | 'whiteboard' | 'spreadsheet';
 export type ViewObjectType = 'calendar_slot' | 'map_marker' | 'kanban_column' | 'whiteboard_stroke' | 'whiteboard_shape' | 'whiteboard_text' | 'whiteboard_note' | 'whiteboard_view' | 'whiteboard_edge';
 
 // View data structures
@@ -158,4 +158,70 @@ export interface WhiteboardEdgeData {
   lineStyle: 'solid' | 'dashed' | 'dotted';  // 線條樣式
   color: string;
   strokeWidth: number;
+}
+
+// Spreadsheet view data
+export interface SpreadsheetViewData {
+  defaultSheet?: string;  // 默認顯示的工作表 ID
+  viewport?: {
+    scrollLeft: number;
+    scrollTop: number;
+    zoomRatio: number;
+  };
+}
+
+// FortuneSheet 單元格數據結構
+export interface SpreadsheetCellData {
+  v?: string | number | boolean;  // 原始值
+  m?: string;                      // 顯示值
+  ct?: {                           // 單元格類型
+    fa: string;                    // 格式
+    t: string;                     // 類型
+  };
+  bg?: string;                     // 背景色
+  fc?: string;                     // 字體顏色
+  bl?: number;                     // 粗體
+  it?: number;                     // 斜體
+  fs?: number;                     // 字體大小
+  ff?: string;                     // 字體
+  ht?: number;                     // 水平對齊
+  vt?: number;                     // 垂直對齊
+  mc?: {                           // 合併單元格
+    r: number;
+    c: number;
+    rs: number;
+    cs: number;
+  };
+  f?: string;                      // 公式
+}
+
+// FortuneSheet 工作表結構
+export interface SpreadsheetSheetData {
+  id: string;
+  name: string;
+  order: number;
+  status?: number;
+  row?: number;
+  column?: number;
+  celldata?: Array<{ r: number; c: number; v: SpreadsheetCellData }>;
+  config?: {
+    merge?: Record<string, { r: number; c: number; rs: number; cs: number }>;
+    rowlen?: Record<string, number>;
+    columnlen?: Record<string, number>;
+    rowhidden?: Record<string, number>;
+    colhidden?: Record<string, number>;
+    borderInfo?: unknown[];
+  };
+  frozen?: {
+    type?: string;
+    range?: { row_focus: number; column_focus: number };
+  };
+}
+
+// FortuneSheet 操作結構 (用於協作同步)
+export interface SpreadsheetOp {
+  op: string;
+  id: string;         // 工作表 ID
+  path: unknown[];    // 變更路徑
+  value: unknown;     // 變更值
 }

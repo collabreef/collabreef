@@ -24,9 +24,10 @@ type Hub struct {
 	db db.DB
 
 	// Redis caches
-	cache           *redis.ViewCache
-	whiteboardCache *redis.WhiteboardCache
-	noteCache       *redis.NoteCache
+	cache            *redis.ViewCache
+	whiteboardCache  *redis.WhiteboardCache
+	spreadsheetCache *redis.SpreadsheetCache
+	noteCache        *redis.NoteCache
 
 	// Cleanup ticker
 	cleanupTicker *time.Ticker
@@ -36,16 +37,17 @@ type Hub struct {
 }
 
 // NewHub creates a new Hub
-func NewHub(database db.DB, cache *redis.ViewCache, whiteboardCache *redis.WhiteboardCache, noteCache *redis.NoteCache) *Hub {
+func NewHub(database db.DB, cache *redis.ViewCache, whiteboardCache *redis.WhiteboardCache, spreadsheetCache *redis.SpreadsheetCache, noteCache *redis.NoteCache) *Hub {
 	hub := &Hub{
-		rooms:           make(map[string]RoomInterface),
-		noteRooms:       make(map[string]*NoteRoom),
-		db:              database,
-		cache:           cache,
-		whiteboardCache: whiteboardCache,
-		noteCache:       noteCache,
-		cleanupTicker:   time.NewTicker(5 * time.Minute),
-		done:            make(chan struct{}),
+		rooms:            make(map[string]RoomInterface),
+		noteRooms:        make(map[string]*NoteRoom),
+		db:               database,
+		cache:            cache,
+		whiteboardCache:  whiteboardCache,
+		spreadsheetCache: spreadsheetCache,
+		noteCache:        noteCache,
+		cleanupTicker:    time.NewTicker(5 * time.Minute),
+		done:             make(chan struct{}),
 	}
 
 	// Start cleanup goroutine
@@ -87,6 +89,25 @@ func (h *Hub) GetOrCreateWhiteboardRoom(viewID string) RoomInterface {
 		go room.Run()
 
 		log.Printf("Created new whiteboard room for view %s", viewID)
+	}
+
+	return room
+}
+
+// GetOrCreateSpreadsheetRoom gets an existing room or creates a new spreadsheet room
+func (h *Hub) GetOrCreateSpreadsheetRoom(viewID string) RoomInterface {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	room, exists := h.rooms[viewID]
+	if !exists {
+		room = NewSpreadsheetRoom(viewID, h.spreadsheetCache)
+		h.rooms[viewID] = room
+
+		// Start the room's event loop
+		go room.Run()
+
+		log.Printf("Created new spreadsheet room for view %s", viewID)
 	}
 
 	return room

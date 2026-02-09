@@ -492,7 +492,18 @@ export default {
     searchWhiteboardOnly: "Search Whiteboard",
     noWhiteboards: "No whiteboards yet",
     createFirstWhiteboard: "Create your first whiteboard to get started",
-    whiteboardSettings: "Whiteboard Settings"
+    whiteboardSettings: "Whiteboard Settings",
+    spreadsheet: "Spreadsheet",
+    searchSpreadsheet: "Search / Add Spreadsheet",
+    searchSpreadsheetOnly: "Search Spreadsheet",
+    noSpreadsheets: "No spreadsheets yet",
+    createFirstSpreadsheet: "Create your first spreadsheet to get started",
+    spreadsheetSettings: "Spreadsheet Settings"
+  },
+  spreadsheet: {
+    loading: "Loading spreadsheet...",
+    connected: "Connected",
+    disconnected: "Disconnected"
   },
   whiteboard: {
     loading: "Loading...",

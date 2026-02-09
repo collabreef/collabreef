@@ -78,6 +78,18 @@ func (h *Handler) HandleViewWebSocket(c echo.Context) error {
 
 		// Start client's read and write pumps
 		client.Run()
+	} else if view.Type == "spreadsheet" {
+		room = h.hub.GetOrCreateSpreadsheetRoom(viewID)
+		log.Printf("Using spreadsheet room for view %s", viewID)
+
+		// Create spreadsheet client (sends text messages for JSON)
+		client := ws.NewSpreadsheetClient(conn, user.ID, user.Name, viewID, room)
+
+		// Register client with the room
+		room.Register(client.Client)
+
+		// Start client's read and write pumps
+		client.Run()
 	} else {
 		room = h.hub.GetOrCreateRoom(viewID)
 		log.Printf("Using Y.js room for view %s", viewID)
@@ -176,6 +188,20 @@ func (h *Handler) HandlePublicViewWebSocket(c echo.Context) error {
 
 		// Create whiteboard client (read-only for public)
 		client := ws.NewWhiteboardClient(conn, userID, userName, viewID, room)
+		// Mark client as read-only
+		client.Client.IsReadOnly = true
+
+		// Register client with the room
+		room.Register(client.Client)
+
+		// Start client's read and write pumps
+		client.Run()
+	} else if view.Type == "spreadsheet" {
+		room = h.hub.GetOrCreateSpreadsheetRoom(viewID)
+		log.Printf("Using spreadsheet room for public view %s", viewID)
+
+		// Create spreadsheet client (read-only for public)
+		client := ws.NewSpreadsheetClient(conn, userID, userName, viewID, room)
 		// Mark client as read-only
 		client.Client.IsReadOnly = true
 
