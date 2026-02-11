@@ -56,10 +56,10 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     -o /out/cli ./cmd/cli/main.go
 
 # ---------- Stage 4: final runtime ----------
-FROM alpine:latest
+FROM node:20-alpine
 WORKDIR /usr/local/app
 
-RUN apk add --no-cache tzdata nodejs
+RUN apk add --no-cache tzdata
 
 ENV TZ="UTC"
 
