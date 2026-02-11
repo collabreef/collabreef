@@ -4,6 +4,7 @@ import (
 	"embed"
 	"io/fs"
 	"net/http"
+	"net/url"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -16,13 +17,12 @@ import (
 	"github.com/collabreef/collabreef/internal/db"
 	"github.com/collabreef/collabreef/internal/redis"
 	"github.com/collabreef/collabreef/internal/storage"
-	"github.com/collabreef/collabreef/internal/websocket"
 )
 
 //go:embed dist/*
 var webAssets embed.FS
 
-func New(db db.DB, storage storage.Storage, hub *websocket.Hub, noteCache *redis.NoteCache) (*echo.Echo, error) {
+func New(db db.DB, storage storage.Storage, collabURL *url.URL, noteCache *redis.NoteCache) (*echo.Echo, error) {
 	e := echo.New()
 
 	subFS, err := fs.Sub(webAssets, "dist")
@@ -43,7 +43,7 @@ func New(db db.DB, storage storage.Storage, hub *websocket.Hub, noteCache *redis
 
 	apiRoot := config.C.GetString(config.SERVER_API_ROOT_PATH)
 
-	handler := handler.NewHandler(db, storage, hub, noteCache)
+	handler := handler.NewHandler(db, storage, collabURL, noteCache)
 	auth := middlewares.NewAuthMiddleware(db)
 	workspace := middlewares.NewWorkspaceMiddleware(db)
 

@@ -542,6 +542,8 @@ export function useNoteWebSocket(options: UseNoteWebSocketOptions) {
             // Reset state
             setIsConnected(false);
             setIsReady(false);
+            setNoteData(null);
+            setHasYjsSnapshot(null);
             setTitle('');
             setContent('');
             setActiveUsers([]);

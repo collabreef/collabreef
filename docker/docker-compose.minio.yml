@@ -50,6 +50,24 @@ services:
       exit 0;
       "
 
+  collabreef-collab:
+    build:
+      context: ..
+      dockerfile: Dockerfile.web
+    container_name: collabreef-collab
+    command: ["node", "collab/src/index.js"]
+    restart: unless-stopped
+    volumes:
+      - ../bin:/usr/local/app/bin
+    environment:
+      PORT: 3000
+      REDIS_ADDR: redis:6379
+      DB_DRIVER: sqlite3
+      DB_DSN: /usr/local/app/bin/collabreef.db
+    depends_on:
+      redis:
+        condition: service_healthy
+
   # CollabReef Web Service with MinIO
   collabreef-web:
     build:
@@ -70,35 +88,14 @@ services:
       PORT: 8080
       APP_DISABLE_SIGNUP: ${APP_DISABLE_SIGNUP}
       APP_SECRET: ${APP_SECRET}
+      COLLAB_URL: http://collabreef-collab:3000
     depends_on:
       minio:
         condition: service_healthy
       redis:
         condition: service_healthy
-    volumes:
-      - ../bin:/usr/local/app/bin
-
-  # CollabReef Worker Service
-  collabreef-worker:
-    build:
-      context: ..
-      dockerfile: Dockerfile.worker
-    container_name: collabreef-worker
-    restart: unless-stopped
-    environment:
-      STORAGE_TYPE: s3
-      STORAGE_S3_ENDPOINT: minio:9000
-      STORAGE_S3_ACCESS_KEY: minioadmin
-      STORAGE_S3_SECRET_KEY: minioadmin
-      STORAGE_S3_BUCKET: collabreef
-      STORAGE_S3_USE_SSL: "false"
-      REDIS_ADDR: redis:6379
-      APP_SECRET: ${APP_SECRET}
-    depends_on:
-      minio:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+      collabreef-collab:
+        condition: service_started
     volumes:
       - ../bin:/usr/local/app/bin
 

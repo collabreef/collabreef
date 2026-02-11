@@ -59,6 +59,7 @@ const (
 	REDIS_ADDR              = "redis_addr"
 	REDIS_PASSWORD          = "redis_password"
 	REDIS_DB                = "redis_db"
+	COLLAB_URL              = "collab_url"
 )
 
 func Init() {
@@ -79,6 +80,7 @@ func Init() {
 	C.SetDefault(REDIS_ADDR, "localhost:6379")
 	C.SetDefault(REDIS_PASSWORD, "")
 	C.SetDefault(REDIS_DB, 0)
+	C.SetDefault(COLLAB_URL, "http://127.0.0.1:3000")
 
 	C.AutomaticEnv()
 }

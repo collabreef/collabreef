@@ -14,10 +14,26 @@ services:
       timeout: 5s
       retries: 5
 
-  collabreef-web:
+  collabreef-collab:
     build:
       context: .
       dockerfile: Dockerfile
+    image: collabreef/collabreef:local
+    container_name: collabreef-collab
+    command: ["node", "collab/src/index.js"]
+    volumes:
+      - "./bin:/usr/local/app/bin"
+    environment:
+      - PORT=3000
+      - REDIS_ADDR=redis:6379
+      - DB_DRIVER=sqlite3
+      - DB_DSN=/usr/local/app/bin/collabreef.db
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  collabreef-web:
     image: collabreef/collabreef:local
     container_name: collabreef-web
     command: ["./web"]
@@ -30,23 +46,12 @@ services:
       - APP_DISABLE_SIGNUP=${APP_DISABLE_SIGNUP}
       - APP_SECRET=${APP_SECRET}
       - REDIS_ADDR=redis:6379
+      - COLLAB_URL=http://collabreef-collab:3000
     depends_on:
       redis:
         condition: service_healthy
-    restart: unless-stopped
-
-  collabreef-worker:
-    image: collabreef/collabreef:local
-    container_name: collabreef-worker
-    command: ["./worker"]
-    volumes:
-      - "./bin:/usr/local/app/bin"
-    environment:
-      - APP_SECRET=${APP_SECRET}
-      - REDIS_ADDR=redis:6379
-    depends_on:
-      redis:
-        condition: service_healthy
+      collabreef-collab:
+        condition: service_started
     restart: unless-stopped
 
 volumes:
