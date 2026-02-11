@@ -50,9 +50,7 @@ Build your own workspace with widgets, keep everything in one place, and stay in
 
 ### Docker Compose (Recommended)
 
-CollabReef is available on Docker Hub as a single image that can run both the web service and background worker.
-
-For production use with background job processing and real-time collaboration features:
+CollabReef is available on Docker Hub as a single image with different entrypoints for the web server and collaboration service.
 
 ```yaml
 services:
@@ -69,6 +67,22 @@ services:
       timeout: 5s
       retries: 5
 
+  collab:
+    image: collabreef/collabreef
+    container_name: collabreef-collab
+    command: ["node", "collab/src/index.js"]
+    volumes:
+      - collabreef_data:/usr/local/app/bin
+    environment:
+      PORT: 3000
+      REDIS_ADDR: redis:6379
+      DB_DRIVER: sqlite3
+      DB_DSN: /usr/local/app/bin/collabreef.db
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
   web:
     image: collabreef/collabreef
     container_name: collabreef-web
@@ -78,23 +92,16 @@ services:
     volumes:
       - collabreef_data:/usr/local/app/bin
     environment:
+      PORT: 8080
       REDIS_ADDR: redis:6379
+      COLLAB_URL: http://collab:3000
+      # APP_SECRET: your-secret-key
+      # APP_DISABLE_SIGNUP: true
     depends_on:
       redis:
         condition: service_healthy
-    restart: unless-stopped
-
-  worker:
-    image: collabreef/collabreef
-    container_name: collabreef-worker
-    command: ["./worker"]
-    volumes:
-      - collabreef_data:/usr/local/app/bin
-    environment:
-      REDIS_ADDR: redis:6379
-    depends_on:
-      redis:
-        condition: service_healthy
+      collab:
+        condition: service_started
     restart: unless-stopped
 
 volumes:
@@ -108,6 +115,55 @@ Start the services:
 
 ```bash
 docker compose up -d
+```
+
+The app will be available at `http://localhost:8080`.
+
+#### Optional: PostgreSQL
+
+By default CollabReef uses SQLite. To use PostgreSQL instead, add a `postgres` service and update the environment variables:
+
+```yaml
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: collabreef-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: collabreef
+      POSTGRES_USER: collabreef
+      POSTGRES_PASSWORD: collabreef_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U collabreef"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+```
+
+Then set these environment variables on both `collab` and `web` services:
+
+```yaml
+environment:
+  DB_DRIVER: postgres
+  DB_DSN: "host=postgres port=5432 user=collabreef password=collabreef_password dbname=collabreef sslmode=disable TimeZone=UTC"
+```
+
+Additionally, add `DB_MIGRATIONS_PATH: "file://migrations/postgres"` to the `web` service.
+
+#### Optional: S3 / MinIO Storage
+
+By default files are stored locally. To use S3-compatible storage, set these environment variables on the `web` service:
+
+```yaml
+environment:
+  STORAGE_TYPE: s3
+  STORAGE_S3_ENDPOINT: your-s3-endpoint
+  STORAGE_S3_ACCESS_KEY: your-access-key
+  STORAGE_S3_SECRET_KEY: your-secret-key
+  STORAGE_S3_BUCKET: collabreef
+  STORAGE_S3_USE_SSL: "true"
 ```
 
 ## 🤝 Contributing
