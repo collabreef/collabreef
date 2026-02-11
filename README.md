@@ -68,7 +68,7 @@ services:
       retries: 5
 
   collab:
-    image: collabreef/collabreef
+    image: ti777777/collabreef
     container_name: collabreef-collab
     command: ["node", "collab/src/index.js"]
     volumes:
@@ -84,7 +84,7 @@ services:
     restart: unless-stopped
 
   web:
-    image: collabreef/collabreef
+    image: ti777777/collabreef
     container_name: collabreef-web
     command: ["./web"]
     ports:
