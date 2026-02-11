@@ -35,6 +35,24 @@ services:
       timeout: 5s
       retries: 5
 
+  collabreef-collab:
+    build:
+      context: ..
+      dockerfile: Dockerfile.web
+    container_name: collabreef-collab
+    command: ["node", "collab/src/index.js"]
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      REDIS_ADDR: redis:6379
+      DB_DRIVER: postgres
+      DB_DSN: "host=postgres port=5432 user=collabreef password=collabreef_password dbname=collabreef sslmode=disable TimeZone=UTC"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
   collabreef-web:
     build:
       context: ..
@@ -51,31 +69,14 @@ services:
       PORT: 8080
       APP_DISABLE_SIGNUP: ${APP_DISABLE_SIGNUP}
       APP_SECRET: ${APP_SECRET}
+      COLLAB_URL: http://collabreef-collab:3000
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-    volumes:
-      - ../bin:/usr/local/app/bin
-
-  collabreef-worker:
-    build:
-      context: ..
-      dockerfile: Dockerfile.worker
-    container_name: collabreef-worker
-    restart: unless-stopped
-    environment:
-      DB_DRIVER: postgres
-      DB_DSN: "host=postgres port=5432 user=collabreef password=collabreef_password dbname=collabreef sslmode=disable TimeZone=UTC"
-      DB_MIGRATIONS_PATH: "file://migrations/postgres"
-      REDIS_ADDR: redis:6379
-      APP_SECRET: ${APP_SECRET}
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+      collabreef-collab:
+        condition: service_started
     volumes:
       - ../bin:/usr/local/app/bin
 

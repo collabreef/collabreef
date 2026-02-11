@@ -33,10 +33,13 @@ func NewNoteCache(client *Client) *NoteCache {
 
 // NoteData represents the cached note data
 type NoteData struct {
-	Title     string `json:"title"`
-	Content   string `json:"content"`
-	UpdatedAt string `json:"updated_at"`
-	UpdatedBy string `json:"updated_by"`
+	Title      string `json:"title"`
+	Content    string `json:"content"`
+	Visibility string `json:"visibility"`
+	CreatedAt  string `json:"created_at"`
+	CreatedBy  string `json:"created_by"`
+	UpdatedAt  string `json:"updated_at"`
+	UpdatedBy  string `json:"updated_by"`
 }
 
 // GetNoteData retrieves note data from cache
@@ -55,10 +58,13 @@ func (nc *NoteCache) GetNoteData(ctx context.Context, noteID string) (*NoteData,
 	}
 
 	noteData := &NoteData{
-		Title:     result["title"],
-		Content:   result["content"],
-		UpdatedAt: result["updated_at"],
-		UpdatedBy: result["updated_by"],
+		Title:      result["title"],
+		Content:    result["content"],
+		Visibility: result["visibility"],
+		CreatedAt:  result["created_at"],
+		CreatedBy:  result["created_by"],
+		UpdatedAt:  result["updated_at"],
+		UpdatedBy:  result["updated_by"],
 	}
 
 	return noteData, nil
@@ -73,6 +79,9 @@ func (nc *NoteCache) SetNoteData(ctx context.Context, noteID string, data *NoteD
 	pipe.HSet(ctx, key, map[string]interface{}{
 		"title":      data.Title,
 		"content":    data.Content,
+		"visibility": data.Visibility,
+		"created_at": data.CreatedAt,
+		"created_by": data.CreatedBy,
 		"updated_at": data.UpdatedAt,
 		"updated_by": data.UpdatedBy,
 	})

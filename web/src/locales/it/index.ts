@@ -24,7 +24,7 @@ export default {
     comfirmPassword: "Conferma password",
   },
   about: {
-    description: "Un'applicazione moderna per prendere appunti",
+    description: "Servizio collaborativo self-hosted",
     version: "Versione",
   },
   pages: {

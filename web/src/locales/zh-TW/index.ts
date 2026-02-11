@@ -24,7 +24,7 @@ export default {
     comfirmPassword: "再次輸入密碼",
   },
   about: {
-    description: "現代化筆記應用程式",
+    description: "自架式協作服務",
     version: "版本",
   },
   pages: {

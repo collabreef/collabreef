@@ -24,7 +24,7 @@ export default {
     comfirmPassword: "パスワード確認",
   },
   about: {
-    description: "モダンなノートアプリケーション",
+    description: "セルフホスト型コラボレーションサービス",
     version: "バージョン",
   },
   pages: {

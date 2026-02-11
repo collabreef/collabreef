@@ -25,8 +25,6 @@ const NoteWidget: FC<NoteWidgetProps> = ({ config }) => {
 
   // Connect to WebSocket for real-time collaboration
   const {
-    noteData,
-    hasYjsSnapshot,
     isReady: wsReady,
     title: wsTitle,
     content: wsContent,
@@ -38,25 +36,18 @@ const NoteWidget: FC<NoteWidgetProps> = ({ config }) => {
     enabled: !!config.noteId && !!workspaceId
   });
 
-  // Only fetch from REST API if note is NOT initialized (no Y.js snapshot)
+  // Always fetch note metadata from REST API
   const { data: fetchedNote, isLoading, error } = useQuery({
     queryKey: ['note', workspaceId, config.noteId],
     queryFn: () => getNote(workspaceId, config.noteId),
-    enabled: !!workspaceId && !!config.noteId && hasYjsSnapshot === false,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: true,
+    enabled: !!workspaceId && !!config.noteId,
   });
 
   useEffect(() => {
-    if (hasYjsSnapshot && noteData) {
-      // Note is initialized - use WebSocket data
-      setNote(noteData as NoteData | null);
-    } else if (!hasYjsSnapshot && fetchedNote) {
-      // Note is not initialized - use REST API data
+    if (fetchedNote) {
       setNote(fetchedNote);
     }
-  }, [hasYjsSnapshot, noteData, fetchedNote]);
+  }, [fetchedNote]);
 
   if (!config.noteId) {
     return (

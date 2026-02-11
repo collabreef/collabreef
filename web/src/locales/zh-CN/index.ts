@@ -24,7 +24,7 @@ export default {
     comfirmPassword: "确认密码",
   },
   about: {
-    description: "现代化笔记应用程序",
+    description: "自托管协作服务",
     version: "版本",
   },
   pages: {

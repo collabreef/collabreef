@@ -24,7 +24,7 @@ export default {
     comfirmPassword: "Confirmar Senha",
   },
   about: {
-    description: "Um aplicativo moderno de anotações",
+    description: "Serviço colaborativo auto-hospedado",
     version: "Versão",
   },
   pages: {

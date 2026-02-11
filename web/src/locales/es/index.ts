@@ -18,7 +18,7 @@ export default {
     about: "Acerca de",
   },
   about: {
-    description: "Una aplicación moderna para tomar notas",
+    description: "Servicio colaborativo autoalojado",
     version: "Versión",
   },
   form: {

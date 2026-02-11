@@ -24,7 +24,7 @@ export default {
     comfirmPassword: "Passwort bestätigen",
   },
   about: {
-    description: "Eine moderne Notizverwaltungsanwendung",
+    description: "Selbstgehosteter kollaborativer Dienst",
     version: "Version",
   },
   pages: {

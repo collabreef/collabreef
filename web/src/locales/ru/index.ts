@@ -24,7 +24,7 @@ export default {
     comfirmPassword: "Подтвердить пароль",
   },
   about: {
-    description: "Современное приложение для ведения заметок",
+    description: "Самостоятельно размещаемый сервис для совместной работы",
     version: "Версия",
   },
   pages: {

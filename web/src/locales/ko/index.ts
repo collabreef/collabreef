@@ -24,7 +24,7 @@ export default {
     comfirmPassword: "비밀번호 확인",
   },
   about: {
-    description: "현대적인 노트 작성 애플리케이션",
+    description: "셀프 호스팅 협업 서비스",
     version: "버전",
   },
   pages: {

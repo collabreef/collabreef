@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,7 +13,6 @@ import (
 	"github.com/collabreef/collabreef/internal/config"
 	"github.com/collabreef/collabreef/internal/redis"
 	"github.com/collabreef/collabreef/internal/server"
-	"github.com/collabreef/collabreef/internal/websocket"
 )
 
 // Version is set at build time via ldflags
@@ -50,18 +50,19 @@ func main() {
 	defer redisClient.Close()
 	log.Printf("Redis connected: %s", redisConfig.Addr)
 
-	// Initialize caches
-	viewCache := redis.NewViewCache(redisClient)
-	whiteboardCache := redis.NewWhiteboardCache(redisClient)
-	spreadsheetCache := redis.NewSpreadsheetCache(redisClient)
+	// Initialize note cache (used for pre-warming before WebSocket proxy)
 	noteCache := redis.NewNoteCache(redisClient)
 
-	// Initialize WebSocket Hub
-	hub := websocket.NewHub(db, viewCache, whiteboardCache, spreadsheetCache, noteCache)
-	log.Println("WebSocket Hub initialized")
+	// Parse collab service URL
+	collabURLStr := config.C.GetString(config.COLLAB_URL)
+	collabURL, err := url.Parse(collabURLStr)
+	if err != nil {
+		log.Fatalf("Invalid COLLAB_URL: %v", err)
+	}
+	log.Printf("Collab service URL: %s", collabURLStr)
 
-	// Setup server with WebSocket support
-	e, err := server.New(db, storage, hub, noteCache)
+	// Setup server with reverse proxy to collab service
+	e, err := server.New(db, storage, collabURL, noteCache)
 	if err != nil {
 		log.Fatalf("Failed to setup server: %v", err)
 	}
@@ -94,6 +95,5 @@ func main() {
 		e.Logger.Fatal(err)
 	}
 
-	hub.Stop()
 	log.Println("Server stopped")
 }

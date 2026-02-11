@@ -6,17 +6,12 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/collabreef/collabreef/internal/model"
-	ws "github.com/collabreef/collabreef/internal/websocket"
+	"github.com/collabreef/collabreef/internal/redis"
 )
 
 // HandleNoteWebSocket handles WebSocket connections for note collaboration
 func (h *Handler) HandleNoteWebSocket(c echo.Context) error {
-	// Get note ID from URL path
 	noteID := c.Param("noteId")
-
-	log.Printf("Note WebSocket connection request:")
-	log.Printf("  - Full Path: %s", c.Request().URL.Path)
-	log.Printf("  - NoteID param: %s", noteID)
 
 	if noteID == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "Note ID is required")
@@ -38,13 +33,10 @@ func (h *Handler) HandleNoteWebSocket(c echo.Context) error {
 	hasAccess := false
 	switch note.Visibility {
 	case "public":
-		// Everyone can access public notes
 		hasAccess = true
 	case "workspace":
-		// Check if user is a workspace member
 		hasAccess = h.isUserWorkspaceMember(user.ID, note.WorkspaceID)
 	case "private":
-		// Only creator can access private notes
 		hasAccess = note.CreatedBy == user.ID
 	default:
 		hasAccess = false
@@ -54,26 +46,30 @@ func (h *Handler) HandleNoteWebSocket(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusForbidden, "You do not have permission to access this note")
 	}
 
-	// Upgrade HTTP connection to WebSocket
-	conn, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
-	if err != nil {
-		log.Printf("Failed to upgrade connection: %v", err)
-		return err
+	// Pre-warm Redis cache with note data so the collab service can initialize without DB access
+	existing, err := h.noteCache.GetNoteData(c.Request().Context(), noteID)
+	if err != nil || existing == nil {
+		noteData := &redis.NoteData{
+			Title:      note.Title,
+			Content:    note.Content,
+			Visibility: note.Visibility,
+			CreatedAt:  note.CreatedAt,
+			CreatedBy:  note.CreatedBy,
+			UpdatedAt:  note.UpdatedAt,
+			UpdatedBy:  note.UpdatedBy,
+		}
+		if err := h.noteCache.SetNoteData(c.Request().Context(), noteID, noteData); err != nil {
+			log.Printf("Warning: failed to pre-warm note cache: %v", err)
+		} else {
+			log.Printf("Pre-warmed Redis cache for note %s", noteID)
+		}
 	}
 
-	// Get or create note room
-	room := h.hub.GetOrCreateNoteRoom(noteID)
-	log.Printf("Using note room for note %s", noteID)
+	log.Printf("Note WebSocket proxy: user=%s, noteId=%s", user.ID, noteID)
 
-	// Create standard client (sends binary messages for Y.js)
-	// JSON messages (title updates) are also sent as binary (UTF-8 bytes)
-	client := ws.NewClient(conn, user.ID, user.Name, noteID, room)
-
-	// Register client with the room
-	room.Register(client)
-
-	// Start client's read and write pumps
-	client.Run()
-
-	return nil
+	return h.proxyToCollab(c, map[string]string{
+		"X-User-ID":   user.ID,
+		"X-User-Name": user.Name,
+		"X-Read-Only": "false",
+	})
 }

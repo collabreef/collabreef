@@ -24,7 +24,7 @@ export default {
     comfirmPassword: "Confirm Password",
   },
   about: {
-    description: "A modern note-taking application",
+    description: "Self-hosted collaborative service",
     version: "Version",
   },
   pages: {

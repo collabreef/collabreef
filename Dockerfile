@@ -12,7 +12,16 @@ RUN npm ci
 COPY web/ .
 RUN npm run build
 
-# ---------- Stage 2: build Go backend ----------
+# ---------- Stage 2: install collab service dependencies ----------
+FROM node:20-alpine AS collab-deps
+WORKDIR /app/collab
+
+RUN apk add --no-cache python3 make g++
+
+COPY collab/package*.json ./
+RUN npm ci --production
+
+# ---------- Stage 3: build Go backend ----------
 FROM golang:1.25-alpine AS backend
 WORKDIR /app
 
@@ -33,7 +42,7 @@ RUN go mod download
 COPY . .
 COPY --from=frontend /app/web/dist /app/internal/server/dist
 
-# Build web, worker, and cli binaries
+# Build web and cli binaries
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
     GOOS=linux GOARCH=amd64 go build \
@@ -44,28 +53,26 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
     GOOS=linux GOARCH=amd64 go build \
     -ldflags "-X main.Version=${APP_VERSION}" \
-    -o /out/worker ./cmd/worker/main.go
-
-RUN --mount=type=cache,target=/root/.cache/go-build \
-    --mount=type=cache,target=/go/pkg/mod \
-    GOOS=linux GOARCH=amd64 go build \
-    -ldflags "-X main.Version=${APP_VERSION}" \
     -o /out/cli ./cmd/cli/main.go
 
-# ---------- Stage 3: final runtime ----------
+# ---------- Stage 4: final runtime ----------
 FROM alpine:latest
 WORKDIR /usr/local/app
 
-RUN apk add --no-cache tzdata
+RUN apk add --no-cache tzdata nodejs
 
 ENV TZ="UTC"
 
 COPY ./migrations /usr/local/app/migrations
 
-# Copy all binaries
+# Copy Go binaries
 COPY --from=backend /out/web ./web
-COPY --from=backend /out/worker ./worker
 COPY --from=backend /out/cli ./cli
+
+# Copy collab service
+COPY --from=collab-deps /app/collab/node_modules ./collab/node_modules
+COPY collab/src ./collab/src
+COPY collab/package.json ./collab/package.json
 
 RUN mkdir -p ./bin
 VOLUME /usr/local/app/bin

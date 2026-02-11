@@ -24,7 +24,7 @@ export default {
     comfirmPassword: "Confirmer le mot de passe",
   },
   about: {
-    description: "Une application moderne de prise de notes",
+    description: "Service collaboratif auto-hébergé",
     version: "Version",
   },
   pages: {

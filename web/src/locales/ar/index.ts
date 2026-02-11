@@ -24,7 +24,7 @@ export default {
     comfirmPassword: "تأكيد كلمة المرور",
   },
   about: {
-    description: "تطبيق حديث لتدوين الملاحظات",
+    description: "خدمة تعاونية مستضافة ذاتيًا",
     version: "الإصدار",
   },
   pages: {

@@ -14,19 +14,18 @@
             "envFile": "${workspaceFolder}\\.env"
         },
         {
-            "name": "Launch Worker",
-            "type": "go",
+            "name": "Launch Collab",
+            "type": "node",
             "request": "launch",
-            "mode": "debug",
-            "program": "${workspaceFolder}\\cmd\\worker",
+            "program": "${workspaceFolder}\\collab\\src\\index.js",
             "cwd": "${workspaceFolder}",
             "envFile": "${workspaceFolder}\\.env"
         }
     ],
     "compounds": [
         {
-            "name": "Launch Web + Worker",
-            "configurations": ["Launch Web", "Launch Worker"],
+            "name": "Launch Web + Collab",
+            "configurations": ["Launch Web", "Launch Collab"],
             "stopAll": true
         }
     ]
