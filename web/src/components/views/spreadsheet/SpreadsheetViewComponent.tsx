@@ -127,7 +127,7 @@ const SpreadsheetViewComponent = ({
     const [dataSourceReady, setDataSourceReady] = useState(disableWebSocket);
 
     // Initial sheets for first render only - deep clone to ensure mutable data
-    const [initialData, setInitialData] = useState<Sheet[]>(() => deepClone(parsedInitialSheets) as unknown as Sheet[]);
+    const [initialData] = useState<Sheet[]>(() => deepClone(parsedInitialSheets) as unknown as Sheet[]);
 
     // Ref to track current sheets for sending to server (updated via onChange)
     const localSheetsRef = useRef<Sheet[]>(initialData);

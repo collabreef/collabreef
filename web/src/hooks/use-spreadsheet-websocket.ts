@@ -98,8 +98,7 @@ export function useSpreadsheetWebSocket(options: UseSpreadsheetWebSocketOptions)
                                     sheetsCount: message.sheets.length,
                                     firstSheetId: message.sheets[0]?.id,
                                     firstSheetName: message.sheets[0]?.name,
-                                    firstSheetCelldataLength: message.sheets[0]?.celldata?.length || 0,
-                                    firstSheetDataLength: message.sheets[0]?.data?.length || 0
+                                    firstSheetCelldataLength: message.sheets[0]?.celldata?.length || 0
                                 });
                                 setSheets(message.sheets);
                                 setIsInitialized(true);
