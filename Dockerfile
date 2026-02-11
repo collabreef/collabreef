@@ -6,7 +6,7 @@ WORKDIR /app/web
 ARG VITE_APP_VERSION=dev
 ENV VITE_APP_VERSION=${VITE_APP_VERSION}
 
-COPY web/package*.json ./
+COPY web/package.json ./
 RUN npm install
 
 COPY web/ .
