@@ -98,7 +98,7 @@ export function useSpreadsheetCollab(options: UseSpreadsheetCollabOptions) {
       const sheetsData: SpreadsheetSheetData[] = []
       ySpreadsheet.forEach((value, key) => {
         if (!key.startsWith('_')) {
-          sheetsData.push(value)
+          sheetsData.push(value as SpreadsheetSheetData)
         }
       })
       sheetsData.sort((a, b) => (a.order || 0) - (b.order || 0))

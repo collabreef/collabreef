@@ -94,7 +94,7 @@ export function useWhiteboardCollab(options: UseWhiteboardCollabOptions) {
     function syncCanvasFromYjs() {
       const map = new Map<string, CanvasObject>()
       yCanvas.forEach((value, key) => {
-        map.set(key, value)
+        map.set(key, value as CanvasObject)
       })
       setCanvasObjects(map)
     }
@@ -102,7 +102,7 @@ export function useWhiteboardCollab(options: UseWhiteboardCollabOptions) {
     function syncViewObjectsFromYjs() {
       const map = new Map<string, ViewObject>()
       yViewObjs.forEach((value, key) => {
-        const obj = value
+        const obj = value as ViewObject
         // Parse data if it's a string
         if (typeof obj.data === 'string') {
           try {

@@ -74,7 +74,7 @@ export function useNoteCollab(options: UseNoteCollabOptions) {
     const metaObserver = () => {
       const newTitle = yMeta.get('title')
       if (newTitle !== undefined) {
-        setTitle(newTitle)
+        setTitle(newTitle as string)
       }
     }
     yMeta.observe(metaObserver)
@@ -82,7 +82,7 @@ export function useNoteCollab(options: UseNoteCollabOptions) {
     // Set initial title if already in doc
     const existingTitle = yMeta.get('title')
     if (existingTitle !== undefined) {
-      setTitle(existingTitle)
+      setTitle(existingTitle as string)
     }
 
     return () => {

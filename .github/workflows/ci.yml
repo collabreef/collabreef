@@ -50,7 +50,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./web
-        run: rm package-lock.json && npm install
+        run: npm ci
 
       - name: Build frontend
         working-directory: ./web

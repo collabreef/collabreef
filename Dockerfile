@@ -6,8 +6,12 @@ WORKDIR /app/web
 ARG VITE_APP_VERSION=dev
 ENV VITE_APP_VERSION=${VITE_APP_VERSION}
 
-COPY web/package.json ./
-RUN npm install
+COPY web/package.json web/package-lock.json ./
+RUN npm ci
+# Fix missing Alpine musl native bindings from cross-platform lockfile (npm/cli#4828)
+RUN npm install --no-save \
+    "@rollup/rollup-linux-x64-musl@$(node -p "require('./node_modules/rollup/package.json').version")" \
+    "@swc/core-linux-x64-musl@$(node -p "require('./node_modules/@swc/core/package.json').version")"
 
 COPY web/ .
 RUN npm run build
@@ -19,7 +23,7 @@ WORKDIR /app/collab
 RUN apk add --no-cache python3 make g++
 
 COPY collab/package*.json ./
-RUN npm install --production
+RUN npm ci --omit=dev
 
 # ---------- Stage 3: build Go backend ----------
 FROM golang:1.25-alpine AS backend
