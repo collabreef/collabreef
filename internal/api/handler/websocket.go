@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/collabreef/collabreef/internal/model"
@@ -34,12 +33,6 @@ func (h *Handler) HandleViewWebSocket(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "View ID is required")
 	}
 
-	// y-websocket appends the room name to the URL, which causes duplication
-	parts := strings.Split(viewID, "/")
-	if len(parts) > 0 {
-		viewID = parts[0]
-	}
-
 	// Get authenticated user from context
 	user, ok := c.Get("user").(model.User)
 	if !ok {
@@ -63,24 +56,12 @@ func (h *Handler) HandleViewWebSocket(c echo.Context) error {
 	})
 }
 
-// HandleHubStats returns statistics about the WebSocket hub
-func (h *Handler) HandleHubStats(c echo.Context) error {
-	// Proxy stats request to collab service
-	return h.proxyToCollab(c, nil)
-}
-
 // HandlePublicViewWebSocket handles WebSocket connections for public views (read-only)
 func (h *Handler) HandlePublicViewWebSocket(c echo.Context) error {
 	viewID := c.Param("viewId")
 
 	if viewID == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "View ID is required")
-	}
-
-	// Clean up viewID
-	parts := strings.Split(viewID, "/")
-	if len(parts) > 0 {
-		viewID = parts[0]
 	}
 
 	// Verify the view exists and is accessible

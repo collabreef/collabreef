@@ -20,9 +20,6 @@ func RegisterWebSocket(e *echo.Echo, h handler.Handler, auth middlewares.AuthMid
 	// WebSocket endpoint for note collaboration
 	ws.GET("/notes/:noteId", h.HandleNoteWebSocket)
 
-	// Hub statistics endpoint (for monitoring)
-	ws.GET("/stats", h.HandleHubStats)
-
 	// Public WebSocket endpoint for read-only access to public views
 	// Uses ParseJWT middleware which allows unauthenticated access (optional auth)
 	wsPublic := e.Group("/ws/public")

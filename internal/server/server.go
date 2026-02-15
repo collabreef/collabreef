@@ -15,14 +15,13 @@ import (
 	"github.com/collabreef/collabreef/internal/api/validate"
 	"github.com/collabreef/collabreef/internal/config"
 	"github.com/collabreef/collabreef/internal/db"
-	"github.com/collabreef/collabreef/internal/redis"
 	"github.com/collabreef/collabreef/internal/storage"
 )
 
 //go:embed dist/*
 var webAssets embed.FS
 
-func New(db db.DB, storage storage.Storage, collabURL *url.URL, noteCache *redis.NoteCache) (*echo.Echo, error) {
+func New(db db.DB, storage storage.Storage, collabURL *url.URL) (*echo.Echo, error) {
 	e := echo.New()
 
 	subFS, err := fs.Sub(webAssets, "dist")
@@ -43,7 +42,7 @@ func New(db db.DB, storage storage.Storage, collabURL *url.URL, noteCache *redis
 
 	apiRoot := config.C.GetString(config.SERVER_API_ROOT_PATH)
 
-	handler := handler.NewHandler(db, storage, collabURL, noteCache)
+	handler := handler.NewHandler(db, storage, collabURL)
 	auth := middlewares.NewAuthMiddleware(db)
 	workspace := middlewares.NewWorkspaceMiddleware(db)
 

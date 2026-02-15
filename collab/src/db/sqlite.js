@@ -21,6 +21,10 @@ export function createSqliteDB(dsn) {
       'UPDATE view_objects SET name = ?, type = ?, data = ?, updated_by = ?, updated_at = ? WHERE id = ?'
     ),
     deleteViewObject: db.prepare('DELETE FROM view_objects WHERE id = ?'),
+    getYjsDocument: db.prepare('SELECT * FROM yjs_documents WHERE name = ?'),
+    upsertYjsDocument: db.prepare(
+      'INSERT INTO yjs_documents (name, data, updated_at) VALUES (?, ?, ?) ON CONFLICT(name) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at'
+    ),
   };
 
   return {
@@ -50,6 +54,12 @@ export function createSqliteDB(dsn) {
     },
     deleteViewObject(id) {
       stmts.deleteViewObject.run(id);
+    },
+    getYjsDocument(name) {
+      return stmts.getYjsDocument.get(name) || null;
+    },
+    saveYjsDocument(name, data, updated_at) {
+      stmts.upsertYjsDocument.run(name, data, updated_at);
     },
     close() {
       db.close();

@@ -10,7 +10,6 @@ interface NoteDetailViewProps {
     note: NoteData | null
     menu?: ReactNode
     wsTitle: string
-    wsContent: string
     wsReady?: boolean
     onTitleChange: (title: string) => void
     yDoc?: any
@@ -21,7 +20,6 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({
     note,
     menu,
     wsTitle,
-    wsContent,
     wsReady,
     onTitleChange,
     yDoc,
@@ -58,9 +56,8 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({
         )
     }
 
-    // Use WebSocket data if available, fallback to note data
+    // Use WebSocket title if available, fallback to note data
     const displayTitle = wsTitle || note.title
-    const displayContent = wsContent || note.content
 
     return (
         <div className="w-full">
@@ -95,7 +92,7 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({
                                     <div className="px-4">
                                         <div key={`editor-${note.id}`}>
                                             <Editor
-                                                note={{ ...note, content: displayContent }}
+                                                note={note}
                                                 yDoc={yDoc}
                                                 yText={yText}
                                                 yjsReady={wsReady}

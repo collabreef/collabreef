@@ -6,7 +6,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/collabreef/collabreef/internal/model"
-	"github.com/collabreef/collabreef/internal/redis"
 )
 
 // HandleNoteWebSocket handles WebSocket connections for note collaboration
@@ -44,25 +43,6 @@ func (h *Handler) HandleNoteWebSocket(c echo.Context) error {
 
 	if !hasAccess {
 		return echo.NewHTTPError(http.StatusForbidden, "You do not have permission to access this note")
-	}
-
-	// Pre-warm Redis cache with note data so the collab service can initialize without DB access
-	existing, err := h.noteCache.GetNoteData(c.Request().Context(), noteID)
-	if err != nil || existing == nil {
-		noteData := &redis.NoteData{
-			Title:      note.Title,
-			Content:    note.Content,
-			Visibility: note.Visibility,
-			CreatedAt:  note.CreatedAt,
-			CreatedBy:  note.CreatedBy,
-			UpdatedAt:  note.UpdatedAt,
-			UpdatedBy:  note.UpdatedBy,
-		}
-		if err := h.noteCache.SetNoteData(c.Request().Context(), noteID, noteData); err != nil {
-			log.Printf("Warning: failed to pre-warm note cache: %v", err)
-		} else {
-			log.Printf("Pre-warmed Redis cache for note %s", noteID)
-		}
 	}
 
 	log.Printf("Note WebSocket proxy: user=%s, noteId=%s", user.ID, noteID)

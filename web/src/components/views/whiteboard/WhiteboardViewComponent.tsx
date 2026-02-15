@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import WhiteboardToolbar from './WhiteboardToolbar';
 import WhiteboardToolProperties from './WhiteboardToolProperties';
 import AddElementDialog from './AddElementDialog';
-import { useWhiteboardWebSocket } from '../../../hooks/use-whiteboard-websocket';
+import { useWhiteboardCollab } from '../../../hooks/use-whiteboard-collab';
 import NoteOverlay from './NoteOverlay';
 import { renderStroke, renderShape, renderText, renderNoteOrView, renderGrid, renderEdge, renderSelectionBox } from './renderUtils';
 import { Lock, Unlock } from 'lucide-react';
@@ -53,12 +53,11 @@ const WhiteboardViewComponent = ({
         canvasObjects: remoteCanvasObjects,
         viewObjects: remoteViewObjects,
         isInitialized
-    } = useWhiteboardWebSocket({
+    } = useWhiteboardCollab({
         viewId: viewId || '',
         workspaceId: workspaceId || '',
         enabled: !disableWebSocket && !!viewId && (isPublic || !!workspaceId),
         isPublic: isPublic,
-        skipInitialFetch: isPublic && !!(initialCanvasObjects && initialViewObjects),
     });
 
     // Canvas refs

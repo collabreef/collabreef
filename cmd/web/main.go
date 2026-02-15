@@ -11,7 +11,6 @@ import (
 
 	"github.com/collabreef/collabreef/internal/bootstrap"
 	"github.com/collabreef/collabreef/internal/config"
-	"github.com/collabreef/collabreef/internal/redis"
 	"github.com/collabreef/collabreef/internal/server"
 )
 
@@ -37,22 +36,6 @@ func main() {
 		log.Fatalf("Failed to initialize storage: %v", err)
 	}
 
-	// Initialize Redis
-	redisConfig := redis.Config{
-		Addr:     config.C.GetString(config.REDIS_ADDR),
-		Password: config.C.GetString(config.REDIS_PASSWORD),
-		DB:       config.C.GetInt(config.REDIS_DB),
-	}
-	redisClient, err := redis.NewClient(redisConfig)
-	if err != nil {
-		log.Fatalf("Failed to initialize Redis: %v", err)
-	}
-	defer redisClient.Close()
-	log.Printf("Redis connected: %s", redisConfig.Addr)
-
-	// Initialize note cache (used for pre-warming before WebSocket proxy)
-	noteCache := redis.NewNoteCache(redisClient)
-
 	// Parse collab service URL
 	collabURLStr := config.C.GetString(config.COLLAB_URL)
 	collabURL, err := url.Parse(collabURLStr)
@@ -62,7 +45,7 @@ func main() {
 	log.Printf("Collab service URL: %s", collabURLStr)
 
 	// Setup server with reverse proxy to collab service
-	e, err := server.New(db, storage, collabURL, noteCache)
+	e, err := server.New(db, storage, collabURL)
 	if err != nil {
 		log.Fatalf("Failed to setup server: %v", err)
 	}

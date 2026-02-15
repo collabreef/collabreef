@@ -68,6 +68,16 @@ export function createPostgresDB(dsn) {
     async deleteViewObject(id) {
       await pool.query('DELETE FROM view_objects WHERE id = $1', [id]);
     },
+    async getYjsDocument(name) {
+      const { rows } = await pool.query('SELECT * FROM yjs_documents WHERE name = $1', [name]);
+      return rows[0] || null;
+    },
+    async saveYjsDocument(name, data, updated_at) {
+      await pool.query(
+        'INSERT INTO yjs_documents (name, data, updated_at) VALUES ($1, $2, $3) ON CONFLICT(name) DO UPDATE SET data = EXCLUDED.data, updated_at = EXCLUDED.updated_at',
+        [name, data, updated_at]
+      );
+    },
     async close() {
       await pool.end();
     },

@@ -1,17 +1,18 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
+import { HocuspocusProvider } from '@hocuspocus/provider'
 import * as Y from 'yjs'
 import { IndexeddbPersistence } from 'y-indexeddb'
-import { AuthenticatedWebSocketProvider } from '@/lib/yjs/websocket-provider'
 
 export interface UseYjsViewConfig {
   viewId: string
   workspaceId: string
+  documentPrefix?: string
   enabled?: boolean
 }
 
 export interface UseYjsViewReturn {
   doc: Y.Doc | null
-  provider: AuthenticatedWebSocketProvider | null
+  provider: HocuspocusProvider | null
   isConnected: boolean
   isSynced: boolean
   connectionStatus: string
@@ -21,13 +22,13 @@ export interface UseYjsViewReturn {
 }
 
 /**
- * Hook for managing Y.js document and WebSocket connection for a view
+ * Hook for managing Y.js document and HocuspocusProvider connection for a view
  */
 export function useYjsView(config: UseYjsViewConfig): UseYjsViewReturn {
-  const { viewId, workspaceId, enabled = true } = config
+  const { viewId, workspaceId, documentPrefix = 'view', enabled = true } = config
 
   const [doc, setDoc] = useState<Y.Doc | null>(null)
-  const [provider, setProvider] = useState<AuthenticatedWebSocketProvider | null>(null)
+  const [provider, setProvider] = useState<HocuspocusProvider | null>(null)
   const [isConnected, setIsConnected] = useState(false)
   const [isSynced, setIsSynced] = useState(false)
   const [connectionStatus, setConnectionStatus] = useState('disconnected')
@@ -59,34 +60,41 @@ export function useYjsView(config: UseYjsViewConfig): UseYjsViewReturn {
       console.log('IndexedDB sync complete')
     })
 
-    // Setup WebSocket provider
-    const wsProvider = new AuthenticatedWebSocketProvider(viewId, workspaceId, ydoc, {
-      onSync: (synced: boolean) => {
-        setIsSynced(synced)
-        console.log('WebSocket sync status:', synced)
+    // Build WebSocket URL
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    const url = `${protocol}//${window.location.host}/ws/views/${viewId}`
+
+    // Setup HocuspocusProvider
+    const hocuspocusProvider = new HocuspocusProvider({
+      url,
+      name: `${documentPrefix}:${viewId}`,
+      document: ydoc,
+      onConnect() {
+        setConnectionStatus('connected')
+        setIsConnected(true)
       },
-      onStatus: (status: { status: string }) => {
-        setConnectionStatus(status.status)
-        setIsConnected(status.status === 'connected')
-        console.log('WebSocket status:', status.status)
+      onDisconnect() {
+        setConnectionStatus('disconnected')
+        setIsConnected(false)
+        setIsSynced(false)
+      },
+      onSynced() {
+        setIsSynced(true)
       },
     })
 
-    setProvider(wsProvider)
+    setProvider(hocuspocusProvider)
 
     // Cleanup
     return () => {
       console.log('Cleaning up Y.js resources for view', viewId)
 
-      // Disconnect WebSocket
-      wsProvider.destroy()
+      hocuspocusProvider.destroy()
 
-      // Close IndexedDB
       if (indexeddbProvider.current) {
         indexeddbProvider.current.destroy()
       }
 
-      // Destroy document
       ydoc.destroy()
 
       setDoc(null)
@@ -95,7 +103,7 @@ export function useYjsView(config: UseYjsViewConfig): UseYjsViewReturn {
       setIsSynced(false)
       setConnectionStatus('disconnected')
     }
-  }, [viewId, workspaceId, enabled])
+  }, [viewId, workspaceId, documentPrefix, enabled])
 
   const getMap = useCallback((name: string) => {
     if (!doc) return null

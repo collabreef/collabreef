@@ -4,7 +4,7 @@ import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { useEffect, useState } from "react"
 import { getNote, NoteData } from "@/api/note"
 import NoteDetailView from "@/components/notedetail/NoteDetailView"
-import { useNoteWebSocket } from "@/hooks/use-note-websocket"
+import { useNoteCollab } from "@/hooks/use-note-collab"
 import NoteDetailMenu from "@/components/notedetailmenu/NoteDetailMenu"
 
 const NoteDetailPage = () => {
@@ -12,15 +12,14 @@ const NoteDetailPage = () => {
     const currentWorkspaceId = useCurrentWorkspaceId()
     const { noteId } = useParams()
 
-    // Connect to WebSocket for real-time collaboration
+    // Connect to Hocuspocus for real-time collaboration
     const {
-        isReady: wsReady,
+        isReady,
         title: wsTitle,
-        content: wsContent,
         sendUpdateTitle,
         yDoc,
         yText
-    } = useNoteWebSocket({
+    } = useNoteCollab({
         noteId: noteId || '',
         workspaceId: currentWorkspaceId || '',
         enabled: !!noteId && !!currentWorkspaceId
@@ -45,8 +44,7 @@ const NoteDetailPage = () => {
                 note={note}
                 menu={note ? <NoteDetailMenu note={note} /> : undefined}
                 wsTitle={wsTitle}
-                wsContent={wsContent}
-                wsReady={wsReady}
+                wsReady={isReady}
                 onTitleChange={sendUpdateTitle}
                 yDoc={yDoc}
                 yText={yText}

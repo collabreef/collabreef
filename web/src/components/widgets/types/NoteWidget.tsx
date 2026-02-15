@@ -11,7 +11,7 @@ import Editor from '@/components/editor/Editor';
 import { registerWidget, WidgetProps, WidgetConfigFormProps } from '../widgetRegistry';
 import { useToastStore } from '@/stores/toast';
 import { extractTextFromTipTapJSON } from '@/utils/tiptap';
-import { useNoteWebSocket } from '@/hooks/use-note-websocket';
+import { useNoteCollab } from '@/hooks/use-note-collab';
 
 interface NoteWidgetProps extends WidgetProps {
   config: NoteWidgetConfig;
@@ -23,14 +23,13 @@ const NoteWidget: FC<NoteWidgetProps> = ({ config }) => {
   const navigate = useNavigate();
   const [note, setNote] = useState<NoteData | null>(null);
 
-  // Connect to WebSocket for real-time collaboration
+  // Connect to Hocuspocus for real-time collaboration
   const {
     isReady: wsReady,
     title: wsTitle,
-    content: wsContent,
     yDoc,
     yText
-  } = useNoteWebSocket({
+  } = useNoteCollab({
     noteId: config.noteId || '',
     workspaceId: workspaceId || '',
     enabled: !!config.noteId && !!workspaceId
@@ -84,7 +83,6 @@ const NoteWidget: FC<NoteWidgetProps> = ({ config }) => {
 
   // Use WebSocket data if available, fallback to note data
   const displayTitle = wsTitle || note.title;
-  const displayContent = wsContent || note.content;
 
   return (
     <Widget withPadding={false}>
@@ -124,10 +122,10 @@ const NoteWidget: FC<NoteWidgetProps> = ({ config }) => {
         </div>
 
         {/* Note Content - Editable Editor with WebSocket */}
-        {displayContent && (
+        {note.content && (
           <div className="flex-1 overflow-auto">
             <Editor
-              note={{ ...note, content: displayContent }}
+              note={{ ...note, content: note.content }}
               yDoc={yDoc}
               yText={yText}
               yjsReady={wsReady}
@@ -135,7 +133,7 @@ const NoteWidget: FC<NoteWidgetProps> = ({ config }) => {
           </div>
         )}
 
-        {!displayContent && (
+        {!note.content && (
           <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
             {t('widgets.emptyNote')}
           </div>

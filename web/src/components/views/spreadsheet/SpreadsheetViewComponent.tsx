@@ -4,10 +4,9 @@ import '@fortune-sheet/react/dist/index.css';
 import { setAutoFreeze } from 'immer';
 import { useTranslation } from 'react-i18next';
 import { SpreadsheetSheetData, SpreadsheetOp } from '../../../types/view';
-import { useSpreadsheetWebSocket } from '../../../hooks/use-spreadsheet-websocket';
+import { useSpreadsheetCollab } from '../../../hooks/use-spreadsheet-collab';
 
 // Disable immer's auto-freezing to allow fortune-sheet to mutate internal state
-// This fixes "Cannot delete property 'data'" errors when adding/modifying sheets
 setAutoFreeze(false);
 
 // Use any for fortune-sheet internal types since they're not fully exported
@@ -18,15 +17,11 @@ type Op = any;
 const deepClone = <T,>(obj: T): T => JSON.parse(JSON.stringify(obj));
 
 // Convert sheets from 'data' format (2D array) to 'celldata' format (sparse array)
-// This is needed because getAllSheets() returns 'data' format but Workbook initialization expects 'celldata'
 const convertDataToCelldata = (sheets: any[]): any[] => {
     return sheets.map(sheet => {
-        // If sheet already has celldata with content, use it
         if (sheet.celldata && sheet.celldata.length > 0) {
             return sheet;
         }
-
-        // If sheet has data (2D array), convert it to celldata (sparse array)
         if (sheet.data && Array.isArray(sheet.data)) {
             const celldata: any[] = [];
             for (let r = 0; r < sheet.data.length; r++) {
@@ -40,11 +35,9 @@ const convertDataToCelldata = (sheets: any[]): any[] => {
                     }
                 }
             }
-            // Return sheet with celldata, removing data to avoid confusion
             const { data, ...sheetWithoutData } = sheet;
             return { ...sheetWithoutData, celldata };
         }
-
         return sheet;
     });
 };
@@ -75,28 +68,19 @@ const SpreadsheetViewComponent = ({
 
     // Parse initial sheets from view.data
     const parsedInitialSheets = React.useMemo(() => {
-        console.log('[SpreadsheetView] Parsing initial sheets:', {
-            hasInitialSheets: !!initialSheets,
-            hasViewData: !!view?.data,
-            viewDataLength: view?.data?.length || 0
-        });
         if (initialSheets && initialSheets.length > 0) {
-            console.log('[SpreadsheetView] Using initialSheets prop');
             return initialSheets;
         }
         if (view?.data) {
             try {
                 const parsed = JSON.parse(view.data);
                 if (Array.isArray(parsed) && parsed.length > 0) {
-                    console.log('[SpreadsheetView] Parsed view.data, sheets count:', parsed.length);
                     return parsed as SpreadsheetSheetData[];
                 }
             } catch (e) {
                 console.warn('[SpreadsheetView] Failed to parse view.data:', e);
             }
         }
-        // Default empty sheet
-        console.log('[SpreadsheetView] Using default empty sheet');
         return [{
             id: 'sheet1',
             name: 'Sheet1',
@@ -110,68 +94,41 @@ const SpreadsheetViewComponent = ({
     // WebSocket connection
     const {
         sendOps,
+        syncSheets,
         isConnected,
         sheets: remoteSheets,
         pendingOps,
         clearPendingOps,
+        getLatestSheets,
         isInitialized: wsInitialized
-    } = useSpreadsheetWebSocket({
+    } = useSpreadsheetCollab({
         viewId: viewId || '',
         workspaceId: workspaceId || '',
         enabled: !disableWebSocket && !!viewId && (isPublic || !!workspaceId),
         isPublic: isPublic,
-        skipInitialFetch: isPublic && !!initialSheets,
     });
 
-    // Track if we've received initial data (either from Redis or determined Redis is empty)
-    const [dataSourceReady, setDataSourceReady] = useState(disableWebSocket);
-
-    // Initial sheets for first render only - deep clone to ensure mutable data
-    const [initialData] = useState<Sheet[]>(() => deepClone(parsedInitialSheets) as unknown as Sheet[]);
-
-    // Ref to track current sheets for sending to server (updated via onChange)
-    const localSheetsRef = useRef<Sheet[]>(initialData);
+    // Workbook data and version - only changes on initial sync (not on every cell edit)
+    const [workbookData, setWorkbookData] = useState<Sheet[]>(() =>
+        deepClone(parsedInitialSheets) as unknown as Sheet[]
+    );
+    const [dataVersion, setDataVersion] = useState(0);
+    const localSheetsRef = useRef<Sheet[]>(workbookData);
 
     const [isReady, setIsReady] = useState(false);
-
-    // Track data version to force Workbook re-mount when external data arrives
-    const [dataVersion, setDataVersion] = useState(0);
-    const [externalData, setExternalData] = useState<Sheet[] | null>(null);
+    const [dataSourceReady, setDataSourceReady] = useState(disableWebSocket);
 
     // Flag to prevent sending ops back when applying remote ops
     const isApplyingRemoteOpsRef = useRef(false);
 
-    // Handle onChange from fortune-sheet - only update ref, don't trigger re-render
+    // Handle onChange from fortune-sheet - track current state and sync to Y.Map
     const handleSheetsChange = useCallback((data: Sheet[]) => {
         localSheetsRef.current = data;
-        console.log('[SpreadsheetView] onChange: sheets updated, count:', data?.length || 0);
-    }, []);
-
-    // Update sheets from external source (Redis) - force Workbook re-mount with new data
-    const updateSheetsFromExternal = useCallback((data: Sheet[]) => {
-        console.log('[SpreadsheetView] updateSheetsFromExternal called with:', {
-            dataType: typeof data,
-            isArray: Array.isArray(data),
-            length: data?.length,
-            firstSheetKeys: data?.[0] ? Object.keys(data[0]) : [],
-            firstSheetCelldataLength: data?.[0]?.celldata?.length || 0,
-            firstSheetDataLength: data?.[0]?.data?.length || 0
-        });
-
-        // Convert data format to celldata format if needed
-        const convertedData = convertDataToCelldata(data);
-        const clonedData = deepClone(convertedData);
-
-        console.log('[SpreadsheetView] After conversion:', {
-            length: clonedData?.length,
-            firstSheetCelldataLength: clonedData?.[0]?.celldata?.length || 0,
-            hasData: !!clonedData?.[0]?.data
-        });
-
-        localSheetsRef.current = clonedData;
-        setExternalData(clonedData);
-        setDataVersion(v => v + 1);
-    }, []);
+        // Sync latest state to Y.Map for persistence (skip when applying remote ops)
+        if (!isApplyingRemoteOpsRef.current && !isPublic) {
+            syncSheets(data as unknown as SpreadsheetSheetData[]);
+        }
+    }, [isPublic, syncSheets]);
 
     // Monitor container size
     useEffect(() => {
@@ -185,98 +142,81 @@ const SpreadsheetViewComponent = ({
             }
         };
 
-        const resizeObserver = new ResizeObserver(() => {
-            updateSize();
-        });
-
+        const resizeObserver = new ResizeObserver(updateSize);
         resizeObserver.observe(container);
-        // Initial size check with a small delay to ensure layout is ready
         setTimeout(updateSize, 100);
 
         return () => resizeObserver.disconnect();
     }, []);
 
-    // Handle WebSocket initialization - prioritize Redis data over database data
+    // One-time: load initial state from server when WS syncs
     useEffect(() => {
-        console.log('[SpreadsheetView] WebSocket state changed:', {
-            wsInitialized,
-            hasRemoteSheets: !!remoteSheets,
-            remoteSheetsCount: remoteSheets?.length || 0,
-            dataSourceReady
-        });
+        if (!wsInitialized || dataSourceReady) return;
 
-        if (wsInitialized && !dataSourceReady) {
-            if (remoteSheets && remoteSheets.length > 0) {
-                // Redis has data - use it (prioritize Redis over database)
-                console.log('[SpreadsheetView] Using Redis data (priority)');
-                updateSheetsFromExternal(remoteSheets as unknown as Sheet[]);
-            } else {
-                // Redis is empty - use database data
-                console.log('[SpreadsheetView] Redis empty, using database data');
-                // initialData is already set from parsedInitialSheets
+        setDataSourceReady(true);
+
+        if (remoteSheets && remoteSheets.length > 0) {
+            // Server has data - re-mount workbook once with server state
+            const converted = convertDataToCelldata(remoteSheets as unknown as Sheet[]);
+            const cloned = deepClone(converted);
+            localSheetsRef.current = cloned;
+            setWorkbookData(cloned);
+            setDataVersion(v => v + 1);
+        }
+    }, [wsInitialized, remoteSheets, dataSourceReady]);
+
+    // Reset on disconnect so reconnect triggers a fresh sync
+    useEffect(() => {
+        if (!wsInitialized && dataSourceReady && !disableWebSocket) {
+            setDataSourceReady(false);
+        }
+    }, [wsInitialized, dataSourceReady, disableWebSocket]);
+
+    // Structural op types that require a full workbook re-mount
+    // (fortune-sheet's internal immer freezes state, causing "Cannot delete property" errors)
+    const STRUCTURAL_OPS = new Set(['addSheet', 'deleteSheet', 'copySheet']);
+
+    // Apply remote ops to fortune-sheet
+    useEffect(() => {
+        if (pendingOps.length === 0 || !workbookRef.current) return;
+
+        const hasStructuralOp = pendingOps.some(op => STRUCTURAL_OPS.has(op.op));
+
+        if (hasStructuralOp) {
+            // Structural ops (addSheet, etc.) cause frozen-object errors in applyOp.
+            // Re-mount the workbook with the latest full state from Y.Map instead.
+            const latestSheets = getLatestSheets();
+            if (latestSheets) {
+                const converted = convertDataToCelldata(latestSheets as unknown as Sheet[]);
+                const cloned = deepClone(converted);
+                localSheetsRef.current = cloned;
+                setWorkbookData(cloned);
+                setDataVersion(v => v + 1);
             }
-            setDataSourceReady(true);
-        }
-    }, [wsInitialized, remoteSheets, dataSourceReady, updateSheetsFromExternal]);
-
-    // Handle subsequent remote updates (after initial load)
-    useEffect(() => {
-        if (dataSourceReady && remoteSheets && remoteSheets.length > 0) {
-            console.log('[SpreadsheetView] Received remote update, re-mounting Workbook');
-            updateSheetsFromExternal(remoteSheets as unknown as Sheet[]);
-        }
-    }, [remoteSheets, dataSourceReady, updateSheetsFromExternal]);
-
-    // Handle pending ops from other clients (for regular cell edits)
-    useEffect(() => {
-        if (pendingOps.length > 0 && workbookRef.current) {
-            // Set flag to prevent sending these ops back to server
+        } else {
+            // Cell-level ops can be applied in-place without re-mount
             isApplyingRemoteOpsRef.current = true;
             pendingOps.forEach(op => {
                 try {
-                    // Cast to Op[] for fortune-sheet compatibility
-                    workbookRef.current?.applyOp([op as unknown as Op]);
+                    workbookRef.current?.applyOp([deepClone(op) as unknown as Op]);
                 } catch (e) {
-                    console.error('Failed to apply op:', e);
+                    console.error('[SpreadsheetView] Failed to apply remote op:', e);
                 }
             });
-            // Clear flag after applying all ops
             isApplyingRemoteOpsRef.current = false;
-            clearPendingOps();
         }
-    }, [pendingOps, clearPendingOps]);
 
-    // Handle local operations (send to server)
+        clearPendingOps();
+    }, [pendingOps, clearPendingOps, getLatestSheets]);
+
+    // Handle local operations - send ops to other clients via Y.Array
     const handleOp = useCallback((ops: Op[]) => {
-        // Skip if we're applying remote ops (to prevent sending them back)
-        if (isApplyingRemoteOpsRef.current) {
-            return;
-        }
+        if (isApplyingRemoteOpsRef.current) return;
         if (!isPublic && ops.length > 0) {
-            // Use getAllSheets() to get current data directly from workbook
-            // This ensures we get the latest state after the operation is applied
-            const sheetsToSend = workbookRef.current?.getAllSheets() || localSheetsRef.current;
-            console.log('[SpreadsheetView] Sending ops with sheets:', {
-                opsCount: ops.length,
-                sheetsCount: sheetsToSend?.length || 0,
-                sheetsSize: JSON.stringify(sheetsToSend || []).length
-            });
-            sendOps(ops as unknown as SpreadsheetOp[], sheetsToSend as unknown as SpreadsheetSheetData[]);
+            sendOps(ops as unknown as SpreadsheetOp[]);
         }
     }, [isPublic, sendOps]);
 
-    // Compute which data to use for Workbook
-    const workbookData = externalData || initialData;
-
-    // Log what data is being used
-    console.log('[SpreadsheetView] workbookData:', {
-        usingExternal: !!externalData,
-        dataVersion,
-        sheetsCount: workbookData?.length,
-        firstSheetCelldataLength: workbookData?.[0]?.celldata?.length || 0
-    });
-
-    // Only show workbook when both container is ready and data source is determined
     const canShowWorkbook = isReady && dataSourceReady;
 
     return (

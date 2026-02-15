@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { WebsocketProvider } from 'y-websocket'
+import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type * as Y from 'yjs'
 
 export interface SyncStatus {
@@ -14,7 +14,7 @@ export interface SyncStatus {
  * Hook for tracking Y.js synchronization status
  */
 export function useYjsSyncStatus(
-  provider: WebsocketProvider | null,
+  provider: HocuspocusProvider | null,
   doc: Y.Doc | null
 ): SyncStatus {
   const [isConnected, setIsConnected] = useState(false)
@@ -32,12 +32,6 @@ export function useYjsSyncStatus(
     const handleStatus = (event: { status: string }) => {
       setConnectionStatus(event.status)
       setIsConnected(event.status === 'connected')
-
-      if (event.status === 'connected') {
-        console.log('WebSocket connected')
-      } else if (event.status === 'disconnected') {
-        console.log('WebSocket disconnected')
-      }
     }
 
     // Sync status handler
@@ -46,7 +40,6 @@ export function useYjsSyncStatus(
 
       if (synced) {
         setLastSyncTime(new Date())
-        console.log('Document synced')
       }
     }
 
@@ -60,18 +53,17 @@ export function useYjsSyncStatus(
 
     // Register event listeners
     provider.on('status', handleStatus)
-    provider.on('sync', handleSync)
+    provider.on('synced', handleSync)
 
     if (provider.awareness) {
       provider.awareness.on('change', handleAwarenessChange)
-      // Initialize online users count
       handleAwarenessChange()
     }
 
     // Cleanup
     return () => {
       provider.off('status', handleStatus)
-      provider.off('sync', handleSync)
+      provider.off('synced', handleSync)
 
       if (provider.awareness) {
         provider.awareness.off('change', handleAwarenessChange)

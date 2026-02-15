@@ -1,19 +1,4 @@
 services:
-  redis:
-    image: redis:7-alpine
-    container_name: collabreef-redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   collabreef-collab:
     build:
       context: .
@@ -25,12 +10,8 @@ services:
       - "./bin:/usr/local/app/bin"
     environment:
       - PORT=3000
-      - REDIS_ADDR=redis:6379
       - DB_DRIVER=sqlite3
       - DB_DSN=/usr/local/app/bin/collabreef.db
-    depends_on:
-      redis:
-        condition: service_healthy
     restart: unless-stopped
 
   collabreef-web:
@@ -43,17 +24,12 @@ services:
       - "./bin:/usr/local/app/bin"
     environment:
       - PORT=8080
+      - DB_DRIVER=sqlite3
+      - DB_DSN=/usr/local/app/bin/collabreef.db
       - APP_DISABLE_SIGNUP=${APP_DISABLE_SIGNUP}
       - APP_SECRET=${APP_SECRET}
-      - REDIS_ADDR=redis:6379
       - COLLAB_URL=http://collabreef-collab:3000
     depends_on:
-      redis:
-        condition: service_healthy
       collabreef-collab:
         condition: service_started
     restart: unless-stopped
-
-volumes:
-  redis_data:
-    driver: local
