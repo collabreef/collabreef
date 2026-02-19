@@ -25,6 +25,16 @@ interface Props {
   yjsReady?: boolean
 }
 
+const DEFAULT_CONTENT = { type: 'doc', content: [{ type: 'paragraph' }] }
+
+const safeParse = (content: string) => {
+  try {
+    return { parsed: JSON.parse(content), error: false }
+  } catch {
+    return { parsed: DEFAULT_CONTENT, error: true }
+  }
+}
+
 const Editor: FC<Props> = ({
   note,
   onChange,
@@ -35,6 +45,7 @@ const Editor: FC<Props> = ({
 }) => {
   const currentWorkspaceId = useCurrentWorkspaceId()
   const { t } = useTranslation()
+  const { parsed: initialContent, error: contentError } = useMemo(() => safeParse(note.content), [note.content])
   const lastContentRef = useRef<string>(note.content)
   const isApplyingYjsUpdate = useRef(false)
   const isComposing = useRef(false)
@@ -195,7 +206,7 @@ const Editor: FC<Props> = ({
         class: 'prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl focus:outline-none',
       },
     },
-    content: JSON.parse(note.content),
+    content: initialContent,
     onUpdate({ editor }) {
       // Avoid infinite loop when applying Y.js updates
       if (isApplyingYjsUpdate.current) return;
@@ -376,6 +387,11 @@ const Editor: FC<Props> = ({
 
   return (
     <EditorContext.Provider value={providerValue}>
+      {contentError && (
+        <div className="mb-2 p-2 rounded bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">
+          {t('editor.contentParseError', 'Failed to load note content. The content may be corrupted.')}
+        </div>
+      )}
       {!isTouchDevice && canDrag && <DragHandle editor={editor} className='border rounded shadow-sm p-1'>
         <GripVertical size={12} />
       </DragHandle>}

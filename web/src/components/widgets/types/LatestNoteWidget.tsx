@@ -162,11 +162,22 @@ const LatestNoteWidget: FC<LatestNoteWidgetProps> = ({ config }) => {
         )}
 
         {/* Note Content - Editable Editor */}
-        {latestNote.content && (
-          <div className="flex-1 overflow-auto">
-            <Editor note={latestNote} onChange={handleNoteChange} />
-          </div>
-        )}
+        {latestNote.content && (() => {
+          try {
+            JSON.parse(latestNote.content);
+            return (
+              <div className="flex-1 overflow-auto">
+                <Editor note={latestNote} onChange={handleNoteChange} />
+              </div>
+            );
+          } catch {
+            return (
+              <div className="flex-1 flex items-center justify-center text-red-500 text-sm">
+                Error parsing content
+              </div>
+            );
+          }
+        })()}
 
         {!latestNote.content && (
           <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">

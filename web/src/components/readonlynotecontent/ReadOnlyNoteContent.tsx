@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useMemo } from "react"
 import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import { TaskItem, TaskList } from "@tiptap/extension-list"
@@ -11,7 +11,17 @@ interface ReadOnlyNoteContentProps {
     note: NoteData
 }
 
+const DEFAULT_CONTENT = { type: 'doc', content: [{ type: 'paragraph' }] }
+
 const ReadOnlyNoteContent: FC<ReadOnlyNoteContentProps> = ({ note }) => {
+    const { parsed, error } = useMemo(() => {
+        try {
+            return { parsed: JSON.parse(note.content), error: false }
+        } catch {
+            return { parsed: DEFAULT_CONTENT, error: true }
+        }
+    }, [note.content])
+
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
@@ -53,9 +63,13 @@ const ReadOnlyNoteContent: FC<ReadOnlyNoteContentProps> = ({ note }) => {
                 class: 'prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl focus:outline-none',
             },
         },
-        content: JSON.parse(note.content),
+        content: parsed,
         editable: false,
     }, [note.id])
+
+    if (error) {
+        return <div className='text-red-500'>Error parsing content</div>
+    }
 
     if (!editor) {
         return null
