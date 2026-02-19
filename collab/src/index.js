@@ -7,7 +7,6 @@ const PORT = parseInt(process.env.PORT || '3000', 10)
 
 // Initialize Database
 const db = createDB()
-console.log(`Database initialized (driver: ${process.env.DB_DRIVER || 'sqlite3'})`)
 
 // Configure Hocuspocus server
 const server = Server.configure({
@@ -16,8 +15,7 @@ const server = Server.configure({
     new AuthExtension(),
     new DatabaseExtension({ db }),
   ],
-  async onListen(data) {
-    console.log(`Hocuspocus collab service listening on port ${data.port}`)
+  async onListen() {
   },
 })
 
@@ -25,10 +23,8 @@ server.listen()
 
 // Graceful shutdown
 async function shutdown() {
-  console.log('Shutting down collab service...')
   await server.destroy()
   await db.close()
-  console.log('Collab service stopped')
   process.exit(0)
 }
 

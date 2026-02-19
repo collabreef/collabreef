@@ -227,14 +227,10 @@ const Editor: FC<Props> = ({
 
         // Update Y.Text for CRDT collaboration
         if (yText && yDoc) {
-          console.log('[Editor] Before Y.Text update, content length:', newContent.length);
           yDoc.transact(() => {
             yText.delete(0, yText.length);
             yText.insert(0, newContent);
           }, 'local');
-          console.log('[Editor] Updated Y.Text from editor change, origin: local');
-        } else {
-          console.log('[Editor] WARNING: yText or yDoc is null, cannot update CRDT');
         }
 
         // Trigger onChange callback if provided
@@ -259,13 +255,11 @@ const Editor: FC<Props> = ({
 
     // Skip if Y.Text is empty (new note or not initialized)
     if (!yjsContent || yjsContent.length === 0) {
-      console.log('[Editor] Y.js ready but yText is empty, using note.content');
       return;
     }
 
     // Skip if content is the same
     if (yjsContent === lastContentRef.current) {
-      console.log('[Editor] Y.js ready, content already in sync');
       return;
     }
 
@@ -280,8 +274,6 @@ const Editor: FC<Props> = ({
       lastContentRef.current = yjsContent;
 
       isApplyingYjsUpdate.current = false;
-
-      console.log('[Editor] Applied Y.js content on ready, length:', yjsContent.length);
     } catch (error) {
       console.error('[Editor] Error parsing Y.js content on ready:', error);
     }
@@ -308,8 +300,6 @@ const Editor: FC<Props> = ({
         lastContentRef.current = newContent;
 
         isApplyingYjsUpdate.current = false;
-
-        console.log('Applied Y.js content update from other client');
       } catch (error) {
         console.error('Error parsing Y.js content:', error);
       }
@@ -346,7 +336,6 @@ const Editor: FC<Props> = ({
 
         // Update Y.Text for CRDT collaboration
         if (yText && yDoc) {
-          console.log('[Editor] Composition ended, sending pending update, content length:', newContent.length);
           yDoc.transact(() => {
             yText.delete(0, yText.length);
             yText.insert(0, newContent);

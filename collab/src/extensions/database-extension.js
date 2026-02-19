@@ -54,7 +54,6 @@ export class DatabaseExtension {
           yOps.delete(0, yOps.length)
         }
 
-        console.log(`[DB] Loaded Y.js state for ${documentName}`)
         return
       }
 
@@ -70,7 +69,7 @@ export class DatabaseExtension {
           await this.initializeSpreadsheet(document, id)
           break
         default:
-          console.log(`[DB] Unknown document type: ${type}`)
+          break
       }
     } catch (err) {
       console.error(`[DB] Error loading document ${documentName}:`, err)
@@ -104,7 +103,6 @@ export class DatabaseExtension {
           break
       }
 
-      console.log(`[DB] Stored document ${documentName}`)
     } catch (err) {
       console.error(`[DB] Error storing document ${documentName}:`, err)
     }
@@ -116,7 +114,6 @@ export class DatabaseExtension {
   async initializeNote(document, noteId) {
     const note = await this.db.findNote(noteId)
     if (!note) {
-      console.log(`[DB] Note ${noteId} not found, starting empty`)
       return
     }
 
@@ -132,7 +129,6 @@ export class DatabaseExtension {
       yMeta.set('title', note.title || '')
     })
 
-    console.log(`[DB] Initialized note ${noteId} from database`)
   }
 
   /**
@@ -141,7 +137,6 @@ export class DatabaseExtension {
   async initializeWhiteboard(document, viewId) {
     const view = await this.db.findView(viewId)
     if (!view) {
-      console.log(`[DB] View ${viewId} not found, starting empty`)
       return
     }
 
@@ -189,7 +184,6 @@ export class DatabaseExtension {
       console.error(`[DB] Error loading view objects:`, e)
     }
 
-    console.log(`[DB] Initialized whiteboard ${viewId} from database`)
   }
 
   /**
@@ -198,7 +192,6 @@ export class DatabaseExtension {
   async initializeSpreadsheet(document, viewId) {
     const view = await this.db.findView(viewId)
     if (!view) {
-      console.log(`[DB] View ${viewId} not found, starting empty`)
       return
     }
 
@@ -226,7 +219,6 @@ export class DatabaseExtension {
       }
     }
 
-    console.log(`[DB] Initialized spreadsheet ${viewId} from database`)
   }
 
   /**

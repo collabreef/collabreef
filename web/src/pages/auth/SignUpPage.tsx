@@ -18,8 +18,7 @@ const SignUp: React.FC = () => {
 
   const signUpMutation = useMutation({
     mutationFn: signUp,
-    onSuccess: (data) => {
-      console.log('Sign up successful:', data);
+    onSuccess: () => {
       navigate('/signin'); // Redirect to sign-in page
     },
     onError: (error: any) => {

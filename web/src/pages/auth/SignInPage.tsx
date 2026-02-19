@@ -19,14 +19,12 @@ const SignIn: React.FC = () => {
 
     const signInMutation = useMutation({
         mutationFn: signIn,
-        onSuccess: async (data) => {
-            console.log('Sign in successful:', data);
+        onSuccess: async () => {
             // Reload user information after successful sign in
             await fetchUser();
             navigate('/');
         },
         onError: (error: any) => {
-            console.log(error)
             const errorMessage = error?.response?.data?.error || '';
             if (errorMessage.toLowerCase().includes('disabled')) {
                 toast.error(t("messages.accountDisabled"));

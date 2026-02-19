@@ -32,7 +32,6 @@ const Sidebar: FC<Props> = function ({ children }) {
             try {
                 resetWorkspaces();
                 resetCurrentUser();
-                console.log("navigate to /")
                 navigate(`/`)
             } catch (error) {
                 console.error('Error invalidating queries:', error)

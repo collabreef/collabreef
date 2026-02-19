@@ -57,7 +57,6 @@ export function useYjsView(config: UseYjsViewConfig): UseYjsViewReturn {
     indexeddbProvider.current = idbProvider
 
     idbProvider.on('synced', () => {
-      console.log('IndexedDB sync complete')
     })
 
     // Build WebSocket URL
@@ -87,8 +86,6 @@ export function useYjsView(config: UseYjsViewConfig): UseYjsViewReturn {
 
     // Cleanup
     return () => {
-      console.log('Cleaning up Y.js resources for view', viewId)
-
       hocuspocusProvider.destroy()
 
       if (indexeddbProvider.current) {

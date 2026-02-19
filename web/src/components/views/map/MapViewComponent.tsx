@@ -295,7 +295,6 @@ const MapViewComponent = ({ viewObjects = [], view, focusedObjectId, isPublic = 
                                         const path = isPublic
                                             ? `/explore/map/${mapId}/marker/${marker.id}`
                                             : `/workspaces/${workspaceId}/map/${mapId}/marker/${marker.id}`
-                                        console.log('Navigating to:', path)
                                         navigate(path)
                                     }
                                 }}

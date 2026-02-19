@@ -33,6 +33,5 @@ export const signOut = async () => {
 
 export const me = async () =>{
   const response = await axios.get('/api/v1/me', { withCredentials: true });
-  console.log('status:', response.status);
   return response.data
 }
