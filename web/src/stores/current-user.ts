@@ -14,6 +14,12 @@ export const useCurrentUserStore = create<CurrentUserStore>((set) => ({
     try {
       const loginedUser = await me();
       set({ user: loginedUser });
+      if (loginedUser?.preferences) {
+        const { lang, theme, primaryColor } = loginedUser.preferences;
+        if (theme) localStorage.setItem("theme", theme);
+        if (primaryColor) localStorage.setItem("primaryColor", primaryColor);
+        if (lang) localStorage.setItem("i18nextLng", lang);
+      }
       return loginedUser;
     } catch(e) {
       set({ user: null });
