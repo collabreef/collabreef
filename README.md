@@ -1,72 +1,28 @@
 # CollabReef
 
-**CollabReef** is an open-source, self-hosted pinboard service designed to help you organize links, notes, and resources in a flexible and visual way.
-
-Build your own workspace with widgets, keep everything in one place, and stay in full control of your data.
+**CollabReef** is an open-source, self-hosted pinboard service to organize links, notes, and resources in a flexible and visual way.
 
 ![screenshot](https://github.com/collabreef/collabreef/blob/main/web/src/assets/app.png)
 
-## ✨ Features
+## Features
 
-* 🧩 **10+ Built-in Widgets**
-  Choose from more than 10 different widgets, including link, note, carousel, rss reader, map, calendar, folder, and more.
-
-* 🗂️ **Unlimited Workspaces**
-  Create unlimited workspaces to organize content by projects, topics, or personal needs.
-
-* 📌 **Flexible Pinboard Layout**
-  Arrange and customize widgets freely within each workspace.
-
-* 🗓️ **Calendar View**
-  Visualize pins and content in a calendar-based view for better time-based organization.
-
-* 🗺️ **Map View**
-  View location-based pins on an interactive map, perfect for travel plans or geo-related notes.
-
-* 📋 **Kanban Board**
-  Organize tasks with a powerful kanban board supporting drag-and-drop, multiple columns, and task management.
-
-* 🎨 **Collaborative Whiteboard**
-  Real-time collaborative whiteboard for brainstorming, sketching, and visual planning with your team.
-
-* ✍️ **Real-time Collaborative Notes**
-  Edit notes together in real-time with CRDT-based synchronization powered by Y.js, ensuring conflict-free collaboration.
-
-* 🌐 **Modern Web Interface**
-  Clean, responsive UI optimized for both desktop and mobile devices.
-
-* 🏠 **Fully Self-Hosted**
-  Deploy CollabReef on your own server and keep full ownership of your data.
-
-* 🧾 **Open Source**
-  Transparent, extensible, and community-driven.
-
-* 🐳 **Docker Ready**
-  Simple deployment with Docker and Docker Compose.
+- **10+ Built-in Widgets** — link, note, carousel, RSS reader, map, calendar, folder, and more
+- **Unlimited Workspaces** — organize content by projects, topics, or personal needs
+- **Kanban Board** — drag-and-drop task management with multiple columns
+- **Collaborative Whiteboard** — real-time brainstorming and visual planning
+- **Real-time Collaborative Notes** — CRDT-based sync powered by Y.js
+- **Calendar & Map Views** — time-based and location-based content organization
+- **Fully Self-Hosted** — deploy on your own server, full data ownership
+- **Docker Ready** — simple deployment with Docker Compose
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### Docker Compose (Recommended)
 
-CollabReef is available on Docker Hub as a single image with different entrypoints for the web server and collaboration service.
-
 ```yaml
 services:
-  redis:
-    image: redis:7-alpine
-    container_name: collabreef-redis
-    restart: unless-stopped
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   collab:
     image: ti777777/collabreef
     container_name: collabreef-collab
@@ -75,12 +31,8 @@ services:
       - collabreef_data:/usr/local/app/bin
     environment:
       PORT: 3000
-      REDIS_ADDR: redis:6379
       DB_DRIVER: sqlite3
       DB_DSN: /usr/local/app/bin/collabreef.db
-    depends_on:
-      redis:
-        condition: service_healthy
     restart: unless-stopped
 
   web:
@@ -93,25 +45,17 @@ services:
       - collabreef_data:/usr/local/app/bin
     environment:
       PORT: 8080
-      REDIS_ADDR: redis:6379
       COLLAB_URL: http://collab:3000
       # APP_SECRET: your-secret-key
       # APP_DISABLE_SIGNUP: true
     depends_on:
-      redis:
-        condition: service_healthy
-      collab:
-        condition: service_started
+      - collab
     restart: unless-stopped
 
 volumes:
-  redis_data:
-    driver: local
   collabreef_data:
     driver: local
 ```
-
-Start the services:
 
 ```bash
 docker compose up -d
@@ -119,9 +63,9 @@ docker compose up -d
 
 The app will be available at `http://localhost:8080`.
 
-#### Optional: PostgreSQL
+### Optional: PostgreSQL
 
-By default CollabReef uses SQLite. To use PostgreSQL instead, add a `postgres` service and update the environment variables:
+By default CollabReef uses SQLite. To use PostgreSQL, add a `postgres` service and set these environment variables on both `collab` and `web` services:
 
 ```yaml
 services:
@@ -142,19 +86,17 @@ services:
       retries: 5
 ```
 
-Then set these environment variables on both `collab` and `web` services:
-
 ```yaml
 environment:
   DB_DRIVER: postgres
   DB_DSN: "host=postgres port=5432 user=collabreef password=collabreef_password dbname=collabreef sslmode=disable TimeZone=UTC"
 ```
 
-Additionally, add `DB_MIGRATIONS_PATH: "file://migrations/postgres"` to the `web` service.
+Also add `DB_MIGRATIONS_PATH: "file://migrations/postgres"` to the `web` service.
 
-#### Optional: S3 / MinIO Storage
+### Optional: S3 / MinIO Storage
 
-By default files are stored locally. To use S3-compatible storage, set these environment variables on the `web` service:
+By default files are stored locally. To use S3-compatible storage, set these on the `web` service:
 
 ```yaml
 environment:
@@ -166,19 +108,12 @@ environment:
   STORAGE_S3_USE_SSL: "true"
 ```
 
-## 🤝 Contributing
-
-Contributions are welcome!
-
-* Fork the repository
-* Create your feature branch
-* Commit your changes
-* Open a pull request
-
 ---
 
-## 📄 License
+## Contributing
+
+Contributions are welcome! Fork the repo, create a feature branch, and open a pull request.
+
+## License
 
 CollabReef is licensed under the **MIT License**.
-
----
