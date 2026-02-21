@@ -6,6 +6,7 @@ import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import WhiteboardViewComponent from "@/components/views/whiteboard/WhiteboardViewComponent"
 import ViewHeader from "@/components/views/common/ViewHeader"
 import ViewMenu from "@/components/viewmenu/ViewMenu"
+import OneColumn from "@/components/onecolumn/OneColumn"
 
 const WhiteboardPage = () => {
     const { t } = useTranslation()
@@ -27,18 +28,20 @@ const WhiteboardPage = () => {
     }
 
     return (
-        <div className="flex flex-col h-dvh bg-neutral-50 dark:bg-neutral-950">
-            <ViewHeader
-                menu={<ViewMenu viewType="whiteboard" currentViewId={view.id} />}
-            />
-            <div className="flex-1 overflow-hidden border shadow">
-                <WhiteboardViewComponent
-                    view={view}
-                    workspaceId={currentWorkspaceId}
-                    viewId={whiteboardId}
+        <OneColumn>
+            <div className="flex flex-col h-screen">
+                <ViewHeader
+                    menu={<ViewMenu viewType="whiteboard" currentViewId={view.id} />}
                 />
+                <div className="flex-1 overflow-hidden">
+                    <WhiteboardViewComponent
+                        view={view}
+                        workspaceId={currentWorkspaceId}
+                        viewId={whiteboardId}
+                    />
+                </div>
             </div>
-        </div>
+        </OneColumn>
     )
 }
 

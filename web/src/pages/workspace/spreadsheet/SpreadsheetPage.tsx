@@ -6,6 +6,7 @@ import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import SpreadsheetViewComponent from "@/components/views/spreadsheet/SpreadsheetViewComponent"
 import ViewHeader from "@/components/views/common/ViewHeader"
 import ViewMenu from "@/components/viewmenu/ViewMenu"
+import OneColumn from "@/components/onecolumn/OneColumn"
 
 const SpreadsheetPage = () => {
     const { t } = useTranslation()
@@ -27,18 +28,20 @@ const SpreadsheetPage = () => {
     }
 
     return (
-        <div className="flex flex-col h-dvh bg-neutral-50 dark:bg-neutral-950">
-            <ViewHeader
-                menu={<ViewMenu viewType="spreadsheet" currentViewId={view.id} />}
-            />
-            <div className="flex-1 overflow-hidden border shadow">
-                <SpreadsheetViewComponent
-                    view={view}
-                    workspaceId={currentWorkspaceId}
-                    viewId={spreadsheetId}
+        <OneColumn>
+            <div className="flex flex-col h-screen">
+                <ViewHeader
+                    menu={<ViewMenu viewType="spreadsheet" currentViewId={view.id} />}
                 />
+                <div className="flex-1 overflow-hidden">
+                    <SpreadsheetViewComponent
+                        view={view}
+                        workspaceId={currentWorkspaceId}
+                        viewId={spreadsheetId}
+                    />
+                </div>
             </div>
-        </div>
+        </OneColumn>
     )
 }
 

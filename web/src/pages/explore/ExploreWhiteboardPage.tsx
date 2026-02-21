@@ -5,6 +5,7 @@ import { getPublicView, getPublicViewObjects } from "@/api/view"
 import WhiteboardViewComponent from "@/components/views/whiteboard/WhiteboardViewComponent"
 import ViewHeader from "@/components/views/common/ViewHeader"
 import PublicViewMenu from "@/components/viewmenu/PublicViewMenu"
+import OneColumn from "@/components/onecolumn/OneColumn"
 import { useMemo } from "react"
 
 const ExploreWhiteboardPage = () => {
@@ -67,21 +68,23 @@ const ExploreWhiteboardPage = () => {
     }
 
     return (
-        <div className="flex flex-col h-dvh bg-neutral-50 dark:bg-neutral-950">
-            <ViewHeader
-                menu={<PublicViewMenu viewType="whiteboard" currentViewId={view.id} />}
-            />
-            <div className="flex-1 overflow-hidden border shadow">
-                <WhiteboardViewComponent
-                    view={view}
-                    isPublic
-                    viewId={whiteboardId}
-                    initialCanvasObjects={canvasObjects}
-                    initialViewObjects={viewObjectsMap}
-                    disableWebSocket={true}
+        <OneColumn>
+            <div className="flex flex-col h-screen">
+                <ViewHeader
+                    menu={<PublicViewMenu viewType="whiteboard" currentViewId={view.id} />}
                 />
+                <div className="flex-1 overflow-hidden">
+                    <WhiteboardViewComponent
+                        view={view}
+                        isPublic
+                        viewId={whiteboardId}
+                        initialCanvasObjects={canvasObjects}
+                        initialViewObjects={viewObjectsMap}
+                        disableWebSocket={true}
+                    />
+                </div>
             </div>
-        </div>
+        </OneColumn>
     )
 }
 
