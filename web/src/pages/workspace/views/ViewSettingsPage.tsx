@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams, useLocation } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useState, useEffect } from "react"
@@ -12,7 +12,12 @@ import { UpdateViewRequest } from "@/types/view"
 
 const ViewSettingsPage = () => {
     const navigate = useNavigate()
-    const { workspaceId, viewId, viewType } = useParams<{ workspaceId: string; viewId: string; viewType: string }>()
+    const location = useLocation()
+    const { workspaceId, viewId } = useParams<{ workspaceId: string; viewId: string }>()
+    // viewType is a static route segment (e.g. /calendar/:viewId/settings), not a param
+    const pathSegments = location.pathname.split('/')
+    const viewIdIndex = pathSegments.indexOf(viewId || '')
+    const viewType = viewIdIndex > 0 ? pathSegments[viewIdIndex - 1] : ''
     const { t } = useTranslation()
     const queryClient = useQueryClient()
     const { addToast } = useToastStore()
