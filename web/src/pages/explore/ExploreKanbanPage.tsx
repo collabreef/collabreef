@@ -5,6 +5,7 @@ import { getPublicView, getPublicViewObjects } from "@/api/view"
 import KanbanViewComponent from "@/components/views/kanban/KanbanViewComponent"
 import ViewHeader from "@/components/views/common/ViewHeader"
 import PublicViewMenu from "@/components/viewmenu/PublicViewMenu"
+import OneColumn from "@/components/onecolumn/OneColumn"
 
 const ExploreKanbanPage = () => {
     const { t } = useTranslation()
@@ -31,19 +32,21 @@ const ExploreKanbanPage = () => {
     }
 
     return (
-        <div className="h-screen flex flex-col">
-            <ViewHeader
-                menu={<PublicViewMenu viewType="kanban" currentViewId={view.id} />}
-            />
-            <div className="flex-1 overflow-hidden">
-                <KanbanViewComponent
-                    view={view}
-                    viewObjects={viewObjects}
-                    isPublic={true}
-                    viewId={kanbanId}
+        <OneColumn>
+            <div className="h-screen flex flex-col">
+                <ViewHeader
+                    menu={<PublicViewMenu viewType="kanban" currentViewId={view.id} />}
                 />
+                <div className="flex-1 overflow-hidden">
+                    <KanbanViewComponent
+                        view={view}
+                        viewObjects={viewObjects}
+                        isPublic={true}
+                        viewId={kanbanId}
+                    />
+                </div>
             </div>
-        </div>
+        </OneColumn>
     )
 }
 
