@@ -5,6 +5,7 @@ import { getPublicView } from "@/api/view"
 import SpreadsheetViewComponent from "@/components/views/spreadsheet/SpreadsheetViewComponent"
 import ViewHeader from "@/components/views/common/ViewHeader"
 import PublicViewMenu from "@/components/viewmenu/PublicViewMenu"
+import OneColumn from "@/components/onecolumn/OneColumn"
 import { useMemo } from "react"
 import { SpreadsheetSheetData } from "@/types/view"
 
@@ -41,20 +42,22 @@ const ExploreSpreadsheetPage = () => {
     }
 
     return (
-        <div className="flex flex-col h-dvh bg-neutral-50 dark:bg-neutral-950">
-            <ViewHeader
-                menu={<PublicViewMenu viewType="spreadsheet" currentViewId={view.id} />}
-            />
-            <div className="flex-1 overflow-hidden border shadow">
-                <SpreadsheetViewComponent
-                    view={view}
-                    isPublic
-                    viewId={spreadsheetId}
-                    initialSheets={initialSheets}
-                    disableWebSocket={true}
+        <OneColumn>
+            <div className="flex flex-col h-screen">
+                <ViewHeader
+                    menu={<PublicViewMenu viewType="spreadsheet" currentViewId={view.id} />}
                 />
+                <div className="flex-1 overflow-hidden">
+                    <SpreadsheetViewComponent
+                        view={view}
+                        isPublic
+                        viewId={spreadsheetId}
+                        initialSheets={initialSheets}
+                        disableWebSocket={true}
+                    />
+                </div>
             </div>
-        </div>
+        </OneColumn>
     )
 }
 
