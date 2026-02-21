@@ -9,6 +9,8 @@ import TextInput from '@/components/textinput/TextInput';
 import SubmitButton from '@/components/submitbutton/SubmitButton';
 import { Telescope } from 'lucide-react';
 import { useCurrentUserStore } from '@/stores/current-user';
+import { useTheme } from '@/providers/Theme';
+import i18n from '@/i18n';
 
 const SignIn: React.FC = () => {
     const {t} = useTranslation();
@@ -16,12 +18,18 @@ const SignIn: React.FC = () => {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
     const { fetchUser } = useCurrentUserStore();
+    const { setTheme, setPrimaryColor } = useTheme()!;
 
     const signInMutation = useMutation({
         mutationFn: signIn,
         onSuccess: async () => {
             // Reload user information after successful sign in
-            await fetchUser();
+            const currentUser = await fetchUser();
+            if (currentUser?.preferences) {
+                if (currentUser.preferences.lang) i18n.changeLanguage(currentUser.preferences.lang);
+                if (currentUser.preferences.theme) setTheme(currentUser.preferences.theme);
+                if (currentUser.preferences.primaryColor) setPrimaryColor(currentUser.preferences.primaryColor);
+            }
             navigate('/');
         },
         onError: (error: any) => {
