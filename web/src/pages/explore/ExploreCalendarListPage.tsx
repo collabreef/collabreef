@@ -22,7 +22,7 @@ const ExploreCalendarListPage = () => {
 
     useEffect(() => {
         if (views && views.length > 0) {
-            navigate(`/explore/calendar/${views[0].id}`, { replace: true })
+            navigate(`/share/calendar/${views[0].id}`, { replace: true })
         }
     }, [views, navigate])
 

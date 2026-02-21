@@ -22,7 +22,7 @@ const ExploreKanbanListPage = () => {
 
     useEffect(() => {
         if (views && views.length > 0) {
-            navigate(`/explore/kanban/${views[0].id}`, { replace: true })
+            navigate(`/share/kanban/${views[0].id}`, { replace: true })
         }
     }, [views, navigate])
 

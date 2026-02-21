@@ -22,7 +22,7 @@ const ExploreWhiteboardListPage = () => {
 
     useEffect(() => {
         if (views && views.length > 0) {
-            navigate(`/explore/whiteboard/${views[0].id}`, { replace: true })
+            navigate(`/share/whiteboard/${views[0].id}`, { replace: true })
         }
     }, [views, navigate])
 

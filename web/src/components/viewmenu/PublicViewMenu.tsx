@@ -38,7 +38,7 @@ const PublicViewMenu = ({ viewType, currentViewId }: PublicViewMenuProps) => {
 
     const handleViewClick = (id: string) => {
         if (id === currentViewId) return
-        navigate(`/explore/${viewType}/${id}`)
+        navigate(`/share/${viewType}/${id}`)
     }
 
     const getViewTypeLabel = () => {

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useState, useEffect } from "react"
 import SidebarButton from "@/components/sidebar/SidebarButton"
-import { Loader, RotateCcw, Trash2 } from "lucide-react"
+import { Loader, RotateCcw, Trash2, Copy, Check } from "lucide-react"
 import OneColumn from "@/components/onecolumn/OneColumn"
 import { getView, updateView, deleteView } from "@/api/view"
 import { useToastStore } from "@/stores/toast"
@@ -20,6 +20,7 @@ const ViewSettingsPage = () => {
     const [viewName, setViewName] = useState("")
     const [visibility, setVisibility] = useState("private")
     const [isRenaming, setIsRenaming] = useState(false)
+    const [isCopied, setIsCopied] = useState(false)
 
     const { data: view, isLoading } = useQuery({
         queryKey: ['view', workspaceId, viewId],
@@ -86,6 +87,17 @@ const ViewSettingsPage = () => {
             setVisibility(newVisibility)
             visibilityMutation.mutate(newVisibility)
         }
+    }
+
+    const handleCopyLink = () => {
+        const publicUrl = `${window.location.origin}/share/${viewType}/${viewId}`
+        navigator.clipboard.writeText(publicUrl).then(() => {
+            setIsCopied(true)
+            addToast({ type: 'success', title: t('messages.copied') })
+            setTimeout(() => setIsCopied(false), 2000)
+        }).catch(() => {
+            addToast({ type: 'error', title: t('messages.copyFailed') })
+        })
     }
 
     const handleDeleteClick = () => {
@@ -187,6 +199,39 @@ const ViewSettingsPage = () => {
                                                 />
                                             </div>
                                         </div>
+
+                                        {/* Public Link */}
+                                        {visibility === "public" && (
+                                            <div className="flex flex-col gap-2">
+                                                <div className="text-lg font-semibold">
+                                                    {t('views.publicLink')}
+                                                </div>
+                                                <div className="flex gap-3 flex-wrap">
+                                                    <input
+                                                        readOnly
+                                                        className="flex-1 px-3 py-2 border dark:border-none rounded-lg dark:bg-neutral-700 text-sm text-gray-600 dark:text-gray-400"
+                                                        value={`${window.location.origin}/share/${viewType}/${viewId}`}
+                                                        onClick={e => (e.target as HTMLInputElement).select()}
+                                                    />
+                                                    <button
+                                                        onClick={handleCopyLink}
+                                                        className="px-3 py-2 flex gap-2 items-center text-neutral-600 dark:text-neutral-300"
+                                                    >
+                                                        {isCopied ? (
+                                                            <>
+                                                                <Check size={16} className="text-green-500" />
+                                                                {t('views.copyPublicLink')}
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Copy size={16} />
+                                                                {t('views.copyPublicLink')}
+                                                            </>
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
 
                                         {/* Delete View */}
                                         <div className="flex gap-2 items-center justify-between">

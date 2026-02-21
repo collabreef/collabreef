@@ -31,7 +31,7 @@ const PublicViewObjectNotesManager = ({
                     {linkedNotes.map((note: any) => (
                         <Link
                             key={note.id}
-                            to={`/explore/notes/${note.id}`}
+                            to={`/share/notes/${note.id}`}
                             className="flex flex-col gap-2 p-3 rounded shadow-sm group bg-white dark:bg-neutral-800"
                         >
                             <div className="flex justify-between">

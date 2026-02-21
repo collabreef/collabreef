@@ -210,11 +210,11 @@ const PinToViewObjectModal: FC<PinToViewObjectModalProps> = ({ note, isOpen, onC
                                             }
                                         } else {
                                             if (viewType === 'calendar') {
-                                                return `/explore/calendar/${viewId}/slot/${objectId}`
+                                                return `/share/calendar/${viewId}/slot/${objectId}`
                                             } else if (viewType === 'map') {
-                                                return `/explore/map/${viewId}/marker/${objectId}`
+                                                return `/share/map/${viewId}/marker/${objectId}`
                                             } else if (viewType === 'kanban') {
-                                                return `/explore/kanban/${viewId}`
+                                                return `/share/kanban/${viewId}`
                                             }
                                         }
                                         return '#'

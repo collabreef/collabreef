@@ -37,7 +37,7 @@ const ExploreCalendarSlotDetail = () => {
     }, [slot])
 
     const handleBack = () => {
-        navigate(`/explore/calendar/${viewId}`)
+        navigate(`/share/calendar/${viewId}`)
     }
 
     if (isLoading) {

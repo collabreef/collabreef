@@ -19,7 +19,7 @@ const ExploreMapMarkersList = ({
     const [searchQuery, setSearchQuery] = useState("")
 
     const handleMarkerClick = (markerId: string) => {
-        navigate(`/explore/map/${mapId}/marker/${markerId}`)
+        navigate(`/share/map/${mapId}/marker/${markerId}`)
     }
 
     let parsedMarkers: any[] = []

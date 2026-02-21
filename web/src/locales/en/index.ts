@@ -487,6 +487,8 @@ export default {
     columnOrderHint: "Lower numbers appear first",
     kanbanSettings: "Kanban Settings",
     publicView: "Public View",
+    publicLink: "Public Link",
+    copyPublicLink: "Copy Link",
     whiteboard: "Whiteboard",
     searchWhiteboard: "Search / Add Whiteboard",
     searchWhiteboardOnly: "Search Whiteboard",

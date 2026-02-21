@@ -22,7 +22,7 @@ const ExploreSpreadsheetListPage = () => {
 
     useEffect(() => {
         if (views && views.length > 0) {
-            navigate(`/explore/spreadsheet/${views[0].id}`, { replace: true })
+            navigate(`/share/spreadsheet/${views[0].id}`, { replace: true })
         }
     }, [views, navigate])
 

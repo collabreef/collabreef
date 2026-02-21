@@ -19,7 +19,7 @@ const ExploreCalendarSlotsList = ({
     const [searchQuery, setSearchQuery] = useState("")
 
     const handleSlotClick = (slotId: string) => {
-        navigate(`/explore/calendar/${calendarId}/slot/${slotId}`)
+        navigate(`/share/calendar/${calendarId}/slot/${slotId}`)
     }
 
     const filteredSlots = slots.filter((slot) => {

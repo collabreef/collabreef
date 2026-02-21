@@ -5,7 +5,7 @@ const RequireAuth = () => {
   const { user } = useCurrentUserStore();
 
   if (!user) {
-    return <Navigate to="/explore/notes" replace />;
+    return <Navigate to="/share/notes" replace />;
   }
 
   return <Outlet />;

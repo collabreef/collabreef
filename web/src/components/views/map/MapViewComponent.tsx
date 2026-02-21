@@ -293,7 +293,7 @@ const MapViewComponent = ({ viewObjects = [], view, focusedObjectId, isPublic = 
                                     click: () => {
                                         openBottomSheet()
                                         const path = isPublic
-                                            ? `/explore/map/${mapId}/marker/${marker.id}`
+                                            ? `/share/map/${mapId}/marker/${marker.id}`
                                             : `/workspaces/${workspaceId}/map/${mapId}/marker/${marker.id}`
                                         navigate(path)
                                     }

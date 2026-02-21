@@ -84,7 +84,7 @@ const WorkspaceMenu = () => {
                     <MonitorCog size={16} />
                     {t("menu.workspaceSettings")}
                 </Link>
-                <Link to="/explore/notes" className="px-3 py-2 rounded w-full hover:bg-neutral-200 dark:hover:bg-neutral-700 flex items-center gap-2">
+                <Link to="/share/notes" className="px-3 py-2 rounded w-full hover:bg-neutral-200 dark:hover:bg-neutral-700 flex items-center gap-2">
                     <Telescope size={16} />
                     {t("menu.explore")}
                 </Link>

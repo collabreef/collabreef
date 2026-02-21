@@ -22,7 +22,7 @@ const ExploreMapListPage = () => {
 
     useEffect(() => {
         if (views && views.length > 0) {
-            navigate(`/explore/map/${views[0].id}`, { replace: true })
+            navigate(`/share/map/${views[0].id}`, { replace: true })
         }
     }, [views, navigate])
 

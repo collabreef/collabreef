@@ -78,7 +78,7 @@ function App() {
   return (
     <>
       <Routes location={location}>
-        <Route path='/explore' element={<PublicLayout />}>
+        <Route path='/share' element={<PublicLayout />}>
           <Route path='notes' element={<ExploreNotesPage />}>
             <Route path=':noteId' element={<ExploreNoteDetailPage />} />
           </Route>

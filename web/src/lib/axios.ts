@@ -7,9 +7,9 @@ axios.interceptors.response.use(
   (error) => {
     // Check if the error is a 401 Unauthorized
     if (error.response && error.response.status === 401) {
-      // Exclude /explore/... paths and root path from redirect
+      // Exclude /share/... paths and root path from redirect
       const currentPath = window.location.pathname;
-      const shouldRedirect = !currentPath.startsWith('/explore/') && currentPath !== '/';
+      const shouldRedirect = !currentPath.startsWith('/share/') && currentPath !== '/';
 
       if (shouldRedirect) {
         // Clear user state

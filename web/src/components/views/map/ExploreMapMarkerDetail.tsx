@@ -24,7 +24,7 @@ const ExploreMapMarkerDetail = () => {
     })
 
     const handleBack = () => {
-        navigate(`/explore/map/${viewId}`)
+        navigate(`/share/map/${viewId}`)
     }
 
     if (isLoading) {

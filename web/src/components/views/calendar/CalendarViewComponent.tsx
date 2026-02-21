@@ -279,7 +279,7 @@ const CalendarViewComponent = ({ viewObjects = [], focusedObjectId, isPublic = f
                                                                     e.stopPropagation()
                                                                     openBottomSheet()
                                                                     const path = isPublic
-                                                                        ? `/explore/calendar/${calendarId}/slot/${slot.id}`
+                                                                        ? `/share/calendar/${calendarId}/slot/${slot.id}`
                                                                         : `/workspaces/${workspaceId}/calendar/${calendarId}/slot/${slot.id}`
                                                                     navigate(path)
                                                                 }}

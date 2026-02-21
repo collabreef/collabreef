@@ -78,7 +78,7 @@ const KanbanViewComponent = ({
 
     const handleNoteClick = (noteId: string) => {
         const path = isPublic
-            ? `/explore/notes/${noteId}`
+            ? `/share/notes/${noteId}`
             : `/workspaces/${currentWorkspaceId}/notes/${noteId}`
         navigate(path)
     }

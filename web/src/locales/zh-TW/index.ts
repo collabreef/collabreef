@@ -487,6 +487,8 @@ export default {
     columnOrderHint: "數字越小越靠前",
     kanbanSettings: "看板設定",
     publicView: "公開視圖",
+    publicLink: "公開連結",
+    copyPublicLink: "複製連結",
     whiteboard: "白板",
     searchWhiteboard: "搜尋 / 新增白板",
     searchWhiteboardOnly: "搜尋白板",
