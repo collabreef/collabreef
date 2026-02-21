@@ -285,7 +285,7 @@ const WorkspaceHomePage = () => {
 
   return (
     <OneColumn>
-      <div className="w-full">
+      <div className="w-full px-4 xl:px-0">
         <div className="py-2">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3 h-10">
