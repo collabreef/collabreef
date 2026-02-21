@@ -95,7 +95,6 @@ const SpreadsheetViewComponent = ({
     const {
         sendOps,
         syncSheets,
-        isConnected,
         sheets: remoteSheets,
         pendingOps,
         clearPendingOps,
@@ -230,20 +229,6 @@ const SpreadsheetViewComponent = ({
                             {t('spreadsheet.loading') || 'Loading spreadsheet...'}
                         </span>
                     </div>
-                </div>
-            )}
-
-            {/* Connection status indicator */}
-            {!isPublic && !disableWebSocket && isReady && (
-                <div className="absolute top-2 right-2 z-10 bg-white dark:bg-neutral-800 rounded-lg shadow-md px-3 py-2 flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${
-                        isConnected ? 'bg-green-500' : 'bg-red-500'
-                    }`} />
-                    <span className="text-xs text-neutral-600 dark:text-neutral-400">
-                        {isConnected
-                            ? t('spreadsheet.connected') || 'Connected'
-                            : t('spreadsheet.disconnected') || 'Disconnected'}
-                    </span>
                 </div>
             )}
 
