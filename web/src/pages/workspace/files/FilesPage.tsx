@@ -183,7 +183,7 @@ const FilesPage = () => {
 
     return (
         <OneColumn>
-            <div className="w-full">
+            <div className="w-full px-4 xl:pl-0">
                 <input
                     ref={fileInputRef}
                     type="file"
