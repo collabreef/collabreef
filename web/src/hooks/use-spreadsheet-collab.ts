@@ -141,6 +141,34 @@ export function useSpreadsheetCollab(options: UseSpreadsheetCollabOptions) {
     })
   }, [isPublic])
 
+  // Send ops AND atomically delete sheets from Y.Map in one transaction.
+  // Used for deleteSheet to prevent a race condition where remote clients
+  // receive the Y.Array op before Y.Map is updated, causing them to
+  // re-add the deleted sheet when they call getLatestSheets().
+  const sendOpsWithDeletedSheets = useCallback((ops: SpreadsheetOp[], deletedSheetIds: string[]) => {
+    if (isPublic) return
+
+    const yOps = yOpsRef.current
+    const ySpreadsheet = ySpreadsheetRef.current
+    const yDoc = yDocRef.current
+    if (!yOps || !ySpreadsheet || !yDoc) return
+
+    yDoc.transact(() => {
+      // Delete sheets from Y.Map first so remote clients see consistent state
+      for (const id of deletedSheetIds) {
+        if (ySpreadsheet.has(id)) {
+          ySpreadsheet.delete(id)
+        }
+      }
+
+      // Broadcast op via Y.Array
+      yOps.push([{ ops }])
+      if (yOps.length > MAX_OPS_HISTORY) {
+        yOps.delete(0, yOps.length - MAX_OPS_HISTORY)
+      }
+    })
+  }, [isPublic])
+
   // Sync full sheet state to Y.Map for persistence (called from onChange, after state is committed)
   const syncSheets = useCallback((currentSheets: SpreadsheetSheetData[]) => {
     if (isPublic) return
@@ -190,6 +218,7 @@ export function useSpreadsheetCollab(options: UseSpreadsheetCollabOptions) {
 
   return {
     sendOps,
+    sendOpsWithDeletedSheets,
     syncSheets,
     isConnected,
     sheets,

@@ -94,6 +94,7 @@ const SpreadsheetViewComponent = ({
     // WebSocket connection
     const {
         sendOps,
+        sendOpsWithDeletedSheets,
         syncSheets,
         sheets: remoteSheets,
         pendingOps,
@@ -212,9 +213,21 @@ const SpreadsheetViewComponent = ({
     const handleOp = useCallback((ops: Op[]) => {
         if (isApplyingRemoteOpsRef.current) return;
         if (!isPublic && ops.length > 0) {
-            sendOps(ops as unknown as SpreadsheetOp[]);
+            // For deleteSheet ops, atomically delete from Y.Map AND broadcast via Y.Array
+            // in one Y.js transaction. This prevents a race condition where remote clients
+            // receive the deleteSheet op before Y.Map is updated (causing them to re-mount
+            // with stale data that still includes the deleted sheet, then write it back).
+            const deletedSheetIds = (ops as any[])
+                .filter(op => op.op === 'deleteSheet' && op.id)
+                .map((op: any) => op.id as string);
+
+            if (deletedSheetIds.length > 0) {
+                sendOpsWithDeletedSheets(ops as unknown as SpreadsheetOp[], deletedSheetIds);
+            } else {
+                sendOps(ops as unknown as SpreadsheetOp[]);
+            }
         }
-    }, [isPublic, sendOps]);
+    }, [isPublic, sendOps, sendOpsWithDeletedSheets]);
 
     const canShowWorkbook = isReady && dataSourceReady;
 
