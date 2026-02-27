@@ -27,6 +27,10 @@ body {
   font-family: -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen, ubuntu, cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
+html,body {
+  overscroll-behavior-y: none;
+}
+
 input, button {
   outline: none;
 }

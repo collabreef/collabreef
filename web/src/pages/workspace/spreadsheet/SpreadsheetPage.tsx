@@ -29,7 +29,7 @@ const SpreadsheetPage = () => {
 
     return (
         <OneColumn>
-            <div className="flex flex-col h-screen">
+            <div className="flex flex-col h-svh">
                 <ViewHeader
                     menu={<ViewMenu viewType="spreadsheet" currentViewId={view.id} />}
                 />
