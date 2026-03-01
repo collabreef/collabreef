@@ -80,7 +80,6 @@ const ExploreWhiteboardPage = () => {
                         viewId={whiteboardId}
                         initialCanvasObjects={canvasObjects}
                         initialViewObjects={viewObjectsMap}
-                        disableWebSocket={true}
                     />
                 </div>
             </div>

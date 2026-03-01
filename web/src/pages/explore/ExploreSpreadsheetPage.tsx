@@ -53,7 +53,6 @@ const ExploreSpreadsheetPage = () => {
                         isPublic
                         viewId={spreadsheetId}
                         initialSheets={initialSheets}
-                        disableWebSocket={true}
                     />
                 </div>
             </div>

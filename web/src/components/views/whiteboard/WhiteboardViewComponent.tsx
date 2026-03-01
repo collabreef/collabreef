@@ -177,15 +177,15 @@ const WhiteboardViewComponent = ({
         }
     }, [isPublic, initialViewObjects]);
 
-    // Sync remote updates to local state
+    // Sync remote updates to local state (only after WS has synced to avoid overwriting initial data)
     useEffect(() => {
-        if (remoteCanvasObjects) {
+        if (isInitialized && remoteCanvasObjects) {
             setCanvasObjects(new Map(remoteCanvasObjects));
         }
-    }, [remoteCanvasObjects]);
+    }, [isInitialized, remoteCanvasObjects]);
 
     useEffect(() => {
-        if (remoteViewObjects) {
+        if (isInitialized && remoteViewObjects) {
             const convertedMap = new Map<string, WhiteboardObject>();
             remoteViewObjects.forEach((obj, key) => {
                 convertedMap.set(key, {
@@ -197,7 +197,7 @@ const WhiteboardViewComponent = ({
             });
             setViewObjects(convertedMap);
         }
-    }, [remoteViewObjects]);
+    }, [isInitialized, remoteViewObjects]);
 
     // Resize canvas to fit container
     useLayoutEffect(() => {
