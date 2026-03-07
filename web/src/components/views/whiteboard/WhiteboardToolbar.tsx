@@ -36,7 +36,7 @@ const WhiteboardToolbar = ({
     }
 
     return (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-2 z-10 border border-neutral-200 dark:border-neutral-700">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-2 z-50 border border-neutral-200 dark:border-neutral-700">
             <div className="flex items-center gap-1">
                 {tools.map((tool) => (
                     <button
