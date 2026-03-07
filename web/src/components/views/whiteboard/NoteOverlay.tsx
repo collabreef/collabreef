@@ -130,29 +130,27 @@ const NoteOverlay: React.FC<NoteOverlayProps> = ({ viewObjectId, position, width
 
     if (!note || !note.content || !editor) return null;
 
-    // Null/undefined checks for position and viewport
     if (!position || typeof position.x !== 'number' || typeof position.y !== 'number') return null;
     if (!viewport || typeof viewport.x !== 'number' || typeof viewport.y !== 'number') return null;
 
-    // Calculate transformed position based on viewport
     const zoom = viewport.zoom || 1;
-    const transformedX = position.x * zoom + viewport.x;
-    const transformedY = position.y * zoom + viewport.y;
+    const screenX = position.x * zoom + viewport.x;
+    const screenY = position.y * zoom + viewport.y;
 
-    // Connection points positions (relative to the note)
+    // Connection points positions (relative to the note, in world units before scale)
     const connectionPoints = isSelected ? [
-        { x: width / 2, y: 0, label: 'top' },      // Top
-        { x: width / 2, y: measuredHeight, label: 'bottom' }, // Bottom
-        { x: 0, y: measuredHeight / 2, label: 'left' },    // Left
-        { x: width, y: measuredHeight / 2, label: 'right' }, // Right
+        { x: width / 2, y: 0, label: 'top' },
+        { x: width / 2, y: measuredHeight, label: 'bottom' },
+        { x: 0, y: measuredHeight / 2, label: 'left' },
+        { x: width, y: measuredHeight / 2, label: 'right' },
     ] : [];
 
     return (
         <div
             className="absolute pointer-events-none origin-top-left"
             style={{
-                left: `${transformedX}px`,
-                top: `${transformedY}px`,
+                left: screenX,
+                top: screenY,
                 transform: `scale(${zoom})`,
             }}
         >

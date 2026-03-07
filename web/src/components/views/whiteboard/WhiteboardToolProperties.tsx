@@ -70,7 +70,7 @@ const WhiteboardToolProperties = ({
     }
 
     return (
-        <div className="absolute top-4 left-4 bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-3 z-10 border border-neutral-200 dark:border-neutral-700 max-h-[calc(100vh-120px)] overflow-y-auto">
+        <div className="absolute top-4 left-4 bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-3 z-50 border border-neutral-200 dark:border-neutral-700 max-h-[calc(100vh-120px)] overflow-y-auto">
             <div className="flex flex-col gap-3">
                 {/* Text properties - show when text is selected */}
                 {showTextProperties && (

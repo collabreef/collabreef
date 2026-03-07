@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { WhiteboardStrokeData, WhiteboardShapeData, WhiteboardTextData } from '../../../../types/view';
+import { WhiteboardStrokeData, WhiteboardShapeData, WhiteboardTextData, WhiteboardEdgeData } from '../../../../types/view';
 import { CanvasObject, WhiteboardObject, Point, Bounds, ResizeHandle } from './types';
 
 interface UseSelectToolOptions {
@@ -26,7 +26,7 @@ interface UseSelectToolReturn {
     selectionBox: SelectionBox | null;
     resizeHandle: ResizeHandle | null;
     dragOffset: Point | null;
-    startDragging: (pos: Point) => void;
+    startDragging: (pos: Point, explicitIds?: string[]) => void;
     startResizing: (objectId: string, handle: ResizeHandle, pos: Point, bounds: Bounds) => void;
     startSelectionBox: (pos: Point) => void;
     updateDrag: (pos: Point) => void;
@@ -120,21 +120,27 @@ export const useSelectTool = ({
         }
 
         const viewObj = viewObjects.get(objectId);
-        if (viewObj && viewObj.data?.position) {
-            return { ...viewObj.data.position };
+        if (viewObj) {
+            if (viewObj.type === 'whiteboard_edge') {
+                const edgeData = viewObj.data as WhiteboardEdgeData;
+                if (edgeData?.startPoint) return { ...edgeData.startPoint };
+            } else if (viewObj.data?.position) {
+                return { ...viewObj.data.position };
+            }
         }
 
         return null;
     }, [canvasObjects, viewObjects]);
 
-    const startDragging = useCallback((pos: Point) => {
-        if (selectedObjectIds.length === 0) return;
+    const startDragging = useCallback((pos: Point, explicitIds?: string[]) => {
+        const ids = explicitIds ?? selectedObjectIds;
+        if (ids.length === 0) return;
 
         setIsDragging(true);
 
-        // Store original positions for all selected objects
+        // Store original positions for all objects to drag
         const positions = new Map<string, Point>();
-        selectedObjectIds.forEach(id => {
+        ids.forEach(id => {
             const objPos = getObjectPosition(id);
             if (objPos) {
                 positions.set(id, objPos);
@@ -142,8 +148,8 @@ export const useSelectTool = ({
         });
         setDragStartPositions(positions);
 
-        // Calculate drag offset from the first selected object
-        const firstObjPos = positions.get(selectedObjectIds[0]);
+        // Calculate drag offset from the first object
+        const firstObjPos = positions.get(ids[0]);
         if (firstObjPos) {
             setDragOffset({
                 x: pos.x - firstObjPos.x,
@@ -171,13 +177,17 @@ export const useSelectTool = ({
     }, [setSelectedObjectIds, canvasObjects, viewObjects]);
 
     const updateDrag = useCallback((pos: Point) => {
-        if (!isDragging || selectedObjectIds.length === 0 || !dragOffset) return;
+        if (!isDragging || !dragOffset || dragStartPositions.size === 0) return;
 
-        const dx = pos.x - dragOffset.x - (dragStartPositions.get(selectedObjectIds[0])?.x || 0);
-        const dy = pos.y - dragOffset.y - (dragStartPositions.get(selectedObjectIds[0])?.y || 0);
+        // Use dragStartPositions keys as source of truth — avoids stale selectedObjectIds closure
+        const idsToMove = Array.from(dragStartPositions.keys());
+        const firstId = idsToMove[0];
+        const firstStartPos = dragStartPositions.get(firstId)!;
 
-        // Update all selected objects
-        selectedObjectIds.forEach(objectId => {
+        const dx = pos.x - dragOffset.x - firstStartPos.x;
+        const dy = pos.y - dragOffset.y - firstStartPos.y;
+
+        idsToMove.forEach(objectId => {
             const startPos = dragStartPositions.get(objectId);
             if (!startPos) return;
 
@@ -214,14 +224,27 @@ export const useSelectTool = ({
                 setCanvasObjects(prev => new Map(prev).set(objectId, updatedObj));
             } else if (viewObj) {
                 const updatedObj = { ...viewObj };
-                updatedObj.data = {
-                    ...updatedObj.data,
-                    position: newPos
-                };
+                if (viewObj.type === 'whiteboard_edge') {
+                    const edgeData = viewObj.data as WhiteboardEdgeData;
+                    // endPoint - startPoint vector is constant during drag (both translate by same delta)
+                    // so we derive endPoint from newPos + original offset to avoid stale-closure drift
+                    const endOffsetX = edgeData.endPoint.x - edgeData.startPoint.x;
+                    const endOffsetY = edgeData.endPoint.y - edgeData.startPoint.y;
+                    updatedObj.data = {
+                        ...edgeData,
+                        startPoint: newPos,
+                        endPoint: { x: newPos.x + endOffsetX, y: newPos.y + endOffsetY },
+                    };
+                } else {
+                    updatedObj.data = {
+                        ...updatedObj.data,
+                        position: newPos,
+                    };
+                }
                 setViewObjects(prev => new Map(prev).set(objectId, updatedObj));
             }
         });
-    }, [isDragging, selectedObjectIds, dragOffset, dragStartPositions, canvasObjects, viewObjects, setCanvasObjects, setViewObjects]);
+    }, [isDragging, dragOffset, dragStartPositions, canvasObjects, viewObjects, setCanvasObjects, setViewObjects]);
 
     const updateResize = useCallback((pos: Point) => {
         if (!isResizing || !resizeObjectId || !resizeHandle || !resizeStartBounds || !resizeStartData) return;
@@ -362,9 +385,9 @@ export const useSelectTool = ({
     }, [isResizing, resizeObjectId, resizeHandle, resizeStartBounds, resizeStartData, canvasObjects, viewObjects, setCanvasObjects, setViewObjects]);
 
     const finishDragOrResize = useCallback(() => {
-        if (isDragging && selectedObjectIds.length > 0) {
-            // Send updates for all moved objects
-            selectedObjectIds.forEach(objectId => {
+        if (isDragging && dragStartPositions.size > 0) {
+            // Send updates for all moved objects (use dragStartPositions keys, not selectedObjectIds)
+            Array.from(dragStartPositions.keys()).forEach(objectId => {
                 const canvasObj = canvasObjects.get(objectId);
                 const viewObj = viewObjects.get(objectId);
 
@@ -395,7 +418,7 @@ export const useSelectTool = ({
         setResizeObjectId(null);
         setDragOffset(null);
         setDragStartPositions(new Map());
-    }, [isDragging, isResizing, selectedObjectIds, resizeObjectId, canvasObjects, viewObjects, sendUpdate]);
+    }, [isDragging, isResizing, dragStartPositions, resizeObjectId, canvasObjects, viewObjects, sendUpdate]);
 
     return {
         isDragging,

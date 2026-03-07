@@ -60,8 +60,14 @@ export const getObjectBounds = (
             const height = data.height || 200;
             return { x: data.position.x, y: data.position.y, width, height };
         } else if (viewObj.type === 'whiteboard_edge') {
-            // Edges don't have resize handles
-            return null;
+            const edgeData = data as WhiteboardEdgeData;
+            if (!edgeData?.startPoint || !edgeData?.endPoint) return null;
+            const minX = Math.min(edgeData.startPoint.x, edgeData.endPoint.x);
+            const maxX = Math.max(edgeData.startPoint.x, edgeData.endPoint.x);
+            const minY = Math.min(edgeData.startPoint.y, edgeData.endPoint.y);
+            const maxY = Math.max(edgeData.startPoint.y, edgeData.endPoint.y);
+            const pad = Math.max(5, (edgeData.strokeWidth || 2) / 2);
+            return { x: minX - pad, y: minY - pad, width: maxX - minX + pad * 2, height: maxY - minY + pad * 2 };
         }
     }
 
@@ -79,6 +85,10 @@ export const checkResizeHandle = (
     viewObjects: Map<string, WhiteboardObject>,
     ctx?: CanvasRenderingContext2D | null
 ): 'se' | 'sw' | 'ne' | 'nw' | null => {
+    // Edges don't have resize handles
+    const viewObj = viewObjects.get(objId);
+    if (viewObj?.type === 'whiteboard_edge') return null;
+
     const bounds = getObjectBounds(objId, canvasObjects, viewObjects, ctx);
     if (!bounds) return null;
 
@@ -117,6 +127,10 @@ export const checkConnectionPoint = (
     viewObjects: Map<string, WhiteboardObject>,
     ctx?: CanvasRenderingContext2D | null
 ): ConnectionPoint | null => {
+    // Edges don't have connection points for drawing new edges
+    const viewObj = viewObjects.get(objId);
+    if (viewObj?.type === 'whiteboard_edge') return null;
+
     const bounds = getObjectBounds(objId, canvasObjects, viewObjects, ctx);
     if (!bounds) return null;
 
@@ -207,9 +221,8 @@ export const findObjectsInSelectionBox = (
         }
     });
 
-    // Check view objects (excluding edges)
-    viewObjects.forEach((obj, objId) => {
-        if (obj.type === 'whiteboard_edge') return;
+    // Check view objects (including edges)
+    viewObjects.forEach((_, objId) => {
         if (isObjectInSelectionBox(objId, selectionBox, canvasObjects, viewObjects, ctx)) {
             selectedIds.push(objId);
         }
