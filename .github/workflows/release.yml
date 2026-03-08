@@ -13,7 +13,8 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/collabreef
+  IMAGE_APP: ${{ secrets.DOCKERHUB_USERNAME }}/collabreef
+  IMAGE_NGINX: ${{ secrets.DOCKERHUB_USERNAME }}/collabreef-nginx
 
 jobs:
   build-and-release:
@@ -52,26 +53,50 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract metadata
-        id: meta
+      - name: Extract metadata (app)
+        id: meta-app
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.IMAGE_NAME }}
+          images: ${{ env.IMAGE_APP }}
           tags: |
             type=raw,value=${{ steps.version.outputs.VERSION_TAG }}
             type=raw,value=latest
 
-      - name: Build and push Docker image
+      - name: Extract metadata (nginx)
+        id: meta-nginx
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NGINX }}
+          tags: |
+            type=raw,value=${{ steps.version.outputs.VERSION_TAG }}
+            type=raw,value=latest
+
+      - name: Build and push app image (app-runtime)
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
+          target: app-runtime
+          push: true
+          build-args: |
+            APP_VERSION=${{ steps.version.outputs.VERSION }}
+          tags: ${{ steps.meta-app.outputs.tags }}
+          labels: ${{ steps.meta-app.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
+
+      - name: Build and push nginx image (nginx-runtime)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          target: nginx-runtime
           push: true
           build-args: |
             VITE_APP_VERSION=${{ steps.version.outputs.VERSION }}
-            APP_VERSION=${{ steps.version.outputs.VERSION }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta-nginx.outputs.tags }}
+          labels: ${{ steps.meta-nginx.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64
@@ -89,22 +114,16 @@ jobs:
 
       - name: Release Summary
         run: |
-          echo "## 🎉 Release ${{ steps.version.outputs.VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "## Release ${{ steps.version.outputs.VERSION }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Docker Image" >> $GITHUB_STEP_SUMMARY
-          echo "- \`${{ env.IMAGE_NAME }}:${{ steps.version.outputs.VERSION_TAG }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- \`${{ env.IMAGE_NAME }}:latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "### Docker Images" >> $GITHUB_STEP_SUMMARY
+          echo "**App (API + Collab):**" >> $GITHUB_STEP_SUMMARY
+          echo "- \`${{ env.IMAGE_APP }}:${{ steps.version.outputs.VERSION_TAG }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`${{ env.IMAGE_APP }}:latest\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Usage" >> $GITHUB_STEP_SUMMARY
-          echo "#### Web Service" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "docker run -d -p 8080:8080 ${{ env.IMAGE_NAME }}:latest" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "#### Worker Service" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "docker run -d ${{ env.IMAGE_NAME }}:latest ./worker" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Nginx (static frontend):**" >> $GITHUB_STEP_SUMMARY
+          echo "- \`${{ env.IMAGE_NGINX }}:${{ steps.version.outputs.VERSION_TAG }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`${{ env.IMAGE_NGINX }}:latest\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Download" >> $GITHUB_STEP_SUMMARY
           echo "- [Release Page](https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.VERSION }})" >> $GITHUB_STEP_SUMMARY

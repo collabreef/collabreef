@@ -1,19 +1,36 @@
 # CollabReef
 
-**CollabReef** is an open-source, self-hosted pinboard service to organize links, notes, and resources in a flexible and visual way.
-
-![screenshot](https://github.com/collabreef/collabreef/blob/main/web/src/assets/app.png)
+**CollabReef** is an open-source, self-hosted collaborative service to organize links, notes, and resources in a flexible and visual way.
 
 ## Features
 
-- **10+ Built-in Widgets** — link, note, carousel, RSS reader, map, calendar, folder, and more
-- **Unlimited Workspaces** — organize content by projects, topics, or personal needs
-- **Kanban Board** — drag-and-drop task management with multiple columns
-- **Collaborative Whiteboard** — real-time brainstorming and visual planning
-- **Real-time Collaborative Notes** — CRDT-based sync powered by Y.js
-- **Calendar & Map Views** — time-based and location-based content organization
-- **Fully Self-Hosted** — deploy on your own server, full data ownership
-- **Docker Ready** — simple deployment with Docker Compose
+### Workspace Dashboard
+- **15 Built-in Widgets** — note, countdown, carousel, heatmap, RSS reader, music player, video player, iframe, folder, link, map, calendar, and more
+- **Customizable Layout** — drag-and-drop widget positioning
+
+### Collaborative Views
+- **Notes** — rich-text notes with real-time co-editing powered by Y.js
+- **Whiteboard** — multi-layer canvas with freehand drawing, shapes, text, sticky notes, and connector edges
+- **Spreadsheet** — collaborative spreadsheet with formulas, cell styling, merging, and frozen rows/columns
+- **Kanban Board** — drag-and-drop task management with customizable columns
+- **Calendar** — event scheduling with date ranges, timed events, and all-day support
+- **Map** — geographic markers with location pinning
+
+### Sharing & Access Control
+- **Public Sharing** — share notes, whiteboards, spreadsheets, kanban, calendar, and map views via public links
+- **Visibility Levels** — per-resource access control: private, workspace, or public
+
+### Workspace & User Management
+- **Multiple Workspaces** — organize content by project or topic
+- **Member Roles** — owner, admin, and member role assignments
+- **Member Invitations** — invite members by email
+- **Admin Panel** — manage users, reset passwords, disable or delete accounts
+
+### Developer & Power User
+- **File Management** — upload, rename, download, and delete files with S3/MinIO support
+- **API Keys** — create and manage API keys with expiry support
+- **Fully Self-Hosted** — full data ownership, SQLite or PostgreSQL
+- **Docker Ready** — deploy in minutes with Docker Compose
 
 ---
 
@@ -33,22 +50,30 @@ services:
       PORT: 3000
       DB_DRIVER: sqlite3
       DB_DSN: /usr/local/app/bin/collabreef.db
+      # APP_SECRET: your-secret-key
     restart: unless-stopped
 
   web:
     image: ti777777/collabreef
     container_name: collabreef-web
     command: ["./web"]
-    ports:
-      - "8080:8080"
     volumes:
       - collabreef_data:/usr/local/app/bin
     environment:
       PORT: 8080
-      COLLAB_URL: http://collab:3000
       # APP_SECRET: your-secret-key
       # APP_DISABLE_SIGNUP: true
     depends_on:
+      - collab
+    restart: unless-stopped
+
+  nginx:
+    image: ti777777/collabreef-nginx
+    container_name: collabreef-nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - web
       - collab
     restart: unless-stopped
 
@@ -61,7 +86,7 @@ volumes:
 docker compose up -d
 ```
 
-The app will be available at `http://localhost:8080`.
+The app will be available at `http://localhost`.
 
 ### Optional: PostgreSQL
 
