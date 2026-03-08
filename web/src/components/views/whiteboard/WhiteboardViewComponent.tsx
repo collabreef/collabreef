@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { WhiteboardStrokeData, WhiteboardShapeData, WhiteboardTextData, WhiteboardNoteData, WhiteboardEdgeData, ViewObjectType, ConnectionPointType } from '../../../types/view';
+import { WhiteboardTextData, WhiteboardEdgeData, ViewObjectType, ConnectionPointType } from '../../../types/view';
 import { useTranslation } from 'react-i18next';
 import WhiteboardToolbar from './WhiteboardToolbar';
 import WhiteboardToolProperties from './WhiteboardToolProperties';

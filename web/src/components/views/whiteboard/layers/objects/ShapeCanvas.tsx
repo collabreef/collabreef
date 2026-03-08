@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { WhiteboardShapeData } from '../../../../types/view';
+import { WhiteboardShapeData } from '../../../../../types/view';
 import { Viewport } from '../../tools/types';
 
 interface ShapeCanvasProps {

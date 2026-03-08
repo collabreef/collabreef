@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { WhiteboardStrokeData } from '../../../../types/view';
+import { WhiteboardStrokeData } from '../../../../../types/view';
 import { Viewport } from '../../tools/types';
 
 interface StrokeCanvasProps {

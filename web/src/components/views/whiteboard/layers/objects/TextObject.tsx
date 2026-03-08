@@ -1,5 +1,5 @@
 import React from 'react';
-import { WhiteboardTextData } from '../../../../types/view';
+import { WhiteboardTextData } from '../../../../../types/view';
 import { Viewport } from '../../tools/types';
 
 interface TextObjectProps {

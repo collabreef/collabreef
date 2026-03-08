@@ -1,6 +1,6 @@
 import React from 'react';
 import { WhiteboardEdgeData } from '../../../../types/view';
-import { WhiteboardObject, Viewport, Bounds, Point, Tool } from '../tools/types';
+import { WhiteboardObject, Viewport, Bounds, Point } from '../tools/types';
 
 interface HoverTarget {
     objectId: string;
@@ -73,7 +73,7 @@ const getArrowAngles = (data: WhiteboardEdgeData): { startAngle: number; endAngl
         const midX = (sx + ex) / 2;
         const startAngle = Math.atan2(0, midX - sx) + Math.PI;
         const endAngle = Math.atan2(ey - ey, ex - midX); // approaching ex,ey from midX,ey
-        return { startAngle, endAngle: Math.atan2(ey - ey, ex - midX) };
+        return { startAngle, endAngle };
     }
     if (data.curveType === 'elbow') {
         const midX = (sx + ex) / 2;
