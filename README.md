@@ -55,7 +55,7 @@ services:
 
   web:
     image: ti777777/collabreef
-    container_name: collabreef-web
+    container_name: collabreef-api
     command: ["./web"]
     volumes:
       - collabreef_data:/usr/local/app/bin

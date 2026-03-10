@@ -41,12 +41,12 @@ RUN go mod download
 
 COPY api/ .
 
-# Build web and cli binaries
+# Build api and cli binaries
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
     GOOS=linux GOARCH=amd64 go build \
     -ldflags "-X main.Version=${APP_VERSION}" \
-    -o /out/web ./cmd/web/main.go
+    -o /out/api ./cmd/api/main.go
 
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
@@ -65,7 +65,7 @@ ENV TZ="UTC"
 COPY ./api/migrations /usr/local/app/migrations
 
 # Copy Go binaries
-COPY --from=backend /out/web ./web
+COPY --from=backend /out/api ./api
 COPY --from=backend /out/cli ./cli
 
 # Copy collab service

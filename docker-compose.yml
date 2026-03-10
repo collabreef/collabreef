@@ -9,7 +9,7 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - collabreef-web
+      - collabreef-api
       - collabreef-collab
     restart: unless-stopped
 
@@ -30,14 +30,14 @@ services:
       - APP_SECRET=${APP_SECRET}
     restart: unless-stopped
 
-  collabreef-web:
+  collabreef-api:
     build:
       context: .
       dockerfile: Dockerfile
       target: app-runtime
     image: collabreef/collabreef:local
-    container_name: collabreef-web
-    command: ["./web"]
+    container_name: collabreef-api
+    command: ["./api"]
     volumes:
       - "./bin:/usr/local/app/bin"
     environment:

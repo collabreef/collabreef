@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   minio:
     image: minio/minio:latest
@@ -20,22 +18,6 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7-alpine
-    container_name: collabreef-redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Create bucket on startup
   minio-init:
     image: minio/mc:latest
     container_name: collabreef-minio-init
@@ -50,10 +32,26 @@ services:
       exit 0;
       "
 
+  collabreef-nginx:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: nginx-runtime
+    image: collabreef/collabreef-nginx:local
+    container_name: collabreef-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - collabreef-api
+      - collabreef-collab
+
   collabreef-collab:
     build:
       context: ..
-      dockerfile: Dockerfile.web
+      dockerfile: Dockerfile
+      target: app-runtime
+    image: collabreef/collabreef:local
     container_name: collabreef-collab
     command: ["node", "collab/src/index.js"]
     restart: unless-stopped
@@ -61,22 +59,24 @@ services:
       - ../bin:/usr/local/app/bin
     environment:
       PORT: 3000
-      REDIS_ADDR: redis:6379
       DB_DRIVER: sqlite3
       DB_DSN: /usr/local/app/bin/collabreef.db
+      APP_SECRET: ${APP_SECRET}
     depends_on:
-      redis:
+      minio:
         condition: service_healthy
 
-  # CollabReef Web Service with MinIO
-  collabreef-web:
+  collabreef-api:
     build:
       context: ..
-      dockerfile: Dockerfile.web
-    container_name: collabreef-web
+      dockerfile: Dockerfile
+      target: app-runtime
+    image: collabreef/collabreef:local
+    container_name: collabreef-api
+    command: ["./api"]
     restart: unless-stopped
-    ports:
-      - "8080:8080"
+    volumes:
+      - ../bin:/usr/local/app/bin
     environment:
       STORAGE_TYPE: s3
       STORAGE_S3_ENDPOINT: minio:9000
@@ -84,23 +84,15 @@ services:
       STORAGE_S3_SECRET_KEY: minioadmin
       STORAGE_S3_BUCKET: collabreef
       STORAGE_S3_USE_SSL: "false"
-      REDIS_ADDR: redis:6379
       PORT: 8080
       APP_DISABLE_SIGNUP: ${APP_DISABLE_SIGNUP}
       APP_SECRET: ${APP_SECRET}
-      COLLAB_URL: http://collabreef-collab:3000
     depends_on:
       minio:
         condition: service_healthy
-      redis:
-        condition: service_healthy
       collabreef-collab:
         condition: service_started
-    volumes:
-      - ../bin:/usr/local/app/bin
 
 volumes:
   minio_data:
-    driver: local
-  redis_data:
     driver: local

@@ -34,9 +34,9 @@ jobs:
         working-directory: ./api
         run: go test -v -race -coverprofile=coverage.out ./...
 
-      - name: Build web
+      - name: Build api
         working-directory: ./api
-        run: go build -o bin/web ./cmd/web/main.go
+        run: go build -o bin/api ./cmd/api/main.go
 
   frontend-test:
     name: Frontend Build & Lint
