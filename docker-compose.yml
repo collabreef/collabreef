@@ -7,7 +7,7 @@ services:
     image: collabreef/collabreef-nginx:local
     container_name: collabreef-nginx
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       - collabreef-api
       - collabreef-collab
