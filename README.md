@@ -53,10 +53,10 @@ services:
       # APP_SECRET: your-secret-key
     restart: unless-stopped
 
-  web:
+  api:
     image: ti777777/collabreef
     container_name: collabreef-api
-    command: ["./web"]
+    command: ["./api"]
     volumes:
       - collabreef_data:/usr/local/app/bin
     environment:
@@ -73,7 +73,7 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - web
+      - api
       - collab
     restart: unless-stopped
 
@@ -88,52 +88,6 @@ docker compose up -d
 
 The app will be available at `http://localhost`.
 
-### Optional: PostgreSQL
-
-By default CollabReef uses SQLite. To use PostgreSQL, add a `postgres` service and set these environment variables on both `collab` and `web` services:
-
-```yaml
-services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: collabreef-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: collabreef
-      POSTGRES_USER: collabreef
-      POSTGRES_PASSWORD: collabreef_password
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U collabreef"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-```
-
-```yaml
-environment:
-  DB_DRIVER: postgres
-  DB_DSN: "host=postgres port=5432 user=collabreef password=collabreef_password dbname=collabreef sslmode=disable TimeZone=UTC"
-```
-
-Also add `DB_MIGRATIONS_PATH: "file://migrations/postgres"` to the `web` service.
-
-### Optional: S3 / MinIO Storage
-
-By default files are stored locally. To use S3-compatible storage, set these on the `web` service:
-
-```yaml
-environment:
-  STORAGE_TYPE: s3
-  STORAGE_S3_ENDPOINT: your-s3-endpoint
-  STORAGE_S3_ACCESS_KEY: your-access-key
-  STORAGE_S3_SECRET_KEY: your-secret-key
-  STORAGE_S3_BUCKET: collabreef
-  STORAGE_S3_USE_SSL: "true"
-```
-
----
 
 ## Contributing
 
