@@ -5,11 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Web",
+            "name": "Launch API",
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "program": "${workspaceFolder}\\cmd\\web",
+            "program": "${workspaceFolder}\\cmd\\api",
             "cwd": "${workspaceFolder}",
             "envFile": "${workspaceFolder}\\.env"
         },
@@ -24,8 +24,8 @@
     ],
     "compounds": [
         {
-            "name": "Launch Web + Collab",
-            "configurations": ["Launch Web", "Launch Collab"],
+            "name": "Launch API + Collab",
+            "configurations": ["Launch API", "Launch Collab"],
             "stopAll": true
         }
     ]
