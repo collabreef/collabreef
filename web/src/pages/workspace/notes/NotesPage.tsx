@@ -67,7 +67,7 @@ const NotesPage = () => {
     return (
         <div ref={scrollContainerRef} className="h-full overflow-auto bg-neutral-50 dark:bg-neutral-950">
             {isLoading ? (
-                <div className="max-w-2xl mx-auto px-6 pt-8">
+                <div className="max-w-2xl mx-auto pt-2">
                     <NoteListSkeleton />
                 </div>
             ) : isEmpty ? (
@@ -86,7 +86,7 @@ const NotesPage = () => {
                     </button>
                 </div>
             ) : (
-                <div className="max-w-2xl mx-auto px-6 pt-8 pb-4">
+                <div className="max-w-2xl mx-auto pt-2">
                     <NoteList notes={notes} maxNodes={3} getLinkTo={(note) => `${note.id}`} />
                     <div ref={loadMoreRef} className="h-4" />
                     {isFetchingNextPage && <NoteListSkeleton count={3} />}
