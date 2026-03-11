@@ -14,8 +14,8 @@ const ExplorePage: React.FC = () => {
 
     return (
         <div className="min-h-dvh bg-neutral-100 dark:bg-neutral-900">
-            <div className="max-w-5xl mx-auto px-4 py-10">
-                <div className="flex items-center justify-between mb-8">
+            <div className="max-w-5xl mx-auto px-3 py-4 sm:px-6 sm:py-8">
+                <div className="flex items-center justify-between mb-4 sm:mb-8">
                     <div className="flex items-center gap-3 select-none">
                         <img src={logo} className="w-10" alt="logo" />
                         <span className="text-xl font-bold text-gray-900 dark:text-gray-100">Explore</span>

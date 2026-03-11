@@ -12,7 +12,7 @@ interface NoteCardProps {
     maxNodes?: number
 }
 
-const NoteCard: FC<NoteCardProps> = ({ note, linkTo, maxNodes }) => {
+const NoteCard: FC<NoteCardProps> = ({ note, linkTo, showLink = true, maxNodes }) => {
 
     return (
         <div className="bg-white dark:bg-neutral-800 border sm:shadow-sm dark:border-none rounded-lg overflow-auto flex flex-col gap-2 p-4">
@@ -21,19 +21,22 @@ const NoteCard: FC<NoteCardProps> = ({ note, linkTo, maxNodes }) => {
                     <div>
                         <NoteTime time={note.created_at ?? ""} />
                     </div>
-                    <div>
-                        <Link to={linkTo || ""}>
-                            <ExternalLink size={16} />
-                        </Link>
-                    </div>
+                    {showLink && (
+                        <div>
+                            <Link to={linkTo || ""}>
+                                <ExternalLink size={16} />
+                            </Link>
+                        </div>
+                    )}
                 </div>
                 <div className="break-all w-full flex flex-col m-auto">
-                    {note.title ? (
-                        <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    {note.title && (
+                        <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
                             {note.title}
                         </div>
-                    ) : (
-                        <Renderer content={note?.content || ''} maxNodes={maxNodes} />
+                    )}
+                    {note.content && (
+                        <Renderer content={note.content} maxNodes={maxNodes} />
                     )}
                 </div>
             </>

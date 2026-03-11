@@ -94,7 +94,7 @@ const SignIn: React.FC = () => {
                             to="/explore"
                             className="inline-block align-baseline font-bold text-sm text-gray-500 dark:text-gray-400 hover:text-primary"
                         >
-                            Explore public notes
+                            Explore
                         </Link>
                     </div>
                 </form>
