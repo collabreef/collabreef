@@ -11,7 +11,7 @@ const WorkspaceLoader = () => {
 
     useEffect(() => {
         (async () => {
-            if (!user) navigate("/share/notes")
+            if (!user) navigate("/signin")
             await fetchWorkspaces();
         })();
     }, [])

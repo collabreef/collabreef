@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { toast } from '@/stores/toast';
 import TextInput from '@/components/textinput/TextInput';
 import SubmitButton from '@/components/submitbutton/SubmitButton';
-import { Telescope } from 'lucide-react';
 import { useCurrentUserStore } from '@/stores/current-user';
 import { useTheme } from '@/providers/Theme';
 import i18n from '@/i18n';
@@ -90,13 +89,6 @@ const SignIn: React.FC = () => {
                             className="inline-block align-baseline text-right font-bold text-sm text-primary"
                         >
                             {t("pages.signin.noAccount")}
-                        </Link>
-                        <Link
-                            to="/share/notes"
-                            className="flex gap-2 items-center text-right font-bold text-sm text-primary"
-                        >
-                            <Telescope size={20} />
-                            {t("menu.explore")}
                         </Link>
                     </div>
                 </form>

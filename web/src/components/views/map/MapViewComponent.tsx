@@ -4,7 +4,7 @@ import { DivIcon } from 'leaflet'
 import { ViewObject, View, MapViewData } from '@/types/view'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTwoColumn } from '@/components/twocolumn/TwoColumn'
-import { getNotesForViewObject, getPublicNotesForViewObject } from '@/api/view'
+import { getNotesForViewObject } from '@/api/view'
 import { NoteData } from '@/api/note'
 
 interface MapViewComponentProps {
@@ -116,9 +116,7 @@ const MapViewComponent = ({ viewObjects = [], view, focusedObjectId, isPublic = 
                 try {
                     // Fetch notes for this marker
                     let notes: NoteData[] = []
-                    if (isPublic && mapId) {
-                        notes = await getPublicNotesForViewObject(mapId, marker.id)
-                    } else if (workspaceId && mapId) {
+                    if (workspaceId && mapId) {
                         notes = await getNotesForViewObject(workspaceId, mapId, marker.id)
                     }
 

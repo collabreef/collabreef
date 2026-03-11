@@ -1,7 +1,7 @@
 import { FC, useMemo, useState, useEffect } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { NoteData } from "@/api/note"
-import { getViewObjectsForNote, getPublicViewObjectsForNote, getViews, getViewObjects, addNoteToViewObject, createViewObject } from "@/api/view"
+import { getViewObjectsForNote, getViews, getViewObjects, addNoteToViewObject, createViewObject } from "@/api/view"
 import { useTranslation } from "react-i18next"
 import { ChevronRight, Calendar, MapPin, Search, Plus, X, Calendar1Icon, LayoutGrid } from "lucide-react"
 import { ViewObjectType } from "@/types/view"
@@ -48,20 +48,10 @@ const PinToViewObjectModal: FC<PinToViewObjectModalProps> = ({ note, isOpen, onC
         }
     }, [isOpen])
 
-    // Use public endpoint when viewing from explore page (no workspaceId in URL)
     const { data: viewObjects = [], refetch: refetchViewObjects } = useQuery({
-        queryKey: workspaceId
-            ? ['note-view-objects', workspaceId, note.id]
-            : ['public-note-view-objects', note.id],
-        queryFn: () => {
-            if (workspaceId && note.id) {
-                return getViewObjectsForNote(workspaceId, note.id)
-            } else if (note.id) {
-                return getPublicViewObjectsForNote(note.id)
-            }
-            return Promise.resolve([])
-        },
-        enabled: !!note.id && isOpen,
+        queryKey: ['note-view-objects', workspaceId, note.id],
+        queryFn: () => workspaceId && note.id ? getViewObjectsForNote(workspaceId, note.id) : Promise.resolve([]),
+        enabled: !!note.id && !!workspaceId && isOpen,
     })
 
     // Fetch all views when pin dialog is open
@@ -144,13 +134,10 @@ const PinToViewObjectModal: FC<PinToViewObjectModalProps> = ({ note, isOpen, onC
         }
     }
 
-    // Group view objects by view and filter out private views
+    // Group view objects by view
     const groupedByView = useMemo(() => {
         const grouped = new Map()
         viewObjects.forEach(item => {
-            if (!workspaceId && item.view.visibility === 'private') {
-                return
-            }
             const viewId = item.view.id
             if (!grouped.has(viewId)) {
                 grouped.set(viewId, {
@@ -200,22 +187,12 @@ const PinToViewObjectModal: FC<PinToViewObjectModalProps> = ({ note, isOpen, onC
                                         const viewId = viewGroup.view.id
                                         const objectId = vo.id
 
-                                        if (workspaceId) {
-                                            if (viewType === 'calendar') {
-                                                return `/workspaces/${workspaceId}/calendar/${viewId}/slot/${objectId}`
-                                            } else if (viewType === 'map') {
-                                                return `/workspaces/${workspaceId}/map/${viewId}/marker/${objectId}`
-                                            } else if (viewType === 'kanban') {
-                                                return `/workspaces/${workspaceId}/kanban/${viewId}`
-                                            }
-                                        } else {
-                                            if (viewType === 'calendar') {
-                                                return `/share/calendar/${viewId}/slot/${objectId}`
-                                            } else if (viewType === 'map') {
-                                                return `/share/map/${viewId}/marker/${objectId}`
-                                            } else if (viewType === 'kanban') {
-                                                return `/share/kanban/${viewId}`
-                                            }
+                                        if (viewType === 'calendar') {
+                                            return `/workspaces/${workspaceId}/calendar/${viewId}/slot/${objectId}`
+                                        } else if (viewType === 'map') {
+                                            return `/workspaces/${workspaceId}/map/${viewId}/marker/${objectId}`
+                                        } else if (viewType === 'kanban') {
+                                            return `/workspaces/${workspaceId}/kanban/${viewId}`
                                         }
                                         return '#'
                                     }
@@ -245,14 +222,12 @@ const PinToViewObjectModal: FC<PinToViewObjectModalProps> = ({ note, isOpen, onC
                         </div>
                     )}
 
-                    {workspaceId && (
-                        <button
-                            onClick={() => setIsPinning(true)}
-                            className="mt-4 px-4 py-2 bg-black text-white dark:bg-neutral-700 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-colors"
-                        >
-                            {t('views.pinToNewView')}
-                        </button>
-                    )}
+                    <button
+                        onClick={() => setIsPinning(true)}
+                        className="mt-4 px-4 py-2 bg-black text-white dark:bg-neutral-700 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-600 transition-colors"
+                    >
+                        {t('views.pinToNewView')}
+                    </button>
                 </div>
             ) : (
                 // Pin interface
