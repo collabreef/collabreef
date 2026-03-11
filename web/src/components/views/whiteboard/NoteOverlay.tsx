@@ -20,7 +20,7 @@ interface NoteOverlayProps {
     onHeightChange?: (viewObjectId: string, height: number) => void;
 }
 
-const NoteOverlay: React.FC<NoteOverlayProps> = ({ viewObjectId, position, width, viewport, workspaceId, viewId, isSelected = false, isPublic = false, onHeightChange }) => {
+const NoteOverlay: React.FC<NoteOverlayProps> = ({ viewObjectId, position, width, viewport, workspaceId, viewId, isSelected = false, onHeightChange }) => {
     const contentRef = useRef<HTMLDivElement>(null);
     const lastReportedHeightRef = useRef<number>(0);
     const onHeightChangeRef = useRef(onHeightChange);
