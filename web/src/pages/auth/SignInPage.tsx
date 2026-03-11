@@ -90,6 +90,12 @@ const SignIn: React.FC = () => {
                         >
                             {t("pages.signin.noAccount")}
                         </Link>
+                        <Link
+                            to="/explore"
+                            className="inline-block align-baseline font-bold text-sm text-gray-500 dark:text-gray-400 hover:text-primary"
+                        >
+                            Explore public notes
+                        </Link>
                     </div>
                 </form>
             </div>

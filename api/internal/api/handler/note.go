@@ -68,6 +68,47 @@ func (h Handler) isUserWorkspaceMember(userID string, workspaceID string) bool {
 	return false
 }
 
+func (h Handler) GetPublicNotes(c echo.Context) error {
+	pageSize := 20
+	pageNumber := 1
+	if ps := c.QueryParam("pageSize"); ps != "" {
+		if v, err := strconv.Atoi(ps); err == nil && v > 0 {
+			pageSize = v
+		}
+	}
+	if pn := c.QueryParam("pageNumber"); pn != "" {
+		if v, err := strconv.Atoi(pn); err == nil && v > 0 {
+			pageNumber = v
+		}
+	}
+
+	filter := model.NoteFilter{
+		PageSize:   pageSize,
+		PageNumber: pageNumber,
+	}
+
+	notes, err := h.db.FindNotes(filter)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	res := make([]GetNoteResponse, 0)
+	for _, b := range notes {
+		res = append(res, GetNoteResponse{
+			ID:         b.ID,
+			Visibility: b.Visibility,
+			Title:      b.Title,
+			Content:    b.Content,
+			CreatedAt:  b.CreatedAt,
+			CreatedBy:  h.getUserNameByID(b.CreatedBy),
+			UpdatedAt:  b.UpdatedAt,
+			UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
+		})
+	}
+
+	return c.JSON(http.StatusOK, res)
+}
+
 func (h Handler) GetNotes(c echo.Context) error {
 	workspaceId := c.Param("workspaceId")
 	pageSize := 20

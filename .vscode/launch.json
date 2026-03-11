@@ -9,9 +9,13 @@
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "program": "${workspaceFolder}\\cmd\\api",
-            "cwd": "${workspaceFolder}",
-            "envFile": "${workspaceFolder}\\.env"
+            "program": "${workspaceFolder}\\api\\cmd\\api",
+            "cwd": "${workspaceFolder}\\api",
+            "envFile": "${workspaceFolder}\\.env",
+            "env": {
+                "DB_DSN": "../bin/collabreef.db",
+                "STORAGE_ROOT": "../bin/uploads/"
+            }
         },
         {
             "name": "Launch Collab",

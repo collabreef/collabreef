@@ -11,11 +11,18 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
-      '/ws': {
-        target: 'http://localhost:8080',
+      '/ws/public': {
+        target: 'http://localhost:3000',
         changeOrigin: true,
-        ws: true, // Enable WebSocket proxying
-      }
+        ws: true,
+        headers: { 'X-Public-Access': 'true' },
+      },
+      '/ws': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        ws: true,
+        headers: { 'X-Public-Access': 'false' },
+      },
     }
   },
   resolve: {
