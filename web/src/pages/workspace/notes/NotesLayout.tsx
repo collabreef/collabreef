@@ -1,4 +1,4 @@
-import { Edit, Search, X, FileText } from "lucide-react"
+import { Edit, Search, X, FileText, PanelRight } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import SidebarButton from "@/components/sidebar/SidebarButton"
 import { getNotes, NoteData, createNote } from "@/api/note"
@@ -28,6 +28,7 @@ const NotesLayout = () => {
     const [debouncedQuery, setDebouncedQuery] = useState(query);
     const currentWorkspaceId = useCurrentWorkspaceId();
     const [isSearchVisible, setIsSearchVisible] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { t } = useTranslation()
     const observerRef = useRef<IntersectionObserver | null>(null);
     const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -89,12 +90,12 @@ const NotesLayout = () => {
             {/* Notion-style sidebar */}
             <div
                 ref={scrollContainerRef}
-                className="w-full xl:w-[240px] h-full overflow-auto shrink-0 bg-neutral-50 dark:bg-neutral-800 border-r border-neutral-200 dark:border-neutral-800 hidden xl:flex flex-col"
+                className={`w-full xl:w-[240px] h-full overflow-auto shrink-0 bg-neutral-50 dark:bg-neutral-800 border-r border-neutral-200 dark:border-neutral-800 flex-col ${isSidebarOpen ? "flex" : "hidden xl:flex"}`}
             >
                 {/* Header */}
                 <div className="shrink-0">
                     {isSearchVisible ? (
-                        <div className="px-3 pt-3 pb-1">
+                        <div className="px-5 pt-5 pb-1 xl:px-3 xl:pt-3">
                             <div className="flex items-center gap-2 py-1.5 px-2 rounded-md border dark:border-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-100">
                                 <Search size={13} className="text-gray-400 shrink-0" />
                                 <input
@@ -111,22 +112,29 @@ const NotesLayout = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="pt-2 px-3 flex items-center justify-between">
+                        <div className="p-5 xl:p-4 flex items-center justify-between">
                             <div className="flex gap-2 items-center">
                                 <SidebarButton />
-                                <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                                <span className="px-1 font-semibold text-gray-700 dark:text-gray-200">
                                     {t("menu.notes")}
                                 </span>
                             </div>
-                            <div className="flex items-center">
+                            <div className="flex items-center gap-4">
+                                <button
+                                    aria-label="close sidebar"
+                                    className="xl:hidden rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-700 text-gray-500 dark:text-gray-400"
+                                    onClick={() => setIsSidebarOpen(false)}
+                                >
+                                    <PanelRight size={16} />
+                                </button>
                                 <Tooltip.Root>
                                     <Tooltip.Trigger asChild>
                                         <button
                                             aria-label="search"
-                                            className="p-1.5 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 text-gray-500 dark:text-gray-400"
+                                            className=" rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 text-gray-500 dark:text-gray-400"
                                             onClick={() => setIsSearchVisible(true)}
                                         >
-                                            <Search size={15} />
+                                            <Search size={16} />
                                         </button>
                                     </Tooltip.Trigger>
                                     <Tooltip.Portal>
@@ -142,9 +150,9 @@ const NotesLayout = () => {
                                             onClick={handleCreateNote}
                                             aria-label="new note"
                                             disabled={createNoteMutation.isPending}
-                                            className="p-1.5 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 text-gray-500 dark:text-gray-400 disabled:opacity-40"
+                                            className="rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 text-gray-500 dark:text-gray-400 disabled:opacity-40"
                                         >
-                                            <Edit size={15} />
+                                            <Edit size={16} />
                                         </button>
                                     </Tooltip.Trigger>
                                     <Tooltip.Portal>
@@ -160,15 +168,15 @@ const NotesLayout = () => {
                 </div>
 
                 {/* Note title list */}
-                <nav className="flex-1 overflow-auto py-1 px-1">
+                <nav className="flex-1 overflow-auto py-1 px-3 xl:px-1">
                     {isLoading ? (
-                        <div className="flex flex-col gap-0.5 px-1 py-1">
+                        <div className="flex flex-col gap-0.5 py-1">
                             {Array.from({ length: 8 }).map((_, i) => (
                                 <div key={i} className="h-7 rounded-md bg-neutral-200 dark:bg-neutral-800 animate-pulse" style={{ width: `${60 + (i * 13) % 35}%` }} />
                             ))}
                         </div>
                     ) : notes.length === 0 ? (
-                        <div className="px-3 py-4 text-xs text-gray-400 dark:text-neutral-600">
+                        <div className="px-5 py-4 xl:px-3 text-xs text-gray-400 dark:text-neutral-600">
                             {t("messages.noMoreNotes")}
                         </div>
                     ) : (
@@ -177,17 +185,18 @@ const NotesLayout = () => {
                                 <NavLink
                                     key={note.id}
                                     to={`${note.id}`}
+                                    onClick={() => setIsSidebarOpen(false)}
                                     className={() => {
                                         const isActive = noteId === note.id
                                         return [
-                                            "flex items-center gap-2 px-2 py-1.5 rounded-md text-sm cursor-pointer select-none transition-colors duration-100 group",
+                                            "flex items-center gap-2 px-3 py-2.5 xl:px-2 xl:py-1.5 rounded-md text-sm cursor-pointer select-none transition-colors duration-100 group",
                                             isActive
                                                 ? "bg-neutral-200 dark:bg-neutral-700 text-gray-900 dark:text-gray-100 font-medium"
                                                 : "text-gray-600 dark:text-gray-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-gray-100"
                                         ].join(" ")
                                     }}
                                 >
-                                    <FileText size={14} className="shrink-0 opacity-50" />
+                                    <FileText className="shrink-0 opacity-50 size-4 xl:size-3.5" />
                                     <span className="truncate leading-snug">
                                         {getNoteTitle(note)}
                                     </span>
@@ -195,7 +204,7 @@ const NotesLayout = () => {
                             ))}
                             <div ref={loadMoreRef} className="h-2" />
                             {isFetchingNextPage && (
-                                <div className="flex flex-col gap-0.5 px-1 py-1">
+                                <div className="flex flex-col gap-0.5 py-1">
                                     {Array.from({ length: 3 }).map((_, i) => (
                                         <div key={i} className="h-7 rounded-md bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
                                     ))}
@@ -208,12 +217,20 @@ const NotesLayout = () => {
 
             {/* Main content */}
             <div className="flex-1 overflow-hidden">
-                <div className="pt-2 px-3 xl:hidden  flex items-center justify-between">
+                <div className="p-5 xl:hidden  flex items-center justify-between">
                     <div className="flex gap-2 items-center">
                         <SidebarButton />
-                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                        <span className="px-1 font-semibold text-gray-700 dark:text-gray-200">
                             {t("menu.notes")}
                         </span>
+                    </div>
+                    <div>
+                        <button
+                            className="bg-opacity-50 text-gray-600 dark:text-gray-400"
+                            onClick={() => setIsSidebarOpen(prev => !prev)}
+                        >
+                            <PanelRight size={16} />
+                        </button>
                     </div>
                 </div>
                 <Outlet />
