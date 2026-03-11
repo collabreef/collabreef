@@ -138,7 +138,7 @@ const ViewSettingsPage = () => {
 
     return (
         <OneColumn>
-            <div className="w-full">
+            <div className="px-4 xl:px-0 w-full">
                 <div className="flex flex-col min-h-screen">
                     <div className="py-2.5 flex items-center justify-between">
                         <div className="flex gap-3 items-center sm:text-xl font-semibold h-10">
