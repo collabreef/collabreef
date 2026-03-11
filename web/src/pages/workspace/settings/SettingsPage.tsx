@@ -145,7 +145,7 @@ const Settings = () => {
     return <OneColumn>
 
         <div
-            className="w-full"
+            className="w-full px-4 xl:px-4"
         >
             <div className="flex flex-col min-h-screen">
                 <div className="py-2.5 flex items-center justify-between ">
