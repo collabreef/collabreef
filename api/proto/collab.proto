@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package collab;
+
+// CollabService exposes data access operations for the Hocuspocus collab service.
+// Implementation uses JSON encoding over gRPC transport (no protoc generation required).
+// The Go server registers a JSON codec under the "proto" name so that the
+// standard grpc+proto Content-Type from @grpc/grpc-js is accepted transparently.
+
+service CollabService {
+  // Auth
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc IsWorkspaceMember(IsWorkspaceMemberRequest) returns (IsWorkspaceMemberResponse);
+  rpc GetNote(GetNoteRequest) returns (GetNoteResponse);
+  rpc GetView(GetViewRequest) returns (GetViewResponse);
+
+  // Persistence
+  rpc UpdateNote(UpdateNoteRequest) returns (UpdateNoteResponse);
+  rpc UpdateViewData(UpdateViewDataRequest) returns (UpdateViewDataResponse);
+  rpc GetViewObjects(GetViewObjectsRequest) returns (GetViewObjectsResponse);
+  rpc CreateViewObject(CreateViewObjectRequest) returns (CreateViewObjectResponse);
+  rpc UpdateViewObject(UpdateViewObjectRequest) returns (UpdateViewObjectResponse);
+  rpc DeleteViewObject(DeleteViewObjectRequest) returns (DeleteViewObjectResponse);
+}
+
+message GetUserRequest        { string id = 1; }
+message GetUserResponse       { bool found = 1; string id = 2; string name = 3; bool disabled = 4; }
+
+message IsWorkspaceMemberRequest  { string user_id = 1; string workspace_id = 2; }
+message IsWorkspaceMemberResponse { bool is_member = 1; }
+
+message GetNoteRequest  { string id = 1; }
+message GetNoteResponse { bool found = 1; string id = 2; string title = 3; string content = 4; string visibility = 5; string workspace_id = 6; string created_by = 7; }
+
+message GetViewRequest  { string id = 1; }
+message GetViewResponse { bool found = 1; string id = 2; string data = 3; string visibility = 4; string workspace_id = 5; string created_by = 6; }
+
+message UpdateNoteRequest  { string id = 1; string title = 2; string content = 3; string updated_at = 4; string updated_by = 5; }
+message UpdateNoteResponse {}
+
+message UpdateViewDataRequest  { string id = 1; string data = 2; string updated_at = 3; }
+message UpdateViewDataResponse {}
+
+message ViewObject {
+  string id = 1; string view_id = 2; string name = 3; string type = 4; string data = 5;
+  string created_at = 6; string created_by = 7; string updated_at = 8; string updated_by = 9;
+}
+message GetViewObjectsRequest  { string view_id = 1; }
+message GetViewObjectsResponse { repeated ViewObject objects = 1; }
+
+message CreateViewObjectRequest  { ViewObject object = 1; }
+message CreateViewObjectResponse {}
+
+message UpdateViewObjectRequest  { string id = 1; string name = 2; string type = 3; string data = 4; string updated_by = 5; string updated_at = 6; }
+message UpdateViewObjectResponse {}
+
+message DeleteViewObjectRequest  { string id = 1; }
+message DeleteViewObjectResponse {}

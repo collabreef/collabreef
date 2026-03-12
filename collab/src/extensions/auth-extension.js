@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 
 /**
  * Auth extension for Hocuspocus
- * Validates JWT cookie and checks DB permissions directly.
+ * Validates JWT cookie and checks permissions via gRPC calls to the Go API.
  * nginx sets X-Public-Access header to distinguish public/authenticated endpoints.
  */
 export class AuthExtension {

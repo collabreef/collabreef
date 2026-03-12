@@ -40,19 +40,6 @@
 
 ```yaml
 services:
-  collab:
-    image: ti777777/collabreef
-    container_name: collabreef-collab
-    command: ["node", "collab/src/index.js"]
-    volumes:
-      - collabreef_data:/usr/local/app/bin
-    environment:
-      PORT: 3000
-      DB_DRIVER: sqlite3
-      DB_DSN: /usr/local/app/bin/collabreef.db
-      # APP_SECRET: your-secret-key
-    restart: unless-stopped
-
   api:
     image: ti777777/collabreef
     container_name: collabreef-api
@@ -61,10 +48,22 @@ services:
       - collabreef_data:/usr/local/app/bin
     environment:
       PORT: 8080
+      DB_DRIVER: sqlite3
+      DB_DSN: /usr/local/app/bin/collabreef.db
       # APP_SECRET: your-secret-key
       # APP_DISABLE_SIGNUP: true
+    restart: unless-stopped
+
+  collab:
+    image: ti777777/collabreef
+    container_name: collabreef-collab
+    command: ["node", "collab/src/index.js"]
+    environment:
+      PORT: 3000
+      GRPC_ADDR: collabreef-api:50051
+      # APP_SECRET: your-secret-key
     depends_on:
-      - collab
+      - api
     restart: unless-stopped
 
   nginx:

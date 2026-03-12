@@ -3,8 +3,12 @@ import * as Y from 'yjs'
 /**
  * Database persistence extension for Hocuspocus
  *
- * Handles loading documents from the database (onLoadDocument)
- * and storing them back (onStoreDocument) with debouncing.
+ * Handles loading documents from the database (onLoadDocument) by reading
+ * from the original application tables via gRPC, and writing back
+ * human-readable data on save (onStoreDocument).
+ *
+ * Y.js binary state is NOT persisted — documents are re-initialized from
+ * the source tables each time the server starts or a room is first opened.
  *
  * Document naming convention:
  *   note:{noteId}         - Note documents
@@ -31,33 +35,14 @@ export class DatabaseExtension {
   }
 
   /**
-   * Called when a document is loaded (first client connects to a room)
-   * Loads Y.js binary state from DB, or initializes from existing data
+   * Called when a document is loaded (first client connects to a room).
+   * Always initializes from the original application tables.
    */
   async onLoadDocument(data) {
     const { documentName, document } = data
     const { type, id } = this.parseDocumentName(documentName)
 
     try {
-      // Try loading existing Y.js binary state
-      const yjsDoc = await this.db.getYjsDocument(documentName)
-      if (yjsDoc && yjsDoc.data) {
-        const update = yjsDoc.data instanceof Buffer
-          ? new Uint8Array(yjsDoc.data)
-          : new Uint8Array(yjsDoc.data)
-        Y.applyUpdate(document, update)
-
-        // Clear stale ops array from previous sessions (spreadsheets use Y.Array('ops')
-        // for real-time forwarding; these are no longer needed after persistence)
-        const yOps = document.getArray('ops')
-        if (yOps.length > 0) {
-          yOps.delete(0, yOps.length)
-        }
-
-        return
-      }
-
-      // No Y.js state - initialize from existing data in original tables
       switch (type) {
         case 'note':
           await this.initializeNote(document, id)
@@ -77,20 +62,14 @@ export class DatabaseExtension {
   }
 
   /**
-   * Called after document changes (debounced by Hocuspocus)
-   * Saves Y.js binary state and extracts human-readable data to original tables
+   * Called after document changes (debounced by Hocuspocus).
+   * Extracts human-readable data and saves to original application tables.
    */
   async onStoreDocument(data) {
     const { documentName, document } = data
     const { type, id } = this.parseDocumentName(documentName)
-    const now = new Date().toISOString()
 
     try {
-      // Save Y.js binary state
-      const state = Y.encodeStateAsUpdate(document)
-      await this.db.saveYjsDocument(documentName, Buffer.from(state), now)
-
-      // Extract and save human-readable data to original tables
       switch (type) {
         case 'note':
           await this.persistNote(document, id, data)
@@ -102,7 +81,6 @@ export class DatabaseExtension {
           await this.persistSpreadsheet(document, id)
           break
       }
-
     } catch (err) {
       console.error(`[DB] Error storing document ${documentName}:`, err)
     }
@@ -118,17 +96,14 @@ export class DatabaseExtension {
     }
 
     document.transact(() => {
-      // Set content
       const yText = document.getText('content')
       if (note.content) {
         yText.insert(0, note.content)
       }
 
-      // Set metadata
       const yMeta = document.getMap('meta')
       yMeta.set('title', note.title || '')
     })
-
   }
 
   /**
@@ -141,7 +116,6 @@ export class DatabaseExtension {
     }
 
     document.transact(() => {
-      // Load canvas objects from views.data
       const canvasObjects = document.getMap('canvas-objects')
       if (view.data) {
         try {
@@ -155,12 +129,9 @@ export class DatabaseExtension {
           console.error(`[DB] Error parsing whiteboard canvas data:`, e)
         }
       }
-
-      // Load view objects from view_objects table
-      // Note: This is done outside the transact if async
     })
 
-    // Load view objects (async DB call)
+    // Load view objects (async gRPC call)
     try {
       const viewObjects = await this.db.findViewObjectsByViewId(viewId)
       if (viewObjects && viewObjects.length > 0) {
@@ -183,7 +154,6 @@ export class DatabaseExtension {
     } catch (e) {
       console.error(`[DB] Error loading view objects:`, e)
     }
-
   }
 
   /**
@@ -201,14 +171,12 @@ export class DatabaseExtension {
         document.transact(() => {
           const ySpreadsheet = document.getMap('spreadsheet')
           if (Array.isArray(parsed)) {
-            // Data is an array of sheets
             for (const sheet of parsed) {
               if (sheet.id) {
                 ySpreadsheet.set(sheet.id, sheet)
               }
             }
           } else if (parsed && typeof parsed === 'object') {
-            // Data is a map of sheets
             for (const [key, value] of Object.entries(parsed)) {
               ySpreadsheet.set(key, value)
             }
@@ -218,7 +186,6 @@ export class DatabaseExtension {
         console.error(`[DB] Error parsing spreadsheet data:`, e)
       }
     }
-
   }
 
   /**
@@ -231,8 +198,6 @@ export class DatabaseExtension {
     const content = yText.toString()
     const title = yMeta.get('title')
     const now = new Date().toISOString()
-
-    // Get the user who made the last change from request headers
     const updatedBy = data.requestHeaders?.['x-user-id'] || 'system'
 
     const note = await this.db.findNote(noteId)

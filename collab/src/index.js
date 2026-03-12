@@ -1,12 +1,13 @@
 import { Server } from '@hocuspocus/server'
 import { DatabaseExtension } from './extensions/database-extension.js'
 import { AuthExtension } from './extensions/auth-extension.js'
-import { createDB } from './db/db.js'
+import { createGrpcClient } from './grpc/client.js'
 
 const PORT = parseInt(process.env.PORT || '3000', 10)
+const GRPC_ADDR = process.env.GRPC_ADDR || 'localhost:50051'
 
-// Initialize Database
-const db = createDB()
+// Initialize gRPC client (replaces direct DB access)
+const db = createGrpcClient(GRPC_ADDR)
 
 // Configure Hocuspocus server
 const server = Server.configure({
@@ -24,7 +25,7 @@ server.listen()
 // Graceful shutdown
 async function shutdown() {
   await server.destroy()
-  await db.close()
+  db.close()
   process.exit(0)
 }
 

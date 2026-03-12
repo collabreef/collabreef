@@ -10,6 +10,7 @@ import (
 
 	"github.com/collabreef/collabreef/internal/bootstrap"
 	"github.com/collabreef/collabreef/internal/config"
+	grpcserver "github.com/collabreef/collabreef/internal/grpc"
 	"github.com/collabreef/collabreef/internal/server"
 )
 
@@ -44,6 +45,9 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
+
+	grpcPort := config.C.GetString(config.GRPC_PORT)
+	go grpcserver.Start(db, grpcPort)
 
 	// Start server in a goroutine
 	go func() {
