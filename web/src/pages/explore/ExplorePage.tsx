@@ -1,16 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { getPublicNotes } from '@/api/note';
 import NoteMasonry from '@/components/notecard/NoteMasonry';
 import NoteMasonrySkeleton from '@/components/notecard/NoteMasonrySkeleton';
 import logo from '@/assets/app.png';
+import { LogIn, House } from 'lucide-react';
+import { useCurrentUserStore } from '@/stores/current-user';
 
 const ExplorePage: React.FC = () => {
     const { data: notes = [], isLoading } = useQuery({
         queryKey: ['explore-notes'],
         queryFn: () => getPublicNotes(1, 20),
     });
+
+    const { user, fetchUser } = useCurrentUserStore();
+    const [authChecked, setAuthChecked] = useState(false);
+
+    useEffect(() => {
+        fetchUser().finally(() => setAuthChecked(true));
+    }, []);
 
     return (
         <div className="min-h-dvh bg-neutral-100 dark:bg-neutral-900">
@@ -20,12 +29,25 @@ const ExplorePage: React.FC = () => {
                         <img src={logo} className="w-10" alt="logo" />
                         <span className="text-xl font-bold text-gray-900 dark:text-gray-100">Explore</span>
                     </div>
-                    <Link
-                        to="/signin"
-                        className="font-bold text-sm text-primary"
-                    >
-                        Sign in
-                    </Link>
+                    {authChecked && (
+                        user ? (
+                            <Link
+                                to="/"
+                                className="text-primary hover:text-primary/80 transition-colors"
+                                title="Back to workspace"
+                            >
+                                <House size={20} strokeWidth={2.5} />
+                            </Link>
+                        ) : (
+                            <Link
+                                to="/signin"
+                                className="text-primary hover:text-primary/80 transition-colors"
+                                title="Sign in"
+                            >
+                                <LogIn size={20} strokeWidth={2.5} />
+                            </Link>
+                        )
+                    )}
                 </div>
 
                 {isLoading ? (
