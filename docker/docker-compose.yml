@@ -13,23 +13,6 @@ services:
       - collabreef-collab
     restart: unless-stopped
 
-  collabreef-collab:
-    build:
-      context: ..
-      dockerfile: Dockerfile
-      target: app-runtime
-    image: collabreef/collabreef:local
-    container_name: collabreef-collab
-    command: ["node", "collab/src/index.js"]
-    volumes:
-      - ../bin:/usr/local/app/bin
-    environment:
-      - PORT=3000
-      - DB_DRIVER=sqlite3
-      - DB_DSN=/usr/local/app/bin/collabreef.db
-      - APP_SECRET=${APP_SECRET}
-    restart: unless-stopped
-
   collabreef-api:
     build:
       context: ..
@@ -46,7 +29,20 @@ services:
       - DB_DSN=/usr/local/app/bin/collabreef.db
       - APP_DISABLE_SIGNUP=${APP_DISABLE_SIGNUP}
       - APP_SECRET=${APP_SECRET}
+    restart: unless-stopped
+
+  collabreef-collab:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: app-runtime
+    image: collabreef/collabreef:local
+    container_name: collabreef-collab
+    command: ["node", "collab/src/index.js"]
+    environment:
+      - PORT=3000
+      - APP_SECRET=${APP_SECRET}
+      - GRPC_ADDR=collabreef-api:50051
     depends_on:
-      collabreef-collab:
-        condition: service_started
+      - collabreef-api
     restart: unless-stopped

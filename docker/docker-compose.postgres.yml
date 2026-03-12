@@ -32,24 +32,6 @@ services:
       - collabreef-api
       - collabreef-collab
 
-  collabreef-collab:
-    build:
-      context: ..
-      dockerfile: Dockerfile
-      target: app-runtime
-    image: collabreef/collabreef:local
-    container_name: collabreef-collab
-    command: ["node", "collab/src/index.js"]
-    restart: unless-stopped
-    environment:
-      PORT: 3000
-      DB_DRIVER: postgres
-      DB_DSN: "host=postgres port=5432 user=collabreef password=collabreef_password dbname=collabreef sslmode=disable TimeZone=UTC"
-      APP_SECRET: ${APP_SECRET}
-    depends_on:
-      postgres:
-        condition: service_healthy
-
   collabreef-api:
     build:
       context: ..
@@ -69,8 +51,22 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      collabreef-collab:
-        condition: service_started
+
+  collabreef-collab:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: app-runtime
+    image: collabreef/collabreef:local
+    container_name: collabreef-collab
+    command: ["node", "collab/src/index.js"]
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      APP_SECRET: ${APP_SECRET}
+      GRPC_ADDR: collabreef-api:50051
+    depends_on:
+      - collabreef-api
 
 volumes:
   postgres_data:
