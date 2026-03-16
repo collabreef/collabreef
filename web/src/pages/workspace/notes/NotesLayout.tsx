@@ -1,12 +1,11 @@
-import { Edit, Search, X, FileText, PanelRight } from "lucide-react"
+import { Plus, Search, X, FileText, PanelRight } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import SidebarButton from "@/components/sidebar/SidebarButton"
 import { getNotes, NoteData, createNote } from "@/api/note"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 import { Outlet, useNavigate, NavLink, useParams } from "react-router-dom"
-import { useInfiniteQuery, useMutation } from "@tanstack/react-query"
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRef, useCallback, useState, useEffect } from "react"
-import { Tooltip } from "radix-ui"
 import { toast } from "@/stores/toast"
 
 const PAGE_SIZE = 30;
@@ -17,9 +16,9 @@ function getNoteTitle(note: NoteData): string {
         const doc = JSON.parse(note.content)
         const firstBlock = doc?.content?.[0]
         const text = firstBlock?.content?.map((n: { text?: string }) => n.text ?? "").join("") ?? ""
-        return text.trim() || "Untitled"
+        return text.trim() || "New page"
     } catch {
-        return "Untitled"
+        return "New page"
     }
 }
 
@@ -30,6 +29,7 @@ const NotesLayout = () => {
     const [isSearchVisible, setIsSearchVisible] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { t } = useTranslation()
+    const queryClient = useQueryClient()
     const observerRef = useRef<IntersectionObserver | null>(null);
     const scrollContainerRef = useRef<HTMLDivElement | null>(null);
     const navigate = useNavigate();
@@ -38,6 +38,7 @@ const NotesLayout = () => {
     const createNoteMutation = useMutation({
         mutationFn: (data: NoteData) => createNote(currentWorkspaceId, data),
         onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['notes', currentWorkspaceId] })
             navigate(`./${data.id}?mode=edit`)
         },
         onError: (error) => {
@@ -51,6 +52,7 @@ const NotesLayout = () => {
             type: "doc",
             content: [{ type: "paragraph", content: [{ type: "text", text: "" }] }]
         })
+        setIsSidebarOpen(false)
         createNoteMutation.mutate({ content: emptyContent, visibility: "private" })
     }
 
@@ -86,7 +88,7 @@ const NotesLayout = () => {
     const notes = data?.pages.flat() || [];
 
     return (
-        <div className="flex h-screen">
+        <div className="flex h-svh">
             {/* Notion-style sidebar */}
             <div
                 ref={scrollContainerRef}
@@ -119,49 +121,21 @@ const NotesLayout = () => {
                                     {t("menu.notes")}
                                 </span>
                             </div>
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1">
                                 <button
                                     aria-label="close sidebar"
-                                    className="xl:hidden rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-700 text-gray-500 dark:text-gray-400"
+                                    className="xl:hidden p-1 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-700 text-gray-500 dark:text-gray-400"
                                     onClick={() => setIsSidebarOpen(false)}
                                 >
                                     <PanelRight size={16} />
                                 </button>
-                                <Tooltip.Root>
-                                    <Tooltip.Trigger asChild>
-                                        <button
-                                            aria-label="search"
-                                            className=" rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 text-gray-500 dark:text-gray-400"
-                                            onClick={() => setIsSearchVisible(true)}
-                                        >
-                                            <Search size={16} />
-                                        </button>
-                                    </Tooltip.Trigger>
-                                    <Tooltip.Portal>
-                                        <Tooltip.Content className="select-none rounded-lg bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-2 py-1 text-xs" side="bottom">
-                                            <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-100" />
-                                            {t("actions.filter")}
-                                        </Tooltip.Content>
-                                    </Tooltip.Portal>
-                                </Tooltip.Root>
-                                <Tooltip.Root>
-                                    <Tooltip.Trigger asChild>
-                                        <button
-                                            onClick={handleCreateNote}
-                                            aria-label="new note"
-                                            disabled={createNoteMutation.isPending}
-                                            className="rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 text-gray-500 dark:text-gray-400 disabled:opacity-40"
-                                        >
-                                            <Edit size={16} />
-                                        </button>
-                                    </Tooltip.Trigger>
-                                    <Tooltip.Portal>
-                                        <Tooltip.Content className="select-none rounded-lg bg-gray-900 text-white dark:bg-gray-100 dark:text-black px-2 py-1 text-xs" side="bottom">
-                                            <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-100" />
-                                            {t("actions.newNote")}
-                                        </Tooltip.Content>
-                                    </Tooltip.Portal>
-                                </Tooltip.Root>
+                                <button
+                                    aria-label="search"
+                                    className="p-1 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-700 text-gray-500 dark:text-gray-400"
+                                    onClick={() => setIsSearchVisible(true)}
+                                >
+                                    <Search size={16} />
+                                </button>
                             </div>
                         </div>
                     )}
@@ -169,6 +143,14 @@ const NotesLayout = () => {
 
                 {/* Note title list */}
                 <nav className="flex-1 overflow-auto py-1 px-3 xl:px-1">
+                    <button
+                        onClick={handleCreateNote}
+                        disabled={createNoteMutation.isPending}
+                        className="w-full flex items-center gap-2 px-3 py-2.5 xl:px-2 xl:py-1.5 rounded-md text-sm cursor-pointer select-none transition-colors duration-100 text-gray-400 dark:text-gray-500 hover:bg-neutral-200 dark:hover:bg-neutral-800 hover:text-gray-700 dark:hover:text-gray-300 disabled:opacity-40"
+                    >
+                        <Plus className="shrink-0 size-4 xl:size-3.5" />
+                        <span className="leading-snug">{t("actions.newNote")}</span>
+                    </button>
                     {isLoading ? (
                         <div className="flex flex-col gap-0.5 py-1">
                             {Array.from({ length: 8 }).map((_, i) => (
@@ -216,8 +198,8 @@ const NotesLayout = () => {
             </div>
 
             {/* Main content */}
-            <div className="flex-1 overflow-hidden">
-                <div className="p-5 xl:hidden  flex items-center justify-between">
+            <div className="flex-1 flex flex-col overflow-hidden">
+                <div className="shrink-0 p-5 xl:hidden flex items-center justify-between">
                     <div className="flex gap-2 items-center">
                         <SidebarButton />
                         <span className="px-1 font-semibold text-gray-700 dark:text-gray-200">
@@ -233,7 +215,9 @@ const NotesLayout = () => {
                         </button>
                     </div>
                 </div>
-                <Outlet />
+                <div className="flex-1 overflow-hidden">
+                    <Outlet />
+                </div>
             </div>
         </div>
     )

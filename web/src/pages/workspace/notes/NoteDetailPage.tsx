@@ -39,7 +39,7 @@ const NoteDetailPage = () => {
     }, [fetchedNote])
 
     return (
-        <div className="overflow-auto bg-white dark:bg-neutral-800 xl:w-full h-dvh">
+        <div className="flex flex-col bg-white dark:bg-neutral-800 xl:w-full h-full">
             <NoteDetailView
                 note={note}
                 menu={note ? <NoteDetailMenu note={note} /> : undefined}

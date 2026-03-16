@@ -844,7 +844,7 @@ export default {
     create: "建立筆記",
     createSuccess: "筆記建立成功",
     createError: "筆記建立失敗",
-    untitled: "無標題"
+    untitled: "New page"
   },
   editor: {
     "titlePlaceholder": "無標題",

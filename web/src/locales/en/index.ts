@@ -844,7 +844,7 @@ export default {
     create: "Create Note",
     createSuccess: "Note created successfully",
     createError: "Failed to create note",
-    untitled: "Untitled"
+    untitled: "New page"
   },
   editor: {
     "titlePlaceholder": "Untitled",

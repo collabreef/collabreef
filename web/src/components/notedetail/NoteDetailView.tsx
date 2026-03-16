@@ -31,7 +31,7 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({
     if (!note) {
         return (
             <div className="w-full">
-                <div className="flex flex-col min-h-dvh animate-pulse">
+                <div className="flex flex-col min-h-full animate-pulse">
                     <div className="flex justify-center">
                         <div className="max-w-3xl w-full m-auto">
                             <div className="px-4 pt-16 xl:pt-32">
@@ -60,10 +60,10 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({
     const displayTitle = wsTitle || note.title
 
     return (
-        <div className="w-full">
+        <div className="flex flex-col flex-1 min-h-0">
             {note && (
-                <div className="flex flex-col min-h-dvh">
-                    <div className="p-2 xl:p-4">
+                <>
+                    <div className="shrink-0 p-2 xl:p-4">
                         <div className="flex justify-between items-center gap-2 flex-1 min-w-0 ">
                             <button
                                 onClick={() => navigate(-1)}
@@ -72,23 +72,21 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({
                             >
                                 <ArrowLeft size={20} />
                             </button>
+                            <EditableDiv
+                                key={note.id}
+                                value={displayTitle}
+                                editable={true}
+                                placeholder={t("notes.untitled")}
+                                className="flex-1 text-lg font-medium text-gray-700 dark:text-gray-200 border-none outline-none bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600 min-w-0 truncate"
+                                onChange={onTitleChange}
+                            />
                             <div className="inline-flex flex-shrink-0">{menu}</div>
                         </div>
                     </div>
-                    <div className="flex">
+                    <div className="flex-1 overflow-auto">
                         <div className="max-w-3xl w-full m-auto">
                             <div className="xl:p-10">
                                 <div className="flex flex-col gap-2">
-                                    <div className="flex gap-2 xl:py-4 px-4 items-center">
-                                        <EditableDiv
-                                            key={note.id}
-                                            value={displayTitle}
-                                            editable={true}
-                                            placeholder={t("notes.untitled")}
-                                            className="flex-1 text-4xl font-semibold border-none outline-none bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600 min-w-0"
-                                            onChange={onTitleChange}
-                                        />
-                                    </div>
                                     <div className="px-4">
                                         <div key={`editor-${note.id}`}>
                                             <Editor
@@ -103,7 +101,7 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({
                             </div>
                         </div>
                     </div>
-                </div>
+                </>
             )}
         </div>
     )
