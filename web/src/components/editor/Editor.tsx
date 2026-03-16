@@ -27,9 +27,21 @@ interface Props {
 
 const DEFAULT_CONTENT = { type: 'doc', content: [{ type: 'paragraph' }] }
 
+// Recursively remove empty text nodes that ProseMirror/TipTap disallows
+const sanitizeContent = (node: any): any => {
+  if (!node || typeof node !== 'object') return node;
+  if (node.type === 'text') {
+    return node.text ? node : null;
+  }
+  if (Array.isArray(node.content)) {
+    return { ...node, content: node.content.map(sanitizeContent).filter(Boolean) };
+  }
+  return node;
+}
+
 const safeParse = (content: string) => {
   try {
-    return { parsed: JSON.parse(content), error: false }
+    return { parsed: sanitizeContent(JSON.parse(content)) ?? DEFAULT_CONTENT, error: false }
   } catch {
     return { parsed: DEFAULT_CONTENT, error: true }
   }
@@ -264,7 +276,7 @@ const Editor: FC<Props> = ({
     }
 
     try {
-      const contentJson = JSON.parse(yjsContent);
+      const contentJson = sanitizeContent(JSON.parse(yjsContent)) ?? DEFAULT_CONTENT;
 
       // Set flag to prevent infinite loop
       isApplyingYjsUpdate.current = true;
@@ -290,7 +302,7 @@ const Editor: FC<Props> = ({
       if (newContent === lastContentRef.current) return;
 
       try {
-        const contentJson = JSON.parse(newContent);
+        const contentJson = sanitizeContent(JSON.parse(newContent)) ?? DEFAULT_CONTENT;
 
         // Set flag to prevent infinite loop
         isApplyingYjsUpdate.current = true;
