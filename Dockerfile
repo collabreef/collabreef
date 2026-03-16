@@ -76,5 +76,6 @@ VOLUME /usr/local/app/bin
 
 # ---------- Stage 5: nginx with static frontend ----------
 FROM nginx:alpine AS nginx-runtime
-COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
+ENV CLIENT_MAX_BODY_SIZE=100m
+COPY nginx/nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=frontend /app/web/dist /usr/share/nginx/html

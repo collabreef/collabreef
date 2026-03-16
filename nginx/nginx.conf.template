@@ -3,6 +3,8 @@ server {
     root /usr/share/nginx/html;
     index index.html;
 
+    client_max_body_size ${CLIENT_MAX_BODY_SIZE};
+
     # React SPA
     location / {
         try_files $uri $uri/ /index.html;
