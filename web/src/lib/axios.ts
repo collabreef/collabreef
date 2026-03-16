@@ -9,7 +9,7 @@ axios.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       // Exclude /share/... paths and root path from redirect
       const currentPath = window.location.pathname;
-      const shouldRedirect = !currentPath.startsWith('/share/') && currentPath !== '/';
+      const shouldRedirect = !currentPath.startsWith('/share/') && currentPath !== '/' && currentPath !== '/explore';
 
       if (shouldRedirect) {
         // Clear user state
