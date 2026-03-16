@@ -18,8 +18,10 @@ export const getPublicNotes = async (pageNum: number, pageSize: number) => {
   return response.data;
 };
 
-export const getNotes = async (workspaceId: string, pageNum: number, pageSize: number, query: string) => {
-  const response = await axios.get(`/api/v1/workspaces/${workspaceId}/notes?pageSize=${pageSize}&pageNumber=${pageNum}&query=${query}`, { withCredentials: true });
+export const getNotes = async (workspaceId: string, pageNum: number, pageSize: number, query: string, sort?: string) => {
+  const params = new URLSearchParams({ pageSize: String(pageSize), pageNumber: String(pageNum), query });
+  if (sort) params.set('sort', sort);
+  const response = await axios.get(`/api/v1/workspaces/${workspaceId}/notes?${params}`, { withCredentials: true });
   return response.data;
 };
 

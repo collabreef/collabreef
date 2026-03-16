@@ -69,8 +69,13 @@ func (s SqliteDB) FindNotes(f model.NoteFilter) ([]model.Note, error) {
 		query = query.Where(strings.Join(conds, " AND "), args...)
 	}
 
+	sortCol := "created_at"
+	if f.SortBy == "updated_at" {
+		sortCol = "updated_at"
+	}
+
 	err := query.
-		Order("created_at DESC").
+		Order(sortCol + " DESC").
 		Offset((f.PageNumber - 1) * f.PageSize).
 		Limit(f.PageSize).
 		Find(&notes).Error

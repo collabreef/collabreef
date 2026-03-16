@@ -7,6 +7,7 @@ type NoteFilter struct {
 	PageNumber  int
 	UserID      string
 	Query       string
+	SortBy      string // "updated_at" or "created_at" (default)
 }
 
 type Note struct {

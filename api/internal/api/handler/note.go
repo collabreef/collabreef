@@ -125,6 +125,10 @@ func (h Handler) GetNotes(c echo.Context) error {
 	}
 
 	query := c.QueryParam("query")
+	sortBy := c.QueryParam("sort")
+	if sortBy != "updated_at" {
+		sortBy = "created_at"
+	}
 
 	user := c.Get("user").(model.User)
 
@@ -134,6 +138,7 @@ func (h Handler) GetNotes(c echo.Context) error {
 		PageNumber:  pageNumber,
 		UserID:      user.ID,
 		Query:       query,
+		SortBy:      sortBy,
 	}
 
 	notes, err := h.db.FindNotes(filter)
