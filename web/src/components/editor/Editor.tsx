@@ -11,6 +11,7 @@ import { GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading
 import { CommandItem, SlashCommand } from './extensions/slashcommand/SlashCommand'
 import { Attachment } from './extensions/attachment/Attachment'
 import { ImageNode } from './extensions/imagenode/ImageNode'
+import { PasteHandler } from './extensions/pastehandler/PasteHandler'
 import { uploadFile, listFiles } from '@/api/file'
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id'
 import { NoteData } from '@/api/note'
@@ -110,6 +111,15 @@ const Editor: FC<Props> = ({
         listFiles: listFiles
       }),
       TableKit,
+      PasteHandler.configure({
+        upload: async (f: File, onProgress?: (percent: number) => void) => {
+          const res = await uploadFile(currentWorkspaceId, f, onProgress)
+          return {
+            src: `/api/v1/workspaces/${currentWorkspaceId}/files/${res.filename}`,
+            name: res.original_name
+          }
+        },
+      }),
       SlashCommand.configure({
         suggestion: {
           items: ({ query }: { query: string }): CommandItem[] => {
