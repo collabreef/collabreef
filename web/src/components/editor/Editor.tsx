@@ -25,7 +25,7 @@ interface Props {
   canDrag?: boolean
   onChange?: (data: any) => void
   yDoc?: Y.Doc | null
-  yText?: Y.Text | null
+  yText?: Y.Map<any> | null
   yjsReady?: boolean
 }
 
@@ -47,6 +47,19 @@ const safeParse = (content: string) => {
   try {
     return { parsed: sanitizeContent(JSON.parse(content)) ?? DEFAULT_CONTENT, error: false }
   } catch {
+    // Try to recover first valid JSON object (handles duplicated/corrupted content)
+    try {
+      let depth = 0
+      const start = content.indexOf('{')
+      if (start !== -1) {
+        for (let i = start; i < content.length; i++) {
+          if (content[i] === '{') depth++
+          else if (content[i] === '}' && --depth === 0) {
+            return { parsed: sanitizeContent(JSON.parse(content.slice(start, i + 1))) ?? DEFAULT_CONTENT, error: false }
+          }
+        }
+      }
+    } catch {}
     return { parsed: DEFAULT_CONTENT, error: true }
   }
 }
@@ -284,11 +297,10 @@ const Editor: FC<Props> = ({
           return;
         }
 
-        // Update Y.Text for CRDT collaboration
+        // Update Y.Map for CRDT collaboration (set avoids CRDT concatenation bugs)
         if (yText && yDoc) {
           yDoc.transact(() => {
-            yText.delete(0, yText.length);
-            yText.insert(0, newContent);
+            yText.set('data', newContent);
           }, 'local');
         }
 
@@ -310,9 +322,9 @@ const Editor: FC<Props> = ({
   useEffect(() => {
     if (!editor || !yText || !yjsReady) return;
 
-    const yjsContent = yText.toString();
+    const yjsContent = (yText.get('data') as string) || '';
 
-    // Skip if Y.Text is empty (new note or not initialized)
+    // Skip if Y.Map is empty (new note or not initialized)
     if (!yjsContent || yjsContent.length === 0) {
       return;
     }
@@ -343,7 +355,7 @@ const Editor: FC<Props> = ({
     if (!editor || !yText) return;
 
     const observer = () => {
-      const newContent = yText.toString();
+      const newContent = (yText.get('data') as string) || '';
 
       // Avoid applying if content is the same
       if (newContent === lastContentRef.current) return;
@@ -393,11 +405,10 @@ const Editor: FC<Props> = ({
         const { content: newContent } = pendingUpdate.current;
         pendingUpdate.current = null;
 
-        // Update Y.Text for CRDT collaboration
+        // Update Y.Map for CRDT collaboration (set avoids CRDT concatenation bugs)
         if (yText && yDoc) {
           yDoc.transact(() => {
-            yText.delete(0, yText.length);
-            yText.insert(0, newContent);
+            yText.set('data', newContent);
           }, 'local');
         }
 
