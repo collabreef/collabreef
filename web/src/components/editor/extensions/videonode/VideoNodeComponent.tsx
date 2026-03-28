@@ -1,5 +1,5 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
-import { Loader2, FolderOpen, Upload, Trash2, Edit3, ChevronUp, ChevronDown, Video } from "lucide-react"
+import { Loader2, FolderOpen, Upload, Trash2, Edit3, ChevronUp, ChevronDown } from "lucide-react"
 import { useRef, useState, useEffect } from "react"
 import { twMerge } from "tailwind-merge"
 import VideoPickerDialog from "./VideoPickerDialog"
