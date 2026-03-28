@@ -847,6 +847,7 @@ export default {
     "TaskList":"任务列表",
     "Attachment":"附件",
     "Image":"图片",
+    "YoutubeEmbed":"YouTube 嵌入",
     "table":{
         "name": "表格",
         "deleteColumn": "删除列",

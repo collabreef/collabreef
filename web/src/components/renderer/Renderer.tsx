@@ -81,6 +81,24 @@ const Renderer: React.FC<RendererProps> = ({ content, maxNodes }) => {
                 </div>
             case 'attachment':
                 return <a key={key} href={node.attrs?.src} className="text-blue-600">{node.attrs?.name}</a>
+            case 'youtubeEmbed': {
+                const url = node.attrs?.url
+                let videoId: string | null = null
+                try {
+                    const parsed = new URL(url)
+                    if (parsed.hostname === 'youtu.be') {
+                        videoId = parsed.pathname.slice(1).split('?')[0] || null
+                    } else if (parsed.hostname.includes('youtube.com')) {
+                        if (parsed.pathname === '/watch') videoId = parsed.searchParams.get('v')
+                        else if (parsed.pathname.startsWith('/embed/')) videoId = parsed.pathname.split('/embed/')[1].split('?')[0] || null
+                        else if (parsed.pathname.startsWith('/shorts/')) videoId = parsed.pathname.split('/shorts/')[1].split('?')[0] || null
+                    }
+                } catch { /* ignore */ }
+                if (!videoId) return null
+                return <div key={key} className="w-full aspect-video rounded overflow-hidden">
+                    <iframe className="w-full h-full" src={`https://www.youtube.com/embed/${videoId}`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen title="YouTube video" />
+                </div>
+            }
             case 'table':
                 return <div className='max-w-full overflow-x-auto' key={key}>
                     <table className='w-full table-fixed'>{renderContent()}</table>

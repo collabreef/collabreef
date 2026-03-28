@@ -7,11 +7,12 @@ import { BubbleMenu } from "@tiptap/react/menus"
 import { TableKit } from "@tiptap/extension-table"
 import { FC, useMemo, useRef, useEffect } from "react"
 import { useTranslation } from "react-i18next"
-import { GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, List, ListTodo, Paperclip, Quote, Table, Type } from 'lucide-react'
+import { GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, List, ListTodo, Paperclip, Quote, Table, Type, Youtube } from 'lucide-react'
 import { CommandItem, SlashCommand } from './extensions/slashcommand/SlashCommand'
 import { Attachment } from './extensions/attachment/Attachment'
 import { ImageNode } from './extensions/imagenode/ImageNode'
 import { PasteHandler } from './extensions/pastehandler/PasteHandler'
+import { YoutubeEmbed } from './extensions/youtubeembed/YoutubeEmbed'
 import { uploadFile, listFiles } from '@/api/file'
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id'
 import { NoteData } from '@/api/note'
@@ -110,6 +111,7 @@ const Editor: FC<Props> = ({
         workspaceId: currentWorkspaceId,
         listFiles: listFiles
       }),
+      YoutubeEmbed,
       TableKit,
       PasteHandler.configure({
         upload: async (f: File, onProgress?: (percent: number) => void) => {
@@ -165,6 +167,13 @@ const Editor: FC<Props> = ({
                 keywords: ["image"],
                 command: ({ editor }: any) =>
                   editor?.chain().focus().setImage({ src: null, name: null }).run()
+              },
+              {
+                icon: <Youtube size={16} />,
+                label: t("editor.YoutubeEmbed"),
+                keywords: ["youtube", "video", "embed"],
+                command: ({ editor }: any) =>
+                  editor?.chain().focus().setYoutubeEmbed({ url: null }).run()
               },
               {
                 icon: <Table size={16} />,

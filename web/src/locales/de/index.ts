@@ -764,6 +764,7 @@ export default {
     "TaskList":"Aufgabenliste",
     "Attachment":"Anlage",
     "Image":"Bild",
+    "YoutubeEmbed":"YouTube einbetten",
     "table":{
         "name": "Tabelle",
         "deleteColumn": "Spalte löschen",

@@ -764,6 +764,7 @@ export default {
     "TaskList":"체크리스트",
     "Attachment":"첨부",
     "Image":"이미지",
+    "YoutubeEmbed":"YouTube 삽입",
     "table":{
         "name": "표",
         "deleteColumn": "열 삭제",

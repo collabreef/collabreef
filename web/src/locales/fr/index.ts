@@ -764,6 +764,7 @@ export default {
     "TaskList":"Liste de tâches",
     "Attachment":"Pièce jointe",
     "Image":"Image",
+    "YoutubeEmbed":"Intégrer YouTube",
     "table":{
         "name": "Tableau",
         "deleteColumn": "supprimer la colonne",

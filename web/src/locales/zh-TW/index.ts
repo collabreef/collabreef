@@ -862,6 +862,7 @@ export default {
     "TaskList":"核取清單項目",
     "Attachment":"檔案",
     "Image":"圖片",
+    "YoutubeEmbed":"YouTube 嵌入",
     "table":{
         "name": "表格",
         "deleteColumn": "刪除欄",
