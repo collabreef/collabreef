@@ -1,10 +1,10 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
-import { DownloadIcon, Loader2, FolderOpen, Upload, Trash2, Edit3, FileIcon } from "lucide-react"
+import { DownloadIcon, Loader2, FolderOpen, Upload, Trash2, Edit3, FileIcon, ChevronUp, ChevronDown } from "lucide-react"
 import { useRef, useState } from "react"
 import AllFilePickerDialog from "./AllFilePickerDialog"
 import { FileInfo } from "@/api/file"
 
-const AttachmentComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, extension, editor, deleteNode, selected }) => {
+const AttachmentComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, extension, editor, deleteNode, selected, getPos }) => {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isPickerOpen, setIsPickerOpen] = useState(false)
@@ -47,6 +47,33 @@ const AttachmentComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, 
 
   const handleReselect = () => {
     setIsPickerOpen(true)
+  }
+
+  const handleMoveUp = () => {
+    const pos = getPos()
+    if (pos === undefined) return
+    const { state } = editor
+    const $pos = state.doc.resolve(pos)
+    if ($pos.index() === 0) return
+    const nodeBefore = $pos.nodeBefore
+    if (!nodeBefore) return
+    editor.view.dispatch(
+      state.tr.replaceWith(pos - nodeBefore.nodeSize, pos + node.nodeSize, [node, nodeBefore])
+    )
+  }
+
+  const handleMoveDown = () => {
+    const pos = getPos()
+    if (pos === undefined) return
+    const { state } = editor
+    const $pos = state.doc.resolve(pos)
+    if ($pos.index() >= $pos.parent.childCount - 1) return
+    const nodeAfterPos = pos + node.nodeSize
+    const nodeAfter = state.doc.resolve(nodeAfterPos).nodeAfter
+    if (!nodeAfter) return
+    editor.view.dispatch(
+      state.tr.replaceWith(pos, nodeAfterPos + nodeAfter.nodeSize, [nodeAfter, node])
+    )
   }
 
   const handleDelete = () => {
@@ -140,6 +167,20 @@ const AttachmentComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, 
           </a>
           {isEditable && (showActions || selected) && (
             <>
+              <button
+                onClick={handleMoveUp}
+                className="p-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded transition-colors"
+                title="Move up"
+              >
+                <ChevronUp size={16} />
+              </button>
+              <button
+                onClick={handleMoveDown}
+                className="p-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded transition-colors"
+                title="Move down"
+              >
+                <ChevronDown size={16} />
+              </button>
               <button
                 onClick={handleReselect}
                 className="p-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded transition-colors"
