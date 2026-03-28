@@ -1,11 +1,11 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
-import { Loader2, FolderOpen, Upload, Trash2, Edit3 } from "lucide-react"
+import { Loader2, FolderOpen, Upload, Trash2, Edit3, ChevronUp, ChevronDown } from "lucide-react"
 import { useRef, useState, useEffect } from "react"
 import { twMerge } from "tailwind-merge"
 import FilePickerDialog from "./FilePickerDialog"
 import { FileInfo } from "@/api/file"
 
-const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttributes, selected, editor, deleteNode }) => {
+const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttributes, selected, editor, deleteNode, getPos }) => {
     const [isUploading, setIsUploading] = useState(false)
     const [uploadProgress, setUploadProgress] = useState(0)
     const [isPickerOpen, setIsPickerOpen] = useState(false)
@@ -68,6 +68,33 @@ const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttrib
 
     const handleReselect = () => {
         setIsPickerOpen(true)
+    }
+
+    const handleMoveUp = () => {
+        const pos = getPos()
+        if (pos === undefined) return
+        const { state } = editor
+        const $pos = state.doc.resolve(pos)
+        if ($pos.index() === 0) return
+        const nodeBefore = $pos.nodeBefore
+        if (!nodeBefore) return
+        editor.view.dispatch(
+            state.tr.replaceWith(pos - nodeBefore.nodeSize, pos + node.nodeSize, [node, nodeBefore])
+        )
+    }
+
+    const handleMoveDown = () => {
+        const pos = getPos()
+        if (pos === undefined) return
+        const { state } = editor
+        const $pos = state.doc.resolve(pos)
+        if ($pos.index() >= $pos.parent.childCount - 1) return
+        const nodeAfterPos = pos + node.nodeSize
+        const nodeAfter = state.doc.resolve(nodeAfterPos).nodeAfter
+        if (!nodeAfter) return
+        editor.view.dispatch(
+            state.tr.replaceWith(pos, nodeAfterPos + nodeAfter.nodeSize, [nodeAfter, node])
+        )
     }
 
     const handleDelete = () => {
@@ -148,6 +175,20 @@ const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttrib
                 />
                 {isEditable && (showActions || selected) && (
                     <div className="absolute top-2 right-2 flex gap-1">
+                        <button
+                            onClick={handleMoveUp}
+                            className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
+                            title="Move up"
+                        >
+                            <ChevronUp size={16} className="text-gray-700 dark:text-gray-300" />
+                        </button>
+                        <button
+                            onClick={handleMoveDown}
+                            className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
+                            title="Move down"
+                        >
+                            <ChevronDown size={16} className="text-gray-700 dark:text-gray-300" />
+                        </button>
                         <button
                             onClick={handleReselect}
                             className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
