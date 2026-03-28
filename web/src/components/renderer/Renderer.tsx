@@ -183,9 +183,14 @@ const Renderer: React.FC<RendererProps> = ({ content, maxNodes }) => {
     }
 
     const allNodes = json.content || []
+    const trimTrailingEmptyParagraphs = (nodes: Node[]) => {
+        let end = nodes.length
+        while (end > 0 && nodes[end - 1].type === 'paragraph' && !nodes[end - 1].content) end--
+        return nodes.slice(0, end)
+    }
     const hasLimit = maxNodes && maxNodes > 0
     const shouldLimit = hasLimit && !isExpanded
-    const nodesToRender = shouldLimit ? allNodes.slice(0, maxNodes) : allNodes
+    const nodesToRender = trimTrailingEmptyParagraphs(shouldLimit ? allNodes.slice(0, maxNodes) : allNodes)
     const hasHiddenNodes = shouldLimit && allNodes.length > maxNodes
     const showCollapseButton = isExpanded && hasLimit
 
