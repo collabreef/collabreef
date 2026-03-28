@@ -766,6 +766,7 @@ export default {
     "Image":"Imagem",
     "YoutubeEmbed":"Incorporar YouTube",
     "ThreadsEmbed":"Incorporar Threads",
+    "Video":"Vídeo",
     "table":{
         "name": "Tabela",
         "deleteColumn": "excluir coluna",

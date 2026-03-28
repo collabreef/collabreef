@@ -766,6 +766,7 @@ export default {
     "Image":"Изображение",
     "YoutubeEmbed":"YouTube видео",
     "ThreadsEmbed":"Threads публикация",
+    "Video":"Видео",
     "table":{
         "name": "Таблица",
         "deleteColumn": "удалить столбец",

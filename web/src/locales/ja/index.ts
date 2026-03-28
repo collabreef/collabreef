@@ -766,6 +766,7 @@ export default {
     "Image":"画像",
     "YoutubeEmbed":"YouTube埋め込み",
     "ThreadsEmbed":"Threads埋め込み",
+    "Video":"動画",
     "table":{
         "name": "テーブル",
         "deleteColumn": "列を削除",
