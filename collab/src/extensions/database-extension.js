@@ -97,12 +97,14 @@ export class DatabaseExtension {
 
     document.transact(() => {
       const yText = document.getText('content')
-      if (note.content) {
+      if (note.content && yText.length === 0) {
         yText.insert(0, note.content)
       }
 
       const yMeta = document.getMap('meta')
-      yMeta.set('title', note.title || '')
+      if (!yMeta.has('title')) {
+        yMeta.set('title', note.title || '')
+      }
     })
   }
 
