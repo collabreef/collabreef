@@ -18,7 +18,7 @@ export function useNoteCollab(options: UseNoteCollabOptions) {
 
   const providerRef = useRef<HocuspocusProvider | null>(null)
   const yDocRef = useRef<Y.Doc | null>(null)
-  const yTextRef = useRef<Y.Text | null>(null)
+  const yTextRef = useRef<Y.Map<any> | null>(null)
   const yMetaRef = useRef<Y.Map<any> | null>(null)
 
   const [isConnected, setIsConnected] = useState(false)
@@ -31,7 +31,7 @@ export function useNoteCollab(options: UseNoteCollabOptions) {
 
     // Create Y.js document
     const yDoc = new Y.Doc()
-    const yText = yDoc.getText('content')
+    const yText = yDoc.getMap<{data: string}>('content')
     const yMeta = yDoc.getMap('meta')
 
     yDocRef.current = yDoc

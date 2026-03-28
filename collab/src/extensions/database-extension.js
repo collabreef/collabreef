@@ -96,9 +96,9 @@ export class DatabaseExtension {
     }
 
     document.transact(() => {
-      const yText = document.getText('content')
-      if (note.content && yText.length === 0) {
-        yText.insert(0, note.content)
+      const yContent = document.getMap('content')
+      if (note.content && !yContent.has('data')) {
+        yContent.set('data', note.content)
       }
 
       const yMeta = document.getMap('meta')
@@ -194,10 +194,10 @@ export class DatabaseExtension {
    * Persist note Y.Doc back to notes table
    */
   async persistNote(document, noteId, data) {
-    const yText = document.getText('content')
+    const yContent = document.getMap('content')
     const yMeta = document.getMap('meta')
 
-    const content = yText.toString()
+    const content = yContent.get('data') || ''
     const title = yMeta.get('title')
     const now = new Date().toISOString()
     const updatedBy = data.requestHeaders?.['x-user-id'] || 'system'
