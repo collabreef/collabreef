@@ -764,6 +764,7 @@ export default {
     "TaskList":"Список задач",
     "Attachment":"Вложение",
     "Image":"Изображение",
+    "YoutubeEmbed":"YouTube видео",
     "table":{
         "name": "Таблица",
         "deleteColumn": "удалить столбец",

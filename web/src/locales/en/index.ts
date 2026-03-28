@@ -862,6 +862,7 @@ export default {
     "TaskList":"Task List",
     "Attachment":"Attachment",
     "Image":"Image",
+    "YoutubeEmbed":"YouTube Embed",
     "table":{
         "name": "Table",
         "deleteColumn": "delete column",

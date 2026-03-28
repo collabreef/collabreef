@@ -764,6 +764,7 @@ export default {
     "TaskList":"قائمة المهام",
     "Attachment":"مرفق",
     "Image":"صورة",
+    "YoutubeEmbed":"تضمين يوتيوب",
     "table":{
         "name": "جدول",
         "deleteColumn": "حذف العمود",
