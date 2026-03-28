@@ -848,6 +848,7 @@ export default {
     "Attachment":"附件",
     "Image":"图片",
     "YoutubeEmbed":"YouTube 嵌入",
+    "ThreadsEmbed":"Threads 嵌入",
     "table":{
         "name": "表格",
         "deleteColumn": "删除列",

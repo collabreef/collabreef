@@ -765,6 +765,7 @@ export default {
     "Attachment":"Вложение",
     "Image":"Изображение",
     "YoutubeEmbed":"YouTube видео",
+    "ThreadsEmbed":"Threads публикация",
     "table":{
         "name": "Таблица",
         "deleteColumn": "удалить столбец",

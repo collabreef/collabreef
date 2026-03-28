@@ -1,7 +1,35 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { PhotoView, PhotoProvider } from 'react-photo-view'
 import ShikiHighlighter from "react-shiki"
 import { useTranslation } from 'react-i18next'
+
+const ThreadsRendererEmbed: React.FC<{ url: string }> = ({ url }) => {
+    const containerRef = useRef<HTMLDivElement>(null)
+    useEffect(() => {
+        if (!url || !containerRef.current) return
+        const match = (() => { try { return new URL(url).pathname.match(/\/post\/([^/?#]+)/) } catch { return null } })()
+        const postId = match?.[1]
+        if (!postId) return
+        const container = containerRef.current
+        container.innerHTML = ''
+        const blockquote = document.createElement('blockquote')
+        blockquote.className = 'text-post-media'
+        blockquote.setAttribute('data-text-post-permalink', url)
+        blockquote.setAttribute('data-text-post-version', '0')
+        blockquote.id = `ig-tp-${postId}`
+        blockquote.style.cssText = 'background:#FFF;border-width:1px;border-style:solid;border-color:#00000026;border-radius:16px;max-width:650px;margin:1px;min-width:270px;padding:0;width:99.375%'
+        container.appendChild(blockquote)
+        const existing = document.getElementById('threads-embed-js')
+        if (existing) existing.remove()
+        const script = document.createElement('script')
+        script.id = 'threads-embed-js'
+        script.src = 'https://www.threads.com/embed.js'
+        script.async = true
+        container.appendChild(script)
+        return () => { container.innerHTML = '' }
+    }, [url])
+    return <div ref={containerRef} />
+}
 
 interface Node {
     type: string
@@ -99,6 +127,8 @@ const Renderer: React.FC<RendererProps> = ({ content, maxNodes }) => {
                     <iframe className="w-full h-full" src={`https://www.youtube.com/embed/${videoId}`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen title="YouTube video" />
                 </div>
             }
+            case 'threadsEmbed':
+                return <ThreadsRendererEmbed key={key} url={node.attrs?.url} />
             case 'table':
                 return <div className='max-w-full overflow-x-auto' key={key}>
                     <table className='w-full table-fixed'>{renderContent()}</table>

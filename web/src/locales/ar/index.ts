@@ -765,6 +765,7 @@ export default {
     "Attachment":"مرفق",
     "Image":"صورة",
     "YoutubeEmbed":"تضمين يوتيوب",
+    "ThreadsEmbed":"تضمين ثريدز",
     "table":{
         "name": "جدول",
         "deleteColumn": "حذف العمود",

@@ -765,6 +765,7 @@ export default {
     "Attachment":"Pièce jointe",
     "Image":"Image",
     "YoutubeEmbed":"Intégrer YouTube",
+    "ThreadsEmbed":"Intégrer Threads",
     "table":{
         "name": "Tableau",
         "deleteColumn": "supprimer la colonne",

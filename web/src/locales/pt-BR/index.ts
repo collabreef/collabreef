@@ -765,6 +765,7 @@ export default {
     "Attachment":"Anexo",
     "Image":"Imagem",
     "YoutubeEmbed":"Incorporar YouTube",
+    "ThreadsEmbed":"Incorporar Threads",
     "table":{
         "name": "Tabela",
         "deleteColumn": "excluir coluna",

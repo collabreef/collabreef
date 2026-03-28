@@ -765,6 +765,7 @@ export default {
     "Attachment":"첨부",
     "Image":"이미지",
     "YoutubeEmbed":"YouTube 삽입",
+    "ThreadsEmbed":"Threads 삽입",
     "table":{
         "name": "표",
         "deleteColumn": "열 삭제",

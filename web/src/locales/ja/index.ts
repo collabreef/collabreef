@@ -765,6 +765,7 @@ export default {
     "Attachment":"添付ファイル",
     "Image":"画像",
     "YoutubeEmbed":"YouTube埋め込み",
+    "ThreadsEmbed":"Threads埋め込み",
     "table":{
         "name": "テーブル",
         "deleteColumn": "列を削除",

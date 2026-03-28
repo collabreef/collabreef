@@ -765,6 +765,7 @@ export default {
     "Attachment":"Anlage",
     "Image":"Bild",
     "YoutubeEmbed":"YouTube einbetten",
+    "ThreadsEmbed":"Threads einbetten",
     "table":{
         "name": "Tabelle",
         "deleteColumn": "Spalte löschen",

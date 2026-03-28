@@ -863,6 +863,7 @@ export default {
     "Attachment":"Attachment",
     "Image":"Image",
     "YoutubeEmbed":"YouTube Embed",
+    "ThreadsEmbed":"Threads Embed",
     "table":{
         "name": "Table",
         "deleteColumn": "delete column",
