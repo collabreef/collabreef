@@ -3,6 +3,34 @@ import { PhotoView, PhotoProvider } from 'react-photo-view'
 import ShikiHighlighter from "react-shiki"
 import { useTranslation } from 'react-i18next'
 
+const InstagramRendererEmbed: React.FC<{ url: string }> = ({ url }) => {
+    const containerRef = useRef<HTMLDivElement>(null)
+    useEffect(() => {
+        if (!url || !containerRef.current) return
+        const match = (() => { try { return new URL(url).pathname.match(/\/(p|reel|tv)\/([^/?#]+)/) } catch { return null } })()
+        const postId = match?.[2]
+        if (!postId) return
+        const container = containerRef.current
+        container.innerHTML = ''
+        const blockquote = document.createElement('blockquote')
+        blockquote.className = 'instagram-media'
+        blockquote.setAttribute('data-instgrm-captioned', '')
+        blockquote.setAttribute('data-instgrm-permalink', url)
+        blockquote.setAttribute('data-instgrm-version', '14')
+        blockquote.style.cssText = 'background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:1px;max-width:540px;min-width:326px;padding:0;width:99.375%'
+        container.appendChild(blockquote)
+        const existing = document.getElementById('instagram-embed-js')
+        if (existing) existing.remove()
+        const script = document.createElement('script')
+        script.id = 'instagram-embed-js'
+        script.src = 'https://www.instagram.com/embed.js'
+        script.async = true
+        container.appendChild(script)
+        return () => { container.innerHTML = '' }
+    }, [url])
+    return <div ref={containerRef} />
+}
+
 const ThreadsRendererEmbed: React.FC<{ url: string }> = ({ url }) => {
     const containerRef = useRef<HTMLDivElement>(null)
     useEffect(() => {
@@ -129,6 +157,8 @@ const Renderer: React.FC<RendererProps> = ({ content, maxNodes }) => {
             }
             case 'threadsEmbed':
                 return <ThreadsRendererEmbed key={key} url={node.attrs?.url} />
+            case 'instagramEmbed':
+                return <InstagramRendererEmbed key={key} url={node.attrs?.url} />
             case 'table':
                 return <div className='max-w-full overflow-x-auto' key={key}>
                     <table className='w-full table-fixed'>{renderContent()}</table>

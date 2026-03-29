@@ -849,6 +849,7 @@ export default {
     "Image":"图片",
     "YoutubeEmbed":"YouTube 嵌入",
     "ThreadsEmbed":"Threads 嵌入",
+    "InstagramEmbed":"Instagram 嵌入",
     "Video":"视频",
     "table":{
         "name": "表格",

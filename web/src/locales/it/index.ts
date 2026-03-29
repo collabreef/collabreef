@@ -766,6 +766,7 @@ export default {
     "Image":"Immagine",
     "YoutubeEmbed":"Incorpora YouTube",
     "ThreadsEmbed":"Incorpora Threads",
+    "InstagramEmbed":"Incorpora Instagram",
     "Video":"Video",
     "table":{
         "name": "Tabella",
