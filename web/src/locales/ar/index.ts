@@ -766,6 +766,7 @@ export default {
     "Image":"صورة",
     "YoutubeEmbed":"تضمين يوتيوب",
     "ThreadsEmbed":"تضمين ثريدز",
+    "InstagramEmbed":"تضمين إنستغرام",
     "Video":"فيديو",
     "table":{
         "name": "جدول",
