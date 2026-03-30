@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom"
 import { useEffect } from "react"
 import { useSidebar } from "../sidebar/SidebarProvider"
 import { useWorkspaceStore } from "@/stores/workspace"
@@ -34,10 +33,10 @@ const WorkspaceLayout = () => {
                         side="right"
                         enabled={isCollapse}
                         >
-                        <Link to={`/workspaces/${currentWorkspaceId}/home`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
+                        <a href={`/workspaces/${currentWorkspaceId}/home`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
                             <Home size={20} />
                             {!isCollapse && t("widgets.home")}
-                        </Link>
+                        </a>
                     </Tooltip>
                 </div>
                 <div className="">
@@ -46,10 +45,10 @@ const WorkspaceLayout = () => {
                         side="right"
                         enabled={isCollapse}
                         >
-                        <Link to={`/workspaces/${currentWorkspaceId}/notes`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
+                        <a href={`/workspaces/${currentWorkspaceId}/notes`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
                             <BookText size={20} />
                             {!isCollapse && t("menu.notes")}
-                        </Link>
+                        </a>
                     </Tooltip>
                 </div>
                 <div className="">
@@ -58,10 +57,10 @@ const WorkspaceLayout = () => {
                         side="right"
                         enabled={isCollapse}
                         >
-                        <Link to={`/workspaces/${currentWorkspaceId}/files`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
+                        <a href={`/workspaces/${currentWorkspaceId}/files`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
                             <Paperclip size={20} />
                             {!isCollapse && t("menu.files")}
-                        </Link>
+                        </a>
                     </Tooltip>
                 </div>
                 <div className="">
@@ -70,10 +69,10 @@ const WorkspaceLayout = () => {
                         side="right"
                         enabled={isCollapse}
                         >
-                        <Link to={`/workspaces/${currentWorkspaceId}/calendar`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
+                        <a href={`/workspaces/${currentWorkspaceId}/calendar`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
                             <Calendar size={20} />
                             {!isCollapse && t("views.calendar")}
-                        </Link>
+                        </a>
                     </Tooltip>
                 </div>
                 <div className="">
@@ -82,10 +81,10 @@ const WorkspaceLayout = () => {
                         side="right"
                         enabled={isCollapse}
                         >
-                        <Link to={`/workspaces/${currentWorkspaceId}/map`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
+                        <a href={`/workspaces/${currentWorkspaceId}/map`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
                             <MapPin size={20} />
                             {!isCollapse && t("views.map")}
-                        </Link>
+                        </a>
                     </Tooltip>
                 </div>
                 <div className="">
@@ -94,10 +93,10 @@ const WorkspaceLayout = () => {
                         side="right"
                         enabled={isCollapse}
                         >
-                        <Link to={`/workspaces/${currentWorkspaceId}/kanban`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
+                        <a href={`/workspaces/${currentWorkspaceId}/kanban`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
                             <KanbanSquare size={20} />
                             {!isCollapse && (t("views.kanban") || "Kanban")}
-                        </Link>
+                        </a>
                     </Tooltip>
                 </div>
                 <div className="">
@@ -106,10 +105,10 @@ const WorkspaceLayout = () => {
                         side="right"
                         enabled={isCollapse}
                         >
-                        <Link to={`/workspaces/${currentWorkspaceId}/whiteboard`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
+                        <a href={`/workspaces/${currentWorkspaceId}/whiteboard`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
                             <PenTool size={20} />
                             {!isCollapse && (t("views.whiteboard") || "Whiteboard")}
-                        </Link>
+                        </a>
                     </Tooltip>
                 </div>
                 <div className="">
@@ -118,10 +117,10 @@ const WorkspaceLayout = () => {
                         side="right"
                         enabled={isCollapse}
                         >
-                        <Link to={`/workspaces/${currentWorkspaceId}/spreadsheet`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
+                        <a href={`/workspaces/${currentWorkspaceId}/spreadsheet`} className="flex items-center gap-3 w-full p-2.5 rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700">
                             <Sheet size={20} />
                             {!isCollapse && (t("views.spreadsheet") || "Spreadsheet")}
-                        </Link>
+                        </a>
                     </Tooltip>
                 </div>
             </div>

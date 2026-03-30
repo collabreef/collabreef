@@ -5,7 +5,7 @@ import { getViewObjectsForNote, getViews, getViewObjects, addNoteToViewObject, c
 import { useTranslation } from "react-i18next"
 import { ChevronRight, Calendar, MapPin, Search, Plus, X, Calendar1Icon, LayoutGrid } from "lucide-react"
 import { ViewObjectType } from "@/types/view"
-import { Link, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { useToastStore } from "@/stores/toast"
 import CreateViewObjectModal from "@/components/views/CreateViewObjectModal"
 import { BottomSheet } from "@/components/bottomsheet/BottomSheet"
@@ -198,7 +198,7 @@ const PinToViewObjectModal: FC<PinToViewObjectModalProps> = ({ note, isOpen, onC
                                     }
 
                                     return (
-                                        <Link key={vo.id} to={getObjectUrl()}>
+                                        <a key={vo.id} href={getObjectUrl()}>
                                             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 px-2 py-1 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded">
                                                 <div>
                                                     {vo.type === "map_marker" ? (
@@ -211,7 +211,7 @@ const PinToViewObjectModal: FC<PinToViewObjectModalProps> = ({ note, isOpen, onC
                                                 </div>
                                                 <div className="flex-1 px-2">{vo.name}</div>
                                             </div>
-                                        </Link>
+                                        </a>
                                     )
                                 })}
                             </div>

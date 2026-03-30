@@ -6,7 +6,6 @@ import { getView, getViewObjects, getViews } from '@/api/view';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import { CalendarWidgetConfig } from '@/types/widget';
 import { CalendarSlotData, ViewObject } from '@/types/view';
-import { Link } from 'react-router-dom';
 import { twMerge } from 'tailwind-merge';
 import Widget from '@/components/widgets/Widget';
 import { registerWidget, WidgetProps, WidgetConfigFormProps } from '../widgetRegistry';
@@ -173,14 +172,14 @@ const CalendarWidget: FC<CalendarWidgetProps> = ({ config }) => {
             <div className="font-semibold">
               {monthNames[month]} {year}
             </div>
-            <Link
-              to={`/workspaces/${workspaceId}/calendar/${config.viewId}`}
+            <a
+              href={`/workspaces/${workspaceId}/calendar/${config.viewId}`}
               onClick={(e) => e.stopPropagation()}
               className="p-1.5 bg-white dark:bg-neutral-800 rounded shadow-sm hover:shadow-md transition-shadow border dark:border-neutral-600 flex items-center"
               title="Go to View"
             >
               <ExternalLink size={14} className="text-neutral-700 dark:text-neutral-300" />
-            </Link>
+            </a>
           </div>
           <div>
             <button
@@ -269,14 +268,14 @@ const CalendarWidget: FC<CalendarWidgetProps> = ({ config }) => {
             </div>
             <div className="space-y-1 max-h-32 overflow-y-auto">
               {selectedDaySlots.map((viewObject) => (
-                <Link
+                <a
                   key={viewObject.id}
-                  to={`/workspaces/${workspaceId}/calendar/${config.viewId}/slot/${viewObject.id}`}
+                  href={`/workspaces/${workspaceId}/calendar/${config.viewId}/slot/${viewObject.id}`}
                   className="block text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 px-2 py-1.5 rounded transition-colors"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {viewObject.name}
-                </Link>
+                </a>
               ))}
             </div>
           </div>

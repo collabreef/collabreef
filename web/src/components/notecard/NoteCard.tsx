@@ -1,5 +1,4 @@
 import { FC } from "react"
-import { Link } from "react-router-dom"
 import { NoteData } from "@/api/note"
 import NoteTime from "../notetime/NoteTime"
 import Renderer from "@/components/renderer/Renderer"
@@ -23,9 +22,9 @@ const NoteCard: FC<NoteCardProps> = ({ note, linkTo, showLink = true, maxNodes }
                     </div>
                     {showLink && (
                         <div>
-                            <Link to={linkTo || ""}>
+                            <a href={linkTo || ""}>
                                 <ExternalLink size={16} />
-                            </Link>
+                            </a>
                         </div>
                     )}
                 </div>

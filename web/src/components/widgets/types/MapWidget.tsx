@@ -9,7 +9,6 @@ import { NoteData } from '@/api/note';
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id';
 import { MapWidgetConfig } from '@/types/widget';
 import { MapMarkerData, ViewObject } from '@/types/view';
-import { Link } from 'react-router-dom';
 import Widget from '@/components/widgets/Widget';
 import { registerWidget, WidgetProps, WidgetConfigFormProps } from '../widgetRegistry';
 
@@ -365,26 +364,26 @@ const MapWidget: FC<MapWidgetProps> = ({ config }) => {
                 </MapContainer>
 
                 {/* View Link Button */}
-                <Link
-                  to={`/workspaces/${workspaceId}/map/${config.viewId}`}
+                <a
+                  href={`/workspaces/${workspaceId}/map/${config.viewId}`}
                   onClick={(e) => e.stopPropagation()}
                   className="absolute top-2 right-2 z-[1000] p-2 bg-white text-neutral-800 rounded shadow-md hover:shadow-lg transition-shadow border flex items-center gap-1.5"
                   title="Go to View"
                 >
                   <ExternalLink size={18} />
-                </Link>
+                </a>
 
                 {/* Selected marker info */}
                 {selectedMarker && (
                   <div className="absolute bottom-4 left-4 right-4 z-[1000] p-3 bg-white dark:bg-neutral-800 rounded-lg shadow-lg border dark:border-neutral-700">
                     <div className="flex items-center justify-between mb-1">
-                      <Link
-                        to={`/workspaces/${workspaceId}/map/${config.viewId}/marker/${selectedMarker.viewObject?.id}`}
+                      <a
+                        href={`/workspaces/${workspaceId}/map/${config.viewId}/marker/${selectedMarker.viewObject?.id}`}
                         className="font-semibold text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                         onClick={(e) => e.stopPropagation()}
                       >
                         {selectedMarker.viewObject?.name || 'Marker'}
-                      </Link>
+                      </a>
                       <button
                         onClick={(e) => {
                           e.preventDefault();

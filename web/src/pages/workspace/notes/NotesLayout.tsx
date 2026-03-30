@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import SidebarButton from "@/components/sidebar/SidebarButton"
 import { getNotes, NoteData, createNote } from "@/api/note"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
-import { Outlet, useNavigate, NavLink, useParams } from "react-router-dom"
+import { Outlet, useNavigate, useParams } from "react-router-dom"
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRef, useCallback, useState, useEffect } from "react"
 import { toast } from "@/stores/toast"
@@ -164,11 +164,11 @@ const NotesLayout = () => {
                     ) : (
                         <>
                             {notes.map((note: NoteData) => (
-                                <NavLink
+                                <a
                                     key={note.id}
-                                    to={`${note.id}`}
+                                    href={`${note.id}`}
                                     onClick={() => setIsSidebarOpen(false)}
-                                    className={() => {
+                                    className={(() => {
                                         const isActive = noteId === note.id
                                         return [
                                             "flex items-center gap-2 px-3 py-2.5 xl:px-2 xl:py-1.5 rounded-md text-sm cursor-pointer select-none transition-colors duration-100 group",
@@ -176,13 +176,13 @@ const NotesLayout = () => {
                                                 ? "bg-neutral-200 dark:bg-neutral-700 text-gray-900 dark:text-gray-100 font-medium"
                                                 : "text-gray-600 dark:text-gray-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 hover:text-gray-900 dark:hover:text-gray-100"
                                         ].join(" ")
-                                    }}
+                                    })()}
                                 >
                                     <FileText className="shrink-0 opacity-50 size-4 xl:size-3.5" />
                                     <span className="truncate leading-snug">
                                         {getNoteTitle(note)}
                                     </span>
-                                </NavLink>
+                                </a>
                             ))}
                             <div ref={loadMoreRef} className="h-2" />
                             {isFetchingNextPage && (

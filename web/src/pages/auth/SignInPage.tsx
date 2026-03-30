@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { signIn } from '@/api/auth';
 import logo from '@/assets/app.png'
@@ -84,18 +84,18 @@ const SignIn: React.FC = () => {
                         >
                             {t('actions.signin')}
                         </SubmitButton>
-                        <Link
-                            to="/signup"
+                        <a
+                            href="/signup"
                             className="inline-block align-baseline text-right font-bold text-sm text-primary"
                         >
                             {t("pages.signin.noAccount")}
-                        </Link>
-                        <Link
-                            to="/explore"
+                        </a>
+                        <a
+                            href="/explore"
                             className="inline-block align-baseline font-bold text-sm text-gray-500 dark:text-gray-400 hover:text-primary"
                         >
                             Explore
-                        </Link>
+                        </a>
                     </div>
                 </form>
             </div>
