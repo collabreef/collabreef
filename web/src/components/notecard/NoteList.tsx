@@ -11,7 +11,7 @@ interface NoteListProps {
 
 const NoteList: FC<NoteListProps> = ({ notes, getLinkTo, maxNodes, showLink = true }) => {
     return (
-        <div className="py-2 px-4 flex flex-col gap-2">
+        <div className="px-4 flex flex-col gap-2">
             {notes?.map((note: NoteData, idx: number) => {
                 if (!note) return null
                 return (

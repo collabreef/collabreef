@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { getPublicNotes } from '@/api/note';
-import NoteMasonry from '@/components/notecard/NoteMasonry';
-import NoteMasonrySkeleton from '@/components/notecard/NoteMasonrySkeleton';
+import NoteList from '@/components/notecard/NoteList';
+import NoteListSkeleton from '@/components/notecard/NoteListSkeleton';
 import logo from '@/assets/app.png';
 import { LogIn, House } from 'lucide-react';
 import { useCurrentUserStore } from '@/stores/current-user';
@@ -21,44 +21,61 @@ const ExplorePage: React.FC = () => {
         fetchUser().finally(() => setAuthChecked(true));
     }, []);
 
+    const navLink = authChecked && (
+        user ? (
+            <a
+                href="/"
+                className=" flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors"
+                title="Back to workspace"
+            >
+                <House size={20} strokeWidth={2.5} />
+                <span className="text-sm font-medium px-2 grow ">Home</span>
+            </a>
+        ) : (
+            <a
+                href="/signin"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors"
+                title="Sign in"
+            >
+                <LogIn size={20} strokeWidth={2.5} />
+                <span className="text-sm font-medium px-2 grow">Sign in</span>
+            </a>
+        )
+    );
+
     return (
-        <div className="min-h-dvh bg-neutral-100 dark:bg-neutral-900">
-            <div className="max-w-5xl mx-auto px-3 py-4 sm:px-6 sm:py-8">
-                <div className="flex items-center justify-between mb-4 sm:mb-8">
+        <div className="min-h-dvh lg:flex">
+            {/* Sidebar — desktop only */}
+            <aside className="hidden lg:flex flex-col w-56 shrink-0 fixed top-0 left-0 h-screen px-5 py-6">
+                <div className="flex items-center gap-3 select-none mb-6">
+                    <img src={logo} className="w-9" alt="logo" />
+                </div>
+                {navLink}
+            </aside>
+
+            {/* Main area */}
+            <div className="w-full">
+                {/* Header — mobile only */}
+                <header className="lg:hidden flex items-center justify-between px-4 py-3">
                     <div className="flex items-center gap-3 select-none">
-                        <img src={logo} className="w-10" alt="logo" />
-                        <span className="text-xl font-bold text-gray-900 dark:text-gray-100">Explore</span>
+                        <img src={logo} className="w-8" alt="logo" />
+                        <span className="text-lg font-bold text-gray-900 dark:text-gray-100">Explore</span>
                     </div>
-                    {authChecked && (
-                        user ? (
-                            <Link
-                                to="/"
-                                className="text-primary hover:text-primary/80 transition-colors"
-                                title="Back to workspace"
-                            >
-                                <House size={20} strokeWidth={2.5} />
-                            </Link>
-                        ) : (
-                            <Link
-                                to="/signin"
-                                className="text-primary hover:text-primary/80 transition-colors"
-                                title="Sign in"
-                            >
-                                <LogIn size={20} strokeWidth={2.5} />
-                            </Link>
-                        )
+                    {navLink}
+                </header>
+
+                {/* Note list — full width on mobile, capped on desktop */}
+                <div className="lg:max-w-[600px] mx-auto lg:py-2">
+                    {isLoading ? (
+                        <NoteListSkeleton />
+                    ) : notes.length === 0 ? (
+                        <div className="text-center text-gray-500 dark:text-gray-400 py-20">
+                            No public notes yet.
+                        </div>
+                    ) : (
+                        <NoteList notes={notes} showLink={false} />
                     )}
                 </div>
-
-                {isLoading ? (
-                    <NoteMasonrySkeleton />
-                ) : notes.length === 0 ? (
-                    <div className="text-center text-gray-500 dark:text-gray-400 py-20">
-                        No public notes yet.
-                    </div>
-                ) : (
-                    <NoteMasonry notes={notes} showLink={false} />
-                )}
             </div>
         </div>
     );
