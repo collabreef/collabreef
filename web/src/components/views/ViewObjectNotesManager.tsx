@@ -5,7 +5,6 @@ import { getNotesForViewObject, removeNoteFromViewObject } from "@/api/view"
 import { useToastStore } from "@/stores/toast"
 import Renderer from "@/components/renderer/Renderer"
 import NoteTime from "@/components/notetime/NoteTime"
-import { Link } from "react-router-dom"
 import AddNoteDialog from "./AddNoteDialog"
 
 interface ViewObjectNotesManagerProps {
@@ -57,8 +56,8 @@ const ViewObjectNotesManager = ({
                     {linkedNotes.length > 0 ? (
                         <div className="space-y-2 p-4">
                             {linkedNotes.map((note: any) => (
-                                <Link
-                                    to={`/workspaces/${workspaceId}/notes/${note.id}`}
+                                <a
+                                    href={`/workspaces/${workspaceId}/notes/${note.id}`}
                                     key={note.id}
                                     className="flex flex-col gap-2 p-3 rounded shadow-sm group bg-white dark:bg-neutral-800 relative"
                                 >
@@ -83,7 +82,7 @@ const ViewObjectNotesManager = ({
                                     <div className="line-clamp-2 ">
                                         <Renderer content={note.content} />
                                     </div>
-                                </Link>
+                                </a>
                             ))}
                         </div>
                     ) : (

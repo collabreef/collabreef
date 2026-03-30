@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
 import { getPublicNotes } from '@/api/note';
 import NoteList from '@/components/notecard/NoteList';
 import NoteListSkeleton from '@/components/notecard/NoteListSkeleton';
