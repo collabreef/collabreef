@@ -64,7 +64,7 @@ const ExplorePage: React.FC = () => {
                 </header>
 
                 {/* Note list — full width on mobile, capped on desktop */}
-                <div className="lg:max-w-[600px] mx-auto lg:py-2">
+                <div className="lg:max-w-[600px] mx-auto lg:py-4">
                     {isLoading ? (
                         <NoteListSkeleton />
                     ) : notes.length === 0 ? (
