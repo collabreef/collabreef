@@ -71,6 +71,11 @@ ol {
    list-style-position: inside; 
 }
 
+li p {
+  display: inline;
+  margin: 0;
+}
+
 /* link tool input */
 .tc-popover, .tc-toolbox { @apply bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl ; }
 
