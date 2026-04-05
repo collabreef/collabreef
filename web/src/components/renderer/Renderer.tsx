@@ -159,6 +159,10 @@ const Renderer: React.FC<RendererProps> = ({ content, maxNodes }) => {
                 return <ThreadsRendererEmbed key={key} url={node.attrs?.url} />
             case 'instagramEmbed':
                 return <InstagramRendererEmbed key={key} url={node.attrs?.url} />
+            case 'video':
+                return <div key={key} className="w-full rounded overflow-hidden">
+                    <video className="w-full max-h-[620px]" src={node.attrs?.src} controls />
+                </div>
             case 'table':
                 return <div className='max-w-full overflow-x-auto' key={key}>
                     <table className='w-full table-fixed'>{renderContent()}</table>
