@@ -72,7 +72,7 @@ ol {
 }
 
 li p {
-  display: inline;
+  display: inline!important;
   margin: 0;
 }
 
