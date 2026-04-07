@@ -28,7 +28,7 @@ const ExplorePage: React.FC = () => {
                 title="Back to workspace"
             >
                 <House size={20} strokeWidth={2.5} />
-                <span className="text-sm font-medium px-2 grow ">Home</span>
+                <span className="text-sm font-medium px-1 grow ">Home</span>
             </a>
         ) : (
             <a
@@ -37,7 +37,7 @@ const ExplorePage: React.FC = () => {
                 title="Sign in"
             >
                 <LogIn size={20} strokeWidth={2.5} />
-                <span className="text-sm font-medium px-2 grow">Sign in</span>
+                <span className="text-sm font-medium px-1 grow">Sign in</span>
             </a>
         )
     );
@@ -49,8 +49,12 @@ const ExplorePage: React.FC = () => {
                 <div className="flex items-center gap-3 select-none mb-6">
                     <img src={logo} className="w-9" alt="logo" />
                 </div>
-                {navLink}
             </aside>
+
+            {/* Top-right nav — sm and above */}
+            <div className="hidden lg:flex fixed top-0 right-0 px-5 py-4 z-10">
+                {navLink}
+            </div>
 
             {/* Main area */}
             <div className="w-full">
