@@ -767,6 +767,7 @@ export default {
     "YoutubeEmbed":"YouTube видео",
     "ThreadsEmbed":"Threads публикация",
     "InstagramEmbed":"Instagram публикация",
+    "TiktokEmbed":"TikTok видео",
     "Video":"Видео",
     "table":{
         "name": "Таблица",

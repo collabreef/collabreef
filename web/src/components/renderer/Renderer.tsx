@@ -31,6 +31,35 @@ const InstagramRendererEmbed: React.FC<{ url: string }> = ({ url }) => {
     return <div ref={containerRef} />
 }
 
+const TiktokRendererEmbed: React.FC<{ url: string }> = ({ url }) => {
+    const containerRef = useRef<HTMLDivElement>(null)
+    useEffect(() => {
+        if (!url || !containerRef.current) return
+        const match = (() => { try { return new URL(url).pathname.match(/\/video\/(\d+)/) } catch { return null } })()
+        const videoId = match?.[1]
+        if (!videoId) return
+        const container = containerRef.current
+        container.innerHTML = ''
+        const blockquote = document.createElement('blockquote')
+        blockquote.className = 'tiktok-embed'
+        blockquote.setAttribute('cite', url)
+        blockquote.setAttribute('data-video-id', videoId)
+        blockquote.style.cssText = 'max-width:605px;min-width:325px;'
+        const section = document.createElement('section')
+        blockquote.appendChild(section)
+        container.appendChild(blockquote)
+        const existing = document.getElementById('tiktok-embed-js')
+        if (existing) existing.remove()
+        const script = document.createElement('script')
+        script.id = 'tiktok-embed-js'
+        script.src = 'https://www.tiktok.com/embed.js'
+        script.async = true
+        container.appendChild(script)
+        return () => { container.innerHTML = '' }
+    }, [url])
+    return <div ref={containerRef} />
+}
+
 const ThreadsRendererEmbed: React.FC<{ url: string }> = ({ url }) => {
     const containerRef = useRef<HTMLDivElement>(null)
     useEffect(() => {
@@ -159,6 +188,8 @@ const Renderer: React.FC<RendererProps> = ({ content, maxNodes }) => {
                 return <ThreadsRendererEmbed key={key} url={node.attrs?.url} />
             case 'instagramEmbed':
                 return <InstagramRendererEmbed key={key} url={node.attrs?.url} />
+            case 'tiktokEmbed':
+                return <TiktokRendererEmbed key={key} url={node.attrs?.url} />
             case 'video':
                 return <div key={key} className="w-full rounded overflow-hidden">
                     <video className="w-full max-h-[620px]" src={node.attrs?.src} controls />

@@ -767,6 +767,7 @@ export default {
     "YoutubeEmbed":"Insertar YouTube",
     "ThreadsEmbed":"Insertar Threads",
     "InstagramEmbed":"Insertar Instagram",
+    "TiktokEmbed":"Insertar TikTok",
     "Video":"Video",
     "table":{
         "name": "Tabla",

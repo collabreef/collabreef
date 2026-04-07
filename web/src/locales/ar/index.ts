@@ -767,6 +767,7 @@ export default {
     "YoutubeEmbed":"تضمين يوتيوب",
     "ThreadsEmbed":"تضمين ثريدز",
     "InstagramEmbed":"تضمين إنستغرام",
+    "TiktokEmbed":"تضمين تيك توك",
     "Video":"فيديو",
     "table":{
         "name": "جدول",

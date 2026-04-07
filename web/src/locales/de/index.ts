@@ -767,6 +767,7 @@ export default {
     "YoutubeEmbed":"YouTube einbetten",
     "ThreadsEmbed":"Threads einbetten",
     "InstagramEmbed":"Instagram einbetten",
+    "TiktokEmbed":"TikTok einbetten",
     "Video":"Video",
     "table":{
         "name": "Tabelle",

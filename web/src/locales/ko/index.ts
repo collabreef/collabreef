@@ -767,6 +767,7 @@ export default {
     "YoutubeEmbed":"YouTube 삽입",
     "ThreadsEmbed":"Threads 삽입",
     "InstagramEmbed":"Instagram 삽입",
+    "TiktokEmbed":"TikTok 삽입",
     "Video":"동영상",
     "table":{
         "name": "표",
