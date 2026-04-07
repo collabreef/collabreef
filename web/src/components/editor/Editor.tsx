@@ -15,6 +15,7 @@ import { PasteHandler } from './extensions/pastehandler/PasteHandler'
 import { YoutubeEmbed } from './extensions/youtubeembed/YoutubeEmbed'
 import { ThreadsEmbed } from './extensions/threadsembed/ThreadsEmbed'
 import { InstagramEmbed } from './extensions/instagramembed/InstagramEmbed'
+import { TiktokEmbed } from './extensions/tiktokembed/TiktokEmbed'
 import { VideoNode } from './extensions/videonode/VideoNode'
 import { uploadFile, listFiles } from '@/api/file'
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id'
@@ -130,6 +131,7 @@ const Editor: FC<Props> = ({
       YoutubeEmbed,
       ThreadsEmbed,
       InstagramEmbed,
+      TiktokEmbed,
       VideoNode.configure({
         upload: async (f: File, onProgress?: (percent: number) => void) => {
           const res = await uploadFile(currentWorkspaceId, f, onProgress)
@@ -224,6 +226,13 @@ const Editor: FC<Props> = ({
                 keywords: ["instagram", "ig", "reel", "social", "embed"],
                 command: ({ editor }: any) =>
                   editor?.chain().focus().setInstagramEmbed({ url: null }).run()
+              },
+              {
+                icon: <svg height="16" width="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="fill-current"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.16 8.16 0 0 0 4.77 1.52V6.76a4.85 4.85 0 0 1-1-.07z"/></svg>,
+                label: t("editor.TiktokEmbed"),
+                keywords: ["tiktok", "tik", "tok", "short", "video", "social", "embed"],
+                command: ({ editor }: any) =>
+                  editor?.chain().focus().setTiktokEmbed({ url: null }).run()
               },
               {
                 icon: <Table size={16} />,

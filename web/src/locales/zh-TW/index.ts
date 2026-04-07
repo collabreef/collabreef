@@ -865,6 +865,7 @@ export default {
     "YoutubeEmbed":"YouTube 嵌入",
     "ThreadsEmbed":"Threads 嵌入",
     "InstagramEmbed":"Instagram 嵌入",
+    "TiktokEmbed":"TikTok 嵌入",
     "Video":"影片",
     "table":{
         "name": "表格",

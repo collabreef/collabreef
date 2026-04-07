@@ -767,6 +767,7 @@ export default {
     "YoutubeEmbed":"YouTube埋め込み",
     "ThreadsEmbed":"Threads埋め込み",
     "InstagramEmbed":"Instagram埋め込み",
+    "TiktokEmbed":"TikTok埋め込み",
     "Video":"動画",
     "table":{
         "name": "テーブル",
