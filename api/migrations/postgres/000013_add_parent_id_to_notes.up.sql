@@ -1,0 +1,2 @@
+ALTER TABLE notes ADD COLUMN parent_id VARCHAR(255);
+ALTER TABLE notes ADD CONSTRAINT fk_notes_parent FOREIGN KEY (parent_id) REFERENCES notes(id) ON DELETE SET NULL;

@@ -16,24 +16,28 @@ type CreateNoteRequest struct {
 	Visibility string `json:"visibility"  validate:"required"`
 	Title      string `json:"title"`
 	Content    string `json:"content"`
+	ParentID   string `json:"parent_id"`
 }
 
 type UpdateNoteRequest struct {
-	Title   string `json:"title"`
-	Content string `json:"content"`
+	Title    string `json:"title"`
+	Content  string `json:"content"`
+	ParentID string `json:"parent_id"`
 }
 
 type GetNoteResponse struct {
-	ID         string   `json:"id"`
-	Visibility string   `json:"visibility"`
-	Title      string   `json:"title"`
-	Content    string   `json:"content"`
-	Tags       []string `json:"tags"`
-	Files      []string `json:"files"`
-	CreatedAt  string   `json:"created_at"`
-	CreatedBy  string   `json:"created_by"`
-	UpdatedAt  string   `json:"updated_at"`
-	UpdatedBy  string   `json:"updated_by"`
+	ID          string   `json:"id"`
+	WorkspaceID string   `json:"workspace_id"`
+	ParentID    string   `json:"parent_id"`
+	Visibility  string   `json:"visibility"`
+	Title       string   `json:"title"`
+	Content     string   `json:"content"`
+	Tags        []string `json:"tags"`
+	Files       []string `json:"files"`
+	CreatedAt   string   `json:"created_at"`
+	CreatedBy   string   `json:"created_by"`
+	UpdatedAt   string   `json:"updated_at"`
+	UpdatedBy   string   `json:"updated_by"`
 }
 
 // Helper function to get username by user ID
@@ -85,6 +89,7 @@ func (h Handler) GetPublicNotes(c echo.Context) error {
 	filter := model.NoteFilter{
 		PageSize:   pageSize,
 		PageNumber: pageNumber,
+		ParentID:   "null",
 	}
 
 	notes, err := h.db.FindNotes(filter)
@@ -95,14 +100,16 @@ func (h Handler) GetPublicNotes(c echo.Context) error {
 	res := make([]GetNoteResponse, 0)
 	for _, b := range notes {
 		res = append(res, GetNoteResponse{
-			ID:         b.ID,
-			Visibility: b.Visibility,
-			Title:      b.Title,
-			Content:    b.Content,
-			CreatedAt:  b.CreatedAt,
-			CreatedBy:  h.getUserNameByID(b.CreatedBy),
-			UpdatedAt:  b.UpdatedAt,
-			UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
+			ID:          b.ID,
+			WorkspaceID: b.WorkspaceID,
+			ParentID:    b.ParentID,
+			Visibility:  b.Visibility,
+			Title:       b.Title,
+			Content:     b.Content,
+			CreatedAt:   b.CreatedAt,
+			CreatedBy:   h.getUserNameByID(b.CreatedBy),
+			UpdatedAt:   b.UpdatedAt,
+			UpdatedBy:   h.getUserNameByID(b.UpdatedBy),
 		})
 	}
 
@@ -129,6 +136,7 @@ func (h Handler) GetNotes(c echo.Context) error {
 	if sortBy != "updated_at" {
 		sortBy = "created_at"
 	}
+	parentID := c.QueryParam("parentId")
 
 	user := c.Get("user").(model.User)
 
@@ -139,6 +147,7 @@ func (h Handler) GetNotes(c echo.Context) error {
 		UserID:      user.ID,
 		Query:       query,
 		SortBy:      sortBy,
+		ParentID:    parentID,
 	}
 
 	notes, err := h.db.FindNotes(filter)
@@ -150,14 +159,16 @@ func (h Handler) GetNotes(c echo.Context) error {
 
 	for _, b := range notes {
 		res = append(res, GetNoteResponse{
-			ID:         b.ID,
-			Visibility: b.Visibility,
-			Title:      b.Title,
-			Content:    b.Content,
-			CreatedAt:  b.CreatedAt,
-			CreatedBy:  h.getUserNameByID(b.CreatedBy),
-			UpdatedAt:  b.UpdatedAt,
-			UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
+			ID:          b.ID,
+			WorkspaceID: b.WorkspaceID,
+			ParentID:    b.ParentID,
+			Visibility:  b.Visibility,
+			Title:       b.Title,
+			Content:     b.Content,
+			CreatedAt:   b.CreatedAt,
+			CreatedBy:   h.getUserNameByID(b.CreatedBy),
+			UpdatedAt:   b.UpdatedAt,
+			UpdatedBy:   h.getUserNameByID(b.UpdatedBy),
 		})
 	}
 
@@ -196,14 +207,16 @@ func (h Handler) GetNote(c echo.Context) error {
 	}
 
 	res := GetNoteResponse{
-		ID:         b.ID,
-		Visibility: b.Visibility,
-		Title:      b.Title,
-		Content:    b.Content,
-		CreatedAt:  b.CreatedAt,
-		CreatedBy:  h.getUserNameByID(b.CreatedBy),
-		UpdatedAt:  b.UpdatedAt,
-		UpdatedBy:  h.getUserNameByID(b.UpdatedBy),
+		ID:          b.ID,
+		WorkspaceID: b.WorkspaceID,
+		ParentID:    b.ParentID,
+		Visibility:  b.Visibility,
+		Title:       b.Title,
+		Content:     b.Content,
+		CreatedAt:   b.CreatedAt,
+		CreatedBy:   h.getUserNameByID(b.CreatedBy),
+		UpdatedAt:   b.UpdatedAt,
+		UpdatedBy:   h.getUserNameByID(b.UpdatedBy),
 	}
 
 	return c.JSON(http.StatusOK, res)
@@ -241,6 +254,7 @@ func (h Handler) CreateNote(c echo.Context) error {
 
 	n.WorkspaceID = workspaceId
 	n.ID = util.NewId()
+	n.ParentID = req.ParentID
 	n.Visibility = req.Visibility
 	n.Title = req.Title
 	n.Content = content
@@ -333,6 +347,7 @@ func (h Handler) UpdateNote(c echo.Context) error {
 
 	n.WorkspaceID = workspaceId
 	n.ID = existingNote.ID
+	n.ParentID = req.ParentID
 	n.Title = req.Title
 	n.Content = content
 	n.Visibility = existingNote.Visibility
@@ -385,6 +400,7 @@ func (h Handler) UpdateNoteVisibility(c echo.Context) error {
 
 	n.WorkspaceID = workspaceId
 	n.ID = existingNote.ID
+	n.ParentID = existingNote.ParentID
 	n.Visibility = visibility
 	n.Title = existingNote.Title
 	n.Content = existingNote.Content

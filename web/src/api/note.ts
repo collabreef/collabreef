@@ -3,6 +3,8 @@ import { Visibility } from '@/types/visibility';
 
 export interface NoteData {
   id?: string;
+  workspace_id?: string;
+  parent_id?: string;
   created_at?: string;
   created_by?: string;
   updated_at?: string;
@@ -18,9 +20,10 @@ export const getPublicNotes = async (pageNum: number, pageSize: number) => {
   return response.data;
 };
 
-export const getNotes = async (workspaceId: string, pageNum: number, pageSize: number, query: string, sort?: string) => {
+export const getNotes = async (workspaceId: string, pageNum: number, pageSize: number, query: string, sort?: string, parentId?: string) => {
   const params = new URLSearchParams({ pageSize: String(pageSize), pageNumber: String(pageNum), query });
   if (sort) params.set('sort', sort);
+  if (parentId !== undefined) params.set('parentId', parentId);
   const response = await axios.get(`/api/v1/workspaces/${workspaceId}/notes?${params}`, { withCredentials: true });
   return response.data;
 };

@@ -867,6 +867,10 @@ export default {
     "InstagramEmbed":"Instagram 嵌入",
     "TiktokEmbed":"TikTok 嵌入",
     "Video":"影片",
+    "SubPage":"頁面",
+    "subPage":{
+        "newPage": "新頁面"
+    },
     "table":{
         "name": "表格",
         "deleteColumn": "刪除欄",

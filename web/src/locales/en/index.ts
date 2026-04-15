@@ -867,6 +867,10 @@ export default {
     "InstagramEmbed":"Instagram Embed",
     "TiktokEmbed":"TikTok Embed",
     "Video":"Video",
+    "SubPage":"Page",
+    "subPage":{
+        "newPage": "New page"
+    },
     "table":{
         "name": "Table",
         "deleteColumn": "delete column",

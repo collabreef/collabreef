@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getPublicNotes } from '@/api/note';
 import NoteList from '@/components/notecard/NoteList';
@@ -22,23 +23,23 @@ const ExplorePage: React.FC = () => {
 
     const navLink = authChecked && (
         user ? (
-            <a
-                href="/"
+            <Link
+                to="/"
                 className=" flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors"
                 title="Back to workspace"
             >
                 <House size={20} strokeWidth={2.5} />
                 <span className="text-sm font-medium px-1 grow ">Home</span>
-            </a>
+            </Link>
         ) : (
-            <a
-                href="/signin"
+            <Link
+                to="/signin"
                 className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors"
                 title="Sign in"
             >
                 <LogIn size={20} strokeWidth={2.5} />
                 <span className="text-sm font-medium px-1 grow">Sign in</span>
-            </a>
+            </Link>
         )
     );
 

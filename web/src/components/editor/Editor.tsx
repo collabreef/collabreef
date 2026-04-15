@@ -7,7 +7,7 @@ import { BubbleMenu } from "@tiptap/react/menus"
 import { TableKit } from "@tiptap/extension-table"
 import { FC, useMemo, useRef, useEffect } from "react"
 import { useTranslation } from "react-i18next"
-import { GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, List, ListTodo, Paperclip, Quote, Table, Type, Video, Youtube } from 'lucide-react'
+import { GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, List, ListTodo, FileText, Paperclip, Quote, Table, Type, Video, Youtube } from 'lucide-react'
 import { CommandItem, SlashCommand } from './extensions/slashcommand/SlashCommand'
 import { Attachment } from './extensions/attachment/Attachment'
 import { ImageNode } from './extensions/imagenode/ImageNode'
@@ -17,9 +17,10 @@ import { ThreadsEmbed } from './extensions/threadsembed/ThreadsEmbed'
 import { InstagramEmbed } from './extensions/instagramembed/InstagramEmbed'
 import { TiktokEmbed } from './extensions/tiktokembed/TiktokEmbed'
 import { VideoNode } from './extensions/videonode/VideoNode'
+import { SubPageNode } from './extensions/subpagenode/SubPageNode'
 import { uploadFile, listFiles } from '@/api/file'
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id'
-import { NoteData } from '@/api/note'
+import { createNote, NoteData } from '@/api/note'
 import * as Y from 'yjs'
 
 interface Props {
@@ -144,6 +145,11 @@ const Editor: FC<Props> = ({
         listFiles: listFiles
       }),
       TableKit,
+      SubPageNode.configure({
+        workspaceId: currentWorkspaceId,
+        parentNoteId: note.id,
+        createNote,
+      }),
       PasteHandler.configure({
         upload: async (f: File, onProgress?: (percent: number) => void) => {
           const res = await uploadFile(currentWorkspaceId, f, onProgress)
@@ -157,6 +163,13 @@ const Editor: FC<Props> = ({
         suggestion: {
           items: ({ query }: { query: string }): CommandItem[] => {
             return [
+              {
+                icon: <FileText size={16} />,
+                label: t("editor.SubPage"),
+                keywords: ["page", "sub", "child", "nested", "note"],
+                command: ({ editor }: any) =>
+                  editor?.chain().focus().setSubPage({ noteId: null, title: '' }).run(),
+              },
               {
                 icon: <Type size={14} />,
                 label: t("editor.Paragraph"),

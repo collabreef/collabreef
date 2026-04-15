@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import SidebarButton from "@/components/sidebar/SidebarButton"
 import { getNotes, NoteData, createNote } from "@/api/note"
 import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
-import { Outlet, useNavigate, useParams } from "react-router-dom"
+import { Link, Outlet, useNavigate, useParams } from "react-router-dom"
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRef, useCallback, useState, useEffect } from "react"
 import { toast } from "@/stores/toast"
@@ -64,7 +64,9 @@ const NotesLayout = () => {
     const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
         queryKey: ['notes', currentWorkspaceId, debouncedQuery],
         queryFn: async ({ pageParam = 1 }: { pageParam?: unknown }) => {
-            return await getNotes(currentWorkspaceId, Number(pageParam), PAGE_SIZE, debouncedQuery)
+            // Only show root-level notes in sidebar when not searching
+            const parentId = debouncedQuery ? undefined : "null"
+            return await getNotes(currentWorkspaceId, Number(pageParam), PAGE_SIZE, debouncedQuery, undefined, parentId)
         },
         enabled: !!currentWorkspaceId,
         getNextPageParam: (lastPage, allPages) =>
@@ -164,9 +166,9 @@ const NotesLayout = () => {
                     ) : (
                         <>
                             {notes.map((note: NoteData) => (
-                                <a
+                                <Link
                                     key={note.id}
-                                    href={`${note.id}`}
+                                    to={`${note.id}`}
                                     onClick={() => setIsSidebarOpen(false)}
                                     className={(() => {
                                         const isActive = noteId === note.id
@@ -182,7 +184,7 @@ const NotesLayout = () => {
                                     <span className="truncate leading-snug">
                                         {getNoteTitle(note)}
                                     </span>
-                                </a>
+                                </Link>
                             ))}
                             <div ref={loadMoreRef} className="h-2" />
                             {isFetchingNextPage && (

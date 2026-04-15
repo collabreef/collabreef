@@ -1,7 +1,7 @@
 import { PanelLeftClose, PanelLeftOpen, LogOut, User as UserIcon, Settings, Info, Compass } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import { useSidebar } from "./SidebarProvider"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { FC, ReactNode, useState } from "react"
 import { useCurrentUserStore } from "@/stores/current-user"
 import Tooltip from "../tooltip/Tooltip"
@@ -108,10 +108,10 @@ const Sidebar: FC<Props> = function ({ children }) {
                                     </DropdownMenu.Item>
 
                                     <DropdownMenu.Item className="select-none rounded-lg leading-none outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-neutral-200 dark:data-[highlighted]:bg-neutral-700">
-                                        <a href="/explore" className="flex gap-3 p-3 items-center w-full">
+                                        <Link to="/explore" className="flex gap-3 p-3 items-center w-full">
                                             <Compass size={18} />
                                             {t("menu.explore")}
-                                        </a>
+                                        </Link>
                                     </DropdownMenu.Item>
 
                                     <DropdownMenu.Separator className="h-[1px] bg-neutral-200 dark:bg-neutral-600 m-1" />

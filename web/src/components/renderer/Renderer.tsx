@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react'
 import { PhotoView, PhotoProvider } from 'react-photo-view'
 import ShikiHighlighter from "react-shiki"
 import { useTranslation } from 'react-i18next'
+import { FileText, ChevronDown, LoaderCircle } from 'lucide-react'
+import { useParams } from 'react-router-dom'
+import { getNote, NoteData } from '@/api/note'
 
 const InstagramRendererEmbed: React.FC<{ url: string }> = ({ url }) => {
     const containerRef = useRef<HTMLDivElement>(null)
@@ -88,6 +91,67 @@ const ThreadsRendererEmbed: React.FC<{ url: string }> = ({ url }) => {
     return <div ref={containerRef} />
 }
 
+const SubPageRendererBlock: React.FC<{ noteId: string; title: string; workspaceId?: string }> = ({ noteId, title, workspaceId: workspaceIdProp }) => {
+    const { t } = useTranslation()
+    const { workspaceId: workspaceIdParam } = useParams<{ workspaceId?: string }>()
+    const workspaceId = workspaceIdProp || workspaceIdParam
+    const [isExpanded, setIsExpanded] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+    const [subNote, setSubNote] = useState<NoteData | null>(null)
+
+    const handleClick = async () => {
+        if (!workspaceId) return
+        const expanding = !isExpanded
+        setIsExpanded(expanding)
+        if (expanding && !subNote && !isLoading) {
+            setIsLoading(true)
+            try {
+                const note = await getNote(workspaceId, noteId)
+                setSubNote(note)
+            } catch (e) {
+                console.error('Failed to fetch sub note', e)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+    }
+
+    return (
+        <div className="border dark:border-neutral-700 rounded-lg my-1 overflow-hidden">
+            <div
+                className={`flex items-center gap-2 p-3 bg-gray-50 dark:bg-neutral-800/50 transition-colors ${workspaceId ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-700/50' : 'cursor-default'}`}
+                onClick={handleClick}
+            >
+                <FileText size={16} className="text-gray-400 flex-shrink-0" />
+                <span className="flex-1 text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                    {title || t("notes.untitled")}
+                </span>
+                {workspaceId && (
+                    <ChevronDown size={14} className={`text-gray-400 flex-shrink-0 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+                )}
+            </div>
+            {isExpanded && (
+                <div className="p-3 border-t dark:border-neutral-700">
+                    {isLoading ? (
+                        <div className="flex items-center justify-center py-3">
+                            <LoaderCircle size={16} className="text-gray-400 animate-spin" />
+                        </div>
+                    ) : subNote ? (
+                        <>
+                            {subNote.title && (
+                                <div className="text-base font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                                    {subNote.title}
+                                </div>
+                            )}
+                            <Renderer content={subNote.content} workspaceId={workspaceId} />
+                        </>
+                    ) : null}
+                </div>
+            )}
+        </div>
+    )
+}
+
 interface Node {
     type: string
     content?: Node[]
@@ -99,9 +163,10 @@ interface Node {
 interface RendererProps {
     content: string
     maxNodes?: number
+    workspaceId?: string
 }
 
-const Renderer: React.FC<RendererProps> = ({ content, maxNodes }) => {
+const Renderer: React.FC<RendererProps> = ({ content, maxNodes, workspaceId: workspaceIdProp }) => {
     const { t } = useTranslation()
     const [isExpanded, setIsExpanded] = useState(false)
 
@@ -190,6 +255,9 @@ const Renderer: React.FC<RendererProps> = ({ content, maxNodes }) => {
                 return <InstagramRendererEmbed key={key} url={node.attrs?.url} />
             case 'tiktokEmbed':
                 return <TiktokRendererEmbed key={key} url={node.attrs?.url} />
+            case 'subPage':
+                if (!node.attrs?.noteId) return null
+                return <SubPageRendererBlock key={key} noteId={node.attrs.noteId} title={node.attrs?.title || ''} workspaceId={workspaceIdProp} />
             case 'video':
                 return <div key={key} className="w-full rounded overflow-hidden">
                     <video className="w-full max-h-[620px]" src={node.attrs?.src} controls />

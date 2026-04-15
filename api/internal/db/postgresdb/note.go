@@ -15,7 +15,7 @@ func (s PostgresDB) CreateNote(n model.Note) error {
 func (s PostgresDB) UpdateNote(n model.Note) error {
 	_, err := gorm.G[model.Note](s.getDB()).
 		Where("id = ?", n.ID).
-		Select("title", "content", "visibility", "updated_at", "updated_by").
+		Select("title", "content", "visibility", "parent_id", "updated_at", "updated_by").
 		Updates(context.Background(), n)
 	return err
 }
@@ -53,13 +53,20 @@ func (s PostgresDB) FindNotes(f model.NoteFilter) ([]model.Note, error) {
 
 	if f.UserID != "" {
 		permissionCond := `(
-            visibility IN ('public', 'workspace') 
+            visibility IN ('public', 'workspace')
             OR (visibility = 'private' AND created_by = ?)
         )`
 		conds = append(conds, permissionCond)
 		args = append(args, f.UserID)
 	} else {
 		conds = append(conds, "visibility = 'public'")
+	}
+
+	if f.ParentID == "null" {
+		conds = append(conds, "(parent_id IS NULL OR parent_id = '')")
+	} else if f.ParentID != "" {
+		conds = append(conds, "parent_id = ?")
+		args = append(args, f.ParentID)
 	}
 
 	query := s.getDB().Model(&model.Note{})

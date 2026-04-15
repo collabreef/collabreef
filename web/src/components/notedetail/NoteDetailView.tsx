@@ -1,10 +1,11 @@
 import { FC, ReactNode } from "react"
 import { useNavigate } from "react-router-dom"
-import { ArrowLeft } from "lucide-react"
-import { NoteData } from "@/api/note"
+import { getNote, NoteData } from "@/api/note"
 import { useTranslation } from "react-i18next"
+import { useQuery } from "@tanstack/react-query"
 import Editor from "../editor/Editor"
 import EditableDiv from "@/components/editablediv/EditableDiv"
+import useCurrentWorkspaceId from "@/hooks/use-currentworkspace-id"
 
 interface NoteDetailViewProps {
     note: NoteData | null
@@ -27,6 +28,13 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({
 }) => {
     const navigate = useNavigate()
     const { t } = useTranslation()
+    const currentWorkspaceId = useCurrentWorkspaceId()
+
+    const { data: parentNote } = useQuery<NoteData>({
+        queryKey: ['note', currentWorkspaceId, note?.parent_id],
+        queryFn: () => getNote(currentWorkspaceId, note!.parent_id!),
+        enabled: !!note?.parent_id && !!currentWorkspaceId,
+    })
 
     if (!note) {
         return (
@@ -64,22 +72,28 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({
             {note && (
                 <>
                     <div className="shrink-0 p-2 xl:p-4">
-                        <div className="flex justify-between items-center gap-2 flex-1 min-w-0 ">
-                            <button
-                                onClick={() => navigate(-1)}
-                                aria-label="back"
-                                className="inline-flex p-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0"
-                            >
-                                <ArrowLeft size={20} />
-                            </button>
-                            <EditableDiv
-                                key={note.id}
-                                value={displayTitle}
-                                editable={true}
-                                placeholder={t("notes.untitled")}
-                                className="flex-1 text-lg font-medium text-gray-700 dark:text-gray-200 border-none outline-none bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600 min-w-0 truncate"
-                                onChange={onTitleChange}
-                            />
+                        <div className="flex justify-between items-center gap-2 flex-1 min-w-0 px-3">
+                            <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                                {parentNote && (
+                                    <>
+                                        <button
+                                            onClick={() => navigate(`../${parentNote.id}`)}
+                                            className="text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors shrink-0 max-w-[160px] truncate text-left"
+                                        >
+                                            {parentNote.title || t("notes.untitled")}
+                                        </button>
+                                        <span className="text-gray-300 dark:text-gray-600 select-none">/</span>
+                                    </>
+                                )}
+                                <EditableDiv
+                                    key={note.id}
+                                    value={displayTitle}
+                                    editable={true}
+                                    placeholder={t("notes.untitled")}
+                                    className="flex-1 text-lg font-medium text-gray-700 dark:text-gray-200 border-none outline-none bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600 min-w-0 truncate"
+                                    onChange={onTitleChange}
+                                />
+                            </div>
                             <div className="inline-flex flex-shrink-0">{menu}</div>
                         </div>
                     </div>
