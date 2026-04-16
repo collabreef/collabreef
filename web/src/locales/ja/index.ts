@@ -771,6 +771,7 @@ export default {
     "CalendarNode":"カレンダーイベント",
     "LocationNode":"場所",
     "TagsNode":"タグ",
+    "RatingNode":"評価",
     "Video":"動画",
     "table":{
         "name": "テーブル",

@@ -771,6 +771,7 @@ export default {
     "CalendarNode":"Evento de Calendário",
     "LocationNode":"Localização",
     "TagsNode":"Etiquetas",
+    "RatingNode":"Avaliação",
     "Video":"Vídeo",
     "table":{
         "name": "Tabela",

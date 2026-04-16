@@ -771,6 +771,7 @@ export default {
     "CalendarNode":"حدث التقويم",
     "LocationNode":"موقع",
     "TagsNode":"وسوم",
+    "RatingNode":"تقييم",
     "Video":"فيديو",
     "table":{
         "name": "جدول",
