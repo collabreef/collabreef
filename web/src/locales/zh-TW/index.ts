@@ -868,6 +868,7 @@ export default {
     "TiktokEmbed":"TikTok 嵌入",
     "CalendarNode":"行事曆事件",
     "LocationNode":"位置",
+    "TagsNode":"標籤",
     "Video":"影片",
     "SubPage":"頁面",
     "subPage":{

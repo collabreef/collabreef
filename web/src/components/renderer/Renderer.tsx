@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { PhotoView, PhotoProvider } from 'react-photo-view'
 import ShikiHighlighter from "react-shiki"
 import { useTranslation } from 'react-i18next'
-import { FileText, ChevronDown, LoaderCircle, CalendarDays, MapPin, ExternalLink } from 'lucide-react'
+import { FileText, ChevronDown, LoaderCircle, CalendarDays, MapPin, ExternalLink, Tag } from 'lucide-react'
 import { useParams } from 'react-router-dom'
 import { getNote, NoteData } from '@/api/note'
 import { MapContainer, TileLayer, Marker } from 'react-leaflet'
@@ -190,6 +190,21 @@ const LocationRenderer: React.FC<{ lat: number; lng: number; name?: string; addr
     </div>
 )
 
+// ── Tags renderer ─────────────────────────────────────────────────────────────
+const TagsRenderer: React.FC<{ tags: string[] }> = ({ tags }) => {
+    if (!tags.length) return null
+    return (
+        <div className="flex flex-wrap items-center gap-1.5 my-1">
+            <Tag size={13} className="text-gray-400 dark:text-gray-500 shrink-0" />
+            {tags.map(t => (
+                <span key={t} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300">
+                    {t}
+                </span>
+            ))}
+        </div>
+    )
+}
+
 const SubPageRendererBlock: React.FC<{ noteId: string; title: string; workspaceId?: string }> = ({ noteId, title, workspaceId: workspaceIdProp }) => {
     const { t } = useTranslation()
     const { workspaceId: workspaceIdParam } = useParams<{ workspaceId?: string }>()
@@ -354,6 +369,10 @@ const Renderer: React.FC<RendererProps> = ({ content, maxNodes, workspaceId: wor
                 return <InstagramRendererEmbed key={key} url={node.attrs?.url} />
             case 'tiktokEmbed':
                 return <TiktokRendererEmbed key={key} url={node.attrs?.url} />
+            case 'tagsNode': {
+                const tags: string[] = node.attrs?.tags ?? []
+                return <TagsRenderer key={key} tags={tags} />
+            }
             case 'calendarNode':
                 return <CalendarEventRenderer key={key} date={node.attrs?.date} title={node.attrs?.title} description={node.attrs?.description} />
             case 'locationNode': {

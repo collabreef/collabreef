@@ -770,6 +770,7 @@ export default {
     "TiktokEmbed":"تضمين تيك توك",
     "CalendarNode":"حدث التقويم",
     "LocationNode":"موقع",
+    "TagsNode":"وسوم",
     "Video":"فيديو",
     "table":{
         "name": "جدول",

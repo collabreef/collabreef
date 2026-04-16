@@ -853,6 +853,7 @@ export default {
     "TiktokEmbed":"TikTok 嵌入",
     "CalendarNode":"日历事件",
     "LocationNode":"位置",
+    "TagsNode":"标签",
     "Video":"视频",
     "SubPage":"页面",
     "subPage":{

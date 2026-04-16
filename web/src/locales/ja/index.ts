@@ -770,6 +770,7 @@ export default {
     "TiktokEmbed":"TikTok埋め込み",
     "CalendarNode":"カレンダーイベント",
     "LocationNode":"場所",
+    "TagsNode":"タグ",
     "Video":"動画",
     "table":{
         "name": "テーブル",

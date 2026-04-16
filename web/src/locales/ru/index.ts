@@ -770,6 +770,7 @@ export default {
     "TiktokEmbed":"TikTok видео",
     "CalendarNode":"Событие календаря",
     "LocationNode":"Местоположение",
+    "TagsNode":"Теги",
     "Video":"Видео",
     "table":{
         "name": "Таблица",

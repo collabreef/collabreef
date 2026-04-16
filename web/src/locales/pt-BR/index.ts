@@ -770,6 +770,7 @@ export default {
     "TiktokEmbed":"Incorporar TikTok",
     "CalendarNode":"Evento de Calendário",
     "LocationNode":"Localização",
+    "TagsNode":"Etiquetas",
     "Video":"Vídeo",
     "table":{
         "name": "Tabela",
