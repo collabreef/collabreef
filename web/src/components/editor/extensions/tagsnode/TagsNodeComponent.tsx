@@ -38,7 +38,7 @@ const TagsNodeComponent: React.FC<NodeViewProps> = ({
 
   const [showActions, setShowActions] = useState(false)
   const [inputValue, setInputValue] = useState('')
-  const [isFocused, setIsFocused] = useState(false)
+  const [_, setIsFocused] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Auto-focus when freshly inserted and empty

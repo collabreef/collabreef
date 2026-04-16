@@ -783,6 +783,14 @@ export default {
     "textGen": {
         "name": "Text-Generierung",
         "placeholder": "KI fragen"
+    },
+    "slashCategories": {
+        "text": "Text",
+        "list": "Liste",
+        "block": "Block",
+        "media": "Medien",
+        "embed": "Einbetten",
+        "advanced": "Erweitert"
     }
   },
 } as const;

@@ -783,6 +783,14 @@ export default {
     "textGen": {
         "name": "テキスト生成",
         "placeholder": "AIに質問"
+    },
+    "slashCategories": {
+        "text": "テキスト",
+        "list": "リスト",
+        "block": "ブロック",
+        "media": "メディア",
+        "embed": "埋め込み",
+        "advanced": "詳細"
     }
   },
 } as const;

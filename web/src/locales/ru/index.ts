@@ -783,6 +783,14 @@ export default {
     "textGen": {
         "name": "Генерация текста",
         "placeholder": "Спросите ИИ"
+    },
+    "slashCategories": {
+        "text": "Текст",
+        "list": "Список",
+        "block": "Блок",
+        "media": "Медиа",
+        "embed": "Вставка",
+        "advanced": "Расширенные"
     }
   },
 } as const;

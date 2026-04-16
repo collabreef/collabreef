@@ -783,6 +783,14 @@ export default {
     "textGen": {
         "name": "텍스트 생성",
         "placeholder": "AI에 물어보기"
+    },
+    "slashCategories": {
+        "text": "텍스트",
+        "list": "목록",
+        "block": "블록",
+        "media": "미디어",
+        "embed": "임베드",
+        "advanced": "고급"
     }
   },
 } as const;
