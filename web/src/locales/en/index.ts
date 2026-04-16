@@ -869,6 +869,7 @@ export default {
     "CalendarNode":"Calendar Event",
     "LocationNode":"Location",
     "TagsNode":"Tags",
+    "RatingNode":"Rating",
     "Video":"Video",
     "SubPage":"Page",
     "subPage":{

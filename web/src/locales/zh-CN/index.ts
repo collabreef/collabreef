@@ -854,6 +854,7 @@ export default {
     "CalendarNode":"日历事件",
     "LocationNode":"位置",
     "TagsNode":"标签",
+    "RatingNode":"评分",
     "Video":"视频",
     "SubPage":"页面",
     "subPage":{

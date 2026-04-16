@@ -771,6 +771,7 @@ export default {
     "CalendarNode":"캘린더 이벤트",
     "LocationNode":"위치",
     "TagsNode":"태그",
+    "RatingNode":"평점",
     "Video":"동영상",
     "table":{
         "name": "표",

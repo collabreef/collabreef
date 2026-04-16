@@ -869,6 +869,7 @@ export default {
     "CalendarNode":"行事曆事件",
     "LocationNode":"位置",
     "TagsNode":"標籤",
+    "RatingNode":"評分",
     "Video":"影片",
     "SubPage":"頁面",
     "subPage":{

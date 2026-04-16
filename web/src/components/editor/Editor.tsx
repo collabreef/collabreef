@@ -7,7 +7,7 @@ import { BubbleMenu } from "@tiptap/react/menus"
 import { TableKit } from "@tiptap/extension-table"
 import { FC, useMemo, useRef, useEffect } from "react"
 import { useTranslation } from "react-i18next"
-import { GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, List, ListTodo, FileText, Paperclip, Quote, Table, Type, Video, Youtube, CalendarDays, MapPin, Tag } from 'lucide-react'
+import { GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, List, ListTodo, FileText, Paperclip, Quote, Table, Type, Video, Youtube, CalendarDays, MapPin, Tag, Star } from 'lucide-react'
 import { CommandItem, SlashCommand } from './extensions/slashcommand/SlashCommand'
 import { Attachment } from './extensions/attachment/Attachment'
 import { ImageNode } from './extensions/imagenode/ImageNode'
@@ -21,6 +21,7 @@ import { SubPageNode } from './extensions/subpagenode/SubPageNode'
 import { CalendarNode } from './extensions/calendarnode/CalendarNode'
 import { LocationNode } from './extensions/locationnode/LocationNode'
 import { TagsNode } from './extensions/tagsnode/TagsNode'
+import { RatingNode } from './extensions/ratingnode/RatingNode'
 import { uploadFile, listFiles } from '@/api/file'
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id'
 import { createNote, NoteData } from '@/api/note'
@@ -139,6 +140,7 @@ const Editor: FC<Props> = ({
       CalendarNode,
       LocationNode,
       TagsNode,
+      RatingNode,
       VideoNode.configure({
         upload: async (f: File, onProgress?: (percent: number) => void) => {
           const res = await uploadFile(currentWorkspaceId, f, onProgress)
@@ -350,6 +352,14 @@ const Editor: FC<Props> = ({
                 keywords: ["tag", "tags", "label", "category"],
                 command: ({ editor }: any) =>
                   editor?.chain().focus().setTagsNode({ tags: [] }).run(),
+              },
+              {
+                icon: <Star size={16} />,
+                label: t("editor.RatingNode"),
+                category: 'advanced',
+                keywords: ["rating", "star", "score", "review"],
+                command: ({ editor }: any) =>
+                  editor?.chain().focus().setRatingNode({ rating: 0, maxRating: 5, label: '' }).run(),
               },
             ].filter((item) =>
               item.label.toLowerCase().includes(query.toLowerCase()) ||

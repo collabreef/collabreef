@@ -771,6 +771,7 @@ export default {
     "CalendarNode":"Событие календаря",
     "LocationNode":"Местоположение",
     "TagsNode":"Теги",
+    "RatingNode":"Рейтинг",
     "Video":"Видео",
     "table":{
         "name": "Таблица",
