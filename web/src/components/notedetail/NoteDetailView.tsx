@@ -90,7 +90,7 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({
                                     value={displayTitle}
                                     editable={true}
                                     placeholder={t("notes.untitled")}
-                                    className="flex-1 text-lg font-medium text-gray-700 dark:text-gray-200 border-none outline-none bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600 min-w-0 truncate"
+                                    className="flex-1 text-sm font-medium text-gray-700 dark:text-gray-200 border-none outline-none bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600 min-w-0 truncate"
                                     onChange={onTitleChange}
                                 />
                             </div>
