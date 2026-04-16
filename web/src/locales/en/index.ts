@@ -885,6 +885,14 @@ export default {
     "textGen": {
         "name": "Text Gen",
         "placeholder": "Ask AI"
+    },
+    "slashCategories": {
+        "text": "Text",
+        "list": "List",
+        "block": "Block",
+        "media": "Media",
+        "embed": "Embed",
+        "advanced": "Advanced"
     }
   },
 } as const;

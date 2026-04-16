@@ -783,6 +783,14 @@ export default {
     "textGen": {
         "name": "توليد النصوص",
         "placeholder": "اسأل الذكاء الاصطناعي"
+    },
+    "slashCategories": {
+        "text": "نص",
+        "list": "قائمة",
+        "block": "كتلة",
+        "media": "وسائط",
+        "embed": "تضمين",
+        "advanced": "متقدم"
     }
   },
 } as const;

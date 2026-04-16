@@ -783,6 +783,14 @@ export default {
     "textGen": {
         "name": "Generazione testo",
         "placeholder": "Chiedi all'IA"
+    },
+    "slashCategories": {
+        "text": "Testo",
+        "list": "Lista",
+        "block": "Blocco",
+        "media": "Media",
+        "embed": "Incorpora",
+        "advanced": "Avanzato"
     }
   },
 } as const;

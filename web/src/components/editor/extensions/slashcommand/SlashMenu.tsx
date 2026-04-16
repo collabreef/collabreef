@@ -1,4 +1,5 @@
 import { useState, useEffect, useImperativeHandle, forwardRef, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { CommandItem } from './SlashCommand'
 
 interface Props {
@@ -13,6 +14,7 @@ export interface SlashMenuRef {
 
 export const SlashMenu = forwardRef<SlashMenuRef, Props>(
   ({ items, command }, ref) => {
+    const { t } = useTranslation()
     const [selectedIndex, setSelectedIndex] = useState(0)
     const itemRefs = useRef<HTMLButtonElement[]>([])
 
@@ -62,23 +64,38 @@ export const SlashMenu = forwardRef<SlashMenuRef, Props>(
 
     if (!items.length) return null
 
+    let lastCategory = ''
+    const rendered: JSX.Element[] = []
+    items.forEach((item, i) => {
+      const showHeader = !!item.category && item.category !== lastCategory
+      if (showHeader) {
+        lastCategory = item.category!
+        rendered.push(
+          <div key={`cat-${item.category}`} className="px-3 pt-2 pb-0.5 text-xs font-semibold text-gray-400 dark:text-stone-500 uppercase tracking-wide select-none">
+            {t(`editor.slashCategories.${item.category}`, item.category)}
+          </div>
+        )
+      }
+      rendered.push(
+        <button
+          key={i}
+          ref={(el) => (itemRefs.current[i] = el!)}
+          className={`w-full text-left px-3 py-1.5 rounded-md text-sm flex gap-2 items-center ${i === selectedIndex
+              ? 'bg-gray-200 text-gray-950 dark:bg-stone-950 dark:text-stone-200'
+              : 'hover:bg-gray-100 text-gray-900 dark:hover:bg-stone-950 dark:text-stone-100'
+            }`}
+          onClick={() => command(item)}
+        >
+          {item.icon}
+          {item.label}
+        </button>
+      )
+    })
+
     return (
       <div className="bg-white dark:bg-stone-900 shadow-lg rounded-lg border border-gray-200 p-2 w-56">
-        <div className=' h-40 overflow-y-auto'>
-          {items.map((item, i) => (
-            <button
-              key={i}
-              ref={(el) => (itemRefs.current[i] = el!)}
-              className={`w-full text-left px-3 py-1.5 rounded-md text-sm flex gap-2 items-center ${i === selectedIndex
-                  ? 'bg-gray-200 text-gray-950 dark:bg-stone-950 dark:text-stone-200'
-                  : 'hover:bg-gray-100 text-gray-900 dark:hover:bg-stone-950 dark:text-stone-100'
-                }`}
-              onClick={() => command(item)}
-            >
-              {item.icon}
-              {item.label}
-            </button>
-          ))}
+        <div className='max-h-72 overflow-y-auto'>
+          {rendered}
         </div>
       </div>
     )

@@ -885,6 +885,14 @@ export default {
     "textGen": {
         "name": "文字生成",
         "placeholder": "問AI"
+    },
+    "slashCategories": {
+        "text": "文字",
+        "list": "清單",
+        "block": "區塊",
+        "media": "媒體",
+        "embed": "嵌入",
+        "advanced": "進階"
     }
   },
 } as const;

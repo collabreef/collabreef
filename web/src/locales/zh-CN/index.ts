@@ -870,6 +870,14 @@ export default {
     "textGen": {
         "name": "文本生成",
         "placeholder": "询问 AI"
+    },
+    "slashCategories": {
+        "text": "文字",
+        "list": "列表",
+        "block": "块",
+        "media": "媒体",
+        "embed": "嵌入",
+        "advanced": "高级"
     }
   },
 } as const;

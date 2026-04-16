@@ -8,6 +8,8 @@ import { ReactNode } from 'react'
 export interface CommandItem {
   icon?: ReactNode
   label: string
+  category?: string
+  keywords?: string[]
   command: (ctx: { editor: any }) => void
 }
 
