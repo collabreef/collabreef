@@ -72,7 +72,7 @@ export const SlashMenu = forwardRef<SlashMenuRef, Props>(
         lastCategory = item.category!
         rendered.push(
           <div key={`cat-${item.category}`} className="px-3 pt-2 pb-0.5 text-xs font-semibold text-gray-400 dark:text-stone-500 uppercase tracking-wide select-none">
-            {t(`editor.slashCategories.${item.category}`, item.category)}
+            {t(`editor.slashCategories.${item.category}`, item.category!)}
           </div>
         )
       }
