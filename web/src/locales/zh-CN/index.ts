@@ -852,6 +852,7 @@ export default {
     "InstagramEmbed":"Instagram 嵌入",
     "TiktokEmbed":"TikTok 嵌入",
     "CalendarNode":"日历事件",
+    "LocationNode":"位置",
     "Video":"视频",
     "SubPage":"页面",
     "subPage":{

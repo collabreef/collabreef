@@ -769,6 +769,7 @@ export default {
     "InstagramEmbed":"Instagram публикация",
     "TiktokEmbed":"TikTok видео",
     "CalendarNode":"Событие календаря",
+    "LocationNode":"Местоположение",
     "Video":"Видео",
     "table":{
         "name": "Таблица",

@@ -867,6 +867,7 @@ export default {
     "InstagramEmbed":"Instagram Embed",
     "TiktokEmbed":"TikTok Embed",
     "CalendarNode":"Calendar Event",
+    "LocationNode":"Location",
     "Video":"Video",
     "SubPage":"Page",
     "subPage":{

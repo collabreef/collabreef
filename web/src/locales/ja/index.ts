@@ -769,6 +769,7 @@ export default {
     "InstagramEmbed":"Instagram埋め込み",
     "TiktokEmbed":"TikTok埋め込み",
     "CalendarNode":"カレンダーイベント",
+    "LocationNode":"場所",
     "Video":"動画",
     "table":{
         "name": "テーブル",

@@ -769,6 +769,7 @@ export default {
     "InstagramEmbed":"تضمين إنستغرام",
     "TiktokEmbed":"تضمين تيك توك",
     "CalendarNode":"حدث التقويم",
+    "LocationNode":"موقع",
     "Video":"فيديو",
     "table":{
         "name": "جدول",

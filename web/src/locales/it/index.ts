@@ -769,6 +769,7 @@ export default {
     "InstagramEmbed":"Incorpora Instagram",
     "TiktokEmbed":"Incorpora TikTok",
     "CalendarNode":"Evento Calendario",
+    "LocationNode":"Posizione",
     "Video":"Video",
     "table":{
         "name": "Tabella",
