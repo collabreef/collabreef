@@ -19,14 +19,12 @@ const SubPageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttr
         hasCreated.current = true
 
         const { workspaceId, parentNoteId, createNote } = extension.options
-        const defaultTitle = t("editor.subPage.newPage")
         createNote(workspaceId, {
-            title: defaultTitle,
             content: JSON.stringify({ type: 'doc', content: [{ type: 'paragraph' }] }),
             visibility: 'workspace',
             parent_id: parentNoteId,
         }).then((newNote: { id: string }) => {
-            updateAttributes({ noteId: newNote.id, title: defaultTitle })
+            updateAttributes({ noteId: newNote.id, title: '' })
             navigate(`/workspaces/${workspaceId}/notes/${newNote.id}`)
         }).catch(() => {
             deleteNode()
@@ -38,7 +36,7 @@ const SubPageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttr
         if (!noteId) return
         const { workspaceId } = extension.options
         getNote(workspaceId, noteId).then((note: { title?: string }) => {
-            const liveTitle = note.title || t("editor.subPage.newPage")
+            const liveTitle = note.title || ''
             if (liveTitle !== title) {
                 updateAttributes({ title: liveTitle })
             }
@@ -70,7 +68,7 @@ const SubPageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttr
                 onClick={handleNavigate}
             >
                 <FileText size={16} className="text-gray-400 flex-shrink-0" />
-                <span className="flex-1 text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                <span className={`flex-1 text-sm font-medium truncate ${title ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500 italic'}`}>
                     {title || t("notes.untitled")}
                 </span>
                 <ExternalLink size={14} className="text-gray-400 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />

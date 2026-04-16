@@ -768,6 +768,7 @@ export default {
     "ThreadsEmbed":"تضمين ثريدز",
     "InstagramEmbed":"تضمين إنستغرام",
     "TiktokEmbed":"تضمين تيك توك",
+    "CalendarNode":"حدث التقويم",
     "Video":"فيديو",
     "table":{
         "name": "جدول",

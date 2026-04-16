@@ -866,6 +866,7 @@ export default {
     "ThreadsEmbed":"Threads 嵌入",
     "InstagramEmbed":"Instagram 嵌入",
     "TiktokEmbed":"TikTok 嵌入",
+    "CalendarNode":"行事曆事件",
     "Video":"影片",
     "SubPage":"頁面",
     "subPage":{

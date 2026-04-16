@@ -768,6 +768,7 @@ export default {
     "ThreadsEmbed":"Threads 삽입",
     "InstagramEmbed":"Instagram 삽입",
     "TiktokEmbed":"TikTok 삽입",
+    "CalendarNode":"캘린더 이벤트",
     "Video":"동영상",
     "table":{
         "name": "표",

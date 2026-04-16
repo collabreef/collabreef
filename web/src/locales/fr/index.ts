@@ -768,6 +768,7 @@ export default {
     "ThreadsEmbed":"Intégrer Threads",
     "InstagramEmbed":"Intégrer Instagram",
     "TiktokEmbed":"Intégrer TikTok",
+    "CalendarNode":"Événement Calendrier",
     "Video":"Vidéo",
     "table":{
         "name": "Tableau",
