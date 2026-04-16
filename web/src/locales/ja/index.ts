@@ -768,6 +768,7 @@ export default {
     "ThreadsEmbed":"Threads埋め込み",
     "InstagramEmbed":"Instagram埋め込み",
     "TiktokEmbed":"TikTok埋め込み",
+    "CalendarNode":"カレンダーイベント",
     "Video":"動画",
     "table":{
         "name": "テーブル",

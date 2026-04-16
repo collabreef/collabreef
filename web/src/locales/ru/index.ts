@@ -768,6 +768,7 @@ export default {
     "ThreadsEmbed":"Threads публикация",
     "InstagramEmbed":"Instagram публикация",
     "TiktokEmbed":"TikTok видео",
+    "CalendarNode":"Событие календаря",
     "Video":"Видео",
     "table":{
         "name": "Таблица",
