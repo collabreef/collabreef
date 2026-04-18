@@ -166,10 +166,6 @@ const RatingNodeComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, 
         onMouseEnter={() => isEditable && setShowActions(true)}
         onMouseLeave={() => setShowActions(false)}
       >
-        {/* Star icon badge */}
-        <div className="flex items-center justify-center bg-yellow-100 dark:bg-yellow-900/30 rounded-lg p-2 shrink-0">
-          <Star size={20} className="text-yellow-500 fill-yellow-400" />
-        </div>
 
         {/* Content */}
         <div className="flex flex-col gap-1 flex-1 min-w-0">
