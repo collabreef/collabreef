@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { PhotoView, PhotoProvider } from 'react-photo-view'
 import ShikiHighlighter from "react-shiki"
 import { useTranslation } from 'react-i18next'
-import { FileText, ChevronDown, LoaderCircle, CalendarDays, MapPin, ExternalLink, Tag } from 'lucide-react'
+import { FileText, ChevronDown, LoaderCircle, CalendarDays, MapPin, ExternalLink, Tag, Star } from 'lucide-react'
 import { useParams } from 'react-router-dom'
 import { getNote, NoteData } from '@/api/note'
 import { MapContainer, TileLayer, Marker } from 'react-leaflet'
@@ -186,6 +186,27 @@ const LocationRenderer: React.FC<{ lat: number; lng: number; name?: string; addr
             >
                 <ExternalLink size={14} />
             </a>
+        </div>
+    </div>
+)
+
+// ── Rating renderer ───────────────────────────────────────────────────────────
+const RatingRenderer: React.FC<{ rating: number; maxRating: number; label?: string }> = ({ rating, maxRating, label }) => (
+    <div className="my-1 flex items-center rounded-lg border dark:border-neutral-700 overflow-hidden bg-white dark:bg-neutral-900 shadow-sm px-4 py-3 gap-3">
+        <div className="flex flex-col gap-1 flex-1 min-w-0">
+            {label && (
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{label}</p>
+            )}
+            <div className="flex items-center gap-0.5">
+                {Array.from({ length: maxRating }, (_, i) => i + 1).map(i => (
+                    <Star
+                        key={i}
+                        size={18}
+                        className={i <= rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300 dark:text-neutral-600'}
+                    />
+                ))}
+                <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">{rating}/{maxRating}</span>
+            </div>
         </div>
     </div>
 )
@@ -379,6 +400,10 @@ const Renderer: React.FC<RendererProps> = ({ content, maxNodes, workspaceId: wor
                 const { lat, lng } = node.attrs ?? {}
                 if (lat == null || lng == null) return null
                 return <LocationRenderer key={key} lat={lat} lng={lng} name={node.attrs?.name} address={node.attrs?.address} zoom={node.attrs?.zoom ?? 15} />
+            }
+            case 'ratingNode': {
+                const { rating = 0, maxRating = 5, label } = node.attrs ?? {}
+                return <RatingRenderer key={key} rating={rating} maxRating={maxRating} label={label} />
             }
             case 'subPage':
                 if (!node.attrs?.noteId) return null
