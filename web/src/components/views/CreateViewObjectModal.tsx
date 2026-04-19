@@ -24,7 +24,7 @@ const CreateViewObjectModal = ({
     viewType,
     name,
     setName,
-    data,
+    data: _data,
     setData,
     onSubmit,
     isSubmitting = false,

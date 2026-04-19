@@ -64,7 +64,6 @@ const MiddleLayer: React.FC<MiddleLayerProps> = ({
                             workspaceId={workspaceId}
                             viewId={viewId!}
                             isSelected={selectedObjectIds.includes(id)}
-                            isPublic={isPublic}
                             onHeightChange={onNoteHeightChange}
                         />
                     );
