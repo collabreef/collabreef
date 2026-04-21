@@ -2,11 +2,15 @@ import React, { useState, useEffect, useRef } from 'react'
 import { PhotoView, PhotoProvider } from 'react-photo-view'
 import ShikiHighlighter from "react-shiki"
 import { useTranslation } from 'react-i18next'
-import { FileText, ChevronDown, LoaderCircle, CalendarDays, MapPin, ExternalLink, Tag, Star } from 'lucide-react'
+import { FileText, ChevronDown, LoaderCircle, CalendarDays, MapPin, ExternalLink, Tag, Star, Map, Kanban, PenTool, Sheet } from 'lucide-react'
 import { useParams } from 'react-router-dom'
 import { getNote, NoteData } from '@/api/note'
+import { ViewType } from '@/types/view'
 import { MapContainer, TileLayer, Marker } from 'react-leaflet'
 import { Icon } from 'leaflet'
+import SpreadsheetViewComponent from '@/components/views/spreadsheet/SpreadsheetViewComponent'
+import WhiteboardViewComponent from '@/components/views/whiteboard/WhiteboardViewComponent'
+import { MapInlinePreview, CalendarInlinePreview, KanbanInlinePreview } from '@/components/editor/extensions/viewnode/ViewNodeInlinePreview'
 
 const InstagramRendererEmbed: React.FC<{ url: string }> = ({ url }) => {
     const containerRef = useRef<HTMLDivElement>(null)
@@ -226,6 +230,48 @@ const TagsRenderer: React.FC<{ tags: string[] }> = ({ tags }) => {
     )
 }
 
+const VIEW_TYPE_META: Record<ViewType, { icon: React.ReactNode; label: string }> = {
+    map: { icon: <Map size={16} />, label: 'Map' },
+    calendar: { icon: <CalendarDays size={16} />, label: 'Calendar' },
+    kanban: { icon: <Kanban size={16} />, label: 'Kanban' },
+    whiteboard: { icon: <PenTool size={16} />, label: 'Whiteboard' },
+    spreadsheet: { icon: <Sheet size={16} />, label: 'Spreadsheet' },
+}
+
+const INLINE_VIEW_TYPES = new Set(['spreadsheet', 'whiteboard', 'map', 'calendar', 'kanban'])
+
+const ViewNodeRenderer: React.FC<{ viewId: string; viewType: string; name?: string; workspaceId?: string }> = ({
+    viewId, viewType, name, workspaceId,
+}) => {
+    const meta = VIEW_TYPE_META[viewType as ViewType] ?? { icon: <Sheet size={16} />, label: viewType }
+
+    if (!workspaceId || !INLINE_VIEW_TYPES.has(viewType)) {
+        return (
+            <div className="flex items-center gap-2 border dark:border-neutral-700 rounded-lg p-3 bg-gray-50 dark:bg-neutral-800/50 my-1">
+                <span className="text-blue-500 dark:text-blue-400 flex-shrink-0">{meta.icon}</span>
+                <span className="flex-1 text-sm font-medium text-gray-700 dark:text-gray-300 truncate">{name || meta.label}</span>
+                <span className="text-xs text-gray-400 dark:text-gray-500 px-1.5 py-0.5 rounded bg-gray-100 dark:bg-neutral-700">{meta.label}</span>
+            </div>
+        )
+    }
+
+    return (
+        <div className="my-1 border dark:border-neutral-700 rounded-lg overflow-hidden">
+            <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-neutral-800/50 border-b dark:border-neutral-700">
+                <span className="text-blue-500 dark:text-blue-400 flex-shrink-0">{meta.icon}</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">{name || meta.label}</span>
+            </div>
+            <div className="h-80 w-full">
+                {viewType === 'spreadsheet' && <SpreadsheetViewComponent viewId={viewId} workspaceId={workspaceId} readOnly={true} />}
+                {viewType === 'whiteboard' && <WhiteboardViewComponent viewId={viewId} workspaceId={workspaceId} readOnly={true} />}
+                {viewType === 'map' && <MapInlinePreview viewId={viewId} workspaceId={workspaceId} />}
+                {viewType === 'calendar' && <CalendarInlinePreview viewId={viewId} workspaceId={workspaceId} />}
+                {viewType === 'kanban' && <KanbanInlinePreview viewId={viewId} workspaceId={workspaceId} />}
+            </div>
+        </div>
+    )
+}
+
 const SubPageRendererBlock: React.FC<{ noteId: string; title: string; workspaceId?: string }> = ({ noteId, title, workspaceId: workspaceIdProp }) => {
     const { t } = useTranslation()
     const { workspaceId: workspaceIdParam } = useParams<{ workspaceId?: string }>()
@@ -404,6 +450,11 @@ const Renderer: React.FC<RendererProps> = ({ content, maxNodes, workspaceId: wor
             case 'ratingNode': {
                 const { rating = 0, maxRating = 5, label } = node.attrs ?? {}
                 return <RatingRenderer key={key} rating={rating} maxRating={maxRating} label={label} />
+            }
+            case 'viewNode': {
+                const { viewId, viewType, name } = node.attrs ?? {}
+                if (!viewId) return null
+                return <ViewNodeRenderer key={key} viewId={viewId} viewType={viewType} name={name} workspaceId={workspaceIdProp} />
             }
             case 'subPage':
                 if (!node.attrs?.noteId) return null

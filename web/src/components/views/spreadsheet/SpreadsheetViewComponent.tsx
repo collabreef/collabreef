@@ -48,6 +48,7 @@ interface SpreadsheetViewComponentProps {
         data: string;
     };
     isPublic?: boolean;
+    readOnly?: boolean;
     workspaceId?: string;
     viewId?: string;
     initialSheets?: SpreadsheetSheetData[];
@@ -57,11 +58,13 @@ interface SpreadsheetViewComponentProps {
 const SpreadsheetViewComponent = ({
     view,
     isPublic = false,
+    readOnly = false,
     workspaceId,
     viewId,
     initialSheets,
     disableWebSocket = false
 }: SpreadsheetViewComponentProps) => {
+    const isReadOnly = isPublic || readOnly
     const { t } = useTranslation();
     const workbookRef = useRef<WorkbookInstance | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -125,10 +128,10 @@ const SpreadsheetViewComponent = ({
     const handleSheetsChange = useCallback((data: Sheet[]) => {
         localSheetsRef.current = data;
         // Sync latest state to Y.Map for persistence (skip when applying remote ops)
-        if (!isApplyingRemoteOpsRef.current && !isPublic) {
+        if (!isApplyingRemoteOpsRef.current && !isReadOnly) {
             syncSheets(data as unknown as SpreadsheetSheetData[]);
         }
-    }, [isPublic, syncSheets]);
+    }, [isReadOnly, syncSheets]);
 
     // Monitor container size
     useEffect(() => {
@@ -212,7 +215,7 @@ const SpreadsheetViewComponent = ({
     // Handle local operations - send ops to other clients via Y.Array
     const handleOp = useCallback((ops: Op[]) => {
         if (isApplyingRemoteOpsRef.current) return;
-        if (!isPublic && ops.length > 0) {
+        if (!isReadOnly && ops.length > 0) {
             // For deleteSheet ops, atomically delete from Y.Map AND broadcast via Y.Array
             // in one Y.js transaction. This prevents a race condition where remote clients
             // receive the deleteSheet op before Y.Map is updated (causing them to re-mount
@@ -227,7 +230,7 @@ const SpreadsheetViewComponent = ({
                 sendOps(ops as unknown as SpreadsheetOp[]);
             }
         }
-    }, [isPublic, sendOps, sendOpsWithDeletedSheets]);
+    }, [isReadOnly, sendOps, sendOpsWithDeletedSheets]);
 
     const canShowWorkbook = isReady && dataSourceReady;
 
@@ -254,12 +257,12 @@ const SpreadsheetViewComponent = ({
                         data={workbookData}
                         onChange={handleSheetsChange}
                         onOp={handleOp}
-                        showToolbar={!isPublic}
-                        showFormulaBar={!isPublic}
+                        showToolbar={!isReadOnly}
+                        showFormulaBar={!isReadOnly}
                         showSheetTabs={true}
                         row={100}
                         column={26}
-                        allowEdit={!isPublic}
+                        allowEdit={!isReadOnly}
                     />
                 </div>
             )}
