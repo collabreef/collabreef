@@ -152,73 +152,42 @@ const CalendarNodeComponent: React.FC<NodeViewProps> = ({ node, updateAttributes
   return (
     <NodeViewWrapper>
       <div
-        className={`relative group my-1 flex items-stretch rounded-lg border dark:border-neutral-700 overflow-hidden bg-white dark:bg-neutral-900 shadow-sm ${selected ? 'ring-2 ring-blue-500' : ''}`}
+        className="relative group my-1"
         onMouseEnter={() => isEditable && setShowActions(true)}
         onMouseLeave={() => setShowActions(false)}
       >
-        {/* Date badge */}
-        <div className="flex flex-col items-center justify-center bg-blue-600 dark:bg-blue-700 text-white px-4 py-3 min-w-[72px] select-none">
-          {formatted ? (
-            <>
-              <span className="text-xs font-medium uppercase tracking-wide opacity-80">{formatted.month}</span>
-              <span className="text-3xl font-bold leading-none">{formatted.day}</span>
-              <span className="text-xs opacity-80 mt-0.5">{formatted.weekday}</span>
-            </>
-          ) : (
-            <CalendarDays size={28} className="opacity-70" />
-          )}
-        </div>
-
-        {/* Content */}
-        <div className="flex flex-col justify-center px-4 py-3 flex-1 min-w-0">
-          {title && (
-            <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{title}</p>
-          )}
+        <div className="flex flex-wrap items-center gap-1.5 px-1 py-1">
+          <CalendarDays size={14} className="text-gray-400 dark:text-gray-500 shrink-0" />
           {formatted && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-              {formatted.weekday}, {formatted.month} {formatted.day}, {formatted.year}
-            </p>
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
+              {formatted.month} {formatted.day}, {formatted.year}
+            </span>
+          )}
+          {title && (
+            <span className="text-sm text-gray-800 dark:text-gray-200 truncate">{title}</span>
           )}
           {description && (
-            <p className="text-xs text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">{description}</p>
+            <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{description}</span>
           )}
         </div>
 
-        {/* Action buttons */}
         {isEditable && (showActions || selected) && (
-          <div className="absolute top-2 right-2 flex gap-1 z-10">
-            <button
-              onClick={handleMoveUp}
-              className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
-              title="Move up"
-            >
-              <ChevronUp size={16} className="text-gray-700 dark:text-gray-300" />
+          <div className="absolute top-1/2 -translate-y-1/2 right-1.5 flex gap-1 z-10">
+            <button onClick={handleMoveUp} className="p-1.5 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-md shadow border border-gray-200 dark:border-neutral-600 transition-colors" title="Move up">
+              <ChevronUp size={14} className="text-gray-600 dark:text-gray-300" />
+            </button>
+            <button onClick={handleMoveDown} className="p-1.5 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-md shadow border border-gray-200 dark:border-neutral-600 transition-colors" title="Move down">
+              <ChevronDown size={14} className="text-gray-600 dark:text-gray-300" />
             </button>
             <button
-              onClick={handleMoveDown}
-              className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
-              title="Move down"
-            >
-              <ChevronDown size={16} className="text-gray-700 dark:text-gray-300" />
-            </button>
-            <button
-              onClick={() => {
-                setInputDate(date ?? '')
-                setInputTitle(title ?? '')
-                setInputDescription(description ?? '')
-                setIsEditing(true)
-              }}
-              className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
+              onClick={() => { setInputDate(date ?? ''); setInputTitle(title ?? ''); setInputDescription(description ?? ''); setIsEditing(true) }}
+              className="p-1.5 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-md shadow border border-gray-200 dark:border-neutral-600 transition-colors"
               title="Edit"
             >
-              <Edit3 size={16} className="text-gray-700 dark:text-gray-300" />
+              <Edit3 size={14} className="text-gray-600 dark:text-gray-300" />
             </button>
-            <button
-              onClick={deleteNode}
-              className="p-2 bg-white dark:bg-neutral-800 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
-              title="Delete"
-            >
-              <Trash2 size={16} className="text-red-600 dark:text-red-400" />
+            <button onClick={deleteNode} className="p-1.5 bg-white dark:bg-neutral-800 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md shadow border border-gray-200 dark:border-neutral-600 transition-colors" title="Delete">
+              <Trash2 size={14} className="text-red-500 dark:text-red-400" />
             </button>
           </div>
         )}

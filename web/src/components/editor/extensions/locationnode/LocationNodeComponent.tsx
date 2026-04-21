@@ -1,19 +1,7 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
 import { ChevronUp, ChevronDown, Edit3, Trash2, MapPin, Search, Loader2, ExternalLink } from "lucide-react"
 import { useState, useRef, useEffect, useCallback } from "react"
-import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from "react-leaflet"
-import { Icon } from "leaflet"
-
-// ── Leaflet marker icon ───────────────────────────────────────────────────────
-const markerIcon = new Icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-})
+import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet"
 
 // ── Types ────────────────────────────────────────────────────────────────────
 interface NominatimResult {
@@ -364,75 +352,49 @@ const LocationNodeComponent: React.FC<NodeViewProps> = ({
   return (
     <NodeViewWrapper>
       <div
-        className={`relative group my-1 rounded-lg border dark:border-neutral-700 overflow-hidden bg-white dark:bg-neutral-900 shadow-sm ${selected ? "ring-2 ring-blue-500" : ""}`}
+        className="relative group my-1"
         onMouseEnter={() => isEditable && setShowActions(true)}
         onMouseLeave={() => setShowActions(false)}
       >
-        {/* Static map */}
-        <div style={{ height: 220 }} className="w-full">
-          <MapContainer
-            center={[lat, lng]}
-            zoom={zoom ?? 15}
-            className="h-full w-full"
-            zoomControl={false}
-            scrollWheelZoom={false}
-            dragging={false}
-            doubleClickZoom={false}
-            attributionControl={false}
-          >
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <Marker position={[lat, lng]} icon={markerIcon} />
-          </MapContainer>
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between gap-2 px-3 py-2 bg-white dark:bg-neutral-900 border-t dark:border-neutral-700">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <MapPin size={14} className="text-red-500 shrink-0" />
-            <div className="min-w-0">
-              {name && <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">{name}</p>}
-              {address && address !== name && (
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{address}</p>
-              )}
-            </div>
-          </div>
+        <div className="flex flex-wrap items-center gap-1.5 px-1 py-1">
+          <MapPin size={14} className="text-gray-400 dark:text-gray-500 shrink-0" />
+          {name && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
+              {name}
+            </span>
+          )}
+          {address && address !== name && (
+            <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{address}</span>
+          )}
           <a
             href={`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 p-1 rounded hover:bg-gray-100 dark:hover:bg-neutral-700 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className="p-0.5 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             title="Open in OpenStreetMap"
             onClick={e => e.stopPropagation()}
           >
-            <ExternalLink size={14} />
+            <ExternalLink size={12} />
           </a>
         </div>
 
-        {/* Action buttons */}
         {isEditable && (showActions || selected) && (
-          <div className="absolute top-2 right-2 flex gap-1 z-[1000]">
-            <button onClick={handleMoveUp} className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors" title="Move up">
-              <ChevronUp size={16} className="text-gray-700 dark:text-gray-300" />
+          <div className="absolute top-1/2 -translate-y-1/2 right-1.5 flex gap-1 z-10">
+            <button onClick={handleMoveUp} className="p-1.5 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-md shadow border border-gray-200 dark:border-neutral-600 transition-colors" title="Move up">
+              <ChevronUp size={14} className="text-gray-600 dark:text-gray-300" />
             </button>
-            <button onClick={handleMoveDown} className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors" title="Move down">
-              <ChevronDown size={16} className="text-gray-700 dark:text-gray-300" />
+            <button onClick={handleMoveDown} className="p-1.5 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-md shadow border border-gray-200 dark:border-neutral-600 transition-colors" title="Move down">
+              <ChevronDown size={14} className="text-gray-600 dark:text-gray-300" />
             </button>
             <button
-              onClick={() => {
-                setPendingLat(lat)
-                setPendingLng(lng)
-                setPendingName(name ?? "")
-                setPendingAddress(address ?? "")
-                setQuery(name ?? "")
-                setIsEditing(true)
-              }}
-              className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
+              onClick={() => { setPendingLat(lat); setPendingLng(lng); setPendingName(name ?? ""); setPendingAddress(address ?? ""); setQuery(name ?? ""); setIsEditing(true) }}
+              className="p-1.5 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-md shadow border border-gray-200 dark:border-neutral-600 transition-colors"
               title="Edit location"
             >
-              <Edit3 size={16} className="text-gray-700 dark:text-gray-300" />
+              <Edit3 size={14} className="text-gray-600 dark:text-gray-300" />
             </button>
-            <button onClick={deleteNode} className="p-2 bg-white dark:bg-neutral-800 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors" title="Delete">
-              <Trash2 size={16} className="text-red-600 dark:text-red-400" />
+            <button onClick={deleteNode} className="p-1.5 bg-white dark:bg-neutral-800 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md shadow border border-gray-200 dark:border-neutral-600 transition-colors" title="Delete">
+              <Trash2 size={14} className="text-red-500 dark:text-red-400" />
             </button>
           </div>
         )}
