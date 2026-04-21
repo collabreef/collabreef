@@ -6,7 +6,19 @@ import { FileText, ChevronDown, LoaderCircle, CalendarDays, MapPin, ExternalLink
 import { useParams } from 'react-router-dom'
 import { getNote, NoteData } from '@/api/note'
 import { ViewType } from '@/types/view'
+import { MapContainer, TileLayer, Marker } from 'react-leaflet'
+import { Icon } from 'leaflet'
 import SpreadsheetViewComponent from '@/components/views/spreadsheet/SpreadsheetViewComponent'
+
+const rendererMarkerIcon = new Icon({
+    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
+})
 import WhiteboardViewComponent from '@/components/views/whiteboard/WhiteboardViewComponent'
 import { MapInlinePreview, CalendarInlinePreview, KanbanInlinePreview } from '@/components/editor/extensions/viewnode/ViewNodeInlinePreview'
 
@@ -127,30 +139,56 @@ const CalendarEventRenderer: React.FC<{ date?: string; title?: string; descripti
     )
 }
 
-const LocationRenderer: React.FC<{ lat: number; lng: number; name?: string; address?: string }> = ({
-    lat, lng, name, address,
-}) => (
-    <div className="flex flex-wrap items-center gap-1.5 my-1 px-1 py-1">
-        <MapPin size={14} className="text-gray-400 dark:text-gray-500 shrink-0" />
-        {name && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
-                {name}
-            </span>
-        )}
-        {address && address !== name && (
-            <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{address}</span>
-        )}
-        <a
-            href={`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-0.5 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-            title="Open in OpenStreetMap"
-        >
-            <ExternalLink size={12} />
-        </a>
-    </div>
-)
+const LocationRenderer: React.FC<{ lat: number; lng: number; name?: string; address?: string; zoom?: number }> = ({
+    lat, lng, name, address, zoom = 15,
+}) => {
+    const [showMap, setShowMap] = useState(false)
+    return (
+        <div className="my-1">
+            <div
+                className="flex flex-wrap items-center gap-1.5 px-1 py-1 cursor-pointer"
+                onClick={() => setShowMap(s => !s)}
+            >
+                <MapPin size={14} className="text-gray-400 dark:text-gray-500 shrink-0" />
+                {name && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
+                        {name}
+                    </span>
+                )}
+                {address && address !== name && (
+                    <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{address}</span>
+                )}
+                <a
+                    href={`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-0.5 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    title="Open in OpenStreetMap"
+                    onClick={e => e.stopPropagation()}
+                >
+                    <ExternalLink size={12} />
+                </a>
+            </div>
+            {showMap && (
+                <div style={{ height: 200 }} className="w-full rounded-md overflow-hidden border dark:border-neutral-700">
+                    <MapContainer
+                        center={[lat, lng]}
+                        zoom={zoom}
+                        className="h-full w-full"
+                        zoomControl={false}
+                        scrollWheelZoom={false}
+                        dragging={false}
+                        doubleClickZoom={false}
+                        attributionControl={false}
+                    >
+                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                        <Marker position={[lat, lng]} icon={rendererMarkerIcon} />
+                    </MapContainer>
+                </div>
+            )}
+        </div>
+    )
+}
 
 // ── Rating renderer ───────────────────────────────────────────────────────────
 const RatingRenderer: React.FC<{ rating: number; maxRating: number; label?: string }> = ({ rating, maxRating, label }) => (
@@ -403,7 +441,7 @@ const Renderer: React.FC<RendererProps> = ({ content, maxNodes, workspaceId: wor
             case 'locationNode': {
                 const { lat, lng } = node.attrs ?? {}
                 if (lat == null || lng == null) return null
-                return <LocationRenderer key={key} lat={lat} lng={lng} name={node.attrs?.name} address={node.attrs?.address} />
+                return <LocationRenderer key={key} lat={lat} lng={lng} name={node.attrs?.name} address={node.attrs?.address} zoom={node.attrs?.zoom ?? 15} />
             }
             case 'ratingNode': {
                 const { rating = 0, maxRating = 5, label } = node.attrs ?? {}

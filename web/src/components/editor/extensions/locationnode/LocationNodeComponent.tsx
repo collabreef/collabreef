@@ -1,7 +1,18 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
 import { ChevronUp, ChevronDown, Edit3, Trash2, MapPin, Search, Loader2, ExternalLink } from "lucide-react"
 import { useState, useRef, useEffect, useCallback } from "react"
-import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet"
+import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from "react-leaflet"
+import { Icon } from "leaflet"
+
+const markerIcon = new Icon({
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+})
 
 // ── Types ────────────────────────────────────────────────────────────────────
 interface NominatimResult {
@@ -80,12 +91,13 @@ const LocationNodeComponent: React.FC<NodeViewProps> = ({
   deleteNode,
   getPos,
 }) => {
-  const { lat, lng, name, address } = node.attrs
+  const { lat, lng, name, address, zoom } = node.attrs
   const isEditable = editor.isEditable
   const hasLocation = lat !== null && lng !== null
 
   // display-mode hover state
   const [showActions, setShowActions] = useState(false)
+  const [showMap, setShowMap] = useState(false)
   const [isEditing, setIsEditing] = useState(!hasLocation)
 
   // edit-mode state
@@ -356,7 +368,10 @@ const LocationNodeComponent: React.FC<NodeViewProps> = ({
         onMouseEnter={() => isEditable && setShowActions(true)}
         onMouseLeave={() => setShowActions(false)}
       >
-        <div className="flex flex-wrap items-center gap-1.5 px-1 py-1">
+        <div
+          className="flex flex-wrap items-center gap-1.5 px-1 py-1 cursor-pointer"
+          onClick={() => setShowMap(s => !s)}
+        >
           <MapPin size={14} className="text-gray-400 dark:text-gray-500 shrink-0" />
           {name && (
             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
@@ -377,6 +392,23 @@ const LocationNodeComponent: React.FC<NodeViewProps> = ({
             <ExternalLink size={12} />
           </a>
         </div>
+        {showMap && (
+          <div style={{ height: 200 }} className="w-full rounded-md overflow-hidden border dark:border-neutral-700">
+            <MapContainer
+              center={[lat, lng]}
+              zoom={zoom ?? 15}
+              className="h-full w-full"
+              zoomControl={false}
+              scrollWheelZoom={false}
+              dragging={false}
+              doubleClickZoom={false}
+              attributionControl={false}
+            >
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+              <Marker position={[lat, lng]} icon={markerIcon} />
+            </MapContainer>
+          </div>
+        )}
 
         {isEditable && (showActions || selected) && (
           <div className="absolute top-1/2 -translate-y-1/2 right-1.5 flex gap-1 z-10">
