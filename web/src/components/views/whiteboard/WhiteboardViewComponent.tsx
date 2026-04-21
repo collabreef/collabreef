@@ -34,6 +34,7 @@ import PenPreviewCanvas from './layers/objects/PenPreviewCanvas';
 interface WhiteboardViewComponentProps {
     view?: any;
     isPublic?: boolean;
+    readOnly?: boolean;
     workspaceId?: string;
     viewId?: string;
     initialCanvasObjects?: Record<string, any>;
@@ -43,12 +44,14 @@ interface WhiteboardViewComponentProps {
 
 const WhiteboardViewComponent = ({
     isPublic = false,
+    readOnly = false,
     workspaceId,
     viewId,
     initialCanvasObjects,
     initialViewObjects,
     disableWebSocket = false
 }: WhiteboardViewComponentProps) => {
+    const isReadOnly = isPublic || readOnly;
     const { t } = useTranslation();
 
     // WebSocket integration for real-time sync
@@ -310,7 +313,7 @@ const WhiteboardViewComponent = ({
         }
 
         // In public mode or locked mode, only allow panning
-        if (isPublic || isLocked) {
+        if (isReadOnly || isLocked) {
             setIsPanning(true);
             setLastPanPoint({ x: clientX, y: clientY });
             return;
@@ -430,7 +433,7 @@ const WhiteboardViewComponent = ({
             return;
         }
 
-        if (isPublic || isLocked) return;
+        if (isReadOnly || isLocked) return;
 
         const pos = getPointerPosition(e);
         if (!pos) return;
@@ -505,7 +508,7 @@ const WhiteboardViewComponent = ({
             return;
         }
 
-        if (isPublic || isLocked) return;
+        if (isReadOnly || isLocked) return;
 
         const pos = getPointerPosition(e);
         const ctx = getCtx();
@@ -945,7 +948,7 @@ const WhiteboardViewComponent = ({
                 {/* [5] UI overlay — sync status, zoom controls, toolbar, tool properties */}
 
                 {/* Sync status indicator */}
-                {!isPublic && (
+                {!isReadOnly && (
                     <div className="absolute top-4 right-4 z-50 bg-white dark:bg-neutral-800 rounded-lg shadow-md px-3 py-2 flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${
                             isConnected ? 'bg-green-500' : 'bg-red-500'
@@ -958,7 +961,7 @@ const WhiteboardViewComponent = ({
 
                 {/* Zoom controls and lock button */}
                 <div className="absolute bottom-24 sm:bottom-4 right-4 z-50 bg-white dark:bg-neutral-800 rounded-lg shadow-md p-2 flex flex-col gap-2">
-                    {!isPublic && (
+                    {!isReadOnly && (
                         <>
                             <button
                                 onClick={() => setIsLocked(!isLocked)}
@@ -1032,7 +1035,7 @@ const WhiteboardViewComponent = ({
                 )}
             </div>
 
-            {!isPublic && workspaceId && viewId && (
+            {!isReadOnly && workspaceId && viewId && (
                 <AddElementDialog
                     workspaceId={workspaceId}
                     viewId={viewId}

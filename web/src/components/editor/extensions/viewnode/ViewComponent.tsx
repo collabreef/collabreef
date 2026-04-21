@@ -4,6 +4,9 @@ import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { ViewType } from "@/types/view"
+import SpreadsheetViewComponent from "@/components/views/spreadsheet/SpreadsheetViewComponent"
+import WhiteboardViewComponent from "@/components/views/whiteboard/WhiteboardViewComponent"
+import { MapInlinePreview, CalendarInlinePreview, KanbanInlinePreview } from "./ViewNodeInlinePreview"
 
 const VIEW_TYPE_META: Record<ViewType, { icon: React.ReactNode; label: string; path: string }> = {
     map: { icon: <Map size={16} />, label: 'Map', path: 'map' },
@@ -13,6 +16,8 @@ const VIEW_TYPE_META: Record<ViewType, { icon: React.ReactNode; label: string; p
     spreadsheet: { icon: <Sheet size={16} />, label: 'Spreadsheet', path: 'spreadsheet' },
 }
 
+const INLINE_TYPES: ViewType[] = ['spreadsheet', 'whiteboard', 'map', 'calendar', 'kanban']
+
 const ViewComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttributes, editor, deleteNode }) => {
     const { viewId, viewType, name } = node.attrs
     const [showActions, setShowActions] = useState(false)
@@ -21,7 +26,6 @@ const ViewComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttribu
     const { t } = useTranslation()
     const hasCreated = useRef(false)
 
-    // Create the view on first mount when viewId is not yet set
     useEffect(() => {
         if (viewId || hasCreated.current) return
         hasCreated.current = true
@@ -57,6 +61,65 @@ const ViewComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttribu
                 <div className="flex items-center gap-2 border dark:border-neutral-700 rounded-lg p-3 bg-gray-50 dark:bg-neutral-800/50">
                     <Loader2 size={16} className="text-gray-400 animate-spin flex-shrink-0" />
                     <span className="text-sm text-gray-400">{t('views.creating', 'Creating view...')}</span>
+                </div>
+            </NodeViewWrapper>
+        )
+    }
+
+    const { workspaceId } = extension.options
+
+    if (INLINE_TYPES.includes(viewType as ViewType)) {
+        return (
+            <NodeViewWrapper className="view-node my-1">
+                <div
+                    className="border dark:border-neutral-700 rounded-lg overflow-hidden group"
+                    onMouseEnter={() => setShowActions(true)}
+                    onMouseLeave={() => setShowActions(false)}
+                >
+                    <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-neutral-800/50 border-b dark:border-neutral-700">
+                        <span className="text-blue-500 dark:text-blue-400 flex-shrink-0">{meta.icon}</span>
+                        <span className="flex-1 text-sm font-medium text-gray-700 dark:text-gray-300 truncate">{name || meta.label}</span>
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                                onClick={(e) => { e.stopPropagation(); handleNavigate() }}
+                                className="p-1 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded transition-colors"
+                                title={t("actions.open")}
+                            >
+                                <ExternalLink size={12} className="text-gray-400" />
+                            </button>
+                            {isEditable && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        const { workspaceId, deleteView } = extension.options
+                                        if (viewId) deleteView(workspaceId, viewId).catch(() => {})
+                                        deleteNode()
+                                    }}
+                                    className="p-1 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors"
+                                    title={t("actions.delete")}
+                                >
+                                    <Trash2 size={12} className="text-red-500" />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                    <div className="h-80 w-full">
+                        {viewType === 'spreadsheet' && (
+                            <SpreadsheetViewComponent viewId={viewId} workspaceId={workspaceId} readOnly={true} />
+                        )}
+                        {viewType === 'whiteboard' && (
+                            <WhiteboardViewComponent viewId={viewId} workspaceId={workspaceId} readOnly={true} />
+                        )}
+                        {viewType === 'map' && (
+                            <MapInlinePreview viewId={viewId} workspaceId={workspaceId} />
+                        )}
+                        {viewType === 'calendar' && (
+                            <CalendarInlinePreview viewId={viewId} workspaceId={workspaceId} />
+                        )}
+                        {viewType === 'kanban' && (
+                            <KanbanInlinePreview viewId={viewId} workspaceId={workspaceId} />
+                        )}
+                    </div>
                 </div>
             </NodeViewWrapper>
         )
