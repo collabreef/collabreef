@@ -58,6 +58,13 @@ const NoteDetailPage = () => {
         }
     }, [note, noteId, currentWorkspaceId])
 
+    // Track current noteId in a ref so the wsTitle sync effect can read it
+    // without taking noteId as a dependency (prevents stale-title cross-note pollution)
+    const noteIdRef = useRef(noteId ?? '')
+    useEffect(() => {
+        noteIdRef.current = noteId ?? ''
+    }, [noteId])
+
     // Observe Y.js content changes and track the latest value in a ref.
     // This allows the cleanup to read the most recent content even after the Y.Doc is destroyed.
     useEffect(() => {
@@ -86,17 +93,21 @@ const NoteDetailPage = () => {
         }
     }, [noteId])
 
-    // Sync WebSocket title changes back into React Query cache
+    // Sync WebSocket title changes back into React Query cache.
+    // noteId is intentionally read from a ref (not a dep) so this effect only fires
+    // when wsTitle itself changes — not when noteId changes. Without this, navigating
+    // away from a titled note would momentarily write the old title into the new note's
+    // cache entry before the WS cleanup resets wsTitle to ''.
     useEffect(() => {
-        if (!wsTitle || !noteId || !currentWorkspaceId) return
+        if (!wsTitle || !currentWorkspaceId) return
+        const currentNoteId = noteIdRef.current
+        if (!currentNoteId) return
 
-        // Update single note cache
-        queryClient.setQueryData(['note', currentWorkspaceId, noteId], (old: NoteData | undefined) => {
+        queryClient.setQueryData(['note', currentWorkspaceId, currentNoteId], (old: NoteData | undefined) => {
             if (!old) return old
             return { ...old, title: wsTitle }
         })
 
-        // Update notes list cache (infinite query used by sidebar)
         queryClient.setQueriesData(
             { queryKey: ['notes', currentWorkspaceId], exact: false },
             (old: any) => {
@@ -104,12 +115,12 @@ const NoteDetailPage = () => {
                 return {
                     ...old,
                     pages: old.pages.map((page: NoteData[]) =>
-                        page.map((n: NoteData) => n.id === noteId ? { ...n, title: wsTitle } : n)
+                        page.map((n: NoteData) => n.id === currentNoteId ? { ...n, title: wsTitle } : n)
                     )
                 }
             }
         )
-    }, [wsTitle, noteId, currentWorkspaceId, queryClient])
+    }, [wsTitle, currentWorkspaceId, queryClient])
 
     return (
         <div className="flex flex-col bg-white dark:bg-neutral-800 xl:w-full h-full">
