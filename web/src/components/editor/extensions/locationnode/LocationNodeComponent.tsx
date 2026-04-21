@@ -80,7 +80,7 @@ const LocationNodeComponent: React.FC<NodeViewProps> = ({
   deleteNode,
   getPos,
 }) => {
-  const { lat, lng, name, address, zoom } = node.attrs
+  const { lat, lng, name, address } = node.attrs
   const isEditable = editor.isEditable
   const hasLocation = lat !== null && lng !== null
 
