@@ -1,21 +1,20 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
 import { Loader2, FolderOpen, Upload, Trash2, Edit3, ChevronUp, ChevronDown } from "lucide-react"
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect, useCallback } from "react"
 import { twMerge } from "tailwind-merge"
 import FilePickerDialog from "./FilePickerDialog"
 import { FileInfo } from "@/api/file"
+import { useDragMenu, NodeTouchMenu } from "@/components/editor/DragMenuContext"
 
 const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttributes, selected, editor, deleteNode, getPos }) => {
     const [isUploading, setIsUploading] = useState(false)
     const [uploadProgress, setUploadProgress] = useState(0)
     const [isPickerOpen, setIsPickerOpen] = useState(false)
-    const [showActions, setShowActions] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
     const wasEditableRef = useRef<boolean>(true)
     const { src, name } = node.attrs
-    const isEditable = editor.isEditable
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches
 
-    // When image is selected, disable editor to prevent keyboard from showing
     useEffect(() => {
         if (selected) {
             wasEditableRef.current = editor.isEditable
@@ -25,8 +24,6 @@ const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttrib
                 editor.setEditable(true)
             }
         }
-
-        // Cleanup: restore editor state when component unmounts
         return () => {
             if (wasEditableRef.current && !editor.isEditable) {
                 editor.setEditable(true)
@@ -37,22 +34,15 @@ const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttrib
     const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
-
         setIsUploading(true)
         setUploadProgress(0)
-
         const result = await extension.options?.upload(file, (progress: any) => {
             setUploadProgress(progress)
         })
-
         setIsUploading(false)
         setUploadProgress(0)
-
         if (result?.src) {
-            updateAttributes({
-                src: result.src,
-                name: result.name
-            })
+            updateAttributes({ src: result.src, name: result.name })
         }
     }
 
@@ -61,16 +51,12 @@ const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttrib
         if (workspaceId) {
             updateAttributes({
                 src: `/api/v1/workspaces/${workspaceId}/files/${file.name}`,
-                name: file.original_name
+                name: file.original_name,
             })
         }
     }
 
-    const handleReselect = () => {
-        setIsPickerOpen(true)
-    }
-
-    const handleMoveUp = () => {
+    const handleMoveUp = useCallback(() => {
         const pos = getPos()
         if (pos === undefined) return
         const { state } = editor
@@ -78,12 +64,10 @@ const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttrib
         if ($pos.index() === 0) return
         const nodeBefore = $pos.nodeBefore
         if (!nodeBefore) return
-        editor.view.dispatch(
-            state.tr.replaceWith(pos - nodeBefore.nodeSize, pos + node.nodeSize, [node, nodeBefore])
-        )
-    }
+        editor.view.dispatch(state.tr.replaceWith(pos - nodeBefore.nodeSize, pos + node.nodeSize, [node, nodeBefore]))
+    }, [editor, node, getPos])
 
-    const handleMoveDown = () => {
+    const handleMoveDown = useCallback(() => {
         const pos = getPos()
         if (pos === undefined) return
         const { state } = editor
@@ -92,14 +76,17 @@ const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttrib
         const nodeAfterPos = pos + node.nodeSize
         const nodeAfter = state.doc.resolve(nodeAfterPos).nodeAfter
         if (!nodeAfter) return
-        editor.view.dispatch(
-            state.tr.replaceWith(pos, nodeAfterPos + nodeAfter.nodeSize, [nodeAfter, node])
-        )
-    }
+        editor.view.dispatch(state.tr.replaceWith(pos, nodeAfterPos + nodeAfter.nodeSize, [nodeAfter, node]))
+    }, [editor, node, getPos])
 
-    const handleDelete = () => {
-        deleteNode()
-    }
+    const nodeActions = [
+        { label: 'Move up', icon: <ChevronUp size={14} />, onClick: handleMoveUp },
+        { label: 'Move down', icon: <ChevronDown size={14} />, onClick: handleMoveDown },
+        { label: 'Reselect', icon: <Edit3 size={14} />, onClick: () => setIsPickerOpen(true) },
+        { label: 'Delete', icon: <Trash2 size={14} />, onClick: deleteNode, variant: 'danger' as const },
+    ]
+
+    useDragMenu(getPos, () => nodeActions)
 
     if (!src) {
         return (
@@ -115,10 +102,7 @@ const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttrib
                                 <Loader2 className="animate-spin" size={20} />
                                 <span className="text-sm">Uploading {uploadProgress}%</span>
                                 <div className="w-full bg-gray-300 dark:bg-neutral-700 rounded-full h-2 mt-1">
-                                    <div
-                                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                                        style={{ width: `${uploadProgress}%` }}
-                                    ></div>
+                                    <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
                                 </div>
                             </>
                         ) : (
@@ -137,14 +121,7 @@ const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttrib
                         <span className="text-sm">Choose Existing</span>
                     </button>
                 </div>
-                <input
-                    type="file"
-                    ref={inputRef}
-                    className="hidden"
-                    aria-label="upload"
-                    accept="image/*"
-                    onChange={handleUploadFile}
-                />
+                <input type="file" ref={inputRef} className="hidden" aria-label="upload" accept="image/*" onChange={handleUploadFile} />
                 {extension.options?.workspaceId && (
                     <FilePickerDialog
                         open={isPickerOpen}
@@ -160,50 +137,15 @@ const ImageComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttrib
 
     return (
         <NodeViewWrapper>
-            <div
-                className="relative inline-block group"
-                onMouseEnter={() => isEditable && setShowActions(true)}
-                onMouseLeave={() => setShowActions(false)}
-            >
+            <div className="relative inline-block group">
                 <img
                     src={src}
-                    className={twMerge(
-                        "image-node select-none rounded box-border w-auto max-w-full"
-                    )}
+                    className={twMerge("image-node select-none rounded box-border w-auto max-w-full")}
                     alt={name}
                     draggable={false}
                 />
-                {isEditable && (showActions || selected) && (
-                    <div className="absolute top-2 right-2 flex gap-1">
-                        <button
-                            onClick={handleMoveUp}
-                            className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
-                            title="Move up"
-                        >
-                            <ChevronUp size={16} className="text-gray-700 dark:text-gray-300" />
-                        </button>
-                        <button
-                            onClick={handleMoveDown}
-                            className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
-                            title="Move down"
-                        >
-                            <ChevronDown size={16} className="text-gray-700 dark:text-gray-300" />
-                        </button>
-                        <button
-                            onClick={handleReselect}
-                            className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
-                            title="Reselect image"
-                        >
-                            <Edit3 size={16} className="text-gray-700 dark:text-gray-300" />
-                        </button>
-                        <button
-                            onClick={handleDelete}
-                            className="p-2 bg-white dark:bg-neutral-800 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
-                            title="Delete image"
-                        >
-                            <Trash2 size={16} className="text-red-600 dark:text-red-400" />
-                        </button>
-                    </div>
+                {isTouchDevice && (
+                    <NodeTouchMenu visible={selected} actions={nodeActions} />
                 )}
                 {extension.options?.workspaceId && (
                     <FilePickerDialog

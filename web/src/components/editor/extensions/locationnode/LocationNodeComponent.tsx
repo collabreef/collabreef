@@ -1,6 +1,7 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
 import { ChevronUp, ChevronDown, Edit3, Trash2, MapPin, Search, Loader2, ExternalLink } from "lucide-react"
 import { useState, useRef, useEffect, useCallback } from "react"
+import { useDragMenu, NodeTouchMenu } from "@/components/editor/DragMenuContext"
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from "react-leaflet"
 import { Icon } from "leaflet"
 
@@ -93,10 +94,9 @@ const LocationNodeComponent: React.FC<NodeViewProps> = ({
 }) => {
   const { lat, lng, name, address, zoom } = node.attrs
   const isEditable = editor.isEditable
+  const isTouchDevice = window.matchMedia("(pointer: coarse)").matches
   const hasLocation = lat !== null && lng !== null
 
-  // display-mode hover state
-  const [showActions, setShowActions] = useState(false)
   const [showMap, setShowMap] = useState(false)
   const [isEditing, setIsEditing] = useState(!hasLocation)
 
@@ -215,8 +215,7 @@ const LocationNodeComponent: React.FC<NodeViewProps> = ({
     setIsEditing(false)
   }
 
-  // ── Node move up / down ─────────────────────────────────────────────────────
-  const handleMoveUp = () => {
+  const handleMoveUp = useCallback(() => {
     const pos = getPos()
     if (pos === undefined) return
     const { state } = editor
@@ -225,9 +224,9 @@ const LocationNodeComponent: React.FC<NodeViewProps> = ({
     const nodeBefore = $pos.nodeBefore
     if (!nodeBefore) return
     editor.view.dispatch(state.tr.replaceWith(pos - nodeBefore.nodeSize, pos + node.nodeSize, [node, nodeBefore]))
-  }
+  }, [editor, node, getPos])
 
-  const handleMoveDown = () => {
+  const handleMoveDown = useCallback(() => {
     const pos = getPos()
     if (pos === undefined) return
     const { state } = editor
@@ -237,7 +236,16 @@ const LocationNodeComponent: React.FC<NodeViewProps> = ({
     const nodeAfter = state.doc.resolve(nodeAfterPos).nodeAfter
     if (!nodeAfter) return
     editor.view.dispatch(state.tr.replaceWith(pos, nodeAfterPos + nodeAfter.nodeSize, [nodeAfter, node]))
-  }
+  }, [editor, node, getPos])
+
+  const nodeActions = [
+    { label: 'Move up', icon: <ChevronUp size={14} />, onClick: handleMoveUp },
+    { label: 'Move down', icon: <ChevronDown size={14} />, onClick: handleMoveDown },
+    { label: 'Edit location', icon: <Edit3 size={14} />, onClick: () => { setPendingLat(lat); setPendingLng(lng); setPendingName(name ?? ""); setPendingAddress(address ?? ""); setQuery(name ?? ""); setIsEditing(true) } },
+    { label: 'Delete', icon: <Trash2 size={14} />, onClick: deleteNode, variant: 'danger' as const },
+  ]
+
+  useDragMenu(getPos, () => nodeActions)
 
   // ════════════════════════════════════════════════════════════════════════════
   // Edit mode
@@ -363,11 +371,7 @@ const LocationNodeComponent: React.FC<NodeViewProps> = ({
   // ════════════════════════════════════════════════════════════════════════════
   return (
     <NodeViewWrapper>
-      <div
-        className="relative group my-1"
-        onMouseEnter={() => isEditable && setShowActions(true)}
-        onMouseLeave={() => setShowActions(false)}
-      >
+      <div className="relative group my-1">
         <div
           className="flex flex-wrap items-center gap-1.5 px-1 py-1 cursor-pointer"
           onClick={() => setShowMap(s => !s)}
@@ -409,26 +413,8 @@ const LocationNodeComponent: React.FC<NodeViewProps> = ({
             </MapContainer>
           </div>
         )}
-
-        {isEditable && (showActions || selected) && (
-          <div className="absolute top-1/2 -translate-y-1/2 right-1.5 flex gap-1 z-10">
-            <button onClick={handleMoveUp} className="p-1.5 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-md shadow border border-gray-200 dark:border-neutral-600 transition-colors" title="Move up">
-              <ChevronUp size={14} className="text-gray-600 dark:text-gray-300" />
-            </button>
-            <button onClick={handleMoveDown} className="p-1.5 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-md shadow border border-gray-200 dark:border-neutral-600 transition-colors" title="Move down">
-              <ChevronDown size={14} className="text-gray-600 dark:text-gray-300" />
-            </button>
-            <button
-              onClick={() => { setPendingLat(lat); setPendingLng(lng); setPendingName(name ?? ""); setPendingAddress(address ?? ""); setQuery(name ?? ""); setIsEditing(true) }}
-              className="p-1.5 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-md shadow border border-gray-200 dark:border-neutral-600 transition-colors"
-              title="Edit location"
-            >
-              <Edit3 size={14} className="text-gray-600 dark:text-gray-300" />
-            </button>
-            <button onClick={deleteNode} className="p-1.5 bg-white dark:bg-neutral-800 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md shadow border border-gray-200 dark:border-neutral-600 transition-colors" title="Delete">
-              <Trash2 size={14} className="text-red-500 dark:text-red-400" />
-            </button>
-          </div>
+        {isTouchDevice && isEditable && (
+          <NodeTouchMenu visible={selected} actions={nodeActions} />
         )}
       </div>
     </NodeViewWrapper>

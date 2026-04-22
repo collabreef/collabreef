@@ -321,7 +321,7 @@ const NotesLayout = () => {
             {/* Main content */}
             <div className="flex-1 flex flex-col overflow-hidden">
                 {/* Mobile header */}
-                <div className="shrink-0 p-3 xl:hidden flex items-center justify-between border-b border-neutral-200 dark:border-neutral-700">
+                <div className="shrink-0 py-3 pl-4 pr-5  xl:hidden flex items-center justify-between border-b border-neutral-200 dark:border-neutral-700">
                     <span className="font-semibold text-gray-700 dark:text-gray-200">
                         {currentWorkspaceName ?? t("menu.notes")}
                     </span>
