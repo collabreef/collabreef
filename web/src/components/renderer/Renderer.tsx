@@ -126,7 +126,7 @@ const CalendarEventRenderer: React.FC<{ date?: string; title?: string; descripti
     })()
 
     return (
-        <div className="flex flex-wrap items-center gap-1.5 my-1 px-1 py-1">
+        <div className="flex flex-wrap items-center gap-1.5 py-1">
             <CalendarDays size={14} className="text-gray-400 dark:text-gray-500 shrink-0" />
             {formatted && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
@@ -144,9 +144,9 @@ const LocationRenderer: React.FC<{ lat: number; lng: number; name?: string; addr
 }) => {
     const [showMap, setShowMap] = useState(false)
     return (
-        <div className="my-1">
+        <div className="">
             <div
-                className="flex flex-wrap items-center gap-1.5 px-1 py-1 cursor-pointer"
+                className="flex flex-wrap items-center gap-1.5 py-1 cursor-pointer"
                 onClick={() => setShowMap(s => !s)}
             >
                 <MapPin size={14} className="text-gray-400 dark:text-gray-500 shrink-0" />
