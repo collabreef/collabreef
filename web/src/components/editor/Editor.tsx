@@ -5,9 +5,9 @@ import StarterKit from "@tiptap/starter-kit"
 import { Placeholder } from "@tiptap/extensions"
 import { BubbleMenu } from "@tiptap/react/menus"
 import { TableKit } from "@tiptap/extension-table"
-import { FC, useMemo, useRef, useEffect } from "react"
+import { FC, useMemo, useRef, useEffect, useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import { GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, Images, List, ListTodo, FileText, Paperclip, Quote, Table, Type, Video, Youtube, CalendarDays, MapPin, Tag, Star, Map, Kanban, PenTool, Sheet } from 'lucide-react'
+import { GripVertical, ChevronUp, ChevronDown, Trash2, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, Images, List, ListTodo, FileText, Paperclip, Quote, Table, Type, Video, Youtube, CalendarDays, MapPin, Tag, Star, Map, Kanban, PenTool, Sheet } from 'lucide-react'
 import { CommandItem, SlashCommand } from './extensions/slashcommand/SlashCommand'
 import { Attachment } from './extensions/attachment/Attachment'
 import { ImageNode } from './extensions/imagenode/ImageNode'
@@ -29,6 +29,7 @@ import { uploadFile, listFiles } from '@/api/file'
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id'
 import { createNote, NoteData } from '@/api/note'
 import * as Y from 'yjs'
+import { DragMenuContext, type MenuAction } from './DragMenuContext'
 
 interface Props {
   note: NoteData
@@ -605,20 +606,133 @@ const Editor: FC<Props> = ({
   const providerValue = useMemo(() => ({ editor }), [editor])
   const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
 
+  const [dragMenuOpen, setDragMenuOpen] = useState(false)
+  const [activePos, setActivePos] = useState(-1)
+  const [activeNodeActions, setActiveNodeActions] = useState<MenuAction[]>([])
+  const dragMenuRef = useRef<HTMLDivElement>(null)
+  const activePosRef = useRef(-1)
+
+  useEffect(() => {
+    if (!dragMenuOpen) return
+    const close = (e: MouseEvent) => {
+      if (!dragMenuRef.current?.contains(e.target as Element)) setDragMenuOpen(false)
+    }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [dragMenuOpen])
+
+  const setActiveNodeActionsCallback = useCallback((actions: MenuAction[]) => {
+    setActiveNodeActions(actions)
+  }, [])
+
+  const dragMenuContextValue = useMemo(() => ({
+    activePos,
+    setActiveNodeActions: setActiveNodeActionsCallback,
+  }), [activePos, setActiveNodeActionsCallback])
+
+  // Built-in move/delete actions for nodes that don't register via useDragMenu
+  const builtinActions = useMemo((): MenuAction[] => {
+    if (activePos < 0 || !editor) return []
+    const { state } = editor
+    const node = state.doc.nodeAt(activePos)
+    if (!node) return []
+    const $pos = state.doc.resolve(activePos)
+    const actions: MenuAction[] = []
+    if ($pos.index() > 0 && $pos.nodeBefore) {
+      actions.push({
+        label: 'Move up',
+        icon: <ChevronUp size={14} />,
+        onClick: () => {
+          const s = editor.state
+          const n = s.doc.nodeAt(activePos)
+          const nb = s.doc.resolve(activePos).nodeBefore
+          if (n && nb) editor.view.dispatch(s.tr.replaceWith(activePos - nb.nodeSize, activePos + n.nodeSize, [n, nb]))
+        },
+      })
+    }
+    if ($pos.index() < $pos.parent.childCount - 1) {
+      const nap = activePos + node.nodeSize
+      if (state.doc.resolve(nap).nodeAfter) {
+        actions.push({
+          label: 'Move down',
+          icon: <ChevronDown size={14} />,
+          onClick: () => {
+            const s = editor.state
+            const n = s.doc.nodeAt(activePos)
+            if (!n) return
+            const napFresh = activePos + n.nodeSize
+            const na = s.doc.resolve(napFresh).nodeAfter
+            if (na) editor.view.dispatch(s.tr.replaceWith(activePos, napFresh + na.nodeSize, [na, n]))
+          },
+        })
+      }
+    }
+    actions.push({
+      label: 'Delete',
+      icon: <Trash2 size={14} />,
+      onClick: () => {
+        const s = editor.state
+        const n = s.doc.nodeAt(activePos)
+        if (n) editor.view.dispatch(s.tr.delete(activePos, activePos + n.nodeSize))
+      },
+      variant: 'danger',
+    })
+    return actions
+  }, [activePos, editor])
+
+  const displayActions = activeNodeActions.length > 0 ? activeNodeActions : builtinActions
+
   if (!editor) {
     return null
   }
 
   return (
+    <DragMenuContext.Provider value={dragMenuContextValue}>
     <EditorContext.Provider value={providerValue}>
       {contentError && (
         <div className="mb-2 p-2 rounded bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">
           {t('editor.contentParseError', 'Failed to load note content. The content may be corrupted.')}
         </div>
       )}
-      {!isTouchDevice && canDrag && <DragHandle editor={editor} className='border rounded shadow-sm p-1'>
-        <GripVertical size={12} />
-      </DragHandle>}
+      {!isTouchDevice && canDrag && (
+        <DragHandle
+          editor={editor}
+          className='border rounded shadow-sm p-1'
+          onNodeChange={({ pos }: { node: unknown; editor: unknown; pos: number }) => {
+            if (pos === activePosRef.current) return
+            activePosRef.current = pos
+            setActivePos(pos)
+            setActiveNodeActions([])
+            setDragMenuOpen(false)
+          }}
+        >
+          <div className="relative" ref={dragMenuRef}>
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDragMenuOpen(v => !v) }}
+            >
+              <GripVertical size={12} />
+            </button>
+            {dragMenuOpen && displayActions.length > 0 && (
+              <div className="absolute left-full top-0 ml-1 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded shadow-lg z-50 py-1 min-w-[150px]">
+                {displayActions.map((action, i) => (
+                  <button
+                    key={i}
+                    onClick={() => { action.onClick(); setDragMenuOpen(false) }}
+                    className={`flex items-center gap-2 w-full px-3 py-1.5 text-sm transition-colors ${
+                      action.variant === 'danger'
+                        ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700'
+                    }`}
+                  >
+                    {action.icon}
+                    {action.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </DragHandle>
+      )}
 
       <BubbleMenu
         editor={editor}
@@ -648,6 +762,7 @@ const Editor: FC<Props> = ({
       </BubbleMenu>
       <EditorContent editor={editor} />
     </EditorContext.Provider>
+    </DragMenuContext.Provider>
   )
 }
 

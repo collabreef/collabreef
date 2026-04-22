@@ -1,6 +1,7 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
 import { Youtube, ChevronUp, ChevronDown, Edit3, Trash2 } from "lucide-react"
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
+import { useDragMenu, NodeTouchMenu } from "@/components/editor/DragMenuContext"
 
 function extractYoutubeId(url: string): string | null {
   try {
@@ -29,7 +30,7 @@ const YoutubeEmbedComponent: React.FC<NodeViewProps> = ({ node, updateAttributes
   const { url } = node.attrs
   const videoId = url ? extractYoutubeId(url) : null
   const isEditable = editor.isEditable
-  const [showActions, setShowActions] = useState(false)
+  const isTouchDevice = window.matchMedia("(pointer: coarse)").matches
   const [isEditing, setIsEditing] = useState(!url)
   const [inputValue, setInputValue] = useState(url ?? '')
   const [error, setError] = useState(false)
@@ -63,7 +64,7 @@ const YoutubeEmbedComponent: React.FC<NodeViewProps> = ({ node, updateAttributes
     }
   }
 
-  const handleMoveUp = () => {
+  const handleMoveUp = useCallback(() => {
     const pos = getPos()
     if (pos === undefined) return
     const { state } = editor
@@ -71,12 +72,10 @@ const YoutubeEmbedComponent: React.FC<NodeViewProps> = ({ node, updateAttributes
     if ($pos.index() === 0) return
     const nodeBefore = $pos.nodeBefore
     if (!nodeBefore) return
-    editor.view.dispatch(
-      state.tr.replaceWith(pos - nodeBefore.nodeSize, pos + node.nodeSize, [node, nodeBefore])
-    )
-  }
+    editor.view.dispatch(state.tr.replaceWith(pos - nodeBefore.nodeSize, pos + node.nodeSize, [node, nodeBefore]))
+  }, [editor, node, getPos])
 
-  const handleMoveDown = () => {
+  const handleMoveDown = useCallback(() => {
     const pos = getPos()
     if (pos === undefined) return
     const { state } = editor
@@ -85,10 +84,17 @@ const YoutubeEmbedComponent: React.FC<NodeViewProps> = ({ node, updateAttributes
     const nodeAfterPos = pos + node.nodeSize
     const nodeAfter = state.doc.resolve(nodeAfterPos).nodeAfter
     if (!nodeAfter) return
-    editor.view.dispatch(
-      state.tr.replaceWith(pos, nodeAfterPos + nodeAfter.nodeSize, [nodeAfter, node])
-    )
-  }
+    editor.view.dispatch(state.tr.replaceWith(pos, nodeAfterPos + nodeAfter.nodeSize, [nodeAfter, node]))
+  }, [editor, node, getPos])
+
+  const nodeActions = [
+    { label: 'Move up', icon: <ChevronUp size={14} />, onClick: handleMoveUp },
+    { label: 'Move down', icon: <ChevronDown size={14} />, onClick: handleMoveDown },
+    { label: 'Edit URL', icon: <Edit3 size={14} />, onClick: () => { setInputValue(url); setIsEditing(true) } },
+    { label: 'Delete', icon: <Trash2 size={14} />, onClick: deleteNode, variant: 'danger' as const },
+  ]
+
+  useDragMenu(getPos, () => nodeActions)
 
   if (isEditing || !videoId) {
     return (
@@ -132,11 +138,7 @@ const YoutubeEmbedComponent: React.FC<NodeViewProps> = ({ node, updateAttributes
 
   return (
     <NodeViewWrapper>
-      <div
-        className="relative group"
-        onMouseEnter={() => isEditable && setShowActions(true)}
-        onMouseLeave={() => setShowActions(false)}
-      >
+      <div className="relative group">
         <div className={`rounded overflow-hidden ${selected ? 'ring-2 ring-blue-500' : ''}`}>
           <iframe
             className="w-full aspect-video"
@@ -146,37 +148,8 @@ const YoutubeEmbedComponent: React.FC<NodeViewProps> = ({ node, updateAttributes
             title="YouTube video"
           />
         </div>
-        {isEditable && (showActions || selected) && (
-          <div className="absolute top-2 right-2 flex gap-1">
-            <button
-              onClick={handleMoveUp}
-              className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
-              title="Move up"
-            >
-              <ChevronUp size={16} className="text-gray-700 dark:text-gray-300" />
-            </button>
-            <button
-              onClick={handleMoveDown}
-              className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
-              title="Move down"
-            >
-              <ChevronDown size={16} className="text-gray-700 dark:text-gray-300" />
-            </button>
-            <button
-              onClick={() => { setInputValue(url); setIsEditing(true) }}
-              className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
-              title="Edit URL"
-            >
-              <Edit3 size={16} className="text-gray-700 dark:text-gray-300" />
-            </button>
-            <button
-              onClick={deleteNode}
-              className="p-2 bg-white dark:bg-neutral-800 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
-              title="Delete"
-            >
-              <Trash2 size={16} className="text-red-600 dark:text-red-400" />
-            </button>
-          </div>
+        {isTouchDevice && isEditable && (
+          <NodeTouchMenu visible={selected} actions={nodeActions} />
         )}
       </div>
     </NodeViewWrapper>

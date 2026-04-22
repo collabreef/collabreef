@@ -1,37 +1,31 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
 import { DownloadIcon, Loader2, FolderOpen, Upload, Trash2, Edit3, FileIcon, ChevronUp, ChevronDown } from "lucide-react"
-import { useRef, useState } from "react"
+import { useRef, useState, useCallback } from "react"
 import AllFilePickerDialog from "./AllFilePickerDialog"
 import { FileInfo } from "@/api/file"
+import { useDragMenu, NodeTouchMenu } from "@/components/editor/DragMenuContext"
 
 const AttachmentComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, extension, editor, deleteNode, selected, getPos }) => {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isPickerOpen, setIsPickerOpen] = useState(false)
-  const [showActions, setShowActions] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const { src, name } = node.attrs
   const isEditable = editor.isEditable
+  const isTouchDevice = window.matchMedia("(pointer: coarse)").matches
 
   const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-
     setIsUploading(true)
     setUploadProgress(0)
-
     const result = await extension.options?.upload(file, (progress: any) => {
       setUploadProgress(progress)
     })
-
     setIsUploading(false)
     setUploadProgress(0)
-
     if (result?.src) {
-      updateAttributes({
-        src: result.src,
-        name: result.name
-      })
+      updateAttributes({ src: result.src, name: result.name })
     }
   }
 
@@ -40,16 +34,12 @@ const AttachmentComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, 
     if (workspaceId) {
       updateAttributes({
         src: `/api/v1/workspaces/${workspaceId}/files/${file.name}`,
-        name: file.original_name
+        name: file.original_name,
       })
     }
   }
 
-  const handleReselect = () => {
-    setIsPickerOpen(true)
-  }
-
-  const handleMoveUp = () => {
+  const handleMoveUp = useCallback(() => {
     const pos = getPos()
     if (pos === undefined) return
     const { state } = editor
@@ -57,12 +47,10 @@ const AttachmentComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, 
     if ($pos.index() === 0) return
     const nodeBefore = $pos.nodeBefore
     if (!nodeBefore) return
-    editor.view.dispatch(
-      state.tr.replaceWith(pos - nodeBefore.nodeSize, pos + node.nodeSize, [node, nodeBefore])
-    )
-  }
+    editor.view.dispatch(state.tr.replaceWith(pos - nodeBefore.nodeSize, pos + node.nodeSize, [node, nodeBefore]))
+  }, [editor, node, getPos])
 
-  const handleMoveDown = () => {
+  const handleMoveDown = useCallback(() => {
     const pos = getPos()
     if (pos === undefined) return
     const { state } = editor
@@ -71,14 +59,17 @@ const AttachmentComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, 
     const nodeAfterPos = pos + node.nodeSize
     const nodeAfter = state.doc.resolve(nodeAfterPos).nodeAfter
     if (!nodeAfter) return
-    editor.view.dispatch(
-      state.tr.replaceWith(pos, nodeAfterPos + nodeAfter.nodeSize, [nodeAfter, node])
-    )
-  }
+    editor.view.dispatch(state.tr.replaceWith(pos, nodeAfterPos + nodeAfter.nodeSize, [nodeAfter, node]))
+  }, [editor, node, getPos])
 
-  const handleDelete = () => {
-    deleteNode()
-  }
+  const nodeActions = [
+    { label: 'Move up', icon: <ChevronUp size={14} />, onClick: handleMoveUp },
+    { label: 'Move down', icon: <ChevronDown size={14} />, onClick: handleMoveDown },
+    { label: 'Reselect', icon: <Edit3 size={14} />, onClick: () => setIsPickerOpen(true) },
+    { label: 'Delete', icon: <Trash2 size={14} />, onClick: deleteNode, variant: 'danger' as const },
+  ]
+
+  useDragMenu(getPos, () => nodeActions)
 
   if (!src) {
     return (
@@ -94,10 +85,7 @@ const AttachmentComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, 
                 <Loader2 className="animate-spin" size={20} />
                 <span className="text-sm">Uploading {uploadProgress}%</span>
                 <div className="w-full bg-gray-300 dark:bg-neutral-700 rounded-full h-2 mt-1">
-                  <div
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${uploadProgress}%` }}
-                  ></div>
+                  <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
                 </div>
               </>
             ) : (
@@ -116,13 +104,7 @@ const AttachmentComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, 
             <span className="text-sm">Choose Existing</span>
           </button>
         </div>
-        <input
-          type="file"
-          ref={inputRef}
-          className="hidden"
-          aria-label="upload"
-          onChange={handleUploadFile}
-        />
+        <input type="file" ref={inputRef} className="hidden" aria-label="upload" onChange={handleUploadFile} />
         {extension.options?.workspaceId && (
           <AllFilePickerDialog
             open={isPickerOpen}
@@ -139,65 +121,27 @@ const AttachmentComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, 
   return (
     <NodeViewWrapper>
       <div
-        className={`file-node select-none rounded-lg p-3 flex items-center gap-3 transition-all ${
+        className={`relative file-node select-none rounded-lg p-3 flex items-center gap-3 transition-all ${
           selected
             ? 'border-2 border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20'
             : 'border border-gray-300 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700'
         }`}
-        onMouseEnter={() => isEditable && setShowActions(true)}
-        onMouseLeave={() => setShowActions(false)}
       >
         <FileIcon size={20} className="text-blue-600 dark:text-blue-400 flex-shrink-0" />
-        <a
-          href={src}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-700 dark:text-blue-400 hover:underline flex-1 truncate"
-        >
+        <a href={src} target="_blank" rel="noopener noreferrer" className="text-blue-700 dark:text-blue-400 hover:underline flex-1 truncate">
           {name || 'Unnamed file'}
         </a>
-        <div className="flex items-center gap-1">
-          <a
-            href={src}
-            download={name}
-            className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded transition-colors"
-            title="Download file"
-          >
-            <DownloadIcon size={16} />
-          </a>
-          {isEditable && (showActions || selected) && (
-            <>
-              <button
-                onClick={handleMoveUp}
-                className="p-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded transition-colors"
-                title="Move up"
-              >
-                <ChevronUp size={16} />
-              </button>
-              <button
-                onClick={handleMoveDown}
-                className="p-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded transition-colors"
-                title="Move down"
-              >
-                <ChevronDown size={16} />
-              </button>
-              <button
-                onClick={handleReselect}
-                className="p-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded transition-colors"
-                title="Reselect file"
-              >
-                <Edit3 size={16} />
-              </button>
-              <button
-                onClick={handleDelete}
-                className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors"
-                title="Delete file"
-              >
-                <Trash2 size={16} />
-              </button>
-            </>
-          )}
-        </div>
+        <a
+          href={src}
+          download={name}
+          className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded transition-colors"
+          title="Download file"
+        >
+          <DownloadIcon size={16} />
+        </a>
+        {isTouchDevice && isEditable && (
+          <NodeTouchMenu visible={selected} actions={nodeActions} />
+        )}
         {extension.options?.workspaceId && (
           <AllFilePickerDialog
             open={isPickerOpen}

@@ -1,15 +1,16 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Trash2, Plus, X, Images } from "lucide-react"
-import { useRef, useState } from "react"
+import { useRef, useState, useCallback } from "react"
 import CarouselMediaPickerDialog from "./CarouselMediaPickerDialog"
 import { CarouselItem } from "./CarouselNode"
+import { useDragMenu, NodeTouchMenu } from "@/components/editor/DragMenuContext"
 
 const CarouselComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttributes, selected, editor, deleteNode, getPos }) => {
     const [isPickerOpen, setIsPickerOpen] = useState(false)
-    const [showActions, setShowActions] = useState(false)
     const scrollRef = useRef<HTMLDivElement>(null)
     const items: CarouselItem[] = node.attrs.items || []
     const isEditable = editor.isEditable
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches
 
     const handleAddItems = (newItems: CarouselItem[]) => {
         updateAttributes({ items: [...items, ...newItems] })
@@ -19,15 +20,10 @@ const CarouselComponent: React.FC<NodeViewProps> = ({ node, extension, updateAtt
         updateAttributes({ items: items.filter((_, i) => i !== index) })
     }
 
-    const scrollLeft = () => {
-        scrollRef.current?.scrollBy({ left: -220, behavior: 'smooth' })
-    }
+    const scrollLeft = () => scrollRef.current?.scrollBy({ left: -220, behavior: 'smooth' })
+    const scrollRight = () => scrollRef.current?.scrollBy({ left: 220, behavior: 'smooth' })
 
-    const scrollRight = () => {
-        scrollRef.current?.scrollBy({ left: 220, behavior: 'smooth' })
-    }
-
-    const handleMoveUp = () => {
+    const handleMoveUp = useCallback(() => {
         const pos = getPos()
         if (pos === undefined) return
         const { state } = editor
@@ -35,12 +31,10 @@ const CarouselComponent: React.FC<NodeViewProps> = ({ node, extension, updateAtt
         if ($pos.index() === 0) return
         const nodeBefore = $pos.nodeBefore
         if (!nodeBefore) return
-        editor.view.dispatch(
-            state.tr.replaceWith(pos - nodeBefore.nodeSize, pos + node.nodeSize, [node, nodeBefore])
-        )
-    }
+        editor.view.dispatch(state.tr.replaceWith(pos - nodeBefore.nodeSize, pos + node.nodeSize, [node, nodeBefore]))
+    }, [editor, node, getPos])
 
-    const handleMoveDown = () => {
+    const handleMoveDown = useCallback(() => {
         const pos = getPos()
         if (pos === undefined) return
         const { state } = editor
@@ -49,10 +43,17 @@ const CarouselComponent: React.FC<NodeViewProps> = ({ node, extension, updateAtt
         const nodeAfterPos = pos + node.nodeSize
         const nodeAfter = state.doc.resolve(nodeAfterPos).nodeAfter
         if (!nodeAfter) return
-        editor.view.dispatch(
-            state.tr.replaceWith(pos, nodeAfterPos + nodeAfter.nodeSize, [nodeAfter, node])
-        )
-    }
+        editor.view.dispatch(state.tr.replaceWith(pos, nodeAfterPos + nodeAfter.nodeSize, [nodeAfter, node]))
+    }, [editor, node, getPos])
+
+    const nodeActions = [
+        { label: 'Move up', icon: <ChevronUp size={14} />, onClick: handleMoveUp },
+        { label: 'Move down', icon: <ChevronDown size={14} />, onClick: handleMoveDown },
+        { label: 'Add media', icon: <Plus size={14} />, onClick: () => setIsPickerOpen(true) },
+        { label: 'Delete', icon: <Trash2 size={14} />, onClick: deleteNode, variant: 'danger' as const },
+    ]
+
+    useDragMenu(getPos, () => nodeActions)
 
     if (!isEditable && items.length === 0) return null
 
@@ -85,46 +86,9 @@ const CarouselComponent: React.FC<NodeViewProps> = ({ node, extension, updateAtt
 
     return (
         <NodeViewWrapper>
-            <div
-                className="carousel-node relative group select-none"
-                onMouseEnter={() => isEditable && setShowActions(true)}
-                onMouseLeave={() => setShowActions(false)}
-            >
-                {isEditable && (showActions || selected) && (
-                    <div className="absolute top-2 right-2 z-10 flex gap-1">
-                        <button
-                            type="button"
-                            onClick={handleMoveUp}
-                            className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
-                            title="Move up"
-                        >
-                            <ChevronUp size={16} className="text-gray-700 dark:text-gray-300" />
-                        </button>
-                        <button
-                            type="button"
-                            onClick={handleMoveDown}
-                            className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
-                            title="Move down"
-                        >
-                            <ChevronDown size={16} className="text-gray-700 dark:text-gray-300" />
-                        </button>
-                        <button
-                            type="button"
-                            onClick={(e) => { e.stopPropagation(); setIsPickerOpen(true) }}
-                            className="p-2 bg-white dark:bg-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-700 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
-                            title="Add media"
-                        >
-                            <Plus size={16} className="text-gray-700 dark:text-gray-300" />
-                        </button>
-                        <button
-                            type="button"
-                            onClick={deleteNode}
-                            className="p-2 bg-white dark:bg-neutral-800 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg shadow-lg border border-gray-200 dark:border-neutral-600 transition-colors"
-                            title="Delete carousel"
-                        >
-                            <Trash2 size={16} className="text-red-600 dark:text-red-400" />
-                        </button>
-                    </div>
+            <div className="carousel-node relative group select-none">
+                {isTouchDevice && isEditable && (
+                    <NodeTouchMenu visible={selected} actions={nodeActions} />
                 )}
 
                 {items.length > 2 && (
@@ -146,30 +110,16 @@ const CarouselComponent: React.FC<NodeViewProps> = ({ node, extension, updateAtt
                     </>
                 )}
 
-                <div
-                    ref={scrollRef}
-                    className="flex gap-2 overflow-x-auto pb-1"
-                    style={{ scrollbarWidth: 'thin' }}
-                >
+                <div ref={scrollRef} className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'thin' }}>
                     {items.map((item, index) => (
                         <div
                             key={`${item.src}-${index}`}
                             className="relative flex-shrink-0 w-48 h-48 rounded-lg overflow-hidden bg-gray-100 dark:bg-neutral-800 group/item"
                         >
                             {item.type === 'image' ? (
-                                <img
-                                    src={item.src}
-                                    alt={item.name}
-                                    className="w-full h-full object-cover"
-                                    draggable={false}
-                                />
+                                <img src={item.src} alt={item.name} className="w-full h-full object-cover" draggable={false} />
                             ) : (
-                                <video
-                                    src={item.src}
-                                    className="w-full h-full object-cover"
-                                    controls={!isEditable}
-                                    preload="metadata"
-                                />
+                                <video src={item.src} className="w-full h-full object-cover" controls={!isEditable} preload="metadata" />
                             )}
                             {isEditable && (
                                 <button
