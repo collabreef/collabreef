@@ -7,7 +7,7 @@ import { BubbleMenu } from "@tiptap/react/menus"
 import { TableKit } from "@tiptap/extension-table"
 import { FC, useMemo, useRef, useEffect } from "react"
 import { useTranslation } from "react-i18next"
-import { GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, List, ListTodo, FileText, Paperclip, Quote, Table, Type, Video, Youtube, CalendarDays, MapPin, Tag, Star, Map, Kanban, PenTool, Sheet } from 'lucide-react'
+import { GripVertical, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Image, Images, List, ListTodo, FileText, Paperclip, Quote, Table, Type, Video, Youtube, CalendarDays, MapPin, Tag, Star, Map, Kanban, PenTool, Sheet } from 'lucide-react'
 import { CommandItem, SlashCommand } from './extensions/slashcommand/SlashCommand'
 import { Attachment } from './extensions/attachment/Attachment'
 import { ImageNode } from './extensions/imagenode/ImageNode'
@@ -24,6 +24,7 @@ import { CalendarNode } from './extensions/calendarnode/CalendarNode'
 import { LocationNode } from './extensions/locationnode/LocationNode'
 import { TagsNode } from './extensions/tagsnode/TagsNode'
 import { RatingNode } from './extensions/ratingnode/RatingNode'
+import { CarouselNode } from './extensions/carouselnode/CarouselNode'
 import { uploadFile, listFiles } from '@/api/file'
 import useCurrentWorkspaceId from '@/hooks/use-currentworkspace-id'
 import { createNote, NoteData } from '@/api/note'
@@ -144,6 +145,17 @@ const Editor: FC<Props> = ({
       TagsNode,
       RatingNode,
       VideoNode.configure({
+        upload: async (f: File, onProgress?: (percent: number) => void) => {
+          const res = await uploadFile(currentWorkspaceId, f, onProgress)
+          return {
+            src: `/api/v1/workspaces/${currentWorkspaceId}/files/${res.filename}`,
+            name: res.original_name
+          }
+        },
+        workspaceId: currentWorkspaceId,
+        listFiles: listFiles
+      }),
+      CarouselNode.configure({
         upload: async (f: File, onProgress?: (percent: number) => void) => {
           const res = await uploadFile(currentWorkspaceId, f, onProgress)
           return {
@@ -295,6 +307,14 @@ const Editor: FC<Props> = ({
                 command: ({ editor }: any) =>
                   editor?.chain().focus().setFile({ src: null, name: null }).run()
               },
+              {
+                icon: <Images size={16} />,
+                label: t("editor.Carousel", "Carousel"),
+                category: 'media',
+                keywords: ["carousel", "gallery", "slideshow", "images", "media"],
+                command: ({ editor }: any) =>
+                  editor?.chain().focus().setCarousel({ items: [] }).run()
+              },
               // Embed
               {
                 icon: <Youtube size={16} />,
@@ -337,6 +357,38 @@ const Editor: FC<Props> = ({
                 command: ({ editor }: any) =>
                   editor?.chain().focus().setSubPage({ noteId: null, title: '' }).run(),
               },
+              {
+                icon: <CalendarDays size={16} />,
+                label: t("editor.CalendarNode"),
+                category: 'advanced',
+                keywords: ["calendar", "date", "event", "schedule"],
+                command: ({ editor }: any) =>
+                  editor?.chain().focus().setCalendarNode({ date: null, title: '', description: '' }).run(),
+              },
+              {
+                icon: <MapPin size={16} />,
+                label: t("editor.LocationNode"),
+                category: 'advanced',
+                keywords: ["location", "map", "place", "address", "gps"],
+                command: ({ editor }: any) =>
+                  editor?.chain().focus().setLocationNode({ lat: null, lng: null, name: '', address: '' }).run(),
+              },
+              {
+                icon: <Tag size={16} />,
+                label: t("editor.TagsNode"),
+                category: 'advanced',
+                keywords: ["tag", "tags", "label", "category"],
+                command: ({ editor }: any) =>
+                  editor?.chain().focus().setTagsNode({ tags: [] }).run(),
+              },
+              {
+                icon: <Star size={16} />,
+                label: t("editor.RatingNode"),
+                category: 'advanced',
+                keywords: ["rating", "star", "score", "review"],
+                command: ({ editor }: any) =>
+                  editor?.chain().focus().setRatingNode({ rating: 0, maxRating: 5, label: '' }).run(),
+              },
               // Views
               {
                 icon: <Map size={16} />,
@@ -377,38 +429,6 @@ const Editor: FC<Props> = ({
                 keywords: ["spreadsheet", "table", "sheet", "excel", "view"],
                 command: ({ editor }: any) =>
                   editor?.chain().focus().setViewNode({ viewId: null, viewType: 'spreadsheet', name: '' }).run(),
-              },
-              {
-                icon: <CalendarDays size={16} />,
-                label: t("editor.CalendarNode"),
-                category: 'advanced',
-                keywords: ["calendar", "date", "event", "schedule"],
-                command: ({ editor }: any) =>
-                  editor?.chain().focus().setCalendarNode({ date: null, title: '', description: '' }).run(),
-              },
-              {
-                icon: <MapPin size={16} />,
-                label: t("editor.LocationNode"),
-                category: 'advanced',
-                keywords: ["location", "map", "place", "address", "gps"],
-                command: ({ editor }: any) =>
-                  editor?.chain().focus().setLocationNode({ lat: null, lng: null, name: '', address: '' }).run(),
-              },
-              {
-                icon: <Tag size={16} />,
-                label: t("editor.TagsNode"),
-                category: 'advanced',
-                keywords: ["tag", "tags", "label", "category"],
-                command: ({ editor }: any) =>
-                  editor?.chain().focus().setTagsNode({ tags: [] }).run(),
-              },
-              {
-                icon: <Star size={16} />,
-                label: t("editor.RatingNode"),
-                category: 'advanced',
-                keywords: ["rating", "star", "score", "review"],
-                command: ({ editor }: any) =>
-                  editor?.chain().focus().setRatingNode({ rating: 0, maxRating: 5, label: '' }).run(),
               },
             ].filter((item) =>
               item.label.toLowerCase().includes(query.toLowerCase()) ||

@@ -64,32 +64,43 @@ export const SlashMenu = forwardRef<SlashMenuRef, Props>(
 
     if (!items.length) return null
 
-    let lastCategory = ''
-    const rendered: JSX.Element[] = []
+    // Group items by category, preserving first-seen order of categories
+    const categoryOrder: string[] = []
+    const grouped: Record<string, { item: CommandItem; index: number }[]> = {}
     items.forEach((item, i) => {
-      const showHeader = !!item.category && item.category !== lastCategory
-      if (showHeader) {
-        lastCategory = item.category!
+      const cat = item.category ?? ''
+      if (!grouped[cat]) {
+        categoryOrder.push(cat)
+        grouped[cat] = []
+      }
+      grouped[cat].push({ item, index: i })
+    })
+
+    const rendered: JSX.Element[] = []
+    categoryOrder.forEach(cat => {
+      if (cat) {
         rendered.push(
-          <div key={`cat-${item.category}`} className="px-3 pt-2 pb-0.5 text-xs font-semibold text-gray-400 dark:text-stone-500 uppercase tracking-wide select-none">
-            {t(`editor.slashCategories.${item.category}`, item.category!)}
+          <div key={`cat-${cat}`} className="px-3 pt-2 pb-0.5 text-xs font-semibold text-gray-400 dark:text-stone-500 uppercase tracking-wide select-none">
+            {t(`editor.slashCategories.${cat}`, cat)}
           </div>
         )
       }
-      rendered.push(
-        <button
-          key={i}
-          ref={(el) => (itemRefs.current[i] = el!)}
-          className={`w-full text-left px-3 py-1.5 rounded-md text-sm flex gap-2 items-center ${i === selectedIndex
-              ? 'bg-gray-200 text-gray-950 dark:bg-stone-950 dark:text-stone-200'
-              : 'hover:bg-gray-100 text-gray-900 dark:hover:bg-stone-950 dark:text-stone-100'
-            }`}
-          onClick={() => command(item)}
-        >
-          {item.icon}
-          {item.label}
-        </button>
-      )
+      grouped[cat].forEach(({ item, index: i }) => {
+        rendered.push(
+          <button
+            key={i}
+            ref={(el) => (itemRefs.current[i] = el!)}
+            className={`w-full text-left px-3 py-1.5 rounded-md text-sm flex gap-2 items-center ${i === selectedIndex
+                ? 'bg-gray-200 text-gray-950 dark:bg-stone-950 dark:text-stone-200'
+                : 'hover:bg-gray-100 text-gray-900 dark:hover:bg-stone-950 dark:text-stone-100'
+              }`}
+            onClick={() => command(item)}
+          >
+            {item.icon}
+            {item.label}
+          </button>
+        )
+      })
     })
 
     return (

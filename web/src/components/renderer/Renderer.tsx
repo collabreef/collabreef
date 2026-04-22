@@ -459,6 +459,25 @@ const Renderer: React.FC<RendererProps> = ({ content, maxNodes, workspaceId: wor
                 return <div key={key} className="w-full rounded overflow-hidden">
                     <video className="w-full max-h-[620px]" src={node.attrs?.src} controls />
                 </div>
+            case 'carouselNode': {
+                const items: Array<{ src: string; name: string; type: 'image' | 'video' }> = node.attrs?.items || []
+                if (!items.length) return null
+                return (
+                    <div key={key} className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'thin' }}>
+                        {items.map((item, idx) => (
+                            <div key={`${item.src}-${idx}`} className="relative flex-shrink-0 w-48 h-48 rounded-lg overflow-hidden bg-gray-100 dark:bg-neutral-800">
+                                {item.type === 'image' ? (
+                                    <PhotoView src={item.src}>
+                                        <img src={item.src} alt={item.name} className="w-full h-full object-cover cursor-zoom-in" />
+                                    </PhotoView>
+                                ) : (
+                                    <video src={item.src} className="w-full h-full object-cover" controls preload="metadata" />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )
+            }
             case 'table':
                 return <div className='max-w-full overflow-x-auto' key={key}>
                     <table className='w-full table-fixed'>{renderContent()}</table>
