@@ -29,10 +29,10 @@ export default {
   },
   pages: {
     signin: {
-      "noAccount": "Noch kein Konto? Registrieren Sie sich"
+      "noAccount": "Noch kein Konto?"
     },
     signup: {
-      "alreadyHaveAccount": "Sie haben bereits ein Konto? Melden Sie sich an."
+      "alreadyHaveAccount": "Sie haben bereits ein Konto?"
     },
     settings: {
       workspaceSettings: "Arbeitsbereich-Einstellungen",

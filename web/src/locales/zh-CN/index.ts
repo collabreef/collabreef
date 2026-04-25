@@ -29,10 +29,10 @@ export default {
   },
   pages: {
     signin: {
-      "noAccount": "没有账户？去注册"
+      "noAccount": "没有账户？"
     },
     signup: {
-      "alreadyHaveAccount": "已有账户？去登录。"
+      "alreadyHaveAccount": "已有账户？"
     },
     settings: {
       workspaceSettings: "工作区设置",

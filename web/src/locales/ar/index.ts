@@ -29,10 +29,10 @@ export default {
   },
   pages: {
     signin: {
-      "noAccount": "ليس لديك حساب؟ قم بالتسجيل"
+      "noAccount": "ليس لديك حساب؟"
     },
     signup: {
-      "alreadyHaveAccount": "هل لديك حساب بالفعل؟ تسجيل الدخول."
+      "alreadyHaveAccount": "هل لديك حساب بالفعل؟"
     },
     settings: {
       workspaceSettings: "إعدادات مساحة العمل",

@@ -29,10 +29,10 @@ export default {
   },
   pages: {
     signin: {
-      "noAccount": "アカウントをお持ちでないですか？ サインアップ"
+      "noAccount": "アカウントをお持ちでないですか？"
     },
     signup: {
-      "alreadyHaveAccount": "既にアカウントをお持ちですか？ ログイン"
+      "alreadyHaveAccount": "既にアカウントをお持ちですか？"
     },
     settings: {
       workspaceSettings: "ワークスペース設定",
