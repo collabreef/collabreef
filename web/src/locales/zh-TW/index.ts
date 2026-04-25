@@ -29,10 +29,10 @@ export default {
   },
   pages: {
     signin: {
-      "noAccount": "沒有帳號? 註冊"
+      "noAccount": "沒有帳號?"
     },
     signup: {
-      "alreadyHaveAccount": "已有帳號? 登入"
+      "alreadyHaveAccount": "已有帳號?"
     },
     settings: {
       workspaceSettings: "工作區設定",

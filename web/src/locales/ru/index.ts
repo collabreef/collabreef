@@ -29,10 +29,10 @@ export default {
   },
   pages: {
     signin: {
-      "noAccount": "Нет учётной записи? Зарегистрируйтесь"
+      "noAccount": "Нет учётной записи?"
     },
     signup: {
-      "alreadyHaveAccount": "Уже есть учётная запись? Войдите."
+      "alreadyHaveAccount": "Уже есть учётная запись?"
     },
     settings: {
       workspaceSettings: "Параметры рабочего пространства",
