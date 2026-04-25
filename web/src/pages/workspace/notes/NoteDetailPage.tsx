@@ -83,10 +83,17 @@ const NoteDetailPage = () => {
     // This ensures the DB is always up to date before Hocuspocus's debounced onStoreDocument fires,
     // preventing stale content from being shown on the next visit.
     useEffect(() => {
+        // Reset so stale content from the previous note is never saved under this noteId.
+        // The cleanup below runs first (saving the old note), then this reset runs.
+        const capturedNoteId = noteId ?? ''
+        latestContentRef.current = ''
         return () => {
             const content = latestContentRef.current
             const ctx = saveContextRef.current
-            if (content && ctx) {
+            // Guard: only save if saveContextRef still points to the note we set up for.
+            // Prevents a race where the REST API updates saveContextRef to note B before
+            // Y.js syncs, causing latestContent (still note A) to overwrite note B.
+            if (content && ctx && ctx.noteId === capturedNoteId) {
                 updateNote(ctx.workspaceId, { ...ctx.note, id: ctx.noteId, content })
                     .catch(console.error)
             }
