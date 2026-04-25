@@ -52,7 +52,10 @@ const fetchImageAsFile = async (src: string): Promise<File | null> => {
     const blob = await res.blob()
     if (!blob.type.startsWith('image/')) return null
     const ext = blob.type.split('/')[1]?.split('+')[0] || 'png'
-    const filename = src.split('/').pop()?.split('?')[0] || `image.${ext}`
+    // Use URL constructor to strip query params/fragments before extracting filename
+    let basename = ''
+    try { basename = new URL(src).pathname.split('/').pop() || '' } catch { basename = src.split('/').pop()?.split('?')[0] || '' }
+    const filename = basename || `image.${ext}`
     return new File([blob], filename, { type: blob.type })
   } catch {
     return null
