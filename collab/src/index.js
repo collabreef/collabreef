@@ -10,7 +10,7 @@ const GRPC_ADDR = process.env.GRPC_ADDR || 'localhost:50051'
 const db = createGrpcClient(GRPC_ADDR)
 
 // Configure Hocuspocus server
-const server = Server.configure({
+const server = new Server({
   port: PORT,
   extensions: [
     new AuthExtension({ db }),

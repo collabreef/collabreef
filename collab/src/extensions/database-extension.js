@@ -200,7 +200,7 @@ export class DatabaseExtension {
     const content = yContent.get('data') || ''
     const title = yMeta.get('title')
     const now = new Date().toISOString()
-    const updatedBy = data.requestHeaders?.['x-user-id'] || 'system'
+    const updatedBy = data.lastContext?.userId || 'system'
 
     const note = await this.db.findNote(noteId)
     if (!note) return

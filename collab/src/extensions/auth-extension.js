@@ -11,10 +11,10 @@ export class AuthExtension {
   }
 
   async onConnect(data) {
-    const isPublic = data.requestHeaders['x-public-access'] === 'true'
+    const isPublic = data.requestHeaders.get('x-public-access') === 'true'
 
     // Parse JWT from cookie
-    const cookieHeader = data.requestHeaders['cookie'] || ''
+    const cookieHeader = data.requestHeaders.get('cookie') || ''
     const tokenMatch = cookieHeader.match(/(?:^|;\s*)token=([^;]+)/)
     const token = tokenMatch ? tokenMatch[1] : null
 
@@ -51,7 +51,7 @@ export class AuthExtension {
     }
 
     if (isPublic) {
-      data.connection.readOnly = true
+      data.connectionConfig.readOnly = true
     }
 
     data.context.userId = userId || 'anonymous'
