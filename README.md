@@ -1,12 +1,10 @@
 # CollabReef
 
-**CollabReef** is an open-source, self-hosted collaborative service to organize links, notes, and resources in a flexible and visual way.
+[繁體中文](./README.zh-TW.md)
+
+**CollabReef** is an open-source, self-hosted collaborative service to organize notes and resources in a flexible and visual way.
 
 ## Features
-
-### Workspace Dashboard
-- **15 Built-in Widgets** — note, countdown, carousel, heatmap, RSS reader, music player, video player, iframe, folder, link, map, calendar, and more
-- **Customizable Layout** — drag-and-drop widget positioning
 
 ### Collaborative Views
 - **Notes** — rich-text notes with real-time co-editing powered by Y.js
@@ -16,8 +14,15 @@
 - **Calendar** — event scheduling with date ranges, timed events, and all-day support
 - **Map** — geographic markers with location pinning
 
+### Rich Text Editor
+- **Slash Commands** — quickly insert content blocks with `/` menu
+- **Embeds** — YouTube, Twitter/X, Instagram, Facebook, TikTok, Threads
+- **Media** — images, videos, attachments, carousels
+- **Blocks** — sub-pages, inline view previews, location, calendar event, rating, tags
+
 ### Sharing & Access Control
-- **Public Sharing** — share notes, whiteboards, spreadsheets, kanban, calendar, and map views via public links
+- **Public Sharing** — share notes and views via public links
+- **Explore Page** — browse publicly shared notes
 - **Visibility Levels** — per-resource access control: private, workspace, or public
 
 ### Workspace & User Management
@@ -87,6 +92,14 @@ docker compose up -d
 
 The app will be available at `http://localhost`.
 
+### Environment Variables
+
+| Variable | Description | Default |
+|---|---|---|
+| `APP_SECRET` | Secret key for signing tokens | — |
+| `APP_DISABLE_SIGNUP` | Disable public registration | `false` |
+| `DB_DRIVER` | Database driver (`sqlite3` or `postgres`) | `sqlite3` |
+| `DB_DSN` | Database connection string | — |
 
 ## Contributing
 
