@@ -99,7 +99,7 @@ const NoteDetailPage = () => {
     // away from a titled note would momentarily write the old title into the new note's
     // cache entry before the WS cleanup resets wsTitle to ''.
     useEffect(() => {
-        if (!wsTitle || !currentWorkspaceId) return
+        if (!isReady || !currentWorkspaceId) return
         const currentNoteId = noteIdRef.current
         if (!currentNoteId) return
 

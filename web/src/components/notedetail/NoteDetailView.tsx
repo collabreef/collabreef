@@ -65,7 +65,7 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({
     }
 
     // Use WebSocket title if available, fallback to note data
-    const displayTitle = wsTitle || note.title
+    const displayTitle = wsReady ? wsTitle : (note.title ?? '')
 
     return (
         <div className="flex flex-col flex-1 min-h-0">
