@@ -34,8 +34,21 @@ const ThreadsEmbedComponent: React.FC<NodeViewProps> = ({ node, updateAttributes
   const [isEditing, setIsEditing] = useState(!url)
   const [inputValue, setInputValue] = useState(url ?? '')
   const [error, setError] = useState(false)
+  const [mountKey, setMountKey] = useState(Date.now)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setMountKey(Date.now())
+  }, [url])
+
+  useEffect(() => {
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) setMountKey(Date.now())
+    }
+    window.addEventListener('pageshow', handlePageShow)
+    return () => window.removeEventListener('pageshow', handlePageShow)
+  }, [])
 
   useEffect(() => {
     if (isEditing) {
@@ -60,20 +73,20 @@ const ThreadsEmbedComponent: React.FC<NodeViewProps> = ({ node, updateAttributes
     blockquote.style.cssText = 'background:#FFF;border-width:1px;border-style:solid;border-color:#00000026;border-radius:16px;max-width:650px;margin:1px;min-width:270px;padding:0;width:99.375%'
     container.appendChild(blockquote)
 
-    // Remove existing script and re-add to force re-processing
     const existing = document.getElementById('threads-embed-js')
     if (existing) existing.remove()
 
     const script = document.createElement('script')
     script.id = 'threads-embed-js'
-    script.src = 'https://www.threads.com/embed.js'
+    script.src = `https://www.threads.com/embed.js?_=${Date.now()}`
     script.async = true
     container.appendChild(script)
 
     return () => {
       container.innerHTML = ''
     }
-  }, [url])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mountKey])
 
   const handleSubmit = () => {
     const trimmed = inputValue.trim()
@@ -83,6 +96,7 @@ const ThreadsEmbedComponent: React.FC<NodeViewProps> = ({ node, updateAttributes
     }
     setError(false)
     updateAttributes({ url: trimmed })
+    setMountKey(Date.now())
     setIsEditing(false)
   }
 
@@ -170,7 +184,7 @@ const ThreadsEmbedComponent: React.FC<NodeViewProps> = ({ node, updateAttributes
   return (
     <NodeViewWrapper>
       <div className="relative group">
-        <div ref={containerRef} className={selected ? 'ring-2 ring-blue-500 rounded-2xl' : ''} />
+        <div key={mountKey} ref={containerRef} className={selected ? 'ring-2 ring-blue-500 rounded-2xl' : ''} />
         {isTouchDevice && isEditable && (
           <NodeTouchMenu visible={selected} actions={nodeActions} />
         )}

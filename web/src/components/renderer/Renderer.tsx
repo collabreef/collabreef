@@ -81,6 +81,20 @@ const TiktokRendererEmbed: React.FC<{ url: string }> = ({ url }) => {
 
 const ThreadsRendererEmbed: React.FC<{ url: string }> = ({ url }) => {
     const containerRef = useRef<HTMLDivElement>(null)
+    const [mountKey, setMountKey] = useState(Date.now)
+
+    useEffect(() => {
+        setMountKey(Date.now())
+    }, [url])
+
+    useEffect(() => {
+        const handlePageShow = (e: PageTransitionEvent) => {
+            if (e.persisted) setMountKey(Date.now())
+        }
+        window.addEventListener('pageshow', handlePageShow)
+        return () => window.removeEventListener('pageshow', handlePageShow)
+    }, [])
+
     useEffect(() => {
         if (!url || !containerRef.current) return
         const match = (() => { try { return new URL(url).pathname.match(/\/post\/([^/?#]+)/) } catch { return null } })()
@@ -99,12 +113,14 @@ const ThreadsRendererEmbed: React.FC<{ url: string }> = ({ url }) => {
         if (existing) existing.remove()
         const script = document.createElement('script')
         script.id = 'threads-embed-js'
-        script.src = 'https://www.threads.com/embed.js'
+        script.src = `https://www.threads.com/embed.js?_=${Date.now()}`
         script.async = true
         container.appendChild(script)
         return () => { container.innerHTML = '' }
-    }, [url])
-    return <div ref={containerRef} />
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mountKey])
+
+    return <div key={mountKey} ref={containerRef} />
 }
 
 const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
