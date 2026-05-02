@@ -207,23 +207,35 @@ const LocationRenderer: React.FC<{ lat: number; lng: number; name?: string; addr
 }
 
 // ── Rating renderer ───────────────────────────────────────────────────────────
-const RatingRenderer: React.FC<{ rating: number; maxRating: number; label?: string }> = ({ rating, maxRating, label }) => (
-    <div className="my-1 flex items-center rounded-lg border dark:border-neutral-700 overflow-hidden bg-white dark:bg-neutral-900 shadow-sm px-4 py-3 gap-3">
-        <div className="flex flex-col gap-1 flex-1 min-w-0">
-            {label && (
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{label}</p>
+function RendererPartialStar({ fill, size }: { fill: number; size: number }) {
+    return (
+        <span className="relative inline-flex shrink-0" style={{ width: size, height: size }}>
+            <Star size={size} className="text-gray-300 dark:text-neutral-600" />
+            {fill > 0 && (
+                <span className="absolute inset-0 overflow-hidden inline-flex" style={{ width: `${fill * 100}%` }}>
+                    <Star size={size} className="text-yellow-400 fill-yellow-400 shrink-0" />
+                </span>
             )}
-            <div className="flex items-center gap-0.5">
-                {Array.from({ length: maxRating }, (_, i) => i + 1).map(i => (
-                    <Star
-                        key={i}
-                        size={18}
-                        className={i <= rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300 dark:text-neutral-600'}
-                    />
-                ))}
-                <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">{rating}/{maxRating}</span>
-            </div>
+        </span>
+    )
+}
+
+const getStarFill = (i: number, val: number) => Math.min(1, Math.max(0, val - (i - 1)))
+const formatRating = (r: number) => parseFloat(r.toFixed(1)).toString()
+
+const RatingRenderer: React.FC<{ rating: number; maxRating: number; label?: string }> = ({ rating, maxRating, label }) => (
+    <div className="flex flex-wrap items-center gap-1.5 py-1">
+        {label && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
+                {label}
+            </span>
+        )}
+        <div className="flex items-center gap-0.5">
+            {Array.from({ length: maxRating }, (_, i) => i + 1).map(i => (
+                <RendererPartialStar key={i} size={14} fill={getStarFill(i, rating)} />
+            ))}
         </div>
+        <span className="text-xs text-gray-500 dark:text-gray-400">{formatRating(rating)}/{maxRating}</span>
     </div>
 )
 

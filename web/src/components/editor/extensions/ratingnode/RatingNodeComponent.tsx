@@ -3,6 +3,22 @@ import { ChevronUp, ChevronDown, Edit3, Trash2, Star } from "lucide-react"
 import { useState, useRef, useEffect, useCallback } from "react"
 import { useDragMenu, NodeTouchMenu } from "@/components/editor/DragMenuContext"
 
+function PartialStar({ fill, size }: { fill: number; size: number }) {
+  return (
+    <span className="relative inline-flex shrink-0" style={{ width: size, height: size }}>
+      <Star size={size} className="text-gray-300 dark:text-neutral-600" />
+      {fill > 0 && (
+        <span className="absolute inset-0 overflow-hidden inline-flex" style={{ width: `${fill * 100}%` }}>
+          <Star size={size} className="text-yellow-400 fill-yellow-400 shrink-0" />
+        </span>
+      )}
+    </span>
+  )
+}
+
+const getStarFill = (i: number, val: number) => Math.min(1, Math.max(0, val - (i - 1)))
+const formatRating = (r: number) => parseFloat(r.toFixed(1)).toString()
+
 const RatingNodeComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, selected, editor, deleteNode, getPos }) => {
   const { rating, maxRating, label } = node.attrs
   const isEditable = editor.isEditable
@@ -19,7 +35,7 @@ const RatingNodeComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, 
   }, [isEditing])
 
   const handleSubmit = () => {
-    updateAttributes({ rating: inputRating, maxRating: inputMaxRating, label: inputLabel })
+    updateAttributes({ rating: parseFloat(inputRating.toFixed(1)), maxRating: inputMaxRating, label: inputLabel })
     setIsEditing(false)
   }
 
@@ -65,18 +81,46 @@ const RatingNodeComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, 
   if (isEditing || (rating === 0 && !label)) {
     return (
       <NodeViewWrapper className="rating-node select-none border dark:border-neutral-700 rounded p-3 bg-gray-100 dark:bg-neutral-800">
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
             <Star size={18} />
             <span className="text-sm font-medium">Rating</span>
           </div>
           <input ref={labelRef} type="text" className="px-3 py-2 text-sm rounded border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500" placeholder="Label (optional)..." value={inputLabel} onChange={e => setInputLabel(e.target.value)} onKeyDown={handleKeyDown} />
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-gray-500 dark:text-gray-400">Rating ({inputRating}/{inputMaxRating})</span>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500 dark:text-gray-400">Rating</span>
+              <input
+                type="number"
+                step="0.1"
+                min="0"
+                max={inputMaxRating}
+                value={inputRating}
+                onChange={e => {
+                  const val = e.target.valueAsNumber
+                  if (!isNaN(val)) setInputRating(Math.min(inputMaxRating, Math.max(0, val)))
+                }}
+                onKeyDown={handleKeyDown}
+                className="w-16 px-2 py-0.5 text-sm rounded border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+              <span className="text-xs text-gray-500 dark:text-gray-400">/ {inputMaxRating}</span>
+            </div>
+            <div className="flex items-center gap-1" onMouseLeave={() => setHoverRating(0)}>
               {Array.from({ length: inputMaxRating }, (_, i) => i + 1).map(i => (
-                <button key={i} type="button" onClick={() => setInputRating(i)} onMouseEnter={() => setHoverRating(i)} onMouseLeave={() => setHoverRating(0)} className="p-0.5 transition-transform hover:scale-110 focus:outline-none">
-                  <Star size={24} className={i <= (hoverRating || inputRating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300 dark:text-neutral-600'} />
+                <button
+                  key={i}
+                  type="button"
+                  onClick={e => {
+                    const rect = e.currentTarget.getBoundingClientRect()
+                    setInputRating(e.clientX - rect.left < rect.width / 2 ? i - 0.5 : i)
+                  }}
+                  onMouseMove={e => {
+                    const rect = e.currentTarget.getBoundingClientRect()
+                    setHoverRating(e.clientX - rect.left < rect.width / 2 ? i - 0.5 : i)
+                  }}
+                  className="p-0.5 transition-transform hover:scale-110 focus:outline-none"
+                >
+                  <PartialStar size={24} fill={getStarFill(i, hoverRating || inputRating)} />
                 </button>
               ))}
             </div>
@@ -101,16 +145,18 @@ const RatingNodeComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, 
   return (
     <NodeViewWrapper>
       <div className="relative group my-1">
-        <div className={`flex items-center rounded-lg border dark:border-neutral-700 overflow-hidden bg-white dark:bg-neutral-900 shadow-sm px-4 py-3 gap-3 ${selected ? 'ring-2 ring-blue-500' : ''}`}>
-          <div className="flex flex-col gap-1 flex-1 min-w-0">
-            {label && <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{label}</p>}
-            <div className="flex items-center gap-0.5">
-              {Array.from({ length: maxRating }, (_, i) => i + 1).map(i => (
-                <Star key={i} size={18} className={i <= rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300 dark:text-neutral-600'} />
-              ))}
-              <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">{rating}/{maxRating}</span>
-            </div>
+        <div className="flex flex-wrap items-center gap-1.5 px-1 py-1">
+          {label && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
+              {label}
+            </span>
+          )}
+          <div className="flex items-center gap-0.5">
+            {Array.from({ length: maxRating }, (_, i) => i + 1).map(i => (
+              <PartialStar key={i} size={14} fill={getStarFill(i, rating)} />
+            ))}
           </div>
+          <span className="text-xs text-gray-500 dark:text-gray-400">{formatRating(rating)}/{maxRating}</span>
         </div>
         {isTouchDevice && isEditable && (
           <NodeTouchMenu visible={selected} actions={nodeActions} />
