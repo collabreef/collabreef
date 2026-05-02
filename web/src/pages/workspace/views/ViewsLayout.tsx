@@ -286,15 +286,6 @@ const ViewsLayout = () => {
 
             {/* Main content */}
             <div className="flex-1 flex flex-col overflow-hidden">
-                {/* Mobile header */}
-                <div className="shrink-0 px-4 py-2 xl:hidden flex items-center justify-end border-b border-neutral-200 dark:border-neutral-700">
-                    <button
-                        className="p-1 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-700 text-gray-600 dark:text-gray-400"
-                        onClick={() => setIsSidebarOpen((prev) => !prev)}
-                    >
-                        <PanelRight size={16} />
-                    </button>
-                </div>
                 <div className="flex-1 overflow-hidden">
                     <Outlet />
                 </div>
