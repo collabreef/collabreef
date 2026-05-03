@@ -110,13 +110,16 @@ const CalendarNodeComponent: React.FC<NodeViewProps> = ({ node, updateAttributes
     <NodeViewWrapper>
       <div className="relative group my-1">
         <div className="flex flex-wrap items-center gap-1.5 px-1 py-1">
-          <CalendarDays size={14} className="text-gray-400 dark:text-gray-500 shrink-0" />
-          {formatted && (
+          {title && (
             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
+              {title}
+            </span>
+          )}
+          {formatted && (
+            <span className="text-sm text-gray-800 dark:text-gray-200 truncate">
               {formatted.month} {formatted.day}, {formatted.year}
             </span>
           )}
-          {title && <span className="text-sm text-gray-800 dark:text-gray-200 truncate">{title}</span>}
           {description && <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{description}</span>}
         </div>
         {isTouchDevice && isEditable && (
