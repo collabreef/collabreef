@@ -697,7 +697,7 @@ const Editor: FC<Props> = ({
       {!isTouchDevice && canDrag && (
         <DragHandle
           editor={editor}
-          className='border rounded shadow-sm p-1'
+          className='text-gray-500'
           onNodeChange={({ pos }: { node: unknown; editor: unknown; pos: number }) => {
             if (pos === activePosRef.current) return
             activePosRef.current = pos
