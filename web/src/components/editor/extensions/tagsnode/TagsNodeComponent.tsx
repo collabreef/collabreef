@@ -1,5 +1,5 @@
 import { NodeViewProps, NodeViewWrapper } from '@tiptap/react'
-import { ChevronUp, ChevronDown, Trash2, Tag, X, Plus } from 'lucide-react'
+import { ChevronUp, ChevronDown, Trash2, X, Plus } from 'lucide-react'
 import { useState, useRef, useEffect, KeyboardEvent, useCallback } from 'react'
 import { useDragMenu, NodeTouchMenu } from '@/components/editor/DragMenuContext'
 
@@ -96,7 +96,6 @@ const TagsNodeComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, se
     <NodeViewWrapper>
       <div className="relative group my-1">
         <div className="flex flex-wrap items-center gap-1.5 px-1 py-1 cursor-text" onClick={() => inputRef.current?.focus()}>
-          <Tag size={14} className="text-gray-400 dark:text-gray-500 shrink-0" />
           {tags.map((t, i) => <TagChip key={t} label={t} onRemove={() => removeTag(i)} />)}
           <input
             ref={inputRef}

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { PhotoView, PhotoProvider } from 'react-photo-view'
 import ShikiHighlighter from "react-shiki"
 import { useTranslation } from 'react-i18next'
-import { FileText, ChevronDown, LoaderCircle, CalendarDays, ExternalLink, Tag, Star, Map, Kanban, PenTool, Sheet } from 'lucide-react'
+import { FileText, ChevronDown, LoaderCircle, CalendarDays, ExternalLink, Star, Map, Kanban, PenTool, Sheet } from 'lucide-react'
 import { useParams } from 'react-router-dom'
 import { getNote, NoteData } from '@/api/note'
 import { ViewType } from '@/types/view'
@@ -246,7 +246,6 @@ const TagsRenderer: React.FC<{ tags: string[] }> = ({ tags }) => {
     if (!tags.length) return null
     return (
         <div className="flex flex-wrap items-center gap-1.5 my-1">
-            <Tag size={13} className="text-gray-400 dark:text-gray-500 shrink-0" />
             {tags.map(t => (
                 <span key={t} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300">
                     {t}
