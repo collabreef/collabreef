@@ -149,7 +149,7 @@ const CalendarEventRenderer: React.FC<{ date?: string; title?: string; descripti
                 </span>
             )}
             {formatted && (
-                <span className="text-sm text-gray-800 dark:text-gray-200 truncate">
+                <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
                     {formatted.month} {formatted.day}, {formatted.year}
                 </span>
             )}
