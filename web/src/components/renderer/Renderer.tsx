@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { PhotoView, PhotoProvider } from 'react-photo-view'
 import ShikiHighlighter from "react-shiki"
 import { useTranslation } from 'react-i18next'
-import { FileText, ChevronDown, LoaderCircle, CalendarDays, MapPin, ExternalLink, Tag, Star, Map, Kanban, PenTool, Sheet } from 'lucide-react'
+import { FileText, ChevronDown, LoaderCircle, CalendarDays, ExternalLink, Tag, Star, Map, Kanban, PenTool, Sheet } from 'lucide-react'
 import { useParams } from 'react-router-dom'
 import { getNote, NoteData } from '@/api/note'
 import { ViewType } from '@/types/view'
