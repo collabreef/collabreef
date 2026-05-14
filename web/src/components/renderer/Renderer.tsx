@@ -572,8 +572,35 @@ const Renderer: React.FC<RendererProps> = ({ content, maxNodes, workspaceId: wor
     const hasHiddenNodes = shouldLimit && allNodes.length > maxNodes
     const showCollapseButton = isExpanded && hasLimit
 
+    const photoCloseRef = useRef<((evt?: React.MouseEvent | React.TouchEvent) => void) | null>(null)
+    const closedByPopStateRef = useRef(false)
+
+    useEffect(() => {
+        const handlePopState = () => {
+            if (photoCloseRef.current) {
+                closedByPopStateRef.current = true
+                photoCloseRef.current()
+            }
+        }
+        window.addEventListener('popstate', handlePopState)
+        return () => window.removeEventListener('popstate', handlePopState)
+    }, [])
+
     return (
-        <PhotoProvider>
+        <PhotoProvider
+            onVisibleChange={(visible) => {
+                if (visible) {
+                    history.pushState({ photoViewOpen: true }, '')
+                } else if (!closedByPopStateRef.current) {
+                    history.back()
+                }
+                closedByPopStateRef.current = false
+            }}
+            overlayRender={({ onClose }) => {
+                photoCloseRef.current = onClose
+                return null
+            }}
+        >
             <div className='prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl max-w-full overflow-x-auto text-neutral-800 dark:text-gray-400'>
                 {nodesToRender.map((node, idx) => renderNode(node, idx))}
                 {hasHiddenNodes && (
