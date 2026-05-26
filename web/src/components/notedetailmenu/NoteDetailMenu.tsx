@@ -1,4 +1,5 @@
 import { FC, useRef, useState, useEffect } from "react"
+import { createPortal } from "react-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { deleteNote, NoteData, updateNoteVisibility } from "@/api/note"
 import { useTranslation } from "react-i18next"
@@ -20,8 +21,15 @@ const NoteDetailMenu: FC<NoteDetailMenuProps> = ({ note }) => {
     const [isMenuOpened, setIsMenuOpened] = useState(false)
     const menuRef = useRef<HTMLDivElement>(null)
     const buttonRef = useRef<HTMLButtonElement>(null)
+    const [isXl, setIsXl] = useState(() => window.innerWidth >= 1280)
 
-    // Delete note mutation
+    useEffect(() => {
+        const mq = window.matchMedia('(min-width: 1280px)')
+        const handler = (e: MediaQueryListEvent) => setIsXl(e.matches)
+        mq.addEventListener('change', handler)
+        return () => mq.removeEventListener('change', handler)
+    }, [])
+
     const deleteNoteMutation = useMutation({
         mutationFn: () => {
             if (!workspaceId || !note.id) throw new Error('Missing required parameters')
@@ -37,7 +45,6 @@ const NoteDetailMenu: FC<NoteDetailMenuProps> = ({ note }) => {
         },
     })
 
-    // Update visibility mutation
     const updateVisibilityMutation = useMutation({
         mutationFn: (visibility: Visibility) => {
             if (!workspaceId || !note.id) throw new Error('Missing required parameters')
@@ -46,7 +53,7 @@ const NoteDetailMenu: FC<NoteDetailMenuProps> = ({ note }) => {
         onSuccess: async () => {
             try {
                 await queryClient.invalidateQueries({ queryKey: ['note', workspaceId, note.id] })
-                setIsMenuOpened(false);
+                setIsMenuOpened(false)
             } catch (error) {
                 addToast({ title: t('messages.updateVisibilityFailed'), type: 'error' })
             }
@@ -61,9 +68,7 @@ const NoteDetailMenu: FC<NoteDetailMenuProps> = ({ note }) => {
     }
 
     const handleUpdateVisibility = (visibility: Visibility) => {
-        if (visibility === note.visibility) {
-            return
-        }
+        if (visibility === note.visibility) return
         updateVisibilityMutation.mutate(visibility)
     }
 
@@ -71,26 +76,62 @@ const NoteDetailMenu: FC<NoteDetailMenuProps> = ({ note }) => {
         setIsMenuOpened(prev => !prev)
     }
 
-    // Close menu when clicking outside
+    // Close dropdown when clicking outside (xl only)
     useEffect(() => {
+        if (!isXl || !isMenuOpened) return
+
         const handleClickOutside = (event: MouseEvent) => {
             const target = event.target as Node
-            const clickedInsideMenu = menuRef.current && menuRef.current.contains(target)
-            const clickedButton = buttonRef.current && buttonRef.current.contains(target)
-
-            if (!clickedInsideMenu && !clickedButton) {
+            if (
+                !(menuRef.current?.contains(target)) &&
+                !(buttonRef.current?.contains(target))
+            ) {
                 setIsMenuOpened(false)
             }
         }
 
-        if (isMenuOpened) {
-            document.addEventListener('mousedown', handleClickOutside)
-        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [isMenuOpened, isXl])
 
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside)
-        }
-    }, [isMenuOpened])
+    const menuItems = workspaceId && (
+        <>
+            {note.visibility !== "private" && (
+                <button
+                    className="px-3 py-2 flex items-center gap-3 w-full text-left rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                    onClick={() => handleUpdateVisibility("private")}
+                >
+                    <Lock size={16} />
+                    {t("actions.makePrivate")}
+                </button>
+            )}
+            {note.visibility !== "workspace" && (
+                <button
+                    className="px-3 py-2 flex items-center gap-3 w-full text-left rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                    onClick={() => handleUpdateVisibility("workspace")}
+                >
+                    <Building size={16} />
+                    {t("actions.makeWorkspace")}
+                </button>
+            )}
+            {note.visibility !== "public" && (
+                <button
+                    className="px-3 py-2 flex items-center gap-3 w-full text-left rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                    onClick={() => handleUpdateVisibility("public")}
+                >
+                    <Globe2 size={16} />
+                    {t("actions.makePublic")}
+                </button>
+            )}
+            <button
+                onClick={handleDelete}
+                className="px-3 py-2 flex items-center gap-3 w-full text-left text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+            >
+                <Trash2 size={16} />
+                <span>{t('actions.delete')}</span>
+            </button>
+        </>
+    )
 
     return (
         <>
@@ -98,51 +139,35 @@ const NoteDetailMenu: FC<NoteDetailMenuProps> = ({ note }) => {
                 <button ref={buttonRef} className="p-2" onClick={handleOpenMenu}>
                     <Ellipsis size={16} />
                 </button>
-                {isMenuOpened && (
+                {isXl && isMenuOpened && (
                     <div
                         ref={menuRef}
                         className="absolute top-full right-0 min-w-[240px] overflow-y-auto bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 border dark:border-neutral-700 rounded-lg shadow-lg z-50"
                     >
                         <div className="flex flex-col p-2">
-                            {workspaceId && (
-                                <>
-                                    {
-                                        note.visibility != "private" && <button
-                                            className="px-3 py-2 flex items-center gap-3"
-                                            onClick={() => handleUpdateVisibility("private")}>
-                                            <Lock size={16} />
-                                            {t("actions.makePrivate")}
-                                        </button>
-                                    }
-                                    {
-                                        note.visibility != "workspace" && <button
-                                            className="px-3 py-2 flex items-center gap-3"
-                                            onClick={() => handleUpdateVisibility("workspace")}>
-                                            <Building size={16} />
-                                            {t("actions.makeWorkspace")}
-                                        </button>
-                                    }
-                                    {
-                                        note.visibility != "public" && <button
-                                            className="px-3 py-2 flex items-center gap-3"
-                                            onClick={() => handleUpdateVisibility("public")}>
-                                            <Globe2 size={16} />
-                                            {t("actions.makePublic")}
-                                        </button>
-                                    }
-                                    <button
-                                        onClick={handleDelete}
-                                        className="px-3 py-2 flex items-center gap-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors text-left"
-                                    >
-                                        <Trash2 size={16} />
-                                        <span>{t('actions.delete')}</span>
-                                    </button>
-                                </>
-                            )}
+                            {menuItems}
                         </div>
                     </div>
                 )}
             </div>
+
+            {!isXl && isMenuOpened && createPortal(
+                <>
+                    <div
+                        className="fixed inset-0 bg-black/40 z-40"
+                        onClick={() => setIsMenuOpened(false)}
+                    />
+                    <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 rounded-t-2xl z-50 shadow-xl">
+                        <div className="flex justify-center pt-3 pb-1">
+                            <div className="w-10 h-1 bg-neutral-300 dark:bg-neutral-600 rounded-full" />
+                        </div>
+                        <div className="flex flex-col py-4 px-2 pb-8">
+                            {menuItems}
+                        </div>
+                    </div>
+                </>,
+                document.body
+            )}
         </>
     )
 }
