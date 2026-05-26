@@ -879,6 +879,9 @@ export default {
     "KanbanView":"看板",
     "WhiteboardView":"白板",
     "SpreadsheetView":"試算表",
+    "Carousel": "輪播",
+    "moveUp": "向上移動",
+    "moveDown": "向下移動",
     "subPage":{
         "newPage": "新頁面"
     },
@@ -902,6 +905,25 @@ export default {
         "embed": "嵌入",
         "advanced": "進階",
         "views": "視圖"
+    },
+    "carousel": {
+        "addMediaToCarousel": "新增媒體至輪播",
+        "addMedia": "新增媒體",
+        "moveUp": "向上移動",
+        "moveDown": "向下移動",
+        "remove": "移除",
+        "searchFiles": "搜尋檔案...",
+        "upload": "上傳",
+        "noMediaFiles": "找不到媒體檔案",
+        "selectFilesToAdd": "選擇要新增的檔案",
+        "selectedCount": "已選擇 {{count}} 個",
+        "add": "新增",
+        "addCount": "新增 ({{count}})",
+        "filter": {
+            "all": "全部",
+            "image": "圖片",
+            "video": "影片"
+        }
     }
   },
 } as const;

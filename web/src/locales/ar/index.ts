@@ -780,6 +780,9 @@ export default {
     "KanbanView":"كانبان",
     "WhiteboardView":"سبورة",
     "SpreadsheetView":"جدول بيانات",
+    "Carousel": "عرض دوار",
+    "moveUp": "تحريك لأعلى",
+    "moveDown": "تحريك لأسفل",
     "table":{
         "name": "جدول",
         "deleteColumn": "حذف العمود",
@@ -800,6 +803,25 @@ export default {
         "embed": "تضمين",
         "advanced": "متقدم",
         "views": "العروض"
+    },
+    "carousel": {
+        "addMediaToCarousel": "إضافة وسائط إلى العرض الدوار",
+        "addMedia": "إضافة وسائط",
+        "moveUp": "تحريك لأعلى",
+        "moveDown": "تحريك لأسفل",
+        "remove": "إزالة",
+        "searchFiles": "البحث عن ملفات...",
+        "upload": "رفع",
+        "noMediaFiles": "لم يتم العثور على ملفات وسائط",
+        "selectFilesToAdd": "اختر ملفات للإضافة",
+        "selectedCount": "{{count}} محدد",
+        "add": "إضافة",
+        "addCount": "إضافة ({{count}})",
+        "filter": {
+            "all": "الكل",
+            "image": "صورة",
+            "video": "فيديو"
+        }
     }
   },
 } as const;

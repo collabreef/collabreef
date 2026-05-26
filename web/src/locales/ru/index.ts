@@ -780,6 +780,9 @@ export default {
     "KanbanView":"Канбан",
     "WhiteboardView":"Белая доска",
     "SpreadsheetView":"Таблица",
+    "Carousel": "Карусель",
+    "moveUp": "Переместить вверх",
+    "moveDown": "Переместить вниз",
     "table":{
         "name": "Таблица",
         "deleteColumn": "удалить столбец",
@@ -800,6 +803,25 @@ export default {
         "embed": "Вставка",
         "advanced": "Расширенные",
         "views": "Представления"
+    },
+    "carousel": {
+        "addMediaToCarousel": "Добавить медиа в карусель",
+        "addMedia": "Добавить медиа",
+        "moveUp": "Переместить вверх",
+        "moveDown": "Переместить вниз",
+        "remove": "Удалить",
+        "searchFiles": "Поиск файлов...",
+        "upload": "Загрузить",
+        "noMediaFiles": "Медиафайлы не найдены",
+        "selectFilesToAdd": "Выберите файлы для добавления",
+        "selectedCount": "Выбрано: {{count}}",
+        "add": "Добавить",
+        "addCount": "Добавить ({{count}})",
+        "filter": {
+            "all": "Все",
+            "image": "Изображение",
+            "video": "Видео"
+        }
     }
   },
 } as const;

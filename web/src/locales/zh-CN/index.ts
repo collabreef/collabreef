@@ -864,6 +864,9 @@ export default {
     "KanbanView":"看板",
     "WhiteboardView":"白板",
     "SpreadsheetView":"电子表格",
+    "Carousel": "轮播",
+    "moveUp": "向上移动",
+    "moveDown": "向下移动",
     "subPage":{
         "newPage": "新页面"
     },
@@ -887,6 +890,25 @@ export default {
         "embed": "嵌入",
         "advanced": "高级",
         "views": "视图"
+    },
+    "carousel": {
+        "addMediaToCarousel": "添加媒体到轮播",
+        "addMedia": "添加媒体",
+        "moveUp": "向上移动",
+        "moveDown": "向下移动",
+        "remove": "移除",
+        "searchFiles": "搜索文件...",
+        "upload": "上传",
+        "noMediaFiles": "未找到媒体文件",
+        "selectFilesToAdd": "选择要添加的文件",
+        "selectedCount": "已选择 {{count}} 个",
+        "add": "添加",
+        "addCount": "添加 ({{count}})",
+        "filter": {
+            "all": "全部",
+            "image": "图片",
+            "video": "视频"
+        }
     }
   },
 } as const;

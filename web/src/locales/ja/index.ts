@@ -780,6 +780,9 @@ export default {
     "KanbanView":"カンバン",
     "WhiteboardView":"ホワイトボード",
     "SpreadsheetView":"スプレッドシート",
+    "Carousel": "カルーセル",
+    "moveUp": "上に移動",
+    "moveDown": "下に移動",
     "table":{
         "name": "テーブル",
         "deleteColumn": "列を削除",
@@ -800,6 +803,25 @@ export default {
         "embed": "埋め込み",
         "advanced": "詳細",
         "views": "ビュー"
+    },
+    "carousel": {
+        "addMediaToCarousel": "カルーセルにメディアを追加",
+        "addMedia": "メディアを追加",
+        "moveUp": "上に移動",
+        "moveDown": "下に移動",
+        "remove": "削除",
+        "searchFiles": "ファイルを検索...",
+        "upload": "アップロード",
+        "noMediaFiles": "メディアファイルが見つかりません",
+        "selectFilesToAdd": "追加するファイルを選択",
+        "selectedCount": "{{count}} 件選択中",
+        "add": "追加",
+        "addCount": "追加 ({{count}})",
+        "filter": {
+            "all": "すべて",
+            "image": "画像",
+            "video": "動画"
+        }
     }
   },
 } as const;

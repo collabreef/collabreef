@@ -1,11 +1,13 @@
 import { NodeViewProps, NodeViewWrapper } from "@tiptap/react"
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Trash2, Plus, X, Images } from "lucide-react"
 import { useRef, useState, useCallback } from "react"
+import { useTranslation } from "react-i18next"
 import CarouselMediaPickerDialog from "./CarouselMediaPickerDialog"
 import { CarouselItem } from "./CarouselNode"
 import { useDragMenu, NodeTouchMenu } from "@/components/editor/DragMenuContext"
 
 const CarouselComponent: React.FC<NodeViewProps> = ({ node, extension, updateAttributes, selected, editor, deleteNode, getPos }) => {
+    const { t } = useTranslation()
     const [isPickerOpen, setIsPickerOpen] = useState(false)
     const [isExpanded, setIsExpanded] = useState(false)
     const scrollRef = useRef<HTMLDivElement>(null)
@@ -48,10 +50,10 @@ const CarouselComponent: React.FC<NodeViewProps> = ({ node, extension, updateAtt
     }, [editor, node, getPos])
 
     const nodeActions = [
-        { label: 'Move up', icon: <ChevronUp size={14} />, onClick: handleMoveUp },
-        { label: 'Move down', icon: <ChevronDown size={14} />, onClick: handleMoveDown },
-        { label: 'Add media', icon: <Plus size={14} />, onClick: () => setIsPickerOpen(true) },
-        { label: 'Delete', icon: <Trash2 size={14} />, onClick: deleteNode, variant: 'danger' as const },
+        { label: t('editor.carousel.moveUp'), icon: <ChevronUp size={14} />, onClick: handleMoveUp },
+        { label: t('editor.carousel.moveDown'), icon: <ChevronDown size={14} />, onClick: handleMoveDown },
+        { label: t('editor.carousel.addMedia'), icon: <Plus size={14} />, onClick: () => setIsPickerOpen(true) },
+        { label: t('actions.delete'), icon: <Trash2 size={14} />, onClick: deleteNode, variant: 'danger' as const },
     ]
 
     useDragMenu(getPos, () => nodeActions)
@@ -99,7 +101,7 @@ const CarouselComponent: React.FC<NodeViewProps> = ({ node, extension, updateAtt
                         onClick={(e) => { e.stopPropagation(); setIsPickerOpen(true) }}
                     >
                         <Images size={20} />
-                        <span className="text-sm">Add Media to Carousel</span>
+                        <span className="text-sm">{t('editor.carousel.addMediaToCarousel')}</span>
                     </button>
                 </div>
                 {extension.options?.workspaceId && (
@@ -147,7 +149,7 @@ const CarouselComponent: React.FC<NodeViewProps> = ({ node, extension, updateAtt
                                             type="button"
                                             onClick={() => handleRemoveItem(index)}
                                             className="absolute top-1.5 right-1.5 p-1 bg-black/60 hover:bg-black/80 rounded-full opacity-0 group-hover/item:opacity-100 transition-opacity"
-                                            title="Remove"
+                                            title={t('editor.carousel.remove')}
                                         >
                                             <X size={12} className="text-white" />
                                         </button>
@@ -196,7 +198,7 @@ const CarouselComponent: React.FC<NodeViewProps> = ({ node, extension, updateAtt
                                         type="button"
                                         onClick={() => handleRemoveItem(index)}
                                         className="absolute top-1.5 right-1.5 p-1 bg-black/60 hover:bg-black/80 rounded-full opacity-0 group-hover/item:opacity-100 transition-opacity"
-                                        title="Remove"
+                                        title={t('editor.carousel.remove')}
                                     >
                                         <X size={12} className="text-white" />
                                     </button>

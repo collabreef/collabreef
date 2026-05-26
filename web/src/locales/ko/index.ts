@@ -780,6 +780,9 @@ export default {
     "KanbanView":"칸반",
     "WhiteboardView":"화이트보드",
     "SpreadsheetView":"스프레드시트",
+    "Carousel": "캐러셀",
+    "moveUp": "위로 이동",
+    "moveDown": "아래로 이동",
     "table":{
         "name": "표",
         "deleteColumn": "열 삭제",
@@ -800,6 +803,25 @@ export default {
         "embed": "임베드",
         "advanced": "고급",
         "views": "뷰"
+    },
+    "carousel": {
+        "addMediaToCarousel": "캐러셀에 미디어 추가",
+        "addMedia": "미디어 추가",
+        "moveUp": "위로 이동",
+        "moveDown": "아래로 이동",
+        "remove": "제거",
+        "searchFiles": "파일 검색...",
+        "upload": "업로드",
+        "noMediaFiles": "미디어 파일을 찾을 수 없습니다",
+        "selectFilesToAdd": "추가할 파일을 선택하세요",
+        "selectedCount": "{{count}}개 선택됨",
+        "add": "추가",
+        "addCount": "추가 ({{count}})",
+        "filter": {
+            "all": "전체",
+            "image": "이미지",
+            "video": "동영상"
+        }
     }
   },
 } as const;

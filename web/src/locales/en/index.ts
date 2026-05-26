@@ -879,6 +879,9 @@ export default {
     "KanbanView":"Kanban",
     "WhiteboardView":"Whiteboard",
     "SpreadsheetView":"Spreadsheet",
+    "Carousel": "Carousel",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
     "subPage":{
         "newPage": "New page"
     },
@@ -902,6 +905,25 @@ export default {
         "embed": "Embed",
         "advanced": "Advanced",
         "views": "Views"
+    },
+    "carousel": {
+        "addMediaToCarousel": "Add Media to Carousel",
+        "addMedia": "Add media",
+        "moveUp": "Move up",
+        "moveDown": "Move down",
+        "remove": "Remove",
+        "searchFiles": "Search files...",
+        "upload": "Upload",
+        "noMediaFiles": "No media files found",
+        "selectFilesToAdd": "Select files to add",
+        "selectedCount": "{{count}} selected",
+        "add": "Add",
+        "addCount": "Add ({{count}})",
+        "filter": {
+            "all": "All",
+            "image": "Image",
+            "video": "Video"
+        }
     }
   },
 } as const;

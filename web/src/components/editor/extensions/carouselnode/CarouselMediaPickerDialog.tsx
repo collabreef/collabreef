@@ -1,6 +1,7 @@
 import { FC, useState, useEffect, useCallback, useRef } from "react"
 import * as Dialog from "@radix-ui/react-dialog"
 import { Search, Loader2, Image as ImageIcon, Video as VideoIcon, Check, Upload, X } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { FileInfo } from "@/api/file"
 import { CarouselItem } from "./CarouselNode"
 
@@ -26,6 +27,7 @@ const getMediaType = (filename: string): 'image' | 'video' | null => {
 const CarouselMediaPickerDialog: FC<CarouselMediaPickerDialogProps> = ({
     open, onOpenChange, workspaceId, listFiles, onAdd, onUpload,
 }) => {
+    const { t } = useTranslation()
     const [files, setFiles] = useState<FileInfo[]>([])
     const [isLoading, setIsLoading] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
@@ -119,7 +121,7 @@ const CarouselMediaPickerDialog: FC<CarouselMediaPickerDialogProps> = ({
                     onPointerDownOutside={(e) => e.preventDefault()}
                 >
                     <div className="flex items-center justify-between mb-4">
-                        <Dialog.Title className="text-xl font-semibold">Add Media to Carousel</Dialog.Title>
+                        <Dialog.Title className="text-xl font-semibold">{t('editor.carousel.addMediaToCarousel')}</Dialog.Title>
                         <Dialog.Close className="p-1 rounded hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors">
                             <X size={16} />
                         </Dialog.Close>
@@ -132,9 +134,9 @@ const CarouselMediaPickerDialog: FC<CarouselMediaPickerDialogProps> = ({
                                     key={f}
                                     type="button"
                                     onClick={() => setFilter(f)}
-                                    className={`px-3 py-1.5 capitalize transition-colors ${filter === f ? 'bg-blue-500 text-white' : 'hover:bg-gray-100 dark:hover:bg-neutral-700 text-gray-700 dark:text-gray-300'}`}
+                                    className={`px-3 py-1.5 transition-colors ${filter === f ? 'bg-blue-500 text-white' : 'hover:bg-gray-100 dark:hover:bg-neutral-700 text-gray-700 dark:text-gray-300'}`}
                                 >
-                                    {f}
+                                    {t(`editor.carousel.filter.${f}`)}
                                 </button>
                             ))}
                         </div>
@@ -144,7 +146,7 @@ const CarouselMediaPickerDialog: FC<CarouselMediaPickerDialogProps> = ({
                                 type="text"
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
-                                placeholder="Search files..."
+                                placeholder={t('editor.carousel.searchFiles')}
                                 className="w-full pl-10 pr-4 py-2 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-800 text-sm"
                             />
                         </div>
@@ -156,7 +158,7 @@ const CarouselMediaPickerDialog: FC<CarouselMediaPickerDialogProps> = ({
                                 className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg border dark:border-neutral-600 hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors text-gray-700 dark:text-gray-300 disabled:opacity-50"
                             >
                                 {isUploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-                                Upload
+                                {t('editor.carousel.upload')}
                             </button>
                         )}
                     </div>
@@ -209,19 +211,19 @@ const CarouselMediaPickerDialog: FC<CarouselMediaPickerDialogProps> = ({
                         ) : (
                             <div className="flex flex-col items-center justify-center py-12 text-gray-500">
                                 <ImageIcon size={48} className="mb-4" />
-                                <p>No media files found</p>
+                                <p>{t('editor.carousel.noMediaFiles')}</p>
                             </div>
                         )}
                     </div>
 
                     <div className="mt-4 flex items-center justify-between border-t dark:border-neutral-700 pt-4">
                         <span className="text-sm text-gray-500 dark:text-gray-400">
-                            {selected.size > 0 ? `${selected.size} selected` : 'Select files to add'}
+                            {selected.size > 0 ? t('editor.carousel.selectedCount', { count: selected.size }) : t('editor.carousel.selectFilesToAdd')}
                         </span>
                         <div className="flex gap-2">
                             <Dialog.Close asChild>
                                 <button type="button" className="px-4 py-2 text-sm border dark:border-neutral-600 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors">
-                                    Cancel
+                                    {t('common.cancel')}
                                 </button>
                             </Dialog.Close>
                             <button
@@ -230,7 +232,7 @@ const CarouselMediaPickerDialog: FC<CarouselMediaPickerDialogProps> = ({
                                 disabled={selected.size === 0}
                                 className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                                Add{selected.size > 0 ? ` (${selected.size})` : ''}
+                                {selected.size > 0 ? t('editor.carousel.addCount', { count: selected.size }) : t('editor.carousel.add')}
                             </button>
                         </div>
                     </div>

@@ -310,7 +310,7 @@ const Editor: FC<Props> = ({
               },
               {
                 icon: <Images size={16} />,
-                label: t("editor.Carousel", "Carousel"),
+                label: t("editor.Carousel"),
                 category: 'media',
                 keywords: ["carousel", "gallery", "slideshow", "images", "media"],
                 command: ({ editor }: any) =>
@@ -393,7 +393,7 @@ const Editor: FC<Props> = ({
               // Views
               {
                 icon: <Map size={16} />,
-                label: t("editor.MapView", "Map"),
+                label: t("editor.MapView"),
                 category: 'views',
                 keywords: ["map", "location", "geography", "view"],
                 command: ({ editor }: any) =>
@@ -401,7 +401,7 @@ const Editor: FC<Props> = ({
               },
               {
                 icon: <CalendarDays size={16} />,
-                label: t("editor.CalendarView", "Calendar"),
+                label: t("editor.CalendarView"),
                 category: 'views',
                 keywords: ["calendar", "schedule", "event", "view"],
                 command: ({ editor }: any) =>
@@ -409,7 +409,7 @@ const Editor: FC<Props> = ({
               },
               {
                 icon: <Kanban size={16} />,
-                label: t("editor.KanbanView", "Kanban"),
+                label: t("editor.KanbanView"),
                 category: 'views',
                 keywords: ["kanban", "board", "task", "view"],
                 command: ({ editor }: any) =>
@@ -417,7 +417,7 @@ const Editor: FC<Props> = ({
               },
               {
                 icon: <PenTool size={16} />,
-                label: t("editor.WhiteboardView", "Whiteboard"),
+                label: t("editor.WhiteboardView"),
                 category: 'views',
                 keywords: ["whiteboard", "draw", "canvas", "view"],
                 command: ({ editor }: any) =>
@@ -425,7 +425,7 @@ const Editor: FC<Props> = ({
               },
               {
                 icon: <Sheet size={16} />,
-                label: t("editor.SpreadsheetView", "Spreadsheet"),
+                label: t("editor.SpreadsheetView"),
                 category: 'views',
                 keywords: ["spreadsheet", "table", "sheet", "excel", "view"],
                 command: ({ editor }: any) =>
@@ -640,7 +640,7 @@ const Editor: FC<Props> = ({
     const actions: MenuAction[] = []
     if ($pos.index() > 0 && $pos.nodeBefore) {
       actions.push({
-        label: 'Move up',
+        label: t('editor.moveUp'),
         icon: <ChevronUp size={14} />,
         onClick: () => {
           const s = editor.state
@@ -654,7 +654,7 @@ const Editor: FC<Props> = ({
       const nap = activePos + node.nodeSize
       if (state.doc.resolve(nap).nodeAfter) {
         actions.push({
-          label: 'Move down',
+          label: t('editor.moveDown'),
           icon: <ChevronDown size={14} />,
           onClick: () => {
             const s = editor.state
@@ -668,7 +668,7 @@ const Editor: FC<Props> = ({
       }
     }
     actions.push({
-      label: 'Delete',
+      label: t('actions.delete'),
       icon: <Trash2 size={14} />,
       onClick: () => {
         const s = editor.state
@@ -678,7 +678,7 @@ const Editor: FC<Props> = ({
       variant: 'danger',
     })
     return actions
-  }, [activePos, editor])
+  }, [activePos, editor, t])
 
   const displayActions = activeNodeActions.length > 0 ? activeNodeActions : builtinActions
 

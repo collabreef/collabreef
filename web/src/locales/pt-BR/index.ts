@@ -780,6 +780,9 @@ export default {
     "KanbanView":"Kanban",
     "WhiteboardView":"Quadro Branco",
     "SpreadsheetView":"Planilha",
+    "Carousel": "Carrossel",
+    "moveUp": "Mover para cima",
+    "moveDown": "Mover para baixo",
     "table":{
         "name": "Tabela",
         "deleteColumn": "excluir coluna",
@@ -800,6 +803,25 @@ export default {
         "embed": "Incorporar",
         "advanced": "Avançado",
         "views": "Visualizações"
+    },
+    "carousel": {
+        "addMediaToCarousel": "Adicionar mídia ao carrossel",
+        "addMedia": "Adicionar mídia",
+        "moveUp": "Mover para cima",
+        "moveDown": "Mover para baixo",
+        "remove": "Remover",
+        "searchFiles": "Pesquisar arquivos...",
+        "upload": "Enviar",
+        "noMediaFiles": "Nenhum arquivo de mídia encontrado",
+        "selectFilesToAdd": "Selecionar arquivos para adicionar",
+        "selectedCount": "{{count}} selecionado(s)",
+        "add": "Adicionar",
+        "addCount": "Adicionar ({{count}})",
+        "filter": {
+            "all": "Todos",
+            "image": "Imagem",
+            "video": "Vídeo"
+        }
     }
   },
 } as const;
