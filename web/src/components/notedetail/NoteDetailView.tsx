@@ -42,18 +42,20 @@ const NoteDetailView: FC<NoteDetailViewProps> = ({
                 <div className="flex flex-col min-h-full animate-pulse">
                     <div className="flex justify-center">
                         <div className="max-w-3xl w-full m-auto">
-                            <div className="px-4 pt-16 xl:pt-32">
-                                <div className="flex flex-col gap-4">
-                                    <div className="hidden xl:block">
-                                        <div className="h-10 bg-gray-200 dark:bg-neutral-700 rounded w-full"></div>
-                                    </div>
-                                    <div className="flex flex-col gap-3">
-                                        <div className="h-6 bg-gray-200 dark:bg-neutral-700 rounded w-full"></div>
-                                        <div className="h-6 bg-gray-200 dark:bg-neutral-700 rounded w-5/6"></div>
-                                        <div className="h-6 bg-gray-200 dark:bg-neutral-700 rounded w-4/5"></div>
-                                        <div className="h-6 bg-gray-200 dark:bg-neutral-700 rounded w-full"></div>
-                                        <div className="h-6 bg-gray-200 dark:bg-neutral-700 rounded w-3/4"></div>
-                                        <div className="h-6 bg-gray-200 dark:bg-neutral-700 rounded w-5/6"></div>
+                            <div className="xl:p-10">
+                                <div className="px-4 pt-16 xl:pt-14">
+                                    <div className="flex flex-col gap-4">
+                                        <div className="hidden xl:block">
+                                            <div className="h-10 bg-gray-200 dark:bg-neutral-700 rounded w-full"></div>
+                                        </div>
+                                        <div className="flex flex-col gap-3">
+                                            <div className="h-6 bg-gray-200 dark:bg-neutral-700 rounded w-full"></div>
+                                            <div className="h-6 bg-gray-200 dark:bg-neutral-700 rounded w-5/6"></div>
+                                            <div className="h-6 bg-gray-200 dark:bg-neutral-700 rounded w-4/5"></div>
+                                            <div className="h-6 bg-gray-200 dark:bg-neutral-700 rounded w-full"></div>
+                                            <div className="h-6 bg-gray-200 dark:bg-neutral-700 rounded w-3/4"></div>
+                                            <div className="h-6 bg-gray-200 dark:bg-neutral-700 rounded w-5/6"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
