@@ -7,7 +7,7 @@ interface NoteListSkeletonProps {
 
 const NoteListSkeleton: FC<NoteListSkeletonProps> = ({ count = 6 }) => {
     return (
-        <div className="py-2 px-4 flex flex-col gap-2">
+        <div className="px-4 flex flex-col gap-2">
             {Array.from({ length: count }).map((_, idx) => (
                 <NoteCardSkeleton key={idx} />
             ))}
