@@ -130,7 +130,7 @@ const UserMenu = () => {
                         <div className="flex justify-center pt-3 pb-1">
                             <div className="w-10 h-1 bg-neutral-300 dark:bg-neutral-600 rounded-full" />
                         </div>
-                        <div className="pb-8">
+                        <div className="pb-2">
                             {menuContent}
                         </div>
                     </div>
