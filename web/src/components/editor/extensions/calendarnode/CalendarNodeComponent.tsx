@@ -8,20 +8,47 @@ const MONTH_NAMES = [
   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
 ]
 
-function formatDate(dateStr: string): { day: string; month: string; year: string; weekday: string } | null {
-  try {
-    const d = new Date(dateStr)
-    if (isNaN(d.getTime())) return null
-    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    return {
-      day: String(d.getDate()).padStart(2, '0'),
-      month: MONTH_NAMES[d.getMonth()],
-      year: String(d.getFullYear()),
-      weekday: weekdays[d.getDay()],
-    }
-  } catch {
-    return null
-  }
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+// ── Mini month calendar with the event day highlighted ───────────────────────
+function MiniCalendar({ date }: { date: string }) {
+  const d = new Date(date)
+  if (isNaN(d.getTime())) return null
+  const year = d.getFullYear()
+  const month = d.getMonth()
+  const eventDay = d.getDate()
+  const firstWeekday = new Date(year, month, 1).getDay()
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const cells: (number | null)[] = [
+    ...Array(firstWeekday).fill(null),
+    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+  ]
+
+  return (
+    <div className="w-56 rounded-md border dark:border-neutral-700 bg-white dark:bg-neutral-900 p-2">
+      <div className="text-center text-xs font-medium text-gray-700 dark:text-gray-200 mb-1.5">
+        {MONTH_NAMES[month]} {year}
+      </div>
+      <div className="grid grid-cols-7 gap-0.5 text-center">
+        {WEEKDAYS.map(w => (
+          <div key={w} className="text-[10px] text-gray-400 dark:text-gray-500 font-medium py-0.5">{w[0]}</div>
+        ))}
+        {cells.map((day, i) => (
+          <div key={i} className="flex items-center justify-center">
+            {day !== null && (
+              <span className={`flex items-center justify-center w-6 h-6 text-xs rounded-full ${
+                day === eventDay
+                  ? 'bg-blue-600 text-white font-semibold'
+                  : 'text-gray-600 dark:text-gray-300'
+              }`}>
+                {day}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 const CalendarNodeComponent: React.FC<NodeViewProps> = ({ node, updateAttributes, selected, editor, deleteNode, getPos }) => {
@@ -29,6 +56,7 @@ const CalendarNodeComponent: React.FC<NodeViewProps> = ({ node, updateAttributes
   const isEditable = editor.isEditable
   const isTouchDevice = window.matchMedia("(pointer: coarse)").matches
   const [isEditing, setIsEditing] = useState(!date && !title)
+  const [showCalendar, setShowCalendar] = useState(false)
   const [inputDate, setInputDate] = useState(date ?? '')
   const [inputTitle, setInputTitle] = useState(title ?? '')
   const [inputDescription, setInputDescription] = useState(description ?? '')
@@ -82,8 +110,6 @@ const CalendarNodeComponent: React.FC<NodeViewProps> = ({ node, updateAttributes
 
   useDragMenu(getPos, () => nodeActions)
 
-  const formatted = date ? formatDate(date) : null
-
   if (isEditing || (!date && !title)) {
     return (
       <NodeViewWrapper className="calendar-node select-none border dark:border-neutral-700 rounded p-3 bg-gray-100 dark:bg-neutral-800">
@@ -109,19 +135,22 @@ const CalendarNodeComponent: React.FC<NodeViewProps> = ({ node, updateAttributes
   return (
     <NodeViewWrapper>
       <div className="relative group my-1">
-        <div className="flex flex-wrap items-center gap-1.5 px-1 py-1">
+        <div
+          className="flex flex-wrap items-center gap-1.5 px-1 py-1 cursor-pointer"
+          onClick={() => setShowCalendar(s => !s)}
+        >
           {title && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
+              <CalendarDays size={12} className="shrink-0" />
               {title}
             </span>
           )}
-          {formatted && (
-            <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
-              {formatted.month} {formatted.day}, {formatted.year}
-            </span>
-          )}
-          {description && <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{description}</span>}
         </div>
+        {showCalendar && date && (
+          <div className="px-1 py-1">
+            <MiniCalendar date={date} />
+          </div>
+        )}
         {isTouchDevice && isEditable && (
           <NodeTouchMenu visible={selected} actions={nodeActions} />
         )}

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useId, useCallback } from 'react'
 import { PhotoView, PhotoProvider } from 'react-photo-view'
 import ShikiHighlighter from "react-shiki"
 import { useTranslation } from 'react-i18next'
-import { FileText, ChevronDown, LoaderCircle, CalendarDays, ExternalLink, Star, Map, Kanban, PenTool, Sheet } from 'lucide-react'
+import { FileText, ChevronDown, LoaderCircle, CalendarDays, ExternalLink, Star, Map, MapPin, Kanban, PenTool, Sheet } from 'lucide-react'
 import { useParams } from 'react-router-dom'
 import { getNote, NoteData } from '@/api/note'
 import { ViewType } from '@/types/view'
@@ -184,40 +184,73 @@ const ThreadsRendererEmbed: React.FC<{ url: string }> = ({ url }) => {
 const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 const WEEKDAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 
-const CalendarEventRenderer: React.FC<{ date?: string; title?: string; description?: string }> = ({ date, title, description }) => {
-    const formatted = (() => {
-        if (!date) return null
-        try {
-            const d = new Date(date)
-            if (isNaN(d.getTime())) return null
-            return {
-                day: String(d.getDate()).padStart(2, '0'),
-                month: MONTH_NAMES[d.getMonth()],
-                year: String(d.getFullYear()),
-                weekday: WEEKDAYS[d.getDay()],
-            }
-        } catch { return null }
-    })()
+// ── Mini month calendar with the event day highlighted ───────────────────────
+function MiniCalendar({ date }: { date: string }) {
+    const d = new Date(date)
+    if (isNaN(d.getTime())) return null
+    const year = d.getFullYear()
+    const month = d.getMonth()
+    const eventDay = d.getDate()
+    const firstWeekday = new Date(year, month, 1).getDay()
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
+    const cells: (number | null)[] = [
+        ...Array(firstWeekday).fill(null),
+        ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+    ]
 
     return (
-        <div className="flex flex-wrap items-center gap-1.5 py-1">
-            {title && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
-                    {title}
-                </span>
-            )}
-            {formatted && (
-                <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                    {formatted.month} {formatted.day}, {formatted.year}
-                </span>
-            )}
-            {description && <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{description}</span>}
+        <div className="w-56 rounded-md border dark:border-neutral-700 bg-white dark:bg-neutral-900 p-2">
+            <div className="text-center text-xs font-medium text-gray-700 dark:text-gray-200 mb-1.5">
+                {MONTH_NAMES[month]} {year}
+            </div>
+            <div className="grid grid-cols-7 gap-0.5 text-center">
+                {WEEKDAYS.map(w => (
+                    <div key={w} className="text-[10px] text-gray-400 dark:text-gray-500 font-medium py-0.5">{w[0]}</div>
+                ))}
+                {cells.map((day, i) => (
+                    <div key={i} className="flex items-center justify-center">
+                        {day !== null && (
+                            <span className={`flex items-center justify-center w-6 h-6 text-xs rounded-full ${
+                                day === eventDay
+                                    ? 'bg-blue-600 text-white font-semibold'
+                                    : 'text-gray-600 dark:text-gray-300'
+                            }`}>
+                                {day}
+                            </span>
+                        )}
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }
 
-const LocationRenderer: React.FC<{ lat: number; lng: number; name?: string; address?: string; zoom?: number }> = ({
-    lat, lng, name, address, zoom = 15,
+const CalendarEventRenderer: React.FC<{ date?: string; title?: string }> = ({ date, title }) => {
+    const [showCalendar, setShowCalendar] = useState(false)
+    return (
+        <div className="">
+            <div
+                className="flex flex-wrap items-center gap-1.5 py-1 cursor-pointer"
+                onClick={() => setShowCalendar(s => !s)}
+            >
+                {title && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
+                        <CalendarDays size={12} className="shrink-0" />
+                        {title}
+                    </span>
+                )}
+            </div>
+            {showCalendar && date && (
+                <div className="py-1">
+                    <MiniCalendar date={date} />
+                </div>
+            )}
+        </div>
+    )
+}
+
+const LocationRenderer: React.FC<{ lat: number; lng: number; name?: string; zoom?: number }> = ({
+    lat, lng, name, zoom = 15,
 }) => {
     const [showMap, setShowMap] = useState(false)
     return (
@@ -227,12 +260,10 @@ const LocationRenderer: React.FC<{ lat: number; lng: number; name?: string; addr
                 onClick={() => setShowMap(s => !s)}
             >
                 {name && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
+                        <MapPin size={12} className="shrink-0" />
                         {name}
                     </span>
-                )}
-                {address && address !== name && (
-                    <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{address}</span>
                 )}
                 <a
                     href={`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`}
@@ -597,11 +628,11 @@ const Renderer: React.FC<RendererProps> = ({ content, maxNodes, workspaceId: wor
                 return <TagsRenderer key={key} tags={tags} />
             }
             case 'calendarNode':
-                return <CalendarEventRenderer key={key} date={node.attrs?.date} title={node.attrs?.title} description={node.attrs?.description} />
+                return <CalendarEventRenderer key={key} date={node.attrs?.date} title={node.attrs?.title} />
             case 'locationNode': {
                 const { lat, lng } = node.attrs ?? {}
                 if (lat == null || lng == null) return null
-                return <LocationRenderer key={key} lat={lat} lng={lng} name={node.attrs?.name} address={node.attrs?.address} zoom={node.attrs?.zoom ?? 15} />
+                return <LocationRenderer key={key} lat={lat} lng={lng} name={node.attrs?.name} zoom={node.attrs?.zoom ?? 15} />
             }
             case 'ratingNode': {
                 const { rating = 0, maxRating = 5, label } = node.attrs ?? {}

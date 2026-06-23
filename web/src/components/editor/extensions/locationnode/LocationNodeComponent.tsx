@@ -377,12 +377,10 @@ const LocationNodeComponent: React.FC<NodeViewProps> = ({
           onClick={() => setShowMap(s => !s)}
         >
           {name && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 select-none">
+              <MapPin size={12} className="shrink-0" />
               {name}
             </span>
-          )}
-          {address && address !== name && (
-            <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{address}</span>
           )}
           <a
             href={`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`}
